@@ -18,4 +18,4 @@ Na het vertonen van de grap wordt de gebruiker gevraagd of hij nog een grap wil 
 
 ## Voorbeeldinteractie:
 
-![Jokes Interactie](jokes.gif)
+![Jokes Interactie](assets/jokes.gif)

@@ -41,7 +41,7 @@ In deze oefening is het nog niet de bedoeling om EJS te gebruiken. We gaan enkel
 * Deze route toont elke keer dat je deze pagina bezoekt een andere kleur.
 * Zoek zelf uit hoe je een willekeurige kleur kan berekenen. Probeer zelf eerst iets in elkaar te steken voor je begint te googlen hoe het moet.
 
-![](./randomcolor.gif)
+![](./assets/willekeurige-kleur-demo.gif)
 
 **Foutafhandeling**
 

@@ -12,9 +12,9 @@ Onderstaande screenshot en video tonen een project dat **door een student gemaak
 
 In *The Beehive* koos de student voor een dataset over bijensoorten. Het overzicht toont de bijen in een tabel met afbeelding, habitat en voorkeursbloemen, en laat je zoeken en sorteren. Via de navigatie ga je naar de gerelateerde habitats, en de applicatie is afgeschermd met een login.
 
-![Overzichtspagina van The Beehive, een studentenproject over bijensoorten](/assets/bees.png)
+![Overzichtspagina van The Beehive, een studentenproject over bijensoorten](./assets/beehive-overzicht.png)
 
-<video src={require("/assets/bees-demo.mp4").default} controls muted playsInline width="100%" />
+<video src={require("./assets/bees-demo.mp4").default} controls muted playsInline width="100%" />
 
 ## Hoe werkt het?
 

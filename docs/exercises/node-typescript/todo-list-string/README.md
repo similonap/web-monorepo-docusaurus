@@ -43,4 +43,4 @@ Als de gebruiker kiest voor "Exit" dan stopt het programma.
 
 ## **Voorbeeldinteractie:**
 
-<figure><img src={require("./todos.gif").default} alt="" /><figcaption></figcaption></figure>
+<figure><img src={require("./assets/todos.gif").default} alt="" /><figcaption></figcaption></figure>

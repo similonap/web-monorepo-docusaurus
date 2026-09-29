@@ -10,7 +10,7 @@ Bash, een afkorting voor Bourne Again SHell, is een veelgebruikte command-line i
 
 Om een nieuwe terminal te openen in visual studio code klik je op `Terminal` in de menubalk en vervolgens op `New Terminal`. Dit opent een nieuwe terminal in de onderkant van je scherm. 
 
-![Alt text](/assets/newterminal.png)
+![Alt text](./assets/vscode-nieuwe-terminal.png)
 
 Merk op dat je zelfs al werk je in windows je een bash terminal krijgt en nergens iets van een C schijf of dergelijke ziet. Dit komt omdat je in een devcontainer werkt. 
 
@@ -26,11 +26,11 @@ Even de structuur van de terminal uitleggen. De prompt is het stukje tekst dat j
 
 Je kan ook een terminal openen in een specifieke map door eerst naar de map te navigeren in de file explorer en dan rechts te klikken en te kiezen voor `Open in Integrated Terminal`.
 
-![Alt text](/assets/openintegrated.png)
+![Alt text](./assets/vscode-geintegreerde-terminal.png)
 
 Omdat we hier de terminal openen in de `folder` directory, zal de terminal ook openen in die map.
 
-![Alt text](/assets/open_in_terminal.png)
+![Alt text](./assets/openen-in-terminal.png)
 
 ## Basis commando's
 
@@ -40,7 +40,7 @@ We gaan hier de basis commando's behandelen die nodig zijn om te navigeren in ee
 
 `pwd` staat voor `print working directory`. Dit commando toont de huidige map waarin je zit.
 
-![Alt text](/assets/pwd.png)
+![Alt text](./assets/bash-pwd.png)
 
 Je ziet dat we in de map `/workspaces/Deel1-Node-en-Typescript` zitten. Dat wist je al omdat je dat ook in de prompt zag.
 
@@ -48,11 +48,11 @@ Je ziet dat we in de map `/workspaces/Deel1-Node-en-Typescript` zitten. Dat wist
 
 `ls` staat voor `list`. Dit commando toont de bestanden en mappen in de huidige map.
 
-![Alt text](/assets/ls.png)
+![Alt text](./assets/bash-ls.png)
 
 Je kan ook de `ls -a` gebruiken om ook verborgen bestanden en mappen te tonen. Dit zijn bestanden en mappen die beginnen met een punt.
 
-![Alt text](/assets/lsa.png)
+![Alt text](./assets/bash-ls-all.png)
 
 Let er op dat de bestanden `.` en `..` altijd getoond worden. `.` staat voor de huidige map en `..` staat voor de bovenliggende map.
 

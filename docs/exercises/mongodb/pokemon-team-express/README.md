@@ -9,4 +9,4 @@ We starten van de database die we gemaakt hebben in de vorige [opgave](../pokemo
 - Maak een `/` GET route aan die dropdown (`select`) toont met alle pokemon in een vooraf bepaalde lijst. Onder de dropdown laat je een lijst zien van alle pokemon in het team. 
 - Maak een `/` POST route aan die een pokemon toevoegt aan het team. Als de pokemon al in je team zit dan wordt deze niet toegevoegd.
 
-![alt text](pokemon-team.gif)
+![alt text](assets/pokemon-team.gif)

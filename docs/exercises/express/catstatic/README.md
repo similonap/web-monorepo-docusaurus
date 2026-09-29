@@ -10,8 +10,8 @@ Zorg ervoor dat de volgende images getoond worden als je naar `http://localhost:
 
 Zorg dat de array van image urls wordt doorgegeven via de render methode van de ejs template. 
 
-<a href="cats.zip">Cats.zip</a>
+<a href="assets/cats.zip">Cats.zip</a>
 
 Zorg voor een **extern css bestand** waar je een eigen style geeft aan de pagina.
 
-![](cats.png)
+![](assets/overzicht.png)

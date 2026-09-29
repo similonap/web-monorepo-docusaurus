@@ -1,0 +1,1946 @@
+{
+  "version": 1,
+  "description": "Asset migration: original path, new path and original SHA-256. Runtime identifiers and shared branding paths remain stable.",
+  "assets": [
+    {
+      "from": "docs/exercises/express/bitcoin-current/screenshot.png",
+      "to": "docs/exercises/express/bitcoin-current/assets/bitcoin-koersoverzicht.png",
+      "sha256": "91700f6217a7c9684ee969dd9d5d65545d44af05096827acaedae3a653349679"
+    },
+    {
+      "from": "docs/exercises/express/catstatic/cats.png",
+      "to": "docs/exercises/express/catstatic/assets/overzicht.png",
+      "sha256": "d17bc901d1144d8d30b979d75e7d08a967738561a2fa1f81a0748c35b786ca8b"
+    },
+    {
+      "from": "docs/exercises/express/catstatic/cats.zip",
+      "to": "docs/exercises/express/catstatic/assets/cats.zip",
+      "sha256": "eb49871e94c52cdc625230754c70d936c3c93c6e1c2160922d04ead5c8f55469"
+    },
+    {
+      "from": "docs/exercises/express/contact-form/contact.png",
+      "to": "docs/exercises/express/contact-form/assets/contact.png",
+      "sha256": "ad926a24dfa9a9235746660f8cf1540ba9f7e5827a03058742b75acaba84eae5"
+    },
+    {
+      "from": "docs/exercises/express/contact-form/message_empty.png",
+      "to": "docs/exercises/express/contact-form/assets/bericht-ontbreekt.png",
+      "sha256": "36f729dd39e272767c98017ae4917ae8264f8f4bd406e062f81f6c68c9cace9e"
+    },
+    {
+      "from": "docs/exercises/express/contact-form/ok.png",
+      "to": "docs/exercises/express/contact-form/assets/formulier-bevestiging.png",
+      "sha256": "209933ce67ed08a60066c3477dfe48d6fc1c37a18eb4af2f55e3c280153b9c93"
+    },
+    {
+      "from": "docs/exercises/express/contact-form/tos.png",
+      "to": "docs/exercises/express/contact-form/assets/voorwaarden-validatie.png",
+      "sha256": "b781654e7245b5af96626180f3887f37511eefa54519be7a85ae2321d74b1ccf"
+    },
+    {
+      "from": "docs/exercises/express/dadjoke-express/dadjoke-html.png",
+      "to": "docs/exercises/express/dadjoke-express/assets/html-respons.png",
+      "sha256": "e187c16888a02e824009dee2d1b88315455a88f47449ea76e23e72b1eb9a8321"
+    },
+    {
+      "from": "docs/exercises/express/dadjoke-express/dadjoke-json.png",
+      "to": "docs/exercises/express/dadjoke-express/assets/json-respons.png",
+      "sha256": "20a2292c0bda1654af5c639c82f586ed44a9a739c22d8039e07a66dee8088abc"
+    },
+    {
+      "from": "docs/exercises/express/hello-express-ejs/solution/public/assets/images/thisisme.png",
+      "to": "docs/exercises/express/hello-express-ejs/solution/public/assets/images/profielportret.png",
+      "sha256": "d2486128a6607074d0f983ceccb315d66b9ce568ad2db194a649dde458fe5f1a"
+    },
+    {
+      "from": "docs/exercises/express/hello-express/randomcolor.gif",
+      "to": "docs/exercises/express/hello-express/assets/willekeurige-kleur-demo.gif",
+      "sha256": "a2e6010f22e969d0fccd7bfb728830fd50fa5f79b6f29d183414c2c8ced83037"
+    },
+    {
+      "from": "docs/exercises/express/hello-query/bonjour.png",
+      "to": "docs/exercises/express/hello-query/assets/bonjour.png",
+      "sha256": "60feb14ba9df7e48a4da5ba7956e3f9a948930225aba66df7cf74debe852bb91"
+    },
+    {
+      "from": "docs/exercises/express/hello-query/helloworld.png",
+      "to": "docs/exercises/express/hello-query/assets/hello-world.png",
+      "sha256": "83df5ea7d8f258c8167291e7a942531b0fc9001ab5290ce8cc38bcecb463d2b7"
+    },
+    {
+      "from": "docs/exercises/express/maaltafels-ejs/maaltafels.png",
+      "to": "docs/exercises/express/maaltafels-ejs/assets/tabel.png",
+      "sha256": "b0e7e8e44dff822281413fba108b3b5ca21d7d6436cbd6af706bb04553ca0a51"
+    },
+    {
+      "from": "docs/exercises/express/newspaper-search/search-2.png",
+      "to": "docs/exercises/express/newspaper-search/assets/search-2.png",
+      "sha256": "b82effd4cb6b782201a7f42af4078ed4ede7be7621c336fb5208c753776a5bbe"
+    },
+    {
+      "from": "docs/exercises/express/newspaper/articles.png",
+      "to": "docs/exercises/express/newspaper/assets/articles.png",
+      "sha256": "ec5207d2ede1f9f5432b659d90e827c12713427a28afab891a66e48636a4fea9"
+    },
+    {
+      "from": "docs/exercises/express/petshelter-form/animals.zip",
+      "to": "docs/exercises/express/petshelter-form/assets/animals.zip",
+      "sha256": "911bf1a6f4fe96f132011c3f2bb7c8e8a2e9a029b6276053850cc5490fa51304"
+    },
+    {
+      "from": "docs/exercises/express/petshelter-form/form-response.png",
+      "to": "docs/exercises/express/petshelter-form/assets/form-response.png",
+      "sha256": "a8ef805b21b6b9dae3e89841e0e46d20723a8d1049a54f0e305648b7f344620f"
+    },
+    {
+      "from": "docs/exercises/express/petshelter-form/form.png",
+      "to": "docs/exercises/express/petshelter-form/assets/form.png",
+      "sha256": "ee19b138c551297912cce104db9f76a990ad04622162528a06b62d0f6e30f00c"
+    },
+    {
+      "from": "docs/exercises/express/redirect-form/select.png",
+      "to": "docs/exercises/express/redirect-form/assets/select.png",
+      "sha256": "1a5e6dd8817d85e3f18aa2358762f46f65df7dd56acd951b0b3d0467454e5739"
+    },
+    {
+      "from": "docs/exercises/express/redirect-form/urlform.png",
+      "to": "docs/exercises/express/redirect-form/assets/url-formulier.png",
+      "sha256": "59028c5f761ea846b0f8bcae734b9e5a4d8d4319fa5ae162371f9720ca0828f5"
+    },
+    {
+      "from": "docs/exercises/express/router-combi/router-combi.gif",
+      "to": "docs/exercises/express/router-combi/assets/router-combi.gif",
+      "sha256": "5c6f8f2218203bef2d832aa54c198b86079c68a512877da2b06d7220fe88b503"
+    },
+    {
+      "from": "docs/exercises/express/slopify/solution/public/img/slopifylogo.png",
+      "to": "docs/exercises/express/slopify/solution/public/img/slopify-logo.png",
+      "sha256": "74ef8b33dfac0f47b561e7fb958023c7f3f4fc119290c1d4adf8535165176cce"
+    },
+    {
+      "from": "docs/exercises/express/slopify/starter/public/img/slopifylogo.png",
+      "to": "docs/exercises/express/slopify/starter/public/img/slopify-logo.png",
+      "sha256": "74ef8b33dfac0f47b561e7fb958023c7f3f4fc119290c1d4adf8535165176cce"
+    },
+    {
+      "from": "docs/exercises/express/steam/sort.png",
+      "to": "docs/exercises/express/steam/assets/sort.png",
+      "sha256": "5be9f8ddbbaa66f076cad8c385b99ba69ace47b4d3a5798ceac59f4375195bae"
+    },
+    {
+      "from": "docs/exercises/express/steam/sort_header.png",
+      "to": "docs/exercises/express/steam/assets/sorteren-kolomkop.png",
+      "sha256": "05b39bab05174d4490d8dc88db1b9eca8baf8f31e1e7f0a29f69a67660b54f50"
+    },
+    {
+      "from": "docs/exercises/express/twitter/2023-04-25-16-14-50.png",
+      "to": "docs/exercises/express/twitter/assets/twitter-tijdlijn.png",
+      "sha256": "78e98491d61e22cbbff311e2a3e74e6d0f2c63a3698555450483d41bb077f2dd"
+    },
+    {
+      "from": "docs/exercises/express/viewcounter/visits.gif",
+      "to": "docs/exercises/express/viewcounter/assets/visits.gif",
+      "sha256": "0f858ddb0be103e00a2deb00d0f21c918e5157115a484566efa5d5f7b422a85a"
+    },
+    {
+      "from": "docs/exercises/express/word-guess/wordguess-2.gif",
+      "to": "docs/exercises/express/word-guess/assets/wordguess-2.gif",
+      "sha256": "5645723c1fca317fd18660efc7f13afed7bc34193edc35681df179856887bcc0"
+    },
+    {
+      "from": "docs/exercises/express/word-guess/wordguess.gif",
+      "to": "docs/exercises/express/word-guess/assets/wordguess.gif",
+      "sha256": "15b351834e22fbc7a53dbc27e6dff7788e9c0ed835200537e8c7a034010ac7ce"
+    },
+    {
+      "from": "docs/exercises/express/word-guess/words-2.gif",
+      "to": "docs/exercises/express/word-guess/assets/words-2.gif",
+      "sha256": "af537bc39b2f9b971185b2f98bed74bf422d3fc974fee291adfd3bc30ebbe0b6"
+    },
+    {
+      "from": "docs/exercises/express/word-guess/words.png",
+      "to": "docs/exercises/express/word-guess/assets/words.png",
+      "sha256": "557c156023a5311f717ce15b75d8e2c5107bf061102145b8243ed5176e6b2477"
+    },
+    {
+      "from": "docs/exercises/full-stack/pizza-builder/assets/example.gif",
+      "to": "docs/exercises/full-stack/pizza-builder/assets/pizza-builder-demo.gif",
+      "sha256": "befae95872c0703757dbc24002f77335722a61729f8c006219406d5900912885"
+    },
+    {
+      "from": "docs/exercises/full-stack/pokemon-app-bis/assets/example.gif",
+      "to": "docs/exercises/full-stack/pokemon-app-bis/assets/pokemon-app-bis-demo.gif",
+      "sha256": "205091120f27564c7f563bbf6555682a23dcbcf6316d9b28b7e37b3774c4f65b"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/bardetail.png",
+      "to": "docs/exercises/herhaling/beerster/assets/bar-detail.png",
+      "sha256": "40f76df9453096a4634e5001ad814b052c0c601e319a023ae9ddc3981e4c90b2"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/barlist.png",
+      "to": "docs/exercises/herhaling/beerster/assets/bar-overzicht.png",
+      "sha256": "a1b587d05d2813ba9d883b5107169d2a1efdae066873264e54df34d4e174ea21"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/beerdetail.png",
+      "to": "docs/exercises/herhaling/beerster/assets/bier-detail.png",
+      "sha256": "e1621c0606747ceb3b4ab0d7db92ca5c81cfa96b3af66061e95ffa44e9150c09"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/beerspage.png",
+      "to": "docs/exercises/herhaling/beerster/assets/bieren-overzicht.png",
+      "sha256": "e7062a8391488ff60458b719cbf5e9c115c1035b7fadc656354eb60f1c2be90b"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/checkinform-clean.png",
+      "to": "docs/exercises/herhaling/beerster/assets/check-in-formulier-leeg.png",
+      "sha256": "eca8ccafbe5a9c07fb30b5c6d38be848839f512f12f6d6da810b51f4c9bc5142"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/checkinform-success.png",
+      "to": "docs/exercises/herhaling/beerster/assets/check-in-bevestiging.png",
+      "sha256": "6475f2c7b0002e41ce6b9fbc0eda111b54c4bdf3b3b5927236eead9527a5edce"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/checkinform.png",
+      "to": "docs/exercises/herhaling/beerster/assets/check-in-formulier.png",
+      "sha256": "ff0317071770f6308cb5827a58b3789c4486db17353aa4c35737c7aa2ad22d8c"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/homescreen.png",
+      "to": "docs/exercises/herhaling/beerster/assets/startscherm.png",
+      "sha256": "e3f4d5e61af5fdf358810fa8b98b52db054bf9daf4c75ac0f994a739b81f03db"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/login-failed.png",
+      "to": "docs/exercises/herhaling/beerster/assets/login-failed.png",
+      "sha256": "177f70b3f270d29bea23df9457f4025b26ac9ea80cb633e18b8b9dde21609c63"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/login.png",
+      "to": "docs/exercises/herhaling/beerster/assets/login.png",
+      "sha256": "fb96a9b20339e04ebb7557815d7dd5edd79a25759bcf294eb8ef22ffd9b9d2bf"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/profile-button.png",
+      "to": "docs/exercises/herhaling/beerster/assets/profile-button.png",
+      "sha256": "20efa4077872b526aef36164e1ef248f3dd7b85480d9363ccac78f8cb2d56e86"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/profile.png",
+      "to": "docs/exercises/herhaling/beerster/assets/profile.png",
+      "sha256": "d83820ef39fed3384bfffa7c4236681cb79b623a19d673a77ce8d19b237ed097"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/recent.png",
+      "to": "docs/exercises/herhaling/beerster/assets/recente-check-ins.png",
+      "sha256": "bbb1578d17327b790ec87c4afa82481038ef865f3b2b65a8548bfc4dbcba46bd"
+    },
+    {
+      "from": "docs/exercises/herhaling/beerster/topbars.png",
+      "to": "docs/exercises/herhaling/beerster/assets/populairste-bars.png",
+      "sha256": "baee10d138b9b6ecd4000043e431730d3666354d4646138ae5825706edfa75d4"
+    },
+    {
+      "from": "docs/exercises/herhaling/youtube-playlists/youtubevideos.gif",
+      "to": "docs/exercises/herhaling/youtube-playlists/assets/youtube-playlists-demo.gif",
+      "sha256": "597bef4d4112521330b1b329c16c890abdb2fafe8cbca8c92a9ea4f5e3830a70"
+    },
+    {
+      "from": "docs/exercises/mongodb/guestbook-express/guestbook.gif",
+      "to": "docs/exercises/mongodb/guestbook-express/assets/guestbook.gif",
+      "sha256": "8559c45d228f0f5b81ab68f42bc3f8ddbcaeba0a21cbed436a96a836e3a39e64"
+    },
+    {
+      "from": "docs/exercises/mongodb/pet-shelter-express/pets.png",
+      "to": "docs/exercises/mongodb/pet-shelter-express/assets/pets.png",
+      "sha256": "6c943f7e407df8fc234468c8f10fa7642014ed3e3c712fc24135031ff79be919"
+    },
+    {
+      "from": "docs/exercises/mongodb/pet-shelter-express/petssearch.png",
+      "to": "docs/exercises/mongodb/pet-shelter-express/assets/dieren-zoeken.png",
+      "sha256": "dcfb636090dea0476b30ad9e4cfdaadd8514fec9a167fe483528136a6c4aad73"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokedex-mongo-express/filtering.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/filtering.png",
+      "sha256": "de3fc7760991b6bf096303a0ccea3420715585305c685593aca375cf426bb51f"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokedex-mongo-express/firefilter.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/vuurtype-filter.png",
+      "sha256": "4027afc8722e66490770f1bacb54016e53ff5643287c92b09ba32c1819fa7e88"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokedex-mongo-express/player.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/player.png",
+      "sha256": "557aa1d322ed48ab68debaa912415a36bf2ae11ed33a0c1f31ad03c8d2d8b9b7"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokedex-mongo-express/pokemonlist.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/pokemon-overzicht.png",
+      "sha256": "b9da30656b5caed8f23489eeae16e806b8f95c88e076ca8877615b63d3b4dff3"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokedex-mongo-express/pokemonteam.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/pokemon-team.png",
+      "sha256": "187eb5c7a52793aa6ba4b7d7c2fc8f813b2f29b0a99cdf61c575b51c5c20dd40"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokedex-mongo-express/screenshot.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/pokedex-overzicht.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokedex-mongo-express/startpage.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/startpagina.png",
+      "sha256": "6a42afcc7e112bf58bde79481b2799991a79003d336d5ddd5ef6aa9a5c49cc35"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokedex-mongo-express/startpage_empty.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/startpagina-leeg.png",
+      "sha256": "dd6f74dfb9c5f3e9935135860426a6c417778137ffd40f9579d8e81c0da75d08"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokedex-mongo-express/startpage_red.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/startpagina-validatie.png",
+      "sha256": "33307a27534493c0933dfbecae0441d85f26e3433935a0808f56d43e5c41811e"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokedex-mongo-express/summary.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/summary.png",
+      "sha256": "ffb4e57ce06eac57f30d4b0ab6460c135afebb4229d43d90abb6265f90bb577b"
+    },
+    {
+      "from": "docs/exercises/mongodb/pokemon-team-express/pokemon-team.gif",
+      "to": "docs/exercises/mongodb/pokemon-team-express/assets/pokemon-team.gif",
+      "sha256": "cd809f0ea0147950877c2f42983d5e5502791ff4de83e4b6f5695367576bc33d"
+    },
+    {
+      "from": "docs/exercises/mongodb/users-crud-express/users-crud.gif",
+      "to": "docs/exercises/mongodb/users-crud-express/assets/users-crud.gif",
+      "sha256": "85d22ec06a2938163a2b56f464446e35102d55543b5bf68580d7811a8fa1beb4"
+    },
+    {
+      "from": "docs/exercises/node-typescript/cat-gpt/catgpt.gif",
+      "to": "docs/exercises/node-typescript/cat-gpt/assets/cat-gpt-demo.gif",
+      "sha256": "4c3162a98695c625f1cfe004397c28f2e5b8eeda4dc7699e2502fff41ffbef64"
+    },
+    {
+      "from": "docs/exercises/node-typescript/dna-match/dna.gif",
+      "to": "docs/exercises/node-typescript/dna-match/assets/dna.gif",
+      "sha256": "9c326ca20da08310db06d718632eeae9a448a2f3d6c52de9b26257de3f07e65e"
+    },
+    {
+      "from": "docs/exercises/node-typescript/joke-api/jokes.gif",
+      "to": "docs/exercises/node-typescript/joke-api/assets/jokes.gif",
+      "sha256": "6c6179269c1078e13b50f7d8d4793d7cca2a2989954f84886c8423575caf1bb1"
+    },
+    {
+      "from": "docs/exercises/node-typescript/pokemon-team/pokemon.gif",
+      "to": "docs/exercises/node-typescript/pokemon-team/assets/pokemon.gif",
+      "sha256": "dfd869b6e523366b1ab5ddd6f5513af301ee4751e9b6bcf19b65b9f720a5f5df"
+    },
+    {
+      "from": "docs/exercises/node-typescript/rainbow-chalk/rainbow.png",
+      "to": "docs/exercises/node-typescript/rainbow-chalk/assets/rainbow.png",
+      "sha256": "a8836a3eaed2f5a42ddbd8f300e645af35a6d1d557ed15832219d082347276e2"
+    },
+    {
+      "from": "docs/exercises/node-typescript/rot13/rot13.png",
+      "to": "docs/exercises/node-typescript/rot13/assets/alfabet.png",
+      "sha256": "b920702fbc977b655eb08773554bb4d1c4f8f55636aadb81520a1abacb082cab"
+    },
+    {
+      "from": "docs/exercises/node-typescript/tic-tac-toe/tictactoe.gif",
+      "to": "docs/exercises/node-typescript/tic-tac-toe/assets/tic-tac-toe-demo.gif",
+      "sha256": "d15f9b9b49bc1c764501e464fe2d8e0aed4b5fc8f7b83a658b2751516fe99e79"
+    },
+    {
+      "from": "docs/exercises/node-typescript/todo-list-string/todos.gif",
+      "to": "docs/exercises/node-typescript/todo-list-string/assets/todos.gif",
+      "sha256": "66a602bd439dafa49719d09ebde41c03dc0db115ca1a96ee8c5bc733d3ec277e"
+    },
+    {
+      "from": "docs/exercises/security/login-express/screen1.png",
+      "to": "docs/exercises/security/login-express/assets/foutmelding.png",
+      "sha256": "01f55023edd2f33e9ef103aafdaf1610936c24217d3d182b0c7b54c63c2b7a8b"
+    },
+    {
+      "from": "docs/exercises/security/login-express/screen2.png",
+      "to": "docs/exercises/security/login-express/assets/ingelogd.png",
+      "sha256": "a661be33bcce3a89ec869a5cbf47c764b8da743e0c9866b6c2b8f30b41aa13a5"
+    },
+    {
+      "from": "docs/exercises/security/shopping-cookie/starter.png",
+      "to": "docs/exercises/security/shopping-cookie/assets/starter.png",
+      "sha256": "cd095c0e48ff3211c3b99b9592135a5e695937dec9f1690da478c95751614242"
+    },
+    {
+      "from": "docs/express.js/mongodb/mongovscode.png",
+      "to": "docs/express.js/mongodb/assets/mongodb-vscode.png",
+      "sha256": "eaf8a88c87fe5368d2a5548fb15a415f3e41507a673a5b9fa1743518b9db36ef"
+    },
+    {
+      "from": "docs/nodejs-+-typescript/nodejs.png",
+      "to": "docs/nodejs-+-typescript/assets/nodejs-stack-overflow-2025.png",
+      "sha256": "9872652b3669a3e9a1f7aedffa08e9c8f7802b203245fddf022822e078dd80f4"
+    },
+    {
+      "from": "docs/nodejs-+-typescript/npmjs.png",
+      "to": "docs/nodejs-+-typescript/assets/npm-package-overzicht.png",
+      "sha256": "d7c12cfdbce969251136967cd9ffac1786abcb026096e0c1f37ef28724ce4004"
+    },
+    {
+      "from": "docs/security/assymetric.png",
+      "to": "docs/security/assets/asymmetric-encryption.png",
+      "sha256": "ca80ce253d172d7b38d8757ea58f369c641cbf53b7fa38994859d7f30b714d21"
+    },
+    {
+      "from": "docs/security/certificate.png",
+      "to": "docs/security/assets/tls-certificate.png",
+      "sha256": "408e0e15ef57a1d3fe70e8218e90511d24a5684a1b60c3f0bf2958d12b46e7fd"
+    },
+    {
+      "from": "docs/security/hashes-vscode.png",
+      "to": "docs/security/assets/hashes-vscode.png",
+      "sha256": "efe91558c70357ad2a3bd986db483bbca074ee0ba8d5af71394843613bd0551f"
+    },
+    {
+      "from": "docs/security/https.png",
+      "to": "docs/security/assets/https-schema.png",
+      "sha256": "e8dcc95338301c94a49bfa40096e27cf35bfd7e1960a0cb55ca9af2dfcffd367"
+    },
+    {
+      "from": "docs/security/selfsigned.png",
+      "to": "docs/security/assets/self-signed-certificate.png",
+      "sha256": "e89e44f5abfe272be49de859a6cdf2b11853ae5707165b16548851bbe4f6279f"
+    },
+    {
+      "from": "docs/security/symmetric.png",
+      "to": "docs/security/assets/symmetric-encryption.png",
+      "sha256": "4b6a70bb4f20e5b0cd3588a7c89e72cf723de9c6387fb291583f59fcad5cf15f"
+    },
+    {
+      "from": "docs/slides/webontwikkeling/image-1.png",
+      "to": "docs/slides/webontwikkeling/assets/student-aan-het-werk.png",
+      "sha256": "9872a8e96cdc4c39df9cb7483804e25010caf77e5a6ee700bd9bc1abb83e7ac4"
+    },
+    {
+      "from": "docs/slides/webontwikkeling/image.png",
+      "to": "docs/slides/webontwikkeling/assets/digitap-cursusmateriaal.png",
+      "sha256": "aa629b58c50d158c92b01c6d4d4b2a277eb1e72389687d68c8c0c16135d50525"
+    },
+    {
+      "from": "static/assets/2023-04-25-16-14-50 (1).png",
+      "to": "docs/exercises/express/twitter/assets/archive/twitter-tijdlijn.png",
+      "sha256": "78e98491d61e22cbbff311e2a3e74e6d0f2c63a3698555450483d41bb077f2dd"
+    },
+    {
+      "from": "static/assets/2023-04-25-16-14-50.png",
+      "to": "docs/exercises/express/twitter/assets/archive/twitter-tijdlijn-variant-02.png",
+      "sha256": "78e98491d61e22cbbff311e2a3e74e6d0f2c63a3698555450483d41bb077f2dd"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-02 at 10.54.38.png",
+      "to": "docs/nodejs-+-typescript/assets/archive/som-terminal.png",
+      "sha256": "c64717d190ec3b9bd8498a4478c33d147a6ba23d1f6acf33be66278433a59a75"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-02 at 20.54.32.png",
+      "to": "docs/nodejs-+-typescript/assets/archive/robots-terminal.png",
+      "sha256": "ceb5999ae1df3263010b2da3cd130c58ced7c34f2fd0ebe559628066642e2443"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 13.38.30.png",
+      "to": "docs/express.js/assets/archive/movie-database/home.png",
+      "sha256": "47f3b1741ee1c8d888ba917c281d7d48e7a9c2ce99e3ae355a7e83993b568922"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 13.51.08.png",
+      "to": "docs/express.js/assets/archive/movie-database/filmlijst.png",
+      "sha256": "1ed79d6dd2959c1ac4ce4668a2078c24067d541058a384d2d4821682cebeb9f4"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 14.02.49.png",
+      "to": "docs/express.js/assets/archive/movie-database/filmlinks.png",
+      "sha256": "4c0899ba8d6f203ca8d9f929cc33596045e0f8dfcf770a6a95d44c7251a7fd66"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 14.02.56.png",
+      "to": "docs/express.js/assets/archive/movie-database/film-detail.png",
+      "sha256": "19d206f2d05326d786c5bb49b00be24814e71787c3393957514b187b975535a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 14.33.06.png",
+      "to": "docs/express.js/assets/archive/movie-database/film-toevoegen.png",
+      "sha256": "64deea772d6aa951eb17c5db2fe90151aa4d3cf905d60ca716b93f09d41dec2e"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 14.33.19.png",
+      "to": "docs/express.js/assets/archive/movie-database/film-toegevoegd.png",
+      "sha256": "68e37320cac80b8916382846bd3bbefdec71da0ecb11352492f7d64f8d293027"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 15.27.43.png",
+      "to": "docs/exercises/express/maaltafels-ejs/assets/archive/tabel.png",
+      "sha256": "b0e7e8e44dff822281413fba108b3b5ca21d7d6436cbd6af706bb04553ca0a51"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 20.51.44.png",
+      "to": "docs/exercises/express/contact-form/assets/archive/leeg.png",
+      "sha256": "0b8298ddc37362c7e652aa0a6c8a428a161de8f5dab43d749b0e298f0b578021"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 20.53.05.png",
+      "to": "docs/exercises/express/catstatic/assets/archive/overzicht.png",
+      "sha256": "d17bc901d1144d8d30b979d75e7d08a967738561a2fa1f81a0748c35b786ca8b"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 21.00.28.png",
+      "to": "docs/exercises/express/contact-form/assets/archive/bevestiging.png",
+      "sha256": "2a723685b9f869f71c9bd77c9a8ddd0dc982ee41b02a5e704b6fba953c271a3b"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 21.01.23.png",
+      "to": "docs/exercises/express/contact-form/assets/archive/ingevuld.png",
+      "sha256": "15affd3acceeb1565ae95a2bbc4458aa5b2e8458a7703f87b13f939cbcb6e0e3"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-21 at 21.09.28.png",
+      "to": "docs/exercises/express/contact-form/assets/archive/bevestiging-met-formulier.png",
+      "sha256": "153715a0b56ccb7c0d00611778543ff340a8a86f6aba3ca194ed89afd7837306"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-03-28 at 11.28.15.png",
+      "to": "docs/exercises/express/contact-form/assets/archive/bestand-uploaden.png",
+      "sha256": "1f27f1501446b4970d0cf5f23e1c6ee4dd9a6fee25eff80d53fef6f93ca88277"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1) (1) (1) (1) (1) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-02.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1) (1) (1) (1) (1) (2) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-03.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1) (1) (1) (1) (1) (2).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-04.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1) (1) (1) (1) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-05.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1) (1) (1) (1) (2).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-06.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1) (1) (1) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-07.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1) (1) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-08.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-09.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1) (2).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-10.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-11.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (2) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-12.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1) (2).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-13.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-14.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1) (2).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-15.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-16.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1) (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-17.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-18.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40 (2).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-19.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2022-05-11 at 16.40.40.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-20.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-03-13 at 21.08.13.png",
+      "to": "docs/nodejs-+-typescript/asynchroon-programmeren/assets/archive/oven.png",
+      "sha256": "54f491c0dc2be2a5e4903e700f5006dfecab89877f860301f3b5030dad020cc5"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-03-14 at 20.37.05.png",
+      "to": "docs/nodejs-+-typescript/asynchroon-programmeren/assets/archive/potato-meme.png",
+      "sha256": "4776ac26adc22de50745f6541eb2f2aaa1b64bdb536635ddf154fdf464c44774"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-03-17 at 16.16.10 copy.png",
+      "to": "docs/nodejs-+-typescript/modules-npm/assets/archive/types-ontbreken.png",
+      "sha256": "0beea0024c5dea3fbae650ad98c31d5935a31ba795efdd7088207efe4a7a0db6"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-03-17 at 16.16.10.png",
+      "to": "docs/nodejs-+-typescript/modules-npm/assets/types-ontbreken.png",
+      "sha256": "0beea0024c5dea3fbae650ad98c31d5935a31ba795efdd7088207efe4a7a0db6"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-03-21 at 23.09.17.png",
+      "to": "docs/exercises/express/dadjoke-express/assets/archive/html-respons.png",
+      "sha256": "e187c16888a02e824009dee2d1b88315455a88f47449ea76e23e72b1eb9a8321"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-03-21 at 23.10.11.png",
+      "to": "docs/exercises/express/dadjoke-express/assets/archive/json-respons.png",
+      "sha256": "20a2292c0bda1654af5c639c82f586ed44a9a739c22d8039e07a66dee8088abc"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-03-22 at 11.19.38.png",
+      "to": "docs/security/assets/archive/cookies/browser-opslag.png",
+      "sha256": "a52cb438ccfbe2215d57711c62125a0704b12f411a0cc75ea01983df139f046a"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-03-25 at 21.42.31.png",
+      "to": "docs/express.js/assets/archive/rekenquiz/formulier.png",
+      "sha256": "01e4f5effb6112eea0f1f898caca61ae4608ae167e7eb30099857610261bdcf8"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-04-17 at 22.49.12.png",
+      "to": "docs/express.js/assets/archive/llama-movies/home.png",
+      "sha256": "a723af6629438765c26eb1da53cff49bad7a459ff9e3c5cbdc7ced1c64fbd4f5"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-04-17 at 22.49.56.png",
+      "to": "docs/express.js/assets/archive/llama-movies/filmlijst.png",
+      "sha256": "d39df350865262bcba94c59aeaf4d80cff174e02e7bdd4e8832eeaa7917a32e9"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-04-17 at 22.51.34.png",
+      "to": "docs/express.js/assets/archive/llama-movies/film-detail.png",
+      "sha256": "dfb2396e04d9529b71d89f4dc8709ad0369fa65e608c48683c61651629065051"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-04-17 at 22.52.46.png",
+      "to": "docs/express.js/assets/archive/llama-movies/filmformulier.png",
+      "sha256": "bbd8d5d1447a49915294b9f057d30bdd730c609de510904fd37339369e0bec39"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-04-17 at 22.57.41.png",
+      "to": "docs/express.js/assets/archive/llama-movies/filmformulier-ingevuld.png",
+      "sha256": "ee2554e01467aea382138674b74cf6addb489cbcb439e5e28e8669ff7f909d4f"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-04-17 at 22.58.15.png",
+      "to": "docs/express.js/assets/archive/llama-movies/film-toegevoegd.png",
+      "sha256": "ad0969b78e38cc771bb1be874695f4791c9774c5645c167dddbbdd6d467f1daa"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-04-17 at 22.58.30.png",
+      "to": "docs/express.js/assets/archive/llama-movies/film-bijgewerkt.png",
+      "sha256": "0c9490bb5c4972cf830c42657c1bc756f79122624df27d3d20a8eb1f0b39eb6e"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-04-17 at 23.00.33.png",
+      "to": "docs/express.js/assets/archive/llama-movies/film-verwijderd.png",
+      "sha256": "f05df3b32b55ee99edea4c7f200887b7f12ef49e7473099098eedb02c3da15bf"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-05-06 at 17.22.19.png",
+      "to": "docs/express.js/assets/archive/music-search/zoekresultaat.png",
+      "sha256": "e03b97f8e6fde39fb0aea1d687516d1812cd0e99accba9754d2802f527ef77ae"
+    },
+    {
+      "from": "static/assets/Screenshot 2023-05-06 at 17.25.47.png",
+      "to": "docs/express.js/assets/archive/music-search/albums.png",
+      "sha256": "e62762117636d78de8123a40cc9390319c8ec2343bd80f99dcb594a671f6f771"
+    },
+    {
+      "from": "static/assets/Screenshot 2025-02-04 at 21.16.44.png",
+      "to": "docs/nodejs-+-typescript/assets/archive/populariteit-programmeertalen-2025.png",
+      "sha256": "693f6214bdac4968595e929ed8a63580ec9f049d54e7d0c5b01430bbe1869aeb"
+    },
+    {
+      "from": "static/assets/Screenshot 2025-02-05 at 12.41.46.png",
+      "to": "docs/tooling/assets/vscode-accounts-menu.png",
+      "sha256": "4c4f0fe58b5238090af3c530238c1ef2f1e67e75cf2b3b15c15a504baa426283"
+    },
+    {
+      "from": "static/assets/articles (1).png",
+      "to": "docs/exercises/express/newspaper/assets/archive/articles.png",
+      "sha256": "ec5207d2ede1f9f5432b659d90e827c12713427a28afab891a66e48636a4fea9"
+    },
+    {
+      "from": "static/assets/articles.png",
+      "to": "docs/exercises/express/newspaper/assets/archive/articles-variant-02.png",
+      "sha256": "ec5207d2ede1f9f5432b659d90e827c12713427a28afab891a66e48636a4fea9"
+    },
+    {
+      "from": "static/assets/assymetric.png",
+      "to": "docs/security/assets/archive/asymmetric-encryption.png",
+      "sha256": "ca80ce253d172d7b38d8757ea58f369c641cbf53b7fa38994859d7f30b714d21"
+    },
+    {
+      "from": "static/assets/bardetail (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/bar-detail.png",
+      "sha256": "40f76df9453096a4634e5001ad814b052c0c601e319a023ae9ddc3981e4c90b2"
+    },
+    {
+      "from": "static/assets/bardetail.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/bar-detail-variant-02.png",
+      "sha256": "40f76df9453096a4634e5001ad814b052c0c601e319a023ae9ddc3981e4c90b2"
+    },
+    {
+      "from": "static/assets/barlist (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/bar-overzicht.png",
+      "sha256": "a1b587d05d2813ba9d883b5107169d2a1efdae066873264e54df34d4e174ea21"
+    },
+    {
+      "from": "static/assets/barlist.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/bar-overzicht-variant-02.png",
+      "sha256": "a1b587d05d2813ba9d883b5107169d2a1efdae066873264e54df34d4e174ea21"
+    },
+    {
+      "from": "static/assets/beerdetail (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/bier-detail.png",
+      "sha256": "e1621c0606747ceb3b4ab0d7db92ca5c81cfa96b3af66061e95ffa44e9150c09"
+    },
+    {
+      "from": "static/assets/beerdetail.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/bier-detail-variant-02.png",
+      "sha256": "e1621c0606747ceb3b4ab0d7db92ca5c81cfa96b3af66061e95ffa44e9150c09"
+    },
+    {
+      "from": "static/assets/beerspage (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/bieren-overzicht.png",
+      "sha256": "e7062a8391488ff60458b719cbf5e9c115c1035b7fadc656354eb60f1c2be90b"
+    },
+    {
+      "from": "static/assets/beerspage.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/bieren-overzicht-variant-02.png",
+      "sha256": "e7062a8391488ff60458b719cbf5e9c115c1035b7fadc656354eb60f1c2be90b"
+    },
+    {
+      "from": "static/assets/bees-demo.mp4",
+      "to": "docs/project/assets/bees-demo.mp4",
+      "sha256": "8f44aeadbd0039091747e93643b26cc7c6d8bc1fd2a8de9d86fb9bb409c7d8f3"
+    },
+    {
+      "from": "static/assets/bees.png",
+      "to": "docs/project/assets/beehive-overzicht.png",
+      "sha256": "c956f59bfb43dd2411d649d806ed164d05202d1a5cc98cdbd7bffd4304e199d0"
+    },
+    {
+      "from": "static/assets/bonjour (1).png",
+      "to": "docs/exercises/express/hello-query/assets/archive/bonjour.png",
+      "sha256": "60feb14ba9df7e48a4da5ba7956e3f9a948930225aba66df7cf74debe852bb91"
+    },
+    {
+      "from": "static/assets/bonjour.png",
+      "to": "docs/exercises/express/hello-query/assets/archive/bonjour-variant-02.png",
+      "sha256": "60feb14ba9df7e48a4da5ba7956e3f9a948930225aba66df7cf74debe852bb91"
+    },
+    {
+      "from": "static/assets/catgpt (1).gif",
+      "to": "docs/exercises/node-typescript/cat-gpt/assets/archive/cat-gpt-demo.gif",
+      "sha256": "4c3162a98695c625f1cfe004397c28f2e5b8eeda4dc7699e2502fff41ffbef64"
+    },
+    {
+      "from": "static/assets/catgpt.gif",
+      "to": "docs/exercises/node-typescript/cat-gpt/assets/archive/cat-gpt-demo-variant-02.gif",
+      "sha256": "4c3162a98695c625f1cfe004397c28f2e5b8eeda4dc7699e2502fff41ffbef64"
+    },
+    {
+      "from": "static/assets/cats (1).png",
+      "to": "docs/exercises/express/catstatic/assets/archive/overzicht-variant-02.png",
+      "sha256": "d17bc901d1144d8d30b979d75e7d08a967738561a2fa1f81a0748c35b786ca8b"
+    },
+    {
+      "from": "static/assets/cats.png",
+      "to": "docs/exercises/express/catstatic/assets/archive/overzicht-variant-03.png",
+      "sha256": "d17bc901d1144d8d30b979d75e7d08a967738561a2fa1f81a0748c35b786ca8b"
+    },
+    {
+      "from": "static/assets/cats.zip",
+      "to": "docs/exercises/express/catstatic/assets/archive/cats.zip",
+      "sha256": "eb49871e94c52cdc625230754c70d936c3c93c6e1c2160922d04ead5c8f55469"
+    },
+    {
+      "from": "static/assets/certificate.png",
+      "to": "docs/security/assets/archive/tls-certificate.png",
+      "sha256": "408e0e15ef57a1d3fe70e8218e90511d24a5684a1b60c3f0bf2958d12b46e7fd"
+    },
+    {
+      "from": "static/assets/checkinform (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/check-in-formulier.png",
+      "sha256": "ff0317071770f6308cb5827a58b3789c4486db17353aa4c35737c7aa2ad22d8c"
+    },
+    {
+      "from": "static/assets/checkinform-clean (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/check-in-formulier-leeg.png",
+      "sha256": "eca8ccafbe5a9c07fb30b5c6d38be848839f512f12f6d6da810b51f4c9bc5142"
+    },
+    {
+      "from": "static/assets/checkinform-clean.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/check-in-formulier-leeg-variant-02.png",
+      "sha256": "eca8ccafbe5a9c07fb30b5c6d38be848839f512f12f6d6da810b51f4c9bc5142"
+    },
+    {
+      "from": "static/assets/checkinform-success (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/check-in-bevestiging.png",
+      "sha256": "6475f2c7b0002e41ce6b9fbc0eda111b54c4bdf3b3b5927236eead9527a5edce"
+    },
+    {
+      "from": "static/assets/checkinform-success.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/check-in-bevestiging-variant-02.png",
+      "sha256": "6475f2c7b0002e41ce6b9fbc0eda111b54c4bdf3b3b5927236eead9527a5edce"
+    },
+    {
+      "from": "static/assets/checkinform.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/check-in-formulier-variant-02.png",
+      "sha256": "ff0317071770f6308cb5827a58b3789c4486db17353aa4c35737c7aa2ad22d8c"
+    },
+    {
+      "from": "static/assets/contact (1).png",
+      "to": "docs/exercises/express/contact-form/assets/archive/contact.png",
+      "sha256": "ad926a24dfa9a9235746660f8cf1540ba9f7e5827a03058742b75acaba84eae5"
+    },
+    {
+      "from": "static/assets/contact.png",
+      "to": "docs/exercises/express/contact-form/assets/archive/contact-variant-02.png",
+      "sha256": "ad926a24dfa9a9235746660f8cf1540ba9f7e5827a03058742b75acaba84eae5"
+    },
+    {
+      "from": "static/assets/cookie-browser.png",
+      "to": "docs/security/assets/cookie-browser.png",
+      "sha256": "ef4553a2092f0643c41f849bcfc6754444a028fad51eda18c4e2362643acc07d"
+    },
+    {
+      "from": "static/assets/dadjoke-html (1).png",
+      "to": "docs/exercises/express/dadjoke-express/assets/archive/html-respons-variant-02.png",
+      "sha256": "e187c16888a02e824009dee2d1b88315455a88f47449ea76e23e72b1eb9a8321"
+    },
+    {
+      "from": "static/assets/dadjoke-html.png",
+      "to": "docs/exercises/express/dadjoke-express/assets/archive/html-respons-variant-03.png",
+      "sha256": "e187c16888a02e824009dee2d1b88315455a88f47449ea76e23e72b1eb9a8321"
+    },
+    {
+      "from": "static/assets/dadjoke-json (1).png",
+      "to": "docs/exercises/express/dadjoke-express/assets/archive/json-respons-variant-02.png",
+      "sha256": "20a2292c0bda1654af5c639c82f586ed44a9a739c22d8039e07a66dee8088abc"
+    },
+    {
+      "from": "static/assets/dadjoke-json.png",
+      "to": "docs/exercises/express/dadjoke-express/assets/archive/json-respons-variant-03.png",
+      "sha256": "20a2292c0bda1654af5c639c82f586ed44a9a739c22d8039e07a66dee8088abc"
+    },
+    {
+      "from": "static/assets/division.png",
+      "to": "docs/express.js/assets/archive/rekenquiz/division.png",
+      "sha256": "8b381c81bbbc4a81494747bc5a359fd336c25bdd0f70f8179e3bfc8853f948a1"
+    },
+    {
+      "from": "static/assets/dna (1).gif",
+      "to": "docs/exercises/node-typescript/dna-match/assets/archive/dna.gif",
+      "sha256": "9c326ca20da08310db06d718632eeae9a448a2f3d6c52de9b26257de3f07e65e"
+    },
+    {
+      "from": "static/assets/dna.gif",
+      "to": "docs/exercises/node-typescript/dna-match/assets/archive/dna-variant-02.gif",
+      "sha256": "9c326ca20da08310db06d718632eeae9a448a2f3d6c52de9b26257de3f07e65e"
+    },
+    {
+      "from": "static/assets/dt.png",
+      "to": "docs/nodejs-+-typescript/modules-npm/assets/definitely-typed-badge.png",
+      "sha256": "917228798cb990c30eaa0926eba0cf1f0f146e39fbc85fc6257695a0f72e5731"
+    },
+    {
+      "from": "static/assets/equals.png",
+      "to": "docs/express.js/assets/archive/rekenquiz/equals.png",
+      "sha256": "d72a5883015e279a9e6970fe027641613a54abad101e22ede49774f65f89b71d"
+    },
+    {
+      "from": "static/assets/errormove.gif",
+      "to": "static/assets/archive/demos/ongeldige-zet-demo.gif",
+      "sha256": "c1f329f2811a795c935bdf14be66027600a70ac3670a47ea4208ca7bffdb4afb"
+    },
+    {
+      "from": "static/assets/facebook-login-2.png",
+      "to": "docs/security/assets/facebook-login-2.png",
+      "sha256": "6dd3538e8fad8ca41bf1ee9d5db59fd5de3de0034560eba38457099343797a7c"
+    },
+    {
+      "from": "static/assets/facebook-login.png",
+      "to": "docs/security/assets/facebook-login.png",
+      "sha256": "1d7850b326b96d7dddc6c633f0fd6c0a83c9c5aca012ec958c0e26f7dda6aae4"
+    },
+    {
+      "from": "static/assets/filtering (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/filtering.png",
+      "sha256": "de3fc7760991b6bf096303a0ccea3420715585305c685593aca375cf426bb51f"
+    },
+    {
+      "from": "static/assets/filtering.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/filtering-variant-02.png",
+      "sha256": "de3fc7760991b6bf096303a0ccea3420715585305c685593aca375cf426bb51f"
+    },
+    {
+      "from": "static/assets/firefilter (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/vuurtype-filter.png",
+      "sha256": "4027afc8722e66490770f1bacb54016e53ff5643287c92b09ba32c1819fa7e88"
+    },
+    {
+      "from": "static/assets/firefilter.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/vuurtype-filter-variant-02.png",
+      "sha256": "4027afc8722e66490770f1bacb54016e53ff5643287c92b09ba32c1819fa7e88"
+    },
+    {
+      "from": "static/assets/form (1).png",
+      "to": "docs/exercises/express/petshelter-form/assets/archive/form.png",
+      "sha256": "ee19b138c551297912cce104db9f76a990ad04622162528a06b62d0f6e30f00c"
+    },
+    {
+      "from": "static/assets/form-response (1).png",
+      "to": "docs/exercises/express/petshelter-form/assets/archive/form-response.png",
+      "sha256": "a8ef805b21b6b9dae3e89841e0e46d20723a8d1049a54f0e305648b7f344620f"
+    },
+    {
+      "from": "static/assets/form-response.png",
+      "to": "docs/exercises/express/petshelter-form/assets/archive/form-response-variant-02.png",
+      "sha256": "a8ef805b21b6b9dae3e89841e0e46d20723a8d1049a54f0e305648b7f344620f"
+    },
+    {
+      "from": "static/assets/form.png",
+      "to": "docs/exercises/express/petshelter-form/assets/archive/form-variant-02.png",
+      "sha256": "ee19b138c551297912cce104db9f76a990ad04622162528a06b62d0f6e30f00c"
+    },
+    {
+      "from": "static/assets/formhandling.png",
+      "to": "docs/express.js/requests/assets/form-handling-schema.png",
+      "sha256": "b71a40a16bc10b166df32e533a99fb77bb753916017e09fb40be18b58c8dd4e1"
+    },
+    {
+      "from": "static/assets/guestbook (1).gif",
+      "to": "docs/exercises/mongodb/guestbook-express/assets/archive/guestbook.gif",
+      "sha256": "8559c45d228f0f5b81ab68f42bc3f8ddbcaeba0a21cbed436a96a836e3a39e64"
+    },
+    {
+      "from": "static/assets/guestbook.gif",
+      "to": "docs/exercises/mongodb/guestbook-express/assets/archive/guestbook-variant-02.gif",
+      "sha256": "8559c45d228f0f5b81ab68f42bc3f8ddbcaeba0a21cbed436a96a836e3a39e64"
+    },
+    {
+      "from": "static/assets/hanoi1.gif",
+      "to": "static/assets/archive/demos/torens-van-hanoi-demo.gif",
+      "sha256": "4a50c9625420395e2415ed56a1f12cecd38186f5f24afca8559170357b15e2da"
+    },
+    {
+      "from": "static/assets/hashes-vscode.png",
+      "to": "docs/security/assets/hashes-vscode-variant-02.png",
+      "sha256": "efe91558c70357ad2a3bd986db483bbca074ee0ba8d5af71394843613bd0551f"
+    },
+    {
+      "from": "static/assets/helloworld (1).png",
+      "to": "docs/exercises/express/hello-query/assets/archive/hello-world.png",
+      "sha256": "83df5ea7d8f258c8167291e7a942531b0fc9001ab5290ce8cc38bcecb463d2b7"
+    },
+    {
+      "from": "static/assets/helloworld.png",
+      "to": "docs/exercises/express/hello-query/assets/archive/hello-world-variant-02.png",
+      "sha256": "83df5ea7d8f258c8167291e7a942531b0fc9001ab5290ce8cc38bcecb463d2b7"
+    },
+    {
+      "from": "static/assets/homescreen (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/startscherm.png",
+      "sha256": "e3f4d5e61af5fdf358810fa8b98b52db054bf9daf4c75ac0f994a739b81f03db"
+    },
+    {
+      "from": "static/assets/homescreen.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/startscherm-variant-02.png",
+      "sha256": "e3f4d5e61af5fdf358810fa8b98b52db054bf9daf4c75ac0f994a739b81f03db"
+    },
+    {
+      "from": "static/assets/hours.gif",
+      "to": "static/assets/archive/demos/hours.gif",
+      "sha256": "67683a578fd88e7e4c2261eef3be00069375a64da3a1e95e92c846199629e2a9"
+    },
+    {
+      "from": "static/assets/httponly.gif",
+      "to": "docs/security/assets/http-only-cookie-demo.gif",
+      "sha256": "9337b08b0842ea320a076474e3fed0ab3e17f80ec578fa80037bb09021b40c06"
+    },
+    {
+      "from": "static/assets/https.png",
+      "to": "docs/security/assets/archive/https-schema.png",
+      "sha256": "e8dcc95338301c94a49bfa40096e27cf35bfd7e1960a0cb55ca9af2dfcffd367"
+    },
+    {
+      "from": "static/assets/image (1) (1) (1) (1).png",
+      "to": "docs/nodejs-+-typescript/assets/archive/populariteit-programmeertalen.png",
+      "sha256": "f79b04c744357ed106f0c49c7b580e59bf0ee2e216b653250db540de121b043f"
+    },
+    {
+      "from": "static/assets/image (1) (1) (1) copy.png",
+      "to": "docs/nodejs-+-typescript/assets/archive/schaken/paard-zetten.png",
+      "sha256": "4fcb272e8924820da395cb3589ca4b823d0d507208bbae1a914dcd9066f29983"
+    },
+    {
+      "from": "static/assets/image (1) (1) (1).png",
+      "to": "docs/nodejs-+-typescript/assets/typescript-javascript-superset.png",
+      "sha256": "ee750c165ef61d25a85b48b16881d2cdb02585c4cf2d5d00cb6c44cf2e0ff092"
+    },
+    {
+      "from": "static/assets/image (1) (1) copy.png",
+      "to": "docs/nodejs-+-typescript/modules-npm/assets/archive/typescript-logo.png",
+      "sha256": "6c551740b9bf266efebd68addf446e9bec50482e29d3c17d8805ced069b7015b"
+    },
+    {
+      "from": "static/assets/image (1) (1).png",
+      "to": "docs/exercises/node-typescript/rot13/assets/archive/alfabet.png",
+      "sha256": "b920702fbc977b655eb08773554bb4d1c4f8f55636aadb81520a1abacb082cab"
+    },
+    {
+      "from": "static/assets/image (1) copy.png",
+      "to": "docs/tooling/assets/archive/git/gitlab-clone-menu.png",
+      "sha256": "f4362442857551c715b0a3d7f6b6391a039363c6e13ab60726a01d390db50d23"
+    },
+    {
+      "from": "static/assets/image (1).png",
+      "to": "docs/nodejs-+-typescript/modules-npm/assets/typescript-types-badge.png",
+      "sha256": "6c551740b9bf266efebd68addf446e9bec50482e29d3c17d8805ced069b7015b"
+    },
+    {
+      "from": "static/assets/image (10).png",
+      "to": "docs/project/semester-2/assets/trading-card-detail.png",
+      "sha256": "085722c25861fe644bef1991de7d2faf113d792d30658e7a27dcbf92929366c2"
+    },
+    {
+      "from": "static/assets/image (11).png",
+      "to": "docs/project/semester-2/assets/guild-detail.png",
+      "sha256": "422d7a4bd9f1ea7b6dc2174219e8361908cce39fca56f0aeca621220736a0eca"
+    },
+    {
+      "from": "static/assets/image (12).png",
+      "to": "docs/project/semester-2/assets/overzicht-met-navigatie.png",
+      "sha256": "6e67de532407f3a696478b5962f5591476bfdcd5d814b02687d0cdc81ebfd9a0"
+    },
+    {
+      "from": "static/assets/image (13).png",
+      "to": "docs/nodejs-+-typescript/assets/archive/populariteit-programmeertalen-overzicht.png",
+      "sha256": "cc1444d310780557ce22d7c791610b72b76674b2043054cb1790e854680d5e19"
+    },
+    {
+      "from": "static/assets/image (14).png",
+      "to": "docs/nodejs-+-typescript/assets/populariteit-programmeertalen-overzicht.png",
+      "sha256": "cc1444d310780557ce22d7c791610b72b76674b2043054cb1790e854680d5e19"
+    },
+    {
+      "from": "static/assets/image (2) (1).png",
+      "to": "docs/nodejs-+-typescript/assets/archive/nodejs/repl-welkom.png",
+      "sha256": "526cb2fa6fb8d617cad0618f2930bf42c2c9677b1e43764e6969fdec378fd9d9"
+    },
+    {
+      "from": "static/assets/image (2) (2).png",
+      "to": "docs/security/assets/archive/sessions/http-sessie-schema.png",
+      "sha256": "caebdb5a1499584e5175d9277a309de54b1e336fd5a63b00045a5328dd0d25a6"
+    },
+    {
+      "from": "static/assets/image (2) copy.png",
+      "to": "docs/security/assets/archive/sessions/http-sessie-schema-variant-02.png",
+      "sha256": "caebdb5a1499584e5175d9277a309de54b1e336fd5a63b00045a5328dd0d25a6"
+    },
+    {
+      "from": "static/assets/image (2).png",
+      "to": "docs/exercises/node-typescript/bmi-calculator/assets/archive/formule.png",
+      "sha256": "ec08b459ea7aeb6c2de12c97052b9a379e7d164ce6a4e202b49b7a4dbdb2eebe"
+    },
+    {
+      "from": "static/assets/image (3) (1).png",
+      "to": "docs/nodejs-+-typescript/assets/archive/strings/flower-terminal.png",
+      "sha256": "7060cf3f3c1f3f104ce95ca9c9eddb884711b63bdf0c7f84fcee090051c52200"
+    },
+    {
+      "from": "static/assets/image (3).png",
+      "to": "docs/project/semester-2/assets/trading-cards-overzicht.png",
+      "sha256": "06ac2189aac5950cc92f85786a081cba389b87565fc321e8789de87c215ca323"
+    },
+    {
+      "from": "static/assets/image (4).png",
+      "to": "docs/project/semester-2/assets/trading-cards-sorteren.png",
+      "sha256": "06ac2189aac5950cc92f85786a081cba389b87565fc321e8789de87c215ca323"
+    },
+    {
+      "from": "static/assets/image (5).png",
+      "to": "docs/project/semester-2/assets/trading-cards-zoeken.png",
+      "sha256": "cd80610d486e404fdf1304901258b55414c75843296fe06982d39dde8f717efa"
+    },
+    {
+      "from": "static/assets/image (6).png",
+      "to": "docs/project/semester-2/assets/navigatie.png",
+      "sha256": "b095796d543a6af41d66eb1be996d8480da5bcb07e19859aab6b075f04708574"
+    },
+    {
+      "from": "static/assets/image (7).png",
+      "to": "docs/project/semester-2/assets/archive/light-weaver-detail.png",
+      "sha256": "42c19ff95057ed9023bb11aa963a1996923e0b72a6d00415dbf49e2beb1e3c03"
+    },
+    {
+      "from": "static/assets/image (8).png",
+      "to": "docs/project/semester-2/assets/archive/guilds-tabel.png",
+      "sha256": "4b09028ad0c05256bd07b017f44c22e9b4220039e42242527007be9a1e9697d5"
+    },
+    {
+      "from": "static/assets/image (9).png",
+      "to": "docs/project/semester-2/assets/guilds-overzicht.png",
+      "sha256": "37384551131107e674a4100e4db6fb40fb53d49dd53491be50669002a072d69f"
+    },
+    {
+      "from": "static/assets/image copy.png",
+      "to": "docs/nodejs-+-typescript/assets/archive/speelgoed/illustratie.png",
+      "sha256": "5d96410bd74a85a7694a20e44d2f3dd6297f9284747247f778af60a54189839b"
+    },
+    {
+      "from": "static/assets/image.png",
+      "to": "docs/tooling/assets/archive/github/classroom-toegang-geweigerd.png",
+      "sha256": "410f0965529bd550eeea9037e14279a4f2f8999cc41da3671880a7993eac2e5a"
+    },
+    {
+      "from": "static/assets/index (1) (1) (1) (1) (1).html",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-pagina.html",
+      "sha256": "41b6dcde3a9e0d708c4bbf4e2f885cfcca3fb01f002a0877a37c0abecd971563"
+    },
+    {
+      "from": "static/assets/index (1) (1) (1) (1).html",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-pagina-variant-02.html",
+      "sha256": "41b6dcde3a9e0d708c4bbf4e2f885cfcca3fb01f002a0877a37c0abecd971563"
+    },
+    {
+      "from": "static/assets/index (1) (1) (1) (2) (1).html",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-pagina-variant-03.html",
+      "sha256": "41b6dcde3a9e0d708c4bbf4e2f885cfcca3fb01f002a0877a37c0abecd971563"
+    },
+    {
+      "from": "static/assets/index (1) (1) (1) (2).html",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-pagina-variant-04.html",
+      "sha256": "41b6dcde3a9e0d708c4bbf4e2f885cfcca3fb01f002a0877a37c0abecd971563"
+    },
+    {
+      "from": "static/assets/index (1) (1) (1).html",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-pagina-variant-05.html",
+      "sha256": "41b6dcde3a9e0d708c4bbf4e2f885cfcca3fb01f002a0877a37c0abecd971563"
+    },
+    {
+      "from": "static/assets/index (1) (1).html",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-pagina-variant-06.html",
+      "sha256": "41b6dcde3a9e0d708c4bbf4e2f885cfcca3fb01f002a0877a37c0abecd971563"
+    },
+    {
+      "from": "static/assets/index (1).html",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-pagina-variant-07.html",
+      "sha256": "41b6dcde3a9e0d708c4bbf4e2f885cfcca3fb01f002a0877a37c0abecd971563"
+    },
+    {
+      "from": "static/assets/index.html",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-pagina-variant-08.html",
+      "sha256": "41b6dcde3a9e0d708c4bbf4e2f885cfcca3fb01f002a0877a37c0abecd971563"
+    },
+    {
+      "from": "static/assets/index.txt",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-pagina.txt",
+      "sha256": "41b6dcde3a9e0d708c4bbf4e2f885cfcca3fb01f002a0877a37c0abecd971563"
+    },
+    {
+      "from": "static/assets/jokes (1).gif",
+      "to": "docs/exercises/node-typescript/joke-api/assets/archive/jokes.gif",
+      "sha256": "6c6179269c1078e13b50f7d8d4793d7cca2a2989954f84886c8423575caf1bb1"
+    },
+    {
+      "from": "static/assets/jokes.gif",
+      "to": "docs/exercises/node-typescript/joke-api/assets/archive/jokes-variant-02.gif",
+      "sha256": "6c6179269c1078e13b50f7d8d4793d7cca2a2989954f84886c8423575caf1bb1"
+    },
+    {
+      "from": "static/assets/les1_fig1.png",
+      "to": "docs/express.js/assets/archive/frontend-backend-schema.png",
+      "sha256": "d9f291c20216ece67c5b620f2678a2ed33935ff0f7e654be7c8c0be5a20b0f83"
+    },
+    {
+      "from": "static/assets/les1_fig3 (1).png",
+      "to": "docs/tooling/assets/archive/github/repository-naam.png",
+      "sha256": "93dcd6dfa476c83479420e58f5a3d265533d27bd53e8038822759dee37f32582"
+    },
+    {
+      "from": "static/assets/les1_fig3.png",
+      "to": "docs/tooling/assets/archive/github/repository-naam-variant-02.png",
+      "sha256": "93dcd6dfa476c83479420e58f5a3d265533d27bd53e8038822759dee37f32582"
+    },
+    {
+      "from": "static/assets/les1_fig4.png",
+      "to": "docs/tooling/assets/archive/github/prive-repository.png",
+      "sha256": "11ed869d37e67ffd4f7deb421dac964d95d578571f3201a6a7906c3576ba3c71"
+    },
+    {
+      "from": "static/assets/les1_fig5.png",
+      "to": "docs/tooling/assets/archive/github/repository-toegang.png",
+      "sha256": "680ad82e149d833b2a6280422698b5a54ede3b11fc54ad014aaa6b86aff1f9ab"
+    },
+    {
+      "from": "static/assets/login (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/login.png",
+      "sha256": "fb96a9b20339e04ebb7557815d7dd5edd79a25759bcf294eb8ef22ffd9b9d2bf"
+    },
+    {
+      "from": "static/assets/login-failed (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/login-failed.png",
+      "sha256": "177f70b3f270d29bea23df9457f4025b26ac9ea80cb633e18b8b9dde21609c63"
+    },
+    {
+      "from": "static/assets/login-failed.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/login-failed-variant-02.png",
+      "sha256": "177f70b3f270d29bea23df9457f4025b26ac9ea80cb633e18b8b9dde21609c63"
+    },
+    {
+      "from": "static/assets/login.gif",
+      "to": "docs/security/assets/archive/login.gif",
+      "sha256": "68777299fc53bc8bc6ad08eceb9d3c574c38d82eb3964de15ba46df133ef26c2"
+    },
+    {
+      "from": "static/assets/login.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/login-variant-02.png",
+      "sha256": "fb96a9b20339e04ebb7557815d7dd5edd79a25759bcf294eb8ef22ffd9b9d2bf"
+    },
+    {
+      "from": "static/assets/loginsystem.gif",
+      "to": "docs/security/assets/archive/loginsystem.gif",
+      "sha256": "40ac968a06848ad0e7359dc8f27408806614ac0db04c7ed05bf8a967cd3dc58a"
+    },
+    {
+      "from": "static/assets/ls.png",
+      "to": "docs/tooling/assets/bash-ls.png",
+      "sha256": "8130299b9c1bf390503651903c7d08c7061f7dfa0be7d7173d8643085574f7f4"
+    },
+    {
+      "from": "static/assets/lsa.png",
+      "to": "docs/tooling/assets/bash-ls-all.png",
+      "sha256": "8eb5a6597d9c1b71c1466e8a241ffed3b56ffd9fd22b4d1a92a36cf4e5543b11"
+    },
+    {
+      "from": "static/assets/maaltafels (1).png",
+      "to": "docs/exercises/express/maaltafels-ejs/assets/archive/tabel-variant-02.png",
+      "sha256": "b0e7e8e44dff822281413fba108b3b5ca21d7d6436cbd6af706bb04553ca0a51"
+    },
+    {
+      "from": "static/assets/maaltafels.png",
+      "to": "docs/exercises/express/maaltafels-ejs/assets/archive/tabel-variant-03.png",
+      "sha256": "b0e7e8e44dff822281413fba108b3b5ca21d7d6436cbd6af706bb04553ca0a51"
+    },
+    {
+      "from": "static/assets/message_empty (1).png",
+      "to": "docs/exercises/express/contact-form/assets/archive/bericht-ontbreekt.png",
+      "sha256": "36f729dd39e272767c98017ae4917ae8264f8f4bd406e062f81f6c68c9cace9e"
+    },
+    {
+      "from": "static/assets/message_empty.png",
+      "to": "docs/exercises/express/contact-form/assets/archive/bericht-ontbreekt-variant-02.png",
+      "sha256": "36f729dd39e272767c98017ae4917ae8264f8f4bd406e062f81f6c68c9cace9e"
+    },
+    {
+      "from": "static/assets/milestone-1.gif",
+      "to": "docs/project/semester-1/assets/node-client-milestone-demo.gif",
+      "sha256": "07308e738ed9f4d16feec49dabb488f381befc4976bc4357b143d5087f3f8a06"
+    },
+    {
+      "from": "static/assets/milestone-1.mov",
+      "to": "docs/project/semester-1/assets/archive/node-client-milestone-demo.mov",
+      "sha256": "33f9f09e2ceb446644bb2d0a909833d901db8219b1d57a695842233d647c58b2"
+    },
+    {
+      "from": "static/assets/milestone2.gif",
+      "to": "docs/project/semester-2/assets/express-milestone-demo.gif",
+      "sha256": "095ce0ef5c65ca45854240e0865c17c8f01a09d1a54fabe63bbe9717dbf04517"
+    },
+    {
+      "from": "static/assets/mongo-db-uri.gif",
+      "to": "docs/mongodb/assets/archive/mongodb-connection-uri-demo.gif",
+      "sha256": "29155b5571b588c446e741f6dc0670375d6c7325397bcf400ddb9698c254a926"
+    },
+    {
+      "from": "static/assets/mongoconnect.gif",
+      "to": "docs/labos/labo13/assets/mongodb-verbinding-demo.gif",
+      "sha256": "29458e57a0a8000f397a16bd416f2725be2a3050d5f436223658da69a49fb7d8"
+    },
+    {
+      "from": "static/assets/mongovscode.png",
+      "to": "docs/mongodb/assets/mongodb-vscode.png",
+      "sha256": "eaf8a88c87fe5368d2a5548fb15a415f3e41507a673a5b9fa1743518b9db36ef"
+    },
+    {
+      "from": "static/assets/multiplication.png",
+      "to": "docs/express.js/assets/archive/rekenquiz/multiplication.png",
+      "sha256": "4d5df594db95b36edbc67eda25acb4d0ce1b319c444e4ceeb2866c785d5d2904"
+    },
+    {
+      "from": "static/assets/newterminal.png",
+      "to": "docs/tooling/assets/vscode-nieuwe-terminal.png",
+      "sha256": "706653f831f69e7d548f38cd29ab7d19d464cbb729fff509e6c167f74f38e578"
+    },
+    {
+      "from": "static/assets/nodejs.png",
+      "to": "docs/nodejs-+-typescript/assets/nodejs-stack-overflow-2025-variant-02.png",
+      "sha256": "9872652b3669a3e9a1f7aedffa08e9c8f7802b203245fddf022822e078dd80f4"
+    },
+    {
+      "from": "static/assets/npmjs.png",
+      "to": "docs/nodejs-+-typescript/modules-npm/assets/npm-package-overzicht.png",
+      "sha256": "d7c12cfdbce969251136967cd9ffac1786abcb026096e0c1f37ef28724ce4004"
+    },
+    {
+      "from": "static/assets/numbers.gif",
+      "to": "static/assets/archive/demos/numbers.gif",
+      "sha256": "e0e0ff9db159cbe5f53fcaa110b02888e69d103885406836ca639cd9c069743e"
+    },
+    {
+      "from": "static/assets/ok (1).png",
+      "to": "docs/exercises/express/contact-form/assets/archive/formulier-bevestiging.png",
+      "sha256": "209933ce67ed08a60066c3477dfe48d6fc1c37a18eb4af2f55e3c280153b9c93"
+    },
+    {
+      "from": "static/assets/ok.png",
+      "to": "docs/exercises/express/contact-form/assets/archive/formulier-bevestiging-variant-02.png",
+      "sha256": "209933ce67ed08a60066c3477dfe48d6fc1c37a18eb4af2f55e3c280153b9c93"
+    },
+    {
+      "from": "static/assets/open_in_terminal.png",
+      "to": "docs/tooling/assets/openen-in-terminal.png",
+      "sha256": "6f1b528ff3a4e2d5e91ff5582d46f888ca6177d2430e29d226478c9c826c4d89"
+    },
+    {
+      "from": "static/assets/openintegrated.png",
+      "to": "docs/tooling/assets/vscode-geintegreerde-terminal.png",
+      "sha256": "7a2668f5d6af293405f61500481dd11223019731df4d0d8c3022520862f986ae"
+    },
+    {
+      "from": "static/assets/operators.png",
+      "to": "docs/nodejs-+-typescript/type-systeem/assets/archive/operatoren-overzicht.png",
+      "sha256": "210e309e69040b18883f6ed775f65735c75ff175c086ff9561cd69cf85b634cd"
+    },
+    {
+      "from": "static/assets/operators2 (1).png",
+      "to": "docs/nodejs-+-typescript/type-systeem/assets/archive/operatoren-voorbeeld-2.png",
+      "sha256": "8687eefa29a90cb0a21ab707e0361e5661aaadc6a6eaa40fc72a2dc6f3cd5cad"
+    },
+    {
+      "from": "static/assets/operators2.png",
+      "to": "docs/nodejs-+-typescript/type-systeem/assets/archive/operatoren-voorbeeld-2-variant-02.png",
+      "sha256": "8687eefa29a90cb0a21ab707e0361e5661aaadc6a6eaa40fc72a2dc6f3cd5cad"
+    },
+    {
+      "from": "static/assets/oven_terminal.gif",
+      "to": "docs/nodejs-+-typescript/asynchroon-programmeren/assets/archive/oven-terminal.gif",
+      "sha256": "99119137a9b0ded19e82876f127f879c25a9d0ade29bde3063b18ba39ce4c28d"
+    },
+    {
+      "from": "static/assets/pets (1).png",
+      "to": "docs/exercises/mongodb/pet-shelter-express/assets/archive/pets.png",
+      "sha256": "6c943f7e407df8fc234468c8f10fa7642014ed3e3c712fc24135031ff79be919"
+    },
+    {
+      "from": "static/assets/pets.png",
+      "to": "docs/exercises/mongodb/pet-shelter-express/assets/archive/pets-variant-02.png",
+      "sha256": "6c943f7e407df8fc234468c8f10fa7642014ed3e3c712fc24135031ff79be919"
+    },
+    {
+      "from": "static/assets/petssearch (1).png",
+      "to": "docs/exercises/mongodb/pet-shelter-express/assets/archive/dieren-zoeken.png",
+      "sha256": "dcfb636090dea0476b30ad9e4cfdaadd8514fec9a167fe483528136a6c4aad73"
+    },
+    {
+      "from": "static/assets/petssearch.png",
+      "to": "docs/exercises/mongodb/pet-shelter-express/assets/archive/dieren-zoeken-variant-02.png",
+      "sha256": "dcfb636090dea0476b30ad9e4cfdaadd8514fec9a167fe483528136a6c4aad73"
+    },
+    {
+      "from": "static/assets/player (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/player.png",
+      "sha256": "557aa1d322ed48ab68debaa912415a36bf2ae11ed33a0c1f31ad03c8d2d8b9b7"
+    },
+    {
+      "from": "static/assets/player.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/player-variant-02.png",
+      "sha256": "557aa1d322ed48ab68debaa912415a36bf2ae11ed33a0c1f31ad03c8d2d8b9b7"
+    },
+    {
+      "from": "static/assets/pokemon (1).gif",
+      "to": "docs/exercises/node-typescript/pokemon-team/assets/archive/pokemon.gif",
+      "sha256": "dfd869b6e523366b1ab5ddd6f5513af301ee4751e9b6bcf19b65b9f720a5f5df"
+    },
+    {
+      "from": "static/assets/pokemon (2).gif",
+      "to": "docs/exercises/node-typescript/pokemon-team/assets/archive/pokemon-variant-02.gif",
+      "sha256": "dfd869b6e523366b1ab5ddd6f5513af301ee4751e9b6bcf19b65b9f720a5f5df"
+    },
+    {
+      "from": "static/assets/pokemon-team (1).gif",
+      "to": "docs/exercises/mongodb/pokemon-team-express/assets/archive/pokemon-team.gif",
+      "sha256": "cd809f0ea0147950877c2f42983d5e5502791ff4de83e4b6f5695367576bc33d"
+    },
+    {
+      "from": "static/assets/pokemon-team.gif",
+      "to": "docs/exercises/mongodb/pokemon-team-express/assets/archive/pokemon-team-variant-02.gif",
+      "sha256": "cd809f0ea0147950877c2f42983d5e5502791ff4de83e4b6f5695367576bc33d"
+    },
+    {
+      "from": "static/assets/pokemon.gif",
+      "to": "docs/exercises/node-typescript/pokemon-team/assets/archive/pokemon-variant-03.gif",
+      "sha256": "dfd869b6e523366b1ab5ddd6f5513af301ee4751e9b6bcf19b65b9f720a5f5df"
+    },
+    {
+      "from": "static/assets/pokemon.zip",
+      "to": "static/assets/archive/downloads/pokemon.zip",
+      "sha256": "0ac03a024012f918894252023e919a3932c5f1218e842a9a1c1bbd39a17ca5f4"
+    },
+    {
+      "from": "static/assets/pokemonlist (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/pokemon-overzicht.png",
+      "sha256": "b9da30656b5caed8f23489eeae16e806b8f95c88e076ca8877615b63d3b4dff3"
+    },
+    {
+      "from": "static/assets/pokemonlist.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/pokemon-overzicht-variant-02.png",
+      "sha256": "b9da30656b5caed8f23489eeae16e806b8f95c88e076ca8877615b63d3b4dff3"
+    },
+    {
+      "from": "static/assets/pokemonteam (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/pokemon-team.png",
+      "sha256": "187eb5c7a52793aa6ba4b7d7c2fc8f813b2f29b0a99cdf61c575b51c5c20dd40"
+    },
+    {
+      "from": "static/assets/pokemonteam.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/pokemon-team-variant-02.png",
+      "sha256": "187eb5c7a52793aa6ba4b7d7c2fc8f813b2f29b0a99cdf61c575b51c5c20dd40"
+    },
+    {
+      "from": "static/assets/profile (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/profile.png",
+      "sha256": "d83820ef39fed3384bfffa7c4236681cb79b623a19d673a77ce8d19b237ed097"
+    },
+    {
+      "from": "static/assets/profile-button (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/profile-button.png",
+      "sha256": "20efa4077872b526aef36164e1ef248f3dd7b85480d9363ccac78f8cb2d56e86"
+    },
+    {
+      "from": "static/assets/profile-button.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/profile-button-variant-02.png",
+      "sha256": "20efa4077872b526aef36164e1ef248f3dd7b85480d9363ccac78f8cb2d56e86"
+    },
+    {
+      "from": "static/assets/profile.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/profile-variant-02.png",
+      "sha256": "d83820ef39fed3384bfffa7c4236681cb79b623a19d673a77ce8d19b237ed097"
+    },
+    {
+      "from": "static/assets/pwd.png",
+      "to": "docs/tooling/assets/bash-pwd.png",
+      "sha256": "e9b94187731f144b28e5671ee68442f08f8b2a9a86151a9cdd1d11d518228c5d"
+    },
+    {
+      "from": "static/assets/rainbow (1).png",
+      "to": "docs/exercises/node-typescript/rainbow-chalk/assets/archive/rainbow.png",
+      "sha256": "a8836a3eaed2f5a42ddbd8f300e645af35a6d1d557ed15832219d082347276e2"
+    },
+    {
+      "from": "static/assets/rainbow.png",
+      "to": "docs/exercises/node-typescript/rainbow-chalk/assets/archive/rainbow-variant-02.png",
+      "sha256": "a8836a3eaed2f5a42ddbd8f300e645af35a6d1d557ed15832219d082347276e2"
+    },
+    {
+      "from": "static/assets/randomcolor (1).gif",
+      "to": "docs/exercises/express/hello-express/assets/archive/willekeurige-kleur-demo.gif",
+      "sha256": "a2e6010f22e969d0fccd7bfb728830fd50fa5f79b6f29d183414c2c8ced83037"
+    },
+    {
+      "from": "static/assets/randomcolor.gif",
+      "to": "docs/exercises/express/hello-express/assets/archive/willekeurige-kleur-demo-variant-02.gif",
+      "sha256": "a2e6010f22e969d0fccd7bfb728830fd50fa5f79b6f29d183414c2c8ced83037"
+    },
+    {
+      "from": "static/assets/recent (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/recente-check-ins.png",
+      "sha256": "bbb1578d17327b790ec87c4afa82481038ef865f3b2b65a8548bfc4dbcba46bd"
+    },
+    {
+      "from": "static/assets/recent.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/recente-check-ins-variant-02.png",
+      "sha256": "bbb1578d17327b790ec87c4afa82481038ef865f3b2b65a8548bfc4dbcba46bd"
+    },
+    {
+      "from": "static/assets/rot13 (1).png",
+      "to": "docs/exercises/node-typescript/rot13/assets/archive/alfabet-variant-02.png",
+      "sha256": "b920702fbc977b655eb08773554bb4d1c4f8f55636aadb81520a1abacb082cab"
+    },
+    {
+      "from": "static/assets/rot13.png",
+      "to": "docs/exercises/node-typescript/rot13/assets/archive/alfabet-variant-03.png",
+      "sha256": "b920702fbc977b655eb08773554bb4d1c4f8f55636aadb81520a1abacb082cab"
+    },
+    {
+      "from": "static/assets/router-combi (1).gif",
+      "to": "docs/exercises/express/router-combi/assets/archive/router-combi.gif",
+      "sha256": "5c6f8f2218203bef2d832aa54c198b86079c68a512877da2b06d7220fe88b503"
+    },
+    {
+      "from": "static/assets/router-combi.gif",
+      "to": "docs/exercises/express/router-combi/assets/archive/router-combi-variant-02.gif",
+      "sha256": "5c6f8f2218203bef2d832aa54c198b86079c68a512877da2b06d7220fe88b503"
+    },
+    {
+      "from": "static/assets/runhorses.gif",
+      "to": "static/assets/archive/demos/paardenrace.gif",
+      "sha256": "1cda422bf83a02a1f6c3806af44423aa57a5b624d55e424d89834e7697548974"
+    },
+    {
+      "from": "static/assets/runhorses_race.gif",
+      "to": "static/assets/archive/demos/paardenrace-demo.gif",
+      "sha256": "11bceecee5e94e6552217faebd89db1d521b832e38bbab1564467513b820eaf5"
+    },
+    {
+      "from": "static/assets/runhorses_terminal.gif",
+      "to": "static/assets/archive/demos/paardenrace-terminal.gif",
+      "sha256": "37229c25670d362de23398ce9a51b3ef6d12f266c781cf7fc76128280a649731"
+    },
+    {
+      "from": "static/assets/screen1 (1).png",
+      "to": "docs/exercises/security/login-express/assets/archive/foutmelding.png",
+      "sha256": "01f55023edd2f33e9ef103aafdaf1610936c24217d3d182b0c7b54c63c2b7a8b"
+    },
+    {
+      "from": "static/assets/screen1.png",
+      "to": "docs/exercises/security/login-express/assets/archive/foutmelding-variant-02.png",
+      "sha256": "01f55023edd2f33e9ef103aafdaf1610936c24217d3d182b0c7b54c63c2b7a8b"
+    },
+    {
+      "from": "static/assets/screen2 (1).png",
+      "to": "docs/exercises/security/login-express/assets/archive/ingelogd.png",
+      "sha256": "a661be33bcce3a89ec869a5cbf47c764b8da743e0c9866b6c2b8f30b41aa13a5"
+    },
+    {
+      "from": "static/assets/screen2.png",
+      "to": "docs/exercises/security/login-express/assets/archive/ingelogd-variant-02.png",
+      "sha256": "a661be33bcce3a89ec869a5cbf47c764b8da743e0c9866b6c2b8f30b41aa13a5"
+    },
+    {
+      "from": "static/assets/screenshot (1).png",
+      "to": "docs/exercises/express/bitcoin-current/assets/archive/koersoverzicht.png",
+      "sha256": "91700f6217a7c9684ee969dd9d5d65545d44af05096827acaedae3a653349679"
+    },
+    {
+      "from": "static/assets/screenshot (2).png",
+      "to": "docs/exercises/express/bitcoin-current/assets/archive/koersoverzicht-variant-02.png",
+      "sha256": "91700f6217a7c9684ee969dd9d5d65545d44af05096827acaedae3a653349679"
+    },
+    {
+      "from": "static/assets/screenshot (3).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-21.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/screenshot.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/speler-aanmaken-variant-22.png",
+      "sha256": "a400456e34444a650bfc144933a53d2da48902be59f6e59d36fd838f2e8c82a6"
+    },
+    {
+      "from": "static/assets/search-2 (1).png",
+      "to": "docs/exercises/express/newspaper-search/assets/archive/search-2.png",
+      "sha256": "b82effd4cb6b782201a7f42af4078ed4ede7be7621c336fb5208c753776a5bbe"
+    },
+    {
+      "from": "static/assets/search-2.png",
+      "to": "docs/exercises/express/newspaper-search/assets/archive/search-2-variant-02.png",
+      "sha256": "b82effd4cb6b782201a7f42af4078ed4ede7be7621c336fb5208c753776a5bbe"
+    },
+    {
+      "from": "static/assets/search.zip",
+      "to": "static/assets/archive/downloads/search.zip",
+      "sha256": "7e92c54262ccdf901d3af1b5e78f1c54d40c5266ca38e8e028079b4d7ab2e980"
+    },
+    {
+      "from": "static/assets/select (1).png",
+      "to": "docs/exercises/express/redirect-form/assets/archive/select.png",
+      "sha256": "1a5e6dd8817d85e3f18aa2358762f46f65df7dd56acd951b0b3d0467454e5739"
+    },
+    {
+      "from": "static/assets/select.png",
+      "to": "docs/exercises/express/redirect-form/assets/archive/select-variant-02.png",
+      "sha256": "1a5e6dd8817d85e3f18aa2358762f46f65df7dd56acd951b0b3d0467454e5739"
+    },
+    {
+      "from": "static/assets/selfsigned.png",
+      "to": "docs/security/assets/archive/self-signed-certificate.png",
+      "sha256": "e89e44f5abfe272be49de859a6cdf2b11853ae5707165b16548851bbe4f6279f"
+    },
+    {
+      "from": "static/assets/sessionidbrowser.png",
+      "to": "docs/security/assets/session-id-browser.png",
+      "sha256": "cdb0904be6afc6a2fba1cc213ab92eda181f647e21ae619f8f7ce75665c05f91"
+    },
+    {
+      "from": "static/assets/songs.json",
+      "to": "docs/exercises/express/slopify/assets/archive/songs.json",
+      "sha256": "9d58f0af1555f6f670f153030739e76af8d15d42851271ddbfb8978b3af2db5e"
+    },
+    {
+      "from": "static/assets/sort (1).png",
+      "to": "docs/exercises/express/steam/assets/archive/sort.png",
+      "sha256": "5be9f8ddbbaa66f076cad8c385b99ba69ace47b4d3a5798ceac59f4375195bae"
+    },
+    {
+      "from": "static/assets/sort.png",
+      "to": "docs/exercises/express/steam/assets/archive/sort-variant-02.png",
+      "sha256": "5be9f8ddbbaa66f076cad8c385b99ba69ace47b4d3a5798ceac59f4375195bae"
+    },
+    {
+      "from": "static/assets/sort_header (1).png",
+      "to": "docs/exercises/express/steam/assets/archive/sorteren-kolomkop.png",
+      "sha256": "05b39bab05174d4490d8dc88db1b9eca8baf8f31e1e7f0a29f69a67660b54f50"
+    },
+    {
+      "from": "static/assets/sort_header.png",
+      "to": "docs/exercises/express/steam/assets/archive/sorteren-kolomkop-variant-02.png",
+      "sha256": "05b39bab05174d4490d8dc88db1b9eca8baf8f31e1e7f0a29f69a67660b54f50"
+    },
+    {
+      "from": "static/assets/starter.png",
+      "to": "docs/exercises/security/shopping-cookie/assets/archive/starter.png",
+      "sha256": "cd095c0e48ff3211c3b99b9592135a5e695937dec9f1690da478c95751614242"
+    },
+    {
+      "from": "static/assets/startpage.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/startpagina.png",
+      "sha256": "6a42afcc7e112bf58bde79481b2799991a79003d336d5ddd5ef6aa9a5c49cc35"
+    },
+    {
+      "from": "static/assets/startpage_empty (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/startpagina-leeg.png",
+      "sha256": "dd6f74dfb9c5f3e9935135860426a6c417778137ffd40f9579d8e81c0da75d08"
+    },
+    {
+      "from": "static/assets/startpage_empty.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/startpagina-leeg-variant-02.png",
+      "sha256": "dd6f74dfb9c5f3e9935135860426a6c417778137ffd40f9579d8e81c0da75d08"
+    },
+    {
+      "from": "static/assets/startpage_red (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/startpagina-validatie.png",
+      "sha256": "33307a27534493c0933dfbecae0441d85f26e3433935a0808f56d43e5c41811e"
+    },
+    {
+      "from": "static/assets/startpage_red.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/startpagina-validatie-variant-02.png",
+      "sha256": "33307a27534493c0933dfbecae0441d85f26e3433935a0808f56d43e5c41811e"
+    },
+    {
+      "from": "static/assets/stateless.png",
+      "to": "docs/security/assets/http-stateless.png",
+      "sha256": "34f1954e13f4e2995497edf7197ab069d3366be56b32028f29d517db99471b7f"
+    },
+    {
+      "from": "static/assets/style (1) (1) (1) (1).css",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-stijl.css",
+      "sha256": "4f7035ce24f03601dd03e8de7f0e7c9e3141e13001bc536b87ea6f4d4500f64c"
+    },
+    {
+      "from": "static/assets/style (1) (1) (1).css",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-stijl-variant-02.css",
+      "sha256": "4f7035ce24f03601dd03e8de7f0e7c9e3141e13001bc536b87ea6f4d4500f64c"
+    },
+    {
+      "from": "static/assets/style (1) (1) (2) (1).css",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-stijl-variant-03.css",
+      "sha256": "4f7035ce24f03601dd03e8de7f0e7c9e3141e13001bc536b87ea6f4d4500f64c"
+    },
+    {
+      "from": "static/assets/style (1) (1) (2).css",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-stijl-variant-04.css",
+      "sha256": "4f7035ce24f03601dd03e8de7f0e7c9e3141e13001bc536b87ea6f4d4500f64c"
+    },
+    {
+      "from": "static/assets/style (1) (1).css",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-stijl-variant-05.css",
+      "sha256": "4f7035ce24f03601dd03e8de7f0e7c9e3141e13001bc536b87ea6f4d4500f64c"
+    },
+    {
+      "from": "static/assets/style (1) (2).css",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-stijl-variant-06.css",
+      "sha256": "4f7035ce24f03601dd03e8de7f0e7c9e3141e13001bc536b87ea6f4d4500f64c"
+    },
+    {
+      "from": "static/assets/style (1).css",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-stijl-variant-07.css",
+      "sha256": "4f7035ce24f03601dd03e8de7f0e7c9e3141e13001bc536b87ea6f4d4500f64c"
+    },
+    {
+      "from": "static/assets/style.css",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-stijl-variant-08.css",
+      "sha256": "4f7035ce24f03601dd03e8de7f0e7c9e3141e13001bc536b87ea6f4d4500f64c"
+    },
+    {
+      "from": "static/assets/style.txt",
+      "to": "docs/express.js/assets/archive/rekenquiz/rekenquiz-stijl.txt",
+      "sha256": "4f7035ce24f03601dd03e8de7f0e7c9e3141e13001bc536b87ea6f4d4500f64c"
+    },
+    {
+      "from": "static/assets/summary (1).png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/summary.png",
+      "sha256": "ffb4e57ce06eac57f30d4b0ab6460c135afebb4229d43d90abb6265f90bb577b"
+    },
+    {
+      "from": "static/assets/summary.png",
+      "to": "docs/exercises/mongodb/pokedex-mongo-express/assets/archive/summary-variant-02.png",
+      "sha256": "ffb4e57ce06eac57f30d4b0ab6460c135afebb4229d43d90abb6265f90bb577b"
+    },
+    {
+      "from": "static/assets/symmetric.png",
+      "to": "docs/security/assets/archive/symmetric-encryption.png",
+      "sha256": "4b6a70bb4f20e5b0cd3588a7c89e72cf723de9c6387fb291583f59fcad5cf15f"
+    },
+    {
+      "from": "static/assets/tictactoe (1).gif",
+      "to": "docs/exercises/node-typescript/tic-tac-toe/assets/archive/tic-tac-toe-demo.gif",
+      "sha256": "d15f9b9b49bc1c764501e464fe2d8e0aed4b5fc8f7b83a658b2751516fe99e79"
+    },
+    {
+      "from": "static/assets/tictactoe (2).gif",
+      "to": "docs/exercises/node-typescript/tic-tac-toe/assets/archive/tic-tac-toe-demo-variant-02.gif",
+      "sha256": "d15f9b9b49bc1c764501e464fe2d8e0aed4b5fc8f7b83a658b2751516fe99e79"
+    },
+    {
+      "from": "static/assets/tictactoe.gif",
+      "to": "docs/exercises/node-typescript/tic-tac-toe/assets/archive/tic-tac-toe-demo-variant-03.gif",
+      "sha256": "d15f9b9b49bc1c764501e464fe2d8e0aed4b5fc8f7b83a658b2751516fe99e79"
+    },
+    {
+      "from": "static/assets/time.gif",
+      "to": "static/assets/archive/demos/time.gif",
+      "sha256": "8f8eb93a6cb48a06bed0887774620eaa956002087b594074ec205e34bd88e950"
+    },
+    {
+      "from": "static/assets/time_terminal.gif",
+      "to": "static/assets/archive/demos/tijd-terminal.gif",
+      "sha256": "122d55785e4ba61ef71f8583fd699e921dc7f0caf2dd9bb9ce717df14df7fdd4"
+    },
+    {
+      "from": "static/assets/todos (1).gif",
+      "to": "docs/exercises/node-typescript/todo-list-string/assets/archive/todos.gif",
+      "sha256": "66a602bd439dafa49719d09ebde41c03dc0db115ca1a96ee8c5bc733d3ec277e"
+    },
+    {
+      "from": "static/assets/todos (2).gif",
+      "to": "docs/exercises/node-typescript/todo-list-string/assets/archive/todos-variant-02.gif",
+      "sha256": "66a602bd439dafa49719d09ebde41c03dc0db115ca1a96ee8c5bc733d3ec277e"
+    },
+    {
+      "from": "static/assets/todos.gif",
+      "to": "docs/exercises/node-typescript/todo-list-string/assets/archive/todos-variant-03.gif",
+      "sha256": "66a602bd439dafa49719d09ebde41c03dc0db115ca1a96ee8c5bc733d3ec277e"
+    },
+    {
+      "from": "static/assets/todos.json",
+      "to": "docs/exercises/node-typescript/todo-list-objects/assets/archive/todos.json",
+      "sha256": "22bce6bb3f9bd7fd4d4982a3e61736f5ed09550382f5b9341341e34d911edcd5"
+    },
+    {
+      "from": "static/assets/topbars (1).png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/populairste-bars.png",
+      "sha256": "baee10d138b9b6ecd4000043e431730d3666354d4646138ae5825706edfa75d4"
+    },
+    {
+      "from": "static/assets/topbars.png",
+      "to": "docs/exercises/herhaling/beerster/assets/archive/populairste-bars-variant-02.png",
+      "sha256": "baee10d138b9b6ecd4000043e431730d3666354d4646138ae5825706edfa75d4"
+    },
+    {
+      "from": "static/assets/tos (1).png",
+      "to": "docs/exercises/express/contact-form/assets/archive/voorwaarden-validatie.png",
+      "sha256": "b781654e7245b5af96626180f3887f37511eefa54519be7a85ae2321d74b1ccf"
+    },
+    {
+      "from": "static/assets/tos.png",
+      "to": "docs/exercises/express/contact-form/assets/archive/voorwaarden-validatie-variant-02.png",
+      "sha256": "b781654e7245b5af96626180f3887f37511eefa54519be7a85ae2321d74b1ccf"
+    },
+    {
+      "from": "static/assets/urlform (1).png",
+      "to": "docs/exercises/express/redirect-form/assets/archive/url-formulier.png",
+      "sha256": "59028c5f761ea846b0f8bcae734b9e5a4d8d4319fa5ae162371f9720ca0828f5"
+    },
+    {
+      "from": "static/assets/urlform.png",
+      "to": "docs/exercises/express/redirect-form/assets/archive/url-formulier-variant-02.png",
+      "sha256": "59028c5f761ea846b0f8bcae734b9e5a4d8d4319fa5ae162371f9720ca0828f5"
+    },
+    {
+      "from": "static/assets/users-crud (1).gif",
+      "to": "docs/exercises/mongodb/users-crud-express/assets/archive/users-crud.gif",
+      "sha256": "85d22ec06a2938163a2b56f464446e35102d55543b5bf68580d7811a8fa1beb4"
+    },
+    {
+      "from": "static/assets/users-crud.gif",
+      "to": "docs/exercises/mongodb/users-crud-express/assets/archive/users-crud-variant-02.gif",
+      "sha256": "85d22ec06a2938163a2b56f464446e35102d55543b5bf68580d7811a8fa1beb4"
+    },
+    {
+      "from": "static/assets/visits (1).gif",
+      "to": "docs/exercises/express/viewcounter/assets/archive/visits.gif",
+      "sha256": "0f858ddb0be103e00a2deb00d0f21c918e5157115a484566efa5d5f7b422a85a"
+    },
+    {
+      "from": "static/assets/visits.gif",
+      "to": "docs/exercises/express/viewcounter/assets/archive/visits-variant-02.gif",
+      "sha256": "0f858ddb0be103e00a2deb00d0f21c918e5157115a484566efa5d5f7b422a85a"
+    },
+    {
+      "from": "static/assets/wat-is-jwt (1).png",
+      "to": "docs/express.js/cookies-en-sessions/jwt-tokens/assets/archive/wat-is-jwt.png",
+      "sha256": "3284b21122079854e888580decbecb01b8e21a1927dc7e54e1d02db117df1fc9"
+    },
+    {
+      "from": "static/assets/wat-is-jwt-2 (1).png",
+      "to": "docs/express.js/cookies-en-sessions/jwt-tokens/assets/archive/wat-is-jwt-2.png",
+      "sha256": "9cf3f22a2e7e64b558a22915db5c0b740ea3d07a5addc77510a4df3677fe2f6d"
+    },
+    {
+      "from": "static/assets/wat-is-jwt-2.png",
+      "to": "docs/express.js/cookies-en-sessions/jwt-tokens/assets/wat-is-jwt-2.png",
+      "sha256": "9cf3f22a2e7e64b558a22915db5c0b740ea3d07a5addc77510a4df3677fe2f6d"
+    },
+    {
+      "from": "static/assets/wat-is-jwt-3 (1).png",
+      "to": "docs/express.js/cookies-en-sessions/jwt-tokens/assets/archive/wat-is-jwt-3.png",
+      "sha256": "a87275d4f68c59f5e47e48372c9405ad6b10fe7c1347ffa6ed5102d4f81a5e5f"
+    },
+    {
+      "from": "static/assets/wat-is-jwt-3.png",
+      "to": "docs/express.js/cookies-en-sessions/jwt-tokens/assets/wat-is-jwt-3.png",
+      "sha256": "a87275d4f68c59f5e47e48372c9405ad6b10fe7c1347ffa6ed5102d4f81a5e5f"
+    },
+    {
+      "from": "static/assets/wat-is-jwt-4 (1).png",
+      "to": "docs/express.js/cookies-en-sessions/jwt-tokens/assets/archive/wat-is-jwt-4.png",
+      "sha256": "27b5b484d0e300b5921ae8961dc5b6abca7db2642b6f2553d0959d500d3d56df"
+    },
+    {
+      "from": "static/assets/wat-is-jwt-4.png",
+      "to": "docs/express.js/cookies-en-sessions/jwt-tokens/assets/wat-is-jwt-4.png",
+      "sha256": "27b5b484d0e300b5921ae8961dc5b6abca7db2642b6f2553d0959d500d3d56df"
+    },
+    {
+      "from": "static/assets/wat-is-jwt.png",
+      "to": "docs/express.js/cookies-en-sessions/jwt-tokens/assets/wat-is-jwt.png",
+      "sha256": "3284b21122079854e888580decbecb01b8e21a1927dc7e54e1d02db117df1fc9"
+    },
+    {
+      "from": "static/assets/wordguess (1).gif",
+      "to": "docs/exercises/express/word-guess/assets/archive/wordguess.gif",
+      "sha256": "15b351834e22fbc7a53dbc27e6dff7788e9c0ed835200537e8c7a034010ac7ce"
+    },
+    {
+      "from": "static/assets/wordguess-2 (1).gif",
+      "to": "docs/exercises/express/word-guess/assets/archive/wordguess-2.gif",
+      "sha256": "5645723c1fca317fd18660efc7f13afed7bc34193edc35681df179856887bcc0"
+    },
+    {
+      "from": "static/assets/wordguess-2.gif",
+      "to": "docs/exercises/express/word-guess/assets/archive/wordguess-2-variant-02.gif",
+      "sha256": "5645723c1fca317fd18660efc7f13afed7bc34193edc35681df179856887bcc0"
+    },
+    {
+      "from": "static/assets/wordguess.gif",
+      "to": "docs/exercises/express/word-guess/assets/archive/wordguess-variant-02.gif",
+      "sha256": "15b351834e22fbc7a53dbc27e6dff7788e9c0ed835200537e8c7a034010ac7ce"
+    },
+    {
+      "from": "static/assets/words (1).png",
+      "to": "docs/exercises/express/word-guess/assets/archive/words.png",
+      "sha256": "557c156023a5311f717ce15b75d8e2c5107bf061102145b8243ed5176e6b2477"
+    },
+    {
+      "from": "static/assets/words-2 (1).gif",
+      "to": "docs/exercises/express/word-guess/assets/archive/words-2.gif",
+      "sha256": "af537bc39b2f9b971185b2f98bed74bf422d3fc974fee291adfd3bc30ebbe0b6"
+    },
+    {
+      "from": "static/assets/words-2.gif",
+      "to": "docs/exercises/express/word-guess/assets/archive/words-2-variant-02.gif",
+      "sha256": "af537bc39b2f9b971185b2f98bed74bf422d3fc974fee291adfd3bc30ebbe0b6"
+    },
+    {
+      "from": "static/assets/words.png",
+      "to": "docs/exercises/express/word-guess/assets/archive/words-variant-02.png",
+      "sha256": "557c156023a5311f717ce15b75d8e2c5107bf061102145b8243ed5176e6b2477"
+    },
+    {
+      "from": "static/assets/youtubevideos (1).gif",
+      "to": "docs/exercises/herhaling/youtube-playlists/assets/archive/youtube-playlists-demo.gif",
+      "sha256": "597bef4d4112521330b1b329c16c890abdb2fafe8cbca8c92a9ea4f5e3830a70"
+    },
+    {
+      "from": "static/assets/youtubevideos.gif",
+      "to": "docs/exercises/herhaling/youtube-playlists/assets/archive/youtube-playlists-demo-variant-02.gif",
+      "sha256": "597bef4d4112521330b1b329c16c890abdb2fafe8cbca8c92a9ea4f5e3830a70"
+    }
+  ]
+}

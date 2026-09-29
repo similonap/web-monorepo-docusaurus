@@ -4,15 +4,15 @@
 
 HTTP is een stateless protocol. Dit betekent dat de server geen informatie bijhoudt over de client. Elke request is onafhankelijk van de vorige. Doe je een request naar de server, dan weet de server niet wie je bent of wat je vorige requests waren.
 
-![HTTP is stateless](/assets/stateless.png)
+![HTTP is stateless](./assets/http-stateless.png)
 
 Dit maakt het uiteraard moeilijk om bijvoorbeeld bij te houden of een gebruiker ingelogd is of niet.
 
-![Facebook login](/assets/facebook-login.png)
+![Facebook login](./assets/facebook-login.png)
 
 Ook al heb je de eerste keer een login en paswoord meegegeven zal de tweede keer dat je de pagina bezoekt, de server niet weten wie je bent. Je zal dus opnieuw moeten inloggen.
 
-![Facebook login2](/assets/facebook-login-2.png)
+![Facebook login2](./assets/facebook-login-2.png)
 
 ## Cookies
 
@@ -103,7 +103,7 @@ Cookies zijn een krachtig instrument om informatie bij te houden over een gebrui
 
 Je kan cookies aanpassen in de browser. Dit kan handig zijn om te testen wat er gebeurt als een cookie niet meer bestaat of als een cookie een andere waarde heeft. Dit betekent ook dat je niet zomaar gevoelige informatie in een cookie mag opslaan of dat je niet zomaar mag vertrouwen op de data die in een cookie staat.
 
-![Cookies in browser](/assets/cookie-browser.png)
+![Cookies in browser](./assets/cookie-browser.png)
 
 
 #### Cookies instellen met een vervaldatum
@@ -143,7 +143,7 @@ console.log(document.cookie)
 
 Je zal opmerken dat de cookie niet kan uitgelezen worden of aangepast worden als je de `httpOnly` property instelt.
 
-![httponly](/assets/httponly.gif)
+![httponly](./assets/http-only-cookie-demo.gif)
 
 #### Secure
 

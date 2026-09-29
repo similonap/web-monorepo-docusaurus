@@ -85,7 +85,7 @@ Je kan hashing ook gebruiken om de integriteit van bestanden te controleren. Als
 
 Vaak zie je op een website iets zoals dit:
 
-![Hashes VSCode](/assets/hashes-vscode.png)
+![Hashes VSCode](./assets/hashes-vscode-variant-02.png)
 
 Als je het bestand gedownload hebt kan je met het `sha256sum` in je console de hash berekenen en controleren of deze overeenkomt met de hash op de website.
 

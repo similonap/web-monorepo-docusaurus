@@ -95,4 +95,4 @@ Om MongoDB te gebruiken in Visual Studio Code, kan je de MongoDB for VS Code ext
 
 Om deze extension te installeren, ga je naar de extensions tab in VS Code en zoek je naar "MongoDB for VS Code". Klik op install om de extension te installeren.
 
-![alt text](/assets/mongovscode.png)
+![alt text](./assets/mongodb-vscode.png)

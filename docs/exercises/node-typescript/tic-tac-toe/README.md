@@ -16,4 +16,4 @@ Als de gebruiker een zet doet die geldig is dan wordt het bord getoond. Als er e
 
 ## Voorbeeld interactie:
 
-<figure><img src={require("./tictactoe.gif").default} alt="" /><figcaption></figcaption></figure>
+<figure><img src={require("./assets/tic-tac-toe-demo.gif").default} alt="" /><figcaption></figcaption></figure>

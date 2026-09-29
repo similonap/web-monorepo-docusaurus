@@ -4,7 +4,7 @@ Voor deze oefening beginnen we met een <a href="/exercise-files/security/shoppin
 
 Als we het starter project opstart krijg je de volgende situatie te zien:
 
-![Starter](starter.png)
+![Starter](assets/starter.png)
 
 Geen van de functionaliteiten werkt momenteel. Het is aan jou om de applicatie te voorzien van de nodige functionaliteiten.
 

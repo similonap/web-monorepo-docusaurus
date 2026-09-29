@@ -152,4 +152,4 @@ Hieronder een aantal voorwaarden waaraan je applicatie moet voldoen:
 
 
 
-![alt text](articles.png)
+![alt text](assets/articles.png)

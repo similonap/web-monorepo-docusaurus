@@ -48,4 +48,4 @@ Zorg ervoor dat je alles pushed naar je repository en de link naar je repository
 
 ## Voorbeeld
 
-![Bekijk het voorbeeld](/assets/milestone-1.gif)
+![Bekijk het voorbeeld](./assets/node-client-milestone-demo.gif)

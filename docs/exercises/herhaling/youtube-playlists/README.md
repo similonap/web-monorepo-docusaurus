@@ -12,6 +12,6 @@ Bovenaan de pagina staat een zoekbalk waarmee je op de titel van het lied kunt z
 
 Voorzie ook een manier om nieuwe videos toe te voegen. Er moet geen server side validation gebeuren. Als de video correct is toegevoegd, moet de gebruiker terug naar de hoofdpagina worden gestuurd.
 
-![youtube-demo](youtubevideos.gif)
+![youtube-demo](assets/youtube-playlists-demo.gif)
 
 

@@ -20,7 +20,7 @@ Je begint met een start project waarin de basis van een twitter applicatie is ui
 
 In het begin zal de applicatie er als volgt uitzien:
 
-![](2023-04-25-16-14-50.png)
+![](assets/twitter-tijdlijn.png)
 
 Je ziet dat de afbeeldingen en de CSS niet geladen worden. Voer de volgende stappen uit om dit op te lossen:
 

@@ -18,7 +18,7 @@ Als de gebruiker de terms and conditions niet aanvaardt, wordt het formulier opn
 
 Als het formulier correct werd ingevuld, wordt een bedanktbericht gerenderd. Het bedanktbericht bevat de tekst "Thank you for contacting us, \{firstname\} We will get back to you on the following email: \{email\}" waar uiteraard `\{firstname\}` en `\{email\}` worden vervangen door de waarden die de gebruiker heeft ingevuld.
 
-![Contact form](contact.png)
-![Terms and conditions](tos.png)
-![Message Empty](message_empty.png)
-![Ok](ok.png)
+![Contact form](assets/contact.png)
+![Terms and conditions](assets/voorwaarden-validatie.png)
+![Message Empty](assets/bericht-ontbreekt.png)
+![Ok](assets/formulier-bevestiging.png)

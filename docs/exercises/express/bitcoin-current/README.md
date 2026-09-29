@@ -11,4 +11,4 @@ De applicatie moet luisteren op poort 3500 en de volgende routes hebben:
 - `GET /`: Toont een welkomstbericht in een HTML pagina met een link naar de `/bitcoin` route.
 - `GET /bitcoin`: Toont de huidige prijs van Bitcoin in EUR, USD en GBP in een HTML pagina. De prijs moet opgehaald worden van de API en getoond worden in een tabel. 
 
-![](screenshot.png)
+![](assets/bitcoin-koersoverzicht.png)

@@ -20,4 +20,4 @@ De applicatie werkt als volgt:
 
 ## Voorbeeld interactie
 
-![cat](./catgpt.gif)
+![cat](./assets/cat-gpt-demo.gif)

@@ -34,7 +34,7 @@ getRandomWord(['hello', 'world', 'test', 'word']) // 'world'
 - [ ] Toon de woorden aan de hand van een for lus en `<li>` tags.
 - [ ] De woorden die geen 5 letters lang zijn geef je een rode kleur.
 
-![alt text](words.png)
+![alt text](assets/words.png)
 
 ## Words Form
 
@@ -45,7 +45,7 @@ getRandomWord(['hello', 'world', 'test', 'word']) // 'world'
 - [ ] Als je een woord dat geen 5 letters bevat toon je een foutmelding op de pagina. (Please enter a 5 letter word.)
 - [ ] Als alle kleuren groen zijn toon je een succesmelding op de pagina. (Congratulations! You guessed the word.)
 
-![alt text](wordguess.gif)
+![alt text](assets/wordguess.gif)
 
 ## Restart Game
 
@@ -59,7 +59,7 @@ getRandomWord(['hello', 'world', 'test', 'word']) // 'world'
 - [ ] Bij het opstarten van de web server moet de `WORDS` array gevuld worden met de woorden uit de API. Deze bevat een lijst van woorden die mogelijk geraden kunnen worden. Gebruik hiervoor een fetch op https://raw.githubusercontent.com/similonap/word-guess-api/main/words.json
 - [ ] Pas de code aan van de `guess` POST route zodat deze de `WORDS` array gebruikt om te controleren of het woord in deze lijst staat. Geef een foutmelding als het woord niet in de lijst staat. WIOHR is een voorbeeld van een woord dat niet in de lijst staat. KRUID is een voorbeeld van een woord dat wel in de lijst staat.
 
-![alt text](wordguess-2.gif)
+![alt text](assets/wordguess-2.gif)
 
 ## Possible Words Search
 
@@ -68,4 +68,4 @@ getRandomWord(['hello', 'world', 'test', 'word']) // 'world'
 - [ ] Sorteer de woorden alfabetisch. Als je de query parameter `direction` meegeeft kan je de sorteer richting bepalen (asc of desc). 
 - [ ] Voorzie een form op de `words.ejs` pagina die de gebruiker toelaat om te zoeken naar woorden. (GET request)
 
-![alt text](words-2.gif)
+![alt text](assets/words-2.gif)

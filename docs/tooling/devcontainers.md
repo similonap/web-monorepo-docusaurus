@@ -181,7 +181,7 @@ Open Visual Studio Code en open de **Extensions**-tab in de sidebar. Installeer 
 
 1. Klik in Visual Studio Code in de linkeronderhoek op het **avatar**-icoontje.
 
-   <figure><img src={require("/assets/Screenshot 2025-02-05 at 12.41.46.png").default} alt="Het Accounts-menu linksonder in VS Code" /><figcaption><p>De positie van het Accounts menu</p></figcaption></figure>
+   <figure><img src={require("./assets/vscode-accounts-menu.png").default} alt="Het Accounts-menu linksonder in VS Code" /><figcaption><p>De positie van het Accounts menu</p></figcaption></figure>
 
 2. Kies **Sign in to GitHub to use GitHub Pull Requests**.
 3. Er opent een browservenster dat je vraagt om te authenticeren. Meld je aan met je GitHub-account.

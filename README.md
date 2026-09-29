@@ -118,3 +118,39 @@ Publiceer de monorepo-commit voordat je de bijbehorende cursusverwijzing
 publiceert, zodat andere checkouts en CI die commit kunnen ophalen. De
 submodule kan ook een oudere commit vastleggen voor een eerdere cursusversie.
 Voor de volledige clone- en updateprocedure zie de README van de cursus.
+
+## Assets vinden en toevoegen
+
+- `docs/<onderwerp>/assets/` en `docs/exercises/<categorie>/<oefening>/assets/`:
+  plaats afbeeldingen, animaties, video's en downloads zo dicht mogelijk bij
+  de les of oefening die ze gebruikt. Voorbeelden: `docs/tooling/assets/`,
+  `docs/project/semester-2/assets/` en
+  `docs/nodejs-+-typescript/modules-npm/assets/`.
+  Gebruik relatieve links zoals `![Resultaat](./assets/formulier-bevestiging.png)`
+  of `require("./assets/navigatie.png")`. Een bestand dat meerdere topics gebruiken,
+  hoort in de `assets/`-map van hun dichtstbijzijnde gezamenlijke onderwerp.
+- `docs/<onderwerp>/assets/archive/`: bewaarde oude kopieën en ongebruikte
+  bestanden waarvan het onderwerp bekend is. Een `variant-02`-suffix
+  onderscheidt bestanden met dezelfde beschrijvende naam.
+- `static/assets/archive/`: alleen oudere bestanden zonder duidelijk
+  aanwijsbaar topic. Nieuwe lesassets horen bij hun topic, niet in deze map.
+- `static/img/`: bestaande huisstijl, logo's en favicon. Deze publieke paden
+  blijven stabiel omdat de afzonderlijke cursusconfiguraties ze ook gebruiken.
+- `starter/public/` en `solution/public/` binnen oefeningen: assets van de
+  uitvoerbare voorbeeldapps. Houd die bij de app, zodat downloads zelfstandig
+  blijven werken. Namen die dynamisch uit data worden afgeleid, zoals
+  `images/avatars/<handle>.png` en `images/types/<type>.gif`, volgen die data.
+
+Gebruik voor nieuwe bestanden beschrijvende namen in kleine letters met
+koppeltekens, bijvoorbeeld `check-in-formulier-leeg.png`. Vermijd namen zoals
+`image.png`, screenshots met alleen een datum en opeengestapelde kopienummers.
+Pas bij een verplaatsing zowel Markdown-links als `require()`, imports,
+HTML-/EJS-verwijzingen en eventuele app-data aan. Controleer daarna met
+`npm test` en `npm run build`.
+
+De eenmalige herstructurering is terug te vinden in
+[`scripts/asset-migration.json`](scripts/asset-migration.json): oude paden,
+nieuwe paden en SHA-256-checksums van de oorspronkelijke bestanden. Dit is een
+historisch overzicht, geen configuratie of redirectlijst. Bij latere wijzigingen
+hoeft het niet bijgewerkt te worden. Bestaande externe bookmarks naar verplaatste
+bestanden worden niet automatisch omgeleid.

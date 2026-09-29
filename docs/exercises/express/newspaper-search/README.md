@@ -6,4 +6,4 @@ Maak een nieuwe route `/search` die een zoekformulier toont. Dit formulier moet 
 
 Als de gebruiker een zoekterm heeft ingevuld, moet de server de artikels filteren op basis van de zoekterm en de artikels tonen. Als de zoekbalk leeg is, moeten er geen artikels getoond worden. We zoeken op basis van de titel van het artikel en de inhoud van het artikel.
 
-![alt text](search-2.png)
+![alt text](assets/search-2.png)

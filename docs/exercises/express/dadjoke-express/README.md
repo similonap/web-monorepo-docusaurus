@@ -19,6 +19,6 @@ const response = await fetch('https://icanhazdadjoke.com/', {
 
 De applicatie moet op poort 3000 draaien.
 
-<figure><img src={require("./dadjoke-html.png").default} alt="" /><figcaption><p>/joke/html</p></figcaption></figure>
+<figure><img src={require("./assets/html-respons.png").default} alt="" /><figcaption><p>/joke/html</p></figcaption></figure>
 
-<figure><img src={require("./dadjoke-json.png").default} alt="" /><figcaption><p>/joke/json</p></figcaption></figure>
+<figure><img src={require("./assets/json-respons.png").default} alt="" /><figcaption><p>/joke/json</p></figcaption></figure>

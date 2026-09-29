@@ -5,7 +5,7 @@
 
 npm.js is de package manager voor JavaScript. Het is de grootste software registry ter wereld. Hier vind je heel veel packages die je kan gebruiken in je projecten. Wil je een bepaalde package zoeken dan kan je dat doen op de [npmjs website](https://www.npmjs.com/). Je vind er ook uitgebreide documentatie over de packages en hoe je deze kan gebruiken.
 
-![alt text](/assets/npmjs.png)
+![alt text](./assets/npm-package-overzicht.png)
 
 Npm packages kunnen typisch op drie verschillende manieren geïnstalleerd worden: als dependency, dev dependency, en globaal. Een dependency wordt geïnstalleerd wanneer een pakket nodig is voor de werking van je applicatie in productie; dit zijn bijvoorbeeld bibliotheken die essentieel zijn om de applicatie te laten draaien (bv. leaflet om je interactieve map te tonen). Een dev dependency daarentegen is een pakket dat alleen nodig is tijdens de ontwikkeling, zoals tools voor testen of linting, en wordt niet meegeleverd in productie. Tot slot kunnen pakketten ook globaal geïnstalleerd worden, wat betekent dat ze overal op je systeem beschikbaar zijn, ongeacht welk project je gebruikt. Dit wordt meestal gedaan voor CLI-tools die je buiten een specifiek project wilt gebruiken, zoals TypeScript of ESLint.
 
@@ -134,8 +134,8 @@ npm install --save-dev @types/ejs
 
 Je kan op de npmjs website heel eenvoudig zien of een bepaalde package TypeScript support heeft:
 
-* Bevat deze een ![](/assets/dt.png) tag? Dan kan je deze installeren aan de hand van de bovenstaande commando's
-* Bevat deze een ![](/assets/image%20(1).png) tag, dan zitten de types al in de npm package en dan hoef je niets te doen.
+* Bevat deze een ![](./assets/definitely-typed-badge.png) tag? Dan kan je deze installeren aan de hand van de bovenstaande commando's
+* Bevat deze een ![](./assets/typescript-types-badge.png) tag, dan zitten de types al in de npm package en dan hoef je niets te doen.
 
 Bevat deze geen van beide? Dan heb je helemaal geen types en heb je geen voordelen van TypeScript. Je moet dan ook nog een extra aanpassing doen aan je project om deze library toch nog te gebruiken.
 
@@ -147,7 +147,7 @@ declare module 'rainbow-colors-array';
 
 Dit is ook wat je vscode je aanraad als je over de error hovered als hij de types niet vindt:
 
-![](/assets/Screenshot%202023-03-17%20at%2016.16.10.png)
+![](./assets/types-ontbreken.png)
 
 ## Voorbeeld: Lodash
 

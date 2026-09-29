@@ -11,4 +11,4 @@ We gaan nu een express applicatie maken die gebruik maakt van deze database.
 - Maak een `/` POST route aan die een nieuw bericht toevoegt aan de database. Na het toevoegen van het bericht wordt de gebruiker terug gestuurd naar de `/` route. Je mag hier gebruik maken van een redirect.
 - Plaats de connection string in een `.env` bestand.
 
-![alt text](guestbook.gif)
+![alt text](assets/guestbook.gif)

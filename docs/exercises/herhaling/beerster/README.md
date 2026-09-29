@@ -59,23 +59,23 @@ const initialUsers: User[] = [
 
 Maak een login pagina waarop je kan inloggen. Je kan inloggen met de gebruikers die je hebt aangemaakt in de database. Als je inlogt, wordt je doorgestuurd naar de home pagina. Gebruik hiervoor JWT tokens en dus geen sessies. Je mag de username en de fullname van de gebruiker in de token steken. Het wachtwoord mag niet in de token zitten.
 
-![Login Succesful](login.png)
+![Login Succesful](assets/login.png)
 
 Voorzie een error message als de gebruiker niet bestaat of het wachtwoord fout is. Gebruik hiervoor flash messages in de session.
 
-![Login Failed](login-failed.png)
+![Login Failed](assets/login-failed.png)
 
 ## Home pagina
 
 Het home scherm bestaat uit een aantal verschillende onderdelen. Je kan deze vinden op de `/` route. Je moet ingelogd zijn om deze pagina te kunnen zien.
 
-![Home Screen](homescreen.png)
+![Home Screen](assets/startscherm.png)
 
 ### Recent Check-ins
 
 Is een overzicht van alle check-ins die gedaan zijn. Je toont de naam van de gebruiker, de naam van het bier, de naam van de bar, de datum en een eventuele comment. Bovenaan elke checkin toon je een willkeurige afbeelding van de bar en het logo van het bier.
 
-![Recent checkins](recent.png)
+![Recent checkins](assets/recente-check-ins.png)
 
 Limiteer het aantal check-ins dat getoond wordt tot 5. Je kan dit overschrijven door een query parameter `limit` mee te geven.
 
@@ -85,18 +85,18 @@ Boven de recent check-ins toon je een formulier waarmee je een nieuwe check-in k
 
 Je mag willeurig een image kiezen van de bar voor de image van de check-in.
 
-![checkinform](checkinform.png)
-![checkinform](checkinform-clean.png)
+![checkinform](assets/check-in-formulier.png)
+![checkinform](assets/check-in-formulier-leeg.png)
 
 Na het toevoegen krijg je een succes message te zien.
 
-![alt text](checkinform-success.png)
+![alt text](assets/check-in-bevestiging.png)
 
 ### Top Bar
 
 De top bar toont de top 3 bars met de hoogste rating. Je toont de naam van de bar en de description. Je toont ook een willekeurige afbeelding van de bar. Als je op de naam van de bar klikt, ga je naar de detailpagina van de bar.
 
-![Top Bars](topbars.png)
+![Top Bars](assets/populairste-bars.png)
 
 ### Top Beers
 
@@ -106,7 +106,7 @@ De top beers toont de top 3 bieren. Jammer genoeg is er geen rating voor de bier
 
 Als je naar de /beers route gaat, krijg je een overzicht van alle bieren. Je toont de naam van het bier, de alcohol percentage en de description. Je toont ook het logo van het bier. Als je op een bier klikt, ga je naar de detailpagina van het bier.
 
-![Beers page](beerspage.png)
+![Beers page](assets/bieren-overzicht.png)
 
 Je kan het percentage van het bier tonen in een kleur. Als het percentage lager is dan 5, toon je het in het groen. Als het percentage lager is dan 7.5, toon je het in het oranje. Anders toon je het in het rood. Je toont ook een label met `LOW`, `MEDIUM` of `HIGH` afhankelijk van het percentage. 
 
@@ -116,26 +116,26 @@ Je kan eventueel ook het alcohol percentage laten zien aan de hand van een balkj
 
 Als je naar de /beers/:id pagina gaat, krijg je hetzelfde overzicht als op de beers pagina, maar dan enkel voor dat specifieke bier. Je toont ook een lijst van alle check-ins voor dat bier. Je toont de naam van de gebruiker, de naam van de bar, de datum en de comment. Je toont ook een willekeurige afbeelding van de bar.
 
-![Beer detail](beerdetail.png)
+![Beer detail](assets/bier-detail.png)
 
 ## Bars pagina
 
 Als je naar de /bars route gaat, krijg je een overzicht van alle bars. Je toont de naam van de bar, de locatie en de description. Je toont ook de rating van de bar. Als je op een bar klikt, ga je naar de detailpagina van de bar.
 
-![Bar List](barlist.png)
+![Bar List](assets/bar-overzicht.png)
 
 ## Bars detail pagina
 
 Als je naar de /bars/:id pagina gaat, krijg je hetzelfde overzicht als op de bars pagina, maar dan enkel voor die specifieke bar. Je toont hiernaast ook alle images van de bar. 
 
-![Bar detail](bardetail.png)
+![Bar detail](assets/bar-detail.png)
 
 ## Profile pagina
 
 Je hebt bovenaan elke pagina (buiten de login pagina) een navigatiebalk. Rechtsbovenaan zie je een cirkel met de eerste letter van de je username. Als je hier op klikt krijg je een menu waar je kan kiezen tussen uitloggen en naar je profiel gaan.
 
-![Profile button](profile-button.png)
+![Profile button](assets/profile-button.png)
 
 Als je naar je profiel gaat, zie je een overzicht van al je check-ins. Je krijgt ook je username en fullname te zien.
 
-![Profile page](profile.png)
+![Profile page](assets/profile.png)

@@ -28,4 +28,4 @@ Je mag geen aanpassingen maken in de `index.ts` file. Het opbouwen van de tabel 
 
 **De output in de browser moet er als volgt uitzien:**
 
-![](maaltafels.png)
+![](assets/tabel.png)

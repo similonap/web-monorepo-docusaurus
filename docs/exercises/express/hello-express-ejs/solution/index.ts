@@ -10,7 +10,7 @@ app.use(express.static("public"));
 const thisisme: Person = {
     name: "Andie Similon",
     age: 39,
-    profilePic: "/assets/images/thisisme.png"
+    profilePic: "/assets/images/profielportret.png"
 }
 
 function getRandomColor() {

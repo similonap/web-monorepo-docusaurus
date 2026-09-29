@@ -20,7 +20,7 @@ Je gaat een webapplicatie bouwen in twee delen:
    * Elke pizza heeft een verwijder-knop. Hiermee wordt de pizza verwijdert uit het systeem.
      * *Bekijk de database-structuur aandachtig! Een pizza bestaat enerzijds uit een record uit de `pizzas` tabel, maar ook uit records uit de `pizza_ingredients` tabel!*
 
-![Voorbeeld van pizza-builder](./assets/example.gif)
+![Voorbeeld van pizza-builder](./assets/pizza-builder-demo.gif)
 
 ## Functionaliteiten
 

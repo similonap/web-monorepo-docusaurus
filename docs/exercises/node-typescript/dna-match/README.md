@@ -29,4 +29,4 @@ Zorg voor een console applicatie die de gebruiker vraagt om twee DNA sequenties 
 
 ## Voorbeeld interactie
 
-![DNA match](dna.gif)
+![DNA match](assets/dna.gif)

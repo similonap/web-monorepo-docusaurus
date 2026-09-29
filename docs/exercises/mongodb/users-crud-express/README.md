@@ -17,4 +17,4 @@ We gaan een kleine CRUD applicatie maken die data gebruikt afkomstig van `https:
 - Zorg ervoor dat je een gebruiker kan aanpassen door op een knop te klikken in de lijst van users.
 - zorg ervoor dat je een gebruiker kan toevoegen door op de `create` button te klikken.
 
-![users-crud](users-crud.gif)
+![users-crud](assets/users-crud.gif)

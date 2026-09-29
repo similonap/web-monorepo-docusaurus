@@ -16,4 +16,4 @@ De werking van de applicatie moet hetzelfde blijven als de oefeningen die je heb
 
 Zorg dat de `/` route van je applicatie een overzicht geeft van de drie verschillende routes die je hebt gemaakt.
 
-![alt text](router-combi.gif)
+![alt text](assets/router-combi.gif)

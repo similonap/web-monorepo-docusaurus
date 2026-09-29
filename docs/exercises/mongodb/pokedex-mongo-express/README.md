@@ -18,23 +18,23 @@ Zorg ervoor dat alle pagina's de header en de footer includeert zodat de css aut
 
 In het begin zal je pagina er zo uit zien:
 
-![](<./screenshot.png>)
+![](<./assets/pokedex-overzicht.png>)
 
 Met de header en footer ziet ze er als volgt uit:
 
-![](./startpage\_empty.png)
+![](./assets/startpagina-leeg.png)
 
 ## Start Pagina
 
 De start pagina ziet er als volgt uit. Als je naar de root path gaat ([http://localhost:3000](http://localhost:3000/)) dan krijg je de volgende pagina te zien.
 
-![](./startpage\_empty.png)
+![](./assets/startpagina-leeg.png)
 
 De gebruiker krijgt hier een invoerveld te zien met daarnaast een Submit knop. Als deze submit knop wordt aangeklikt dan wordt er in de database een nieuwe Player aangemaakt met de meegegeven naam.
 
 Na het aanmaken wordt de gebruiker terug naar deze root pagina gestuurd (met `res.redirect("/")`) en krijgt de gebruiker zijn naam te zien in een lijst:
 
-![](./startpage\_red.png)
+![](./assets/startpagina-validatie.png)
 
 De gebruiker kan dan vervolgens op zijn naam klikken en wordt dan naar zijn persoonlijke hoofdpagina gestuurd.
 
@@ -48,7 +48,7 @@ De player pagina bevindt zich op de route
 
 waarvan de id overeenkomt met de database id in mongodb.
 
-![](./player.png)
+![](./assets/player.png)
 
 Hier staan 3 knoppen:
 
@@ -85,7 +85,7 @@ We houden de volgende data van een pokemon bij:
 
 De pokemon worden als button elementen getoond. Je zou dus 151 buttons op het scherm moeten hebben.
 
-![](./pokemonlist.png)
+![](./assets/pokemon-overzicht.png)
 
 Als je op een van de buttons klikt wordt deze toegevoegd aan de pokemon lijst van de gebruiker. Wat dit betekent zie je later.
 
@@ -103,7 +103,7 @@ Het toevoegen gebeurd aan de hand van de volgende route:
 
 Alle informatie moet zichtbaar zijn in de volgende tabel:
 
-![](./pokemonteam.png)
+![](./assets/pokemon-team.png)
 
 Je kan de images gebruiken van de types om een icon te tonen van de pokemon types.
 
@@ -111,7 +111,7 @@ Breidt je pokemon object uit met een currentHP key en geef deze een waarde tusse
 
 **Belangrijk:** Het pokemon team mag nog niet worden opgeslagen in de database. Dit mag pas gebeuren op het moment dat de SAVE button gebeurd op de player pagina:
 
-![](./player.png)
+![](./assets/player.png)
 
 Het saven van de player zijn pokemon gebeurd met:
 
@@ -133,9 +133,9 @@ Ook hier zal het Player object met zijn pokemon worden niet verwijderd worden ui
 
 *   Zorg voor een filtering systeem zodat je de pokemon lijst kan filteren op basis van type.
 
-![](./filtering.png)
+![](./assets/filtering.png)
 
-![](./firefilter.png)
+![](./assets/vuurtype-filter.png)
 
 *   Zorg voor een overzicht van je pokemon team:
 
@@ -143,4 +143,4 @@ Ook hier zal het Player object met zijn pokemon worden niet verwijderd worden ui
     * De kleinste pokemon
     * Een overzicht van alle types uit je team (mag geen dubbele bevatten)
 
-![](./summary.png)
+![](./assets/summary.png)

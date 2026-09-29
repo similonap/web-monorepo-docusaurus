@@ -8,13 +8,13 @@ We starten van de database die we gemaakt hebben in de vorige [opgave](../pet-sh
 - Maak gebruik van een aparte `database.ts` module om al je database gerelateerde code in te plaatsen.
 - Maak een `/pets` route aan die alle pets toont in de database. Gebruik hiervoor een aparte `pets.ejs` view. 
 
-![alt text](pets.png)
+![alt text](assets/pets.png)
 
 - Maak een `/pets/:type` route aan die alle pets toont in de database van een bepaald type. Herbruik de `pets.ejs` view. `/pets/dog` toont alle honden, `/pets/cat` toont alle katten, ...
 - Maak een `/pets/sort` route aan die alle pets toont in de database gesorteerd op een bepaald veld. Gebruik hiervoor een aparte `pets.ejs` view. Je kan het veld meegeven via een query parameter `field`. Mogelijke waarden voor `field` zijn `name`, `type` en `age`. De default waarde is `name`. Herbruik de `pets.ejs` view.
 - Maak een `/pets/ageBetween` route aan die alle pets toont in de database met een leeftijd tussen een minimum en een maximum. Je kan een `min` en een `max` parameter meegeven via de query string. Herbruik de `pets.ejs` view. Als er geen `min` en `max` parameter meegegeven worden, dan worden alle pets getoond.
 - Maak een `/pets/search` route aan die alle pets toont in de database waarvan de naam, type of breed overeenkomt met een bepaalde zoekterm. Je kan een `search` parameter meegeven via de query string. Gebruik hier een nieuwe `search.ejs` view voor waar je ook een zoekterm kan ingeven aan de hand van een formulier.
 
-![alt text](petssearch.png)
+![alt text](assets/dieren-zoeken.png)
 
 - Zorg ervoor dat de connection string in een `.env` bestand staat.

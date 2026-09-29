@@ -11,5 +11,5 @@ Maak een nieuwe Express applicatie aan met de naam `login-express`. In deze appl
 - Gebruik een sessie om de gebruiker ingelogd te houden. Deze sessie moet over 1 week vervallen.
 - Voorzie een logout functionaliteit.
 
-![alt text](screen1.png)
-![alt text](screen2.png)
+![alt text](assets/foutmelding.png)
+![alt text](assets/ingelogd.png)

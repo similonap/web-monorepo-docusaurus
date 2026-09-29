@@ -20,7 +20,7 @@ Je gaat een webapplicatie bouwen in twee delen:
      * Pokémon die al gevangen zijn, maar nog niet in je party zitten krijgen een knop waarmee je de Pokémon kunt toevoegen aan je party.
      * Pokémon die al gevangen zijn, en al wel in je party zitten, krijgen een knop waarmee je de Pokémon kunt verwijderen uit je party.
 
-![Voorbeeld van pokemon-app-bis](./assets/example.gif)
+![Voorbeeld van pokemon-app-bis](./assets/pokemon-app-bis-demo.gif)
 
 ## Functionaliteiten
 

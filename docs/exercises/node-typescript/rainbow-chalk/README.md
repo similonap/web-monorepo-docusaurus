@@ -20,4 +20,4 @@ Volg het volgende stappenplan om de oefening te maken:
 
 ## Voorbeeld interactie
 
-![alt text](rainbow.png)
+![alt text](assets/rainbow.png)

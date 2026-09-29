@@ -90,4 +90,4 @@ Jouw team van pokemon is:
 
 **Voorbeeld interactie:**
 
-![](pokemon.gif)
+![](assets/pokemon.gif)

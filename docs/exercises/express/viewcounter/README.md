@@ -10,4 +10,4 @@ Je moet dus een globale teller bijhouden en een teller per pad (bv door een obje
 
 ## Voorbeeldinteractie
 
-<figure><img src={require("./visits.gif").default} alt="" /><figcaption></figcaption></figure>
+<figure><img src={require("./assets/visits.gif").default} alt="" /><figcaption></figcaption></figure>

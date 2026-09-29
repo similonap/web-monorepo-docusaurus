@@ -6,7 +6,7 @@ We willen een programma maken dat een string encodeert met de rot13 methode. De 
 
 De gebruiker geeft een string in en het programma toont de gecodeerde string.
 
-<figure><img src={require("./rot13.png").default} alt="" /><figcaption></figcaption></figure>
+<figure><img src={require("./assets/alfabet.png").default} alt="" /><figcaption></figcaption></figure>
 
 De werkwijze is als volgt:
 
