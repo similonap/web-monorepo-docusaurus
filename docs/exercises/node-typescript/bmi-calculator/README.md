@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # BMI Calculator
 
 Maak een nieuw project aan met de naam `bmi-calculator`.
@@ -21,3 +23,5 @@ Je BMI is 24.69
 ```
 
 Zorg ervoor dat je de BMI afrondt op 2 cijfers na de komma.
+
+<ExerciseSelfTest category="node-typescript" exercise="bmi-calculator" />

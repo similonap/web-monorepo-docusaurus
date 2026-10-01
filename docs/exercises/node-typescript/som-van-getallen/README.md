@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Som van getallen
 
 Maak een nieuw project aan met de naam `som-van-getallen`.
@@ -15,3 +17,5 @@ Geef getal 2 in: 3
 Geef getal 3 in: 7
 De som van de getallen is 15
 ```
+
+<ExerciseSelfTest category="node-typescript" exercise="som-van-getallen" />

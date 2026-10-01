@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Tic Tac Toe
 
 Maak een nieuw project aan met de naam `tic-tac-toe`.
@@ -17,3 +19,5 @@ Als de gebruiker een zet doet die geldig is dan wordt het bord getoond. Als er e
 ## Voorbeeld interactie:
 
 <figure><img src={require("./assets/tic-tac-toe-demo.gif").default} alt="" /><figcaption></figcaption></figure>
+
+<ExerciseSelfTest category="node-typescript" exercise="tic-tac-toe" />

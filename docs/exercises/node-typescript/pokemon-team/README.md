@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Pokemon team
 
 Maak een nieuw project aan met de naam `pokemon`&#x20;
@@ -91,3 +93,5 @@ Jouw team van pokemon is:
 **Voorbeeld interactie:**
 
 ![](assets/pokemon.gif)
+
+<ExerciseSelfTest category="node-typescript" exercise="pokemon-team" />

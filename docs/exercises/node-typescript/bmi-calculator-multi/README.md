@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # BMI Calculator voor meerdere personen
 
 Maak een nieuw project aan in de `labo2` directory met de naam `bmi-calculator-multi`.
@@ -17,3 +19,5 @@ Geef het gewicht van Piet in (in kg): 90
 Geef de lengte van Piet in (in m): 1.75
 Piet heeft een BMI van 29.39
 ```
+
+<ExerciseSelfTest category="node-typescript" exercise="bmi-calculator-multi" />

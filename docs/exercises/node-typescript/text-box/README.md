@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Text-box
 
 Maak een nieuw project aan met de naam `text-box`.
@@ -20,3 +22,5 @@ Geef de tekst in: Hey broer
 Geef de tekst in: 
 Tot ziens!
 ```
+
+<ExerciseSelfTest category="node-typescript" exercise="text-box" />

@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Name from email
 
 Maak een nieuw project aan met de naam `name-from-email`.
@@ -17,3 +19,5 @@ De naam is S. Maes
 Wil je nog een email adres ingeven? (y/n) n
 Nog een goede dag!
 ```
+
+<ExerciseSelfTest category="node-typescript" exercise="name-from-email" />

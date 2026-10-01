@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Puntenboek
 
 Maak een nieuw project aan met de naam `puntenboek`.
@@ -16,3 +18,5 @@ Geef de punten van student 4 in:
 Het gemiddelde van de punten is 7
 Het aantal studenten met een onvoldoende is 2
 ```
+
+<ExerciseSelfTest category="node-typescript" exercise="puntenboek" />

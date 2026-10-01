@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Rot13
 
 Maak een nieuw project aan met de naam `rot13`.
@@ -23,3 +25,5 @@ De werkwijze is als volgt:
 Enter a string: hello
 uryyb
 ```
+
+<ExerciseSelfTest category="node-typescript" exercise="rot13" />

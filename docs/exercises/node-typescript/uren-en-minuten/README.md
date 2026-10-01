@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Uren en minuten
 
 Maak een nieuw project aan met de naam `uren-en-minuten`.
@@ -12,3 +14,5 @@ Je kan dit doen door gebruik te maken van de modulo operator. Deze operator geef
 Geef het aantal minuten in: 150
 Dit is 2 uur en 30 minuten
 ```
+
+<ExerciseSelfTest category="node-typescript" exercise="uren-en-minuten" />

@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Wisselgeld
 
 Maak een nieuw project aan met de naam `wisselgeld`.
@@ -12,3 +14,5 @@ Je kan dit doen door gebruik te maken van de modulo operator. Deze operator geef
 Geef het bedrag in: 123
 Dit is 1 briefje van 100, 1 briefje van 20, 1 munt van 2 en 1 munt van 1
 ```
+
+<ExerciseSelfTest category="node-typescript" exercise="wisselgeld" />

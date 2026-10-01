@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Todo list
 
 Maak een nieuw project aan met de naam `todo-list-string`.
@@ -44,3 +46,5 @@ Als de gebruiker kiest voor "Exit" dan stopt het programma.
 ## **Voorbeeldinteractie:**
 
 <figure><img src={require("./assets/todos.gif").default} alt="" /><figcaption></figcaption></figure>
+
+<ExerciseSelfTest category="node-typescript" exercise="todo-list-string" />

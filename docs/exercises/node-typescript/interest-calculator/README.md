@@ -1,3 +1,5 @@
+import ExerciseSelfTest from '@site/src/components/ExerciseSelfTest';
+
 # Interest Calculator
 
 Maak een nieuw project aan met de naam `interest-calculator`.
@@ -19,3 +21,5 @@ Na 1 jaar heb je 1050
 Na 2 jaar heb je 1102.5
 Na 5 jaar heb je 1276.28
 ```
+
+<ExerciseSelfTest category="node-typescript" exercise="interest-calculator" />
