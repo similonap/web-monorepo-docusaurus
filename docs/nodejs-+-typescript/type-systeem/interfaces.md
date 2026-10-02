@@ -258,7 +258,7 @@ Stel dat je een JSON bestand `users.json` hebt met de volgende inhoud:
 Dan kan je dit bestand inlezen aan de hand van het `import` statement:
 
 ```typescript
-import data from "./users.json";
+import data from "./users.json"  with { type: "json" };
 ```
 
 Je moet hier wel op letten dat je in je `tsconfig.json` bestand de volgende optie hebt aangezet:
