@@ -2,11 +2,13 @@
 sidebar_label: "Alien Alphabet"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Alien Alphabet
 
 Download het [starterproject](/exercise-files/react/labo-5-alien-alphabet/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-5-alien-alphabet/solution.zip).
 
 > 📂 **Naam project:** `lab-state-alien-alphabet`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-5-alien-alphabet/starter.zip).
@@ -20,4 +22,6 @@ Maak een nieuwe React applicatie aan en noem deze `lab-state-alien-alphabet`.
 - Voeg een backspace button toe die het laatste element van de array verwijdert.
 - Voeg een clear button toe die de array leeg maakt.
 
+## Live voorbeeld
 
+<ExercisePreview component={SolutionPreview} />

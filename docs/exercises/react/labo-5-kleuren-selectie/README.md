@@ -2,13 +2,15 @@
 sidebar_label: "Kleuren Selectie"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Kleuren Selectie
 
 Download het [starterproject](/exercise-files/react/labo-5-kleuren-selectie/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-5-kleuren-selectie/solution.zip).
 
 > 📂 **Naam project:** `lab-state-color-select`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-5-kleuren-selectie/starter.zip).
@@ -28,6 +30,10 @@ Je moet hier twee states gebruiken: `selectedColors` en `colors`. De eerste stat
 
 Gebruik dit component in de App component om de volgende pagina te maken:
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 #### Oplossingsvideo
 

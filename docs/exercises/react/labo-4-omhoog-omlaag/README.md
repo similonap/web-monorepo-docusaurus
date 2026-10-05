@@ -2,13 +2,15 @@
 sidebar_label: "Omhoog/Omlaag"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Omhoog/Omlaag
 
 Download het [starterproject](/exercise-files/react/labo-4-omhoog-omlaag/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-4-omhoog-omlaag/solution.zip).
 
 > 📂 **Naam project:** `lab-state-counter`  
 > 🔗 **Basis project:** n/a
@@ -25,6 +27,10 @@ Maak een component `Counter` aan met de volgende functionaliteit:
 Gebruik deze component in de `App` component om de volgende pagina te maken:
 
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 #### Oplossingsvideo
 

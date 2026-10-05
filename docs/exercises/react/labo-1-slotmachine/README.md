@@ -2,13 +2,15 @@
 sidebar_label: "Slotmachine"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Slotmachine
 
 Download het [starterproject](/exercise-files/react/labo-1-slotmachine/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-1-slotmachine/solution.zip).
 
 > 📂 **Naam project:** `lab-basics-slot-machine`  
 > 🔗 **Basis project:** n/a
@@ -28,6 +30,8 @@ Maak een nieuwe react applicatie aan `lab-basics-slot-machine`.
 - Er hoeft geen refresh knop te zijn. Elke keer dat je de pagina refresh zie je een nieuwe combinatie.
 
 #### Voorbeeldoplossing
+
+<ExercisePreview component={SolutionPreview} />
 
 
 

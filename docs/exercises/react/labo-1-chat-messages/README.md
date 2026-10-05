@@ -2,11 +2,13 @@
 sidebar_label: "Chat messages"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Chat messages
 
 Download het [starterproject](/exercise-files/react/labo-1-chat-messages/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-1-chat-messages/solution.zip).
 
 > 📂 **Naam project:** `lab-basics-chat-messages`  
 > 🔗 **Basis project:** n/a
@@ -76,4 +78,4 @@ const messages = [
 
 #### Voorbeeldoplossing
 
-
+<ExercisePreview component={SolutionPreview} />

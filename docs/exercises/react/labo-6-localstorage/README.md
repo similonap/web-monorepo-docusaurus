@@ -2,13 +2,15 @@
 sidebar_label: "LocalStorage"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # LocalStorage
 
 Download het [starterproject](/exercise-files/react/labo-6-localstorage/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-6-localstorage/solution.zip).
 
 > 📂 **Naam project:** `lab-hooks-local-storage`  
 > 🔗 **Basis project:** n/a
@@ -24,6 +26,10 @@ Maak een nieuwe React applicatie aan en noem deze `lab-hooks-local-storage`.
 - Bij het opstarten van de applicatie, wordt de laatst opgeslagen joke getoond. Gebruik hiervoor de `useEffect` hook.
 
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 ### Oplossingsvideo
 

@@ -2,11 +2,13 @@
 sidebar_label: "Who's that pokemon?"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Who's that pokemon?
 
 Download het [starterproject](/exercise-files/react/labo-2-who-s-that-pokemon/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-2-who-s-that-pokemon/solution.zip).
 
 > 📂 **Naam project:** n/a  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-2-who-s-that-pokemon/starter.zip).
@@ -18,6 +20,8 @@ Maak een nieuw component `PokemonImage` dat de afbeelding van een pokemon toont.
 - `visible`: boolean die aangeeft of de pokemon zichtbaar is of niet. Indien deze false is, moet de afbeelding zwart gemaakt worden (gebruik hiervoor de CSS filter `brightness(0)`)
 - `size`: de grootte van de afbeelding in pixels (standaard 200)
 
-Toon in de `App` component twee keer de `PokemonImage` component. Eén keer met `visible` op false en één keer met `visible` op true. 
+Toon in de `App` component twee keer de `PokemonImage` component. Eén keer met `visible` op false en één keer met `visible` op true.
 
+## Live voorbeeld
 
+<ExercisePreview component={SolutionPreview} />

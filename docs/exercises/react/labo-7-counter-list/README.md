@@ -2,11 +2,13 @@
 sidebar_label: "Counter List"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Counter List
 
 Download het [starterproject](/exercise-files/react/labo-7-counter-list/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-7-counter-list/solution.zip).
 
 > 📂 **Naam project:** `lab-communication-counter-list`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-7-counter-list/starter.zip).
@@ -62,3 +64,7 @@ Maak een nieuwe component `Counter` aan. Deze component bevat een teller die je 
 - `index`: de index van de teller in de lijst van tellers
 
 Zorg er nu voor dat de `CounterList` component de `Counter` component gebruikt. De `CounterList` component bevat nog steeds de state van de tellers. De `Counter` component bevat geen state. De `Counter` component gebruikt de properties om de teller te tonen en de callbacks op te roepen.
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />

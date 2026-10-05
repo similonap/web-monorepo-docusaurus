@@ -2,13 +2,15 @@
 sidebar_label: "Slotmachine"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Slotmachine
 
 Download het [starterproject](/exercise-files/react/labo-2-slotmachine/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-2-slotmachine/solution.zip).
 
 > 📂 **Naam project:** `lab-components-slot-machine`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-2-slotmachine/starter.zip).
@@ -33,6 +35,10 @@ Kopieer de slotmachine code van labo 1 en noem deze nieuwe applicatie `lab-compo
 De applicatie moet ongeveer er als volgt uitzien:
 
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 #### Oplossingsvideo
 

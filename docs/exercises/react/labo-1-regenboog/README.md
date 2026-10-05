@@ -2,11 +2,13 @@
 sidebar_label: "Regenboog"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Regenboog
 
 Download het [starterproject](/exercise-files/react/labo-1-regenboog/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-1-regenboog/solution.zip).
 
 > 📂 **Naam project:** `lab-basics-rainbow`  
 > 🔗 **Basis project:** n/a
@@ -33,4 +35,6 @@ Je hebt op dit moment nog niet geleerd hoe je css gebruikt. Je kan dit doen aan 
 
 Dit wordt later nog uitgelegd! Begrijp je hoe dit werkt, kan je ook eens proberen de regenboog in de andere richting te laten gaan! Tip: Twee woorden: flex-direction en flex!
 
+## Live voorbeeld
 
+<ExercisePreview component={SolutionPreview} />

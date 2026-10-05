@@ -2,11 +2,13 @@
 sidebar_label: "Penguins met state"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Penguins met state
 
 Download het [starterproject](/exercise-files/react/labo-4-penguins-met-state/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-4-penguins-met-state/solution.zip).
 
 > 📂 **Naam project:** `lab-state-penguin-gallery`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-4-penguins-met-state/starter.zip).
@@ -20,3 +22,7 @@ Maak een kopie van de `lab-components-penguin-gallery` applicatie van labo 2 naa
 - Je kan meerdere penguins selecteren.
 
 Tip: Je hebt een state nodig in de `PenguinCard` component om bij te houden of de penguin geselecteerd is of niet.
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />

@@ -2,11 +2,13 @@
 sidebar_label: "Happy Workers"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Happy Workers
 
 Download het [starterproject](/exercise-files/react/labo-7-happy-workers/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-7-happy-workers/solution.zip).
 
 > 📂 **Naam project:** `lab-communication-happy-workers`  
 > 🔗 **Basis project:** n/a
@@ -28,3 +30,7 @@ Uitbreiding:
 - Maak een `state` genaamd `clicked` aan in de Square component die initieel op 0 staat.
 - Als de `clicked` state groter of gelijk is aan 10 dan moet de `productivity` state op 0 gezet worden. Dit zorgt ervoor dat de `Square` component een 😵 toont. Het is dan tijdelijk niet meer mogelijk de `work` state te verhogen met die `Square`.
 - Na 5 seconden moet de `productivity` state terug op 1 gezet worden. Dit zorgt ervoor dat de `Square` component terug een 😐 toont. Ook de `clicked` state wordt terug op 0 gezet.
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />

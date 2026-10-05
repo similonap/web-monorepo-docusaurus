@@ -2,11 +2,13 @@
 sidebar_label: "Tic Tac Toe"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Tic Tac Toe
 
 Download het [starterproject](/exercise-files/react/labo-5-tic-tac-toe/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-5-tic-tac-toe/solution.zip).
 
 > 📂 **Naam project:** `lab-state-tic-tac-toe`  
 > 🔗 **Basis project:** n/a
@@ -21,4 +23,6 @@ Maak een component `TicTacToe` aan met de volgende functionaliteit:
 
 Het spel ziet er nu als volgt uit:
 
+## Live voorbeeld
 
+<ExercisePreview component={SolutionPreview} />

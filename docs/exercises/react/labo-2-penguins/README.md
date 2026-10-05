@@ -2,11 +2,13 @@
 sidebar_label: "Penguins"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Penguins
 
 Download het [starterproject](/exercise-files/react/labo-2-penguins/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-2-penguins/solution.zip).
 
 > 📂 **Naam project:** `lab-components-penguin-gallery`  
 > 🔗 **Basis project:** n/a
@@ -18,4 +20,6 @@ Maak een nieuw project aan en noem deze `lab-components-penguin-gallery`
 - Filter de pinguïns zodat je enkel de vrouwelijke pinguïns toont (property `gender` is "Female").
 - Toon alle vrouwelijke pinguïns in een grid met 3 kolommen. Gebruik hiervoor css modules.
 
+## Live voorbeeld
 
+<ExercisePreview component={SolutionPreview} />

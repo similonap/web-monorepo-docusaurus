@@ -6,7 +6,6 @@ sidebar_label: "Y-Clone (Routing) (twitter)"
 
 Download het [starterproject](/exercise-files/nextjs/labo-2-y-clone-routing-twitter/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/nextjs/labo-2-y-clone-routing-twitter/solution.zip).
 
 > 📂 **Naam project:** `lab-nextjs-y-routing`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/nextjs/labo-2-y-clone-routing-twitter/starter.zip).

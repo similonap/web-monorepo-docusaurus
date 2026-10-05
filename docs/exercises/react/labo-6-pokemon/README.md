@@ -2,11 +2,13 @@
 sidebar_label: "Pokemon"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Pokemon
 
 Download het [starterproject](/exercise-files/react/labo-6-pokemon/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-6-pokemon/solution.zip).
 
 > 📂 **Naam project:** `lab-hooks-pokemon-pokedex`  
 > 🔗 **Basis project:** n/a
@@ -19,4 +21,6 @@ Maak een nieuwe React applicatie aan en noem deze `lab-hooks-pokemon-pokedex`.
 - Plaats een invoer veld bovenaan de lijst van pokemon. Deze filtert de lijst van pokemon op naam. De filtering gebeurd op het moment dat de gebruiker een letter intypt. 
 - Plaats een invoerveld onderaan de lijst die aangeeft hoeveel pokemon er getoond mogen worden. Je dient deze filtering aan de hand van de `limit` query parameter te doen van de API. Pas vanaf de gebruiker op de button klikt, wordt de lijst van pokemon opnieuw opgehaald.
 
+## Live voorbeeld
 
+<ExercisePreview component={SolutionPreview} />

@@ -2,11 +2,13 @@
 sidebar_label: "Joske het vierkant"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Joske het vierkant
 
 Download het [starterproject](/exercise-files/react/labo-4-joske-het-vierkant/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-4-joske-het-vierkant/solution.zip).
 
 > 📂 **Naam project:** `lab-state-joske`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-4-joske-het-vierkant/starter.zip).
@@ -23,3 +25,7 @@ Je begint met Joske... Het statische vierkant:
 - Soms wil Josje helemaal geen vierkant meer zijn. Hij zou graag ook een cirkel zijn. Zorg voor een checkbox om te togglen tussen vierkant en cirkel
 
 Josje is nu een blij cirkeltje!
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />

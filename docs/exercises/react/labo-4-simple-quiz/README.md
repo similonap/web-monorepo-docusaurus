@@ -2,11 +2,13 @@
 sidebar_label: "Simple Quiz"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Simple Quiz
 
 Download het [starterproject](/exercise-files/react/labo-4-simple-quiz/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-4-simple-quiz/solution.zip).
 
 > 📂 **Naam project:** `lab-state-simple-quiz`  
 > 🔗 **Basis project:** n/a
@@ -40,4 +42,8 @@ Gebruik o.a. deze vragen:
 
 ### CSS
 - Maak een `SimpleQuiz.module.css`.  
-- Voorzie een klasse `.correct` die het juiste antwoord markeert.  
+- Voorzie een klasse `.correct` die het juiste antwoord markeert.
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />

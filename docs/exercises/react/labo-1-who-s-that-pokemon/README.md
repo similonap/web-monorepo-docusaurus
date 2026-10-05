@@ -2,11 +2,13 @@
 sidebar_label: "Who's that Pokémon?"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Who's that Pokémon?
 
 Download het [starterproject](/exercise-files/react/labo-1-who-s-that-pokemon/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-1-who-s-that-pokemon/solution.zip).
 
 > 📂 **Naam project:** `lab-basics-whos-that-pokemon`  
 > 🔗 **Basis project:** n/a
@@ -62,4 +64,4 @@ const pokemons: Pokemon[] = [
 
 #### Voorbeeldoplossing
 
-
+<ExercisePreview component={SolutionPreview} />

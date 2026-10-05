@@ -2,13 +2,15 @@
 sidebar_label: "Slot machine met map"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Slot machine met map
 
 Download het [starterproject](/exercise-files/react/labo-1-slot-machine-met-map/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-1-slot-machine-met-map/solution.zip).
 
 > 📂 **Naam project:** `lab-basics-slot-machine-map`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-1-slot-machine-met-map/starter.zip).
@@ -22,6 +24,8 @@ Maak een nieuwe react applicatie aan `lab-basics-slot-machine-map`. Kopieer je c
 - Ook de tekst "Je hebt gewonnen" of "Je hebt verloren" moet je nu bepalen met een array functie.
 
 #### Voorbeeldoplossing
+
+<ExercisePreview component={SolutionPreview} />
 
 
 

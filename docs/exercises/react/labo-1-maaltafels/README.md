@@ -2,11 +2,13 @@
 sidebar_label: "Maaltafels"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Maaltafels
 
 Download het [starterproject](/exercise-files/react/labo-1-maaltafels/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-1-maaltafels/solution.zip).
 
 > 📂 **Naam project:** `lab-basics-multiplication-tables`  
 > 🔗 **Basis project:** n/a
@@ -19,4 +21,4 @@ Maak een React-component met de naam MultiplicationTable die een tabel genereert
 
 #### Voorbeeldoplossing
 
-
+<ExercisePreview component={SolutionPreview} />

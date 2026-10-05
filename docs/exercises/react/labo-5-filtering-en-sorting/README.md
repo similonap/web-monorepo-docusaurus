@@ -2,13 +2,15 @@
 sidebar_label: "Filtering en sorting"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Filtering en sorting
 
 Download het [starterproject](/exercise-files/react/labo-5-filtering-en-sorting/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-5-filtering-en-sorting/solution.zip).
 
 > 📂 **Naam project:** `lab-state-filtering`  
 > 🔗 **Basis project:** n/a
@@ -23,6 +25,10 @@ Maak een component `Filtering` aan met de volgende functionaliteit:
 - Je hebt hier twee states nodig: `sortField` en `searchText`. De eerste state bevat de property waarop gesorteerd moet worden, de tweede state bevat de tekst die gebruikt wordt om te filteren.
 
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 #### Oplossingsvideo
 

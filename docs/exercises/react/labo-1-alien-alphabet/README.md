@@ -2,11 +2,13 @@
 sidebar_label: "Alien Alphabet"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Alien Alphabet
 
 Download het [starterproject](/exercise-files/react/labo-1-alien-alphabet/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-1-alien-alphabet/solution.zip).
 
 > 📂 **Naam project:** `lab-basics-alien-alphabet`  
 > 🔗 **Basis project:** n/a
@@ -28,4 +30,4 @@ We willen in deze opdracht een aanzet geven tot een vertaalprogramma voor een bu
 
 #### Voorbeeldoplossing
 
-
+<ExercisePreview component={SolutionPreview} />

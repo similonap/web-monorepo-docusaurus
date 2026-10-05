@@ -2,13 +2,15 @@
 sidebar_label: "Basic context"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Basic context
 
 Download het [starterproject](/exercise-files/react/labo-8-basic-context/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-8-basic-context/solution.zip).
 
 > 📂 **Naam project:** `lab-context-settings`  
 > 🔗 **Basis project:** n/a
@@ -27,6 +29,10 @@ Maak een nieuwe React applicatie aan en noem deze `lab-context-settings`.
 
 6. Zorg er nu voor dat je ook op de `Square` component kan drukken om de kleur te veranderen. 
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 ### Oplossingsvideo
 

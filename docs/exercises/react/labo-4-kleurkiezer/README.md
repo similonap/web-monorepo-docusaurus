@@ -2,13 +2,15 @@
 sidebar_label: "Kleurkiezer"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Kleurkiezer
 
 Download het [starterproject](/exercise-files/react/labo-4-kleurkiezer/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-4-kleurkiezer/solution.zip).
 
 > 📂 **Naam project:** `lab-state-color-picker`  
 > 🔗 **Basis project:** n/a
@@ -28,6 +30,10 @@ Maak een component `ColorPicker` aan met de volgende functionaliteit:
 
 Gebruik deze component in de `App` component om de volgende pagina te maken:
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 #### Oplossingsvideo
 

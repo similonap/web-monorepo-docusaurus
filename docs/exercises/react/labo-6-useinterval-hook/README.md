@@ -2,11 +2,13 @@
 sidebar_label: "useInterval hook"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # useInterval hook
 
 Download het [starterproject](/exercise-files/react/labo-6-useinterval-hook/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-6-useinterval-hook/solution.zip).
 
 > 📂 **Naam project:** `lab-hooks-use-interval`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-6-useinterval-hook/starter.zip).
@@ -20,3 +22,7 @@ Je moet het interval kunnen aan- en uitzetten door een `running` state te gebrui
 Het moet ook mogelijk zijn om de `delay` te veranderen. Wanneer de `delay` verandert, moet het interval opnieuw ingesteld worden met de nieuwe `delay`.
 
 Schrijf een eenvoudig webapplicatie die de `useInterval` hook gebruikt om een teller te maken die elke seconde verhoogd wordt. De applicatie moet ook een button hebben om het interval aan- en uit te zetten. En een invoerveld om de `delay` te veranderen.
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />

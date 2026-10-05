@@ -2,11 +2,13 @@
 sidebar_label: "Game of Life (1)"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Game of Life (1)
 
 Download het [starterproject](/exercise-files/react/labo-5-game-of-life-1/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-5-game-of-life-1/solution.zip).
 
 > 📂 **Naam project:** `lab-state-game-of-life`  
 > 🔗 **Basis project:** n/a
@@ -21,3 +23,7 @@ In deze opdracht wordt van je verwacht om een React-component te implementeren v
 - Zorg ervoor dat het bord wordt weergegeven als een grid, waarbij elke cel wordt weergegeven als een div-element met een achtergrondkleur die overeenkomt met de staat van de cel (0 voor dode cellen, 1 voor levende cellen).
 - Laat de gebruiker de gewenste grootte van het bord opgeven door de waarden in de invoervelden te wijzigen.
 - Zorg ervoor dat de staat van het bord correct wordt bijgewerkt wanneer cellen worden omgedraaid of wanneer het bord wordt vernieuwd.
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />

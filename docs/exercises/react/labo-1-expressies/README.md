@@ -2,13 +2,15 @@
 sidebar_label: "Expressies"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Expressies
 
 Download het [starterproject](/exercise-files/react/labo-1-expressies/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-1-expressies/solution.zip).
 
 > 📂 **Naam project:** `lab-basics-expressies`  
 > 🔗 **Basis project:** n/a
@@ -46,6 +48,8 @@ export default App;
   - Gebruik hier de twee getallen `getal1` en `getal2` voor.
 
 #### Voorbeeldoplossing
+
+<ExercisePreview component={SolutionPreview} />
 
 
 

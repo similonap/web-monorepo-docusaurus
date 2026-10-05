@@ -2,13 +2,15 @@
 sidebar_label: "Simpele componenten"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Simpele componenten
 
 Download het [starterproject](/exercise-files/react/labo-2-simpele-componenten/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-2-simpele-componenten/solution.zip).
 
 > 📂 **Naam project:** `lab-components-basics`  
 > 🔗 **Basis project:** n/a
@@ -26,6 +28,10 @@ Maak de volgende componenten aan:
 Gebruik deze componenten in de `App` component om de volgende pagina te maken:
 
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 #### Oplossingsvideo
 

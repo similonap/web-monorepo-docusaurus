@@ -2,13 +2,15 @@
 sidebar_label: "Random Cat"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Random Cat
 
 Download het [starterproject](/exercise-files/react/labo-4-random-cat/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-4-random-cat/solution.zip).
 
 > 📂 **Naam project:** `lab-state-random-cat`  
 > 🔗 **Basis project:** n/a
@@ -22,6 +24,10 @@ Maak een component `RandomCat` aan met de volgende functionaliteit:
 - Als je terug op de knop klikt, wordt de afbeelding op een andere locatie getoond.
 - Je mag de volgende afbeelding tonen: `https://cataas.com/cat?width=200&height=200`
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 #### Oplossingsvideo
 

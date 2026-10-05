@@ -2,13 +2,15 @@
 sidebar_label: "Quizapp"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Quizapp
 
 Download het [starterproject](/exercise-files/react/labo-7-quizapp/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-7-quizapp/solution.zip).
 
 > 📂 **Naam project:** `lab-communication-quiz-app`  
 > 🔗 **Basis project:** n/a
@@ -25,6 +27,10 @@ Maak een nieuwe React applicatie aan en noem deze `lab-communication-quiz-app`.
 - Maak gebruik van de `html-entities` package om de html entities te decoderen. Deze worden meegeleverd in de API. Anders krijg je bijvoorbeeld `&quot;` te zien in plaats van `"`.
 
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 ### Oplossingsvideo
 

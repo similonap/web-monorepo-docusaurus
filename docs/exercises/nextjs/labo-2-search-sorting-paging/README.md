@@ -6,7 +6,6 @@ sidebar_label: "Search/Sorting/Paging"
 
 Download het [starterproject](/exercise-files/nextjs/labo-2-search-sorting-paging/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/nextjs/labo-2-search-sorting-paging/solution.zip).
 
 > 📂 **Naam project:** `lab-nextjs-query`
 > 🔗 **Basis project:** n/a

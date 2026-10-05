@@ -2,13 +2,15 @@
 sidebar_label: "Todo App"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Todo App
 
 Download het [starterproject](/exercise-files/react/labo-7-todo-app/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-7-todo-app/solution.zip).
 
 > 📂 **Naam project:** `lab-communication-todo-app`  
 > 🔗 **Basis project:** n/a
@@ -69,6 +71,10 @@ Herstructureer deze applicatie als volgt:
 - Zorg dat elk component in een aparte file staat.
 
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 ### Oplossingsvideo
 

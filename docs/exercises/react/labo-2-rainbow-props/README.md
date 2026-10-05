@@ -2,11 +2,13 @@
 sidebar_label: "Rainbow Props"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Rainbow Props
 
 Download het [starterproject](/exercise-files/react/labo-2-rainbow-props/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-2-rainbow-props/solution.zip).
 
 > 📂 **Naam project:** `lab-components-rainbow-props`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-2-rainbow-props/starter.zip).
@@ -25,4 +27,6 @@ Je kan dus bijvoorbeeld de volgende code gebruiken om een horizontale en een ver
 
 Dit zal de volgende output geven:
 
+## Live voorbeeld
 
+<ExercisePreview component={SolutionPreview} />

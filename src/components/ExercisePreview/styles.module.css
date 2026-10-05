@@ -1,0 +1,16 @@
+.preview,
+.loading {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px dotted var(--ifm-color-emphasis-500);
+  border-radius: var(--ifm-global-radius);
+}
+
+.preview {
+  overflow: auto;
+  background: var(--ifm-background-surface-color);
+}
+
+.loading {
+  color: var(--ifm-color-emphasis-700);
+}

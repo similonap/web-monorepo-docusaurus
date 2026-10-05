@@ -2,11 +2,13 @@
 sidebar_label: "Maaltafels component"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Maaltafels component
 
 Download het [starterproject](/exercise-files/react/labo-2-maaltafels-component/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-2-maaltafels-component/solution.zip).
 
 > 📂 **Naam project:** `lab-components-maaltafels`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-2-maaltafels-component/starter.zip).
@@ -31,4 +33,6 @@ Kopieer de maaltafels code van labo 1 naar een nieuw project en noem deze `lab-c
 
 De applicatie moet ongeveer er als volgt uitzien:
 
+## Live voorbeeld
 
+<ExercisePreview component={SolutionPreview} />

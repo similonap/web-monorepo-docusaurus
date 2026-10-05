@@ -2,11 +2,13 @@
 sidebar_label: "Input veld"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Input veld
 
 Download het [starterproject](/exercise-files/react/labo-4-input-veld/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-4-input-veld/solution.zip).
 
 > 📂 **Naam project:** `lab-state-shared-inputs`  
 > 🔗 **Basis project:** n/a
@@ -20,4 +22,6 @@ Maak een component `InputFields` aan met de volgende functionaliteit:
 
 Gebruik deze component in de `App` component om de volgende pagina te maken:
 
+## Live voorbeeld
 
+<ExercisePreview component={SolutionPreview} />

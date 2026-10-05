@@ -2,11 +2,13 @@
 sidebar_label: "Game of Life (2)"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 # Game of Life (2)
 
 Download het [starterproject](/exercise-files/react/labo-6-game-of-life-2/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-6-game-of-life-2/solution.zip).
 
 > 📂 **Naam project:** `lab-hooks-game-of-life`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-6-game-of-life-2/starter.zip).
@@ -24,3 +26,7 @@ De regels van de Game of Life zijn als volgt:
 ![alt text](./assets/gameofliferules.png)
 
 Maak ook een `PLAY` button die de `step` functie elke seconde aanroept. Maak ook een `STOP` button die dit stopt.
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />

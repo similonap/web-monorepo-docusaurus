@@ -2,13 +2,15 @@
 sidebar_label: "Counter list"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Counter list
 
 Download het [starterproject](/exercise-files/react/labo-5-counter-list/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-5-counter-list/solution.zip).
 
 > 📂 **Naam project:** `lab-state-counter-list`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-5-counter-list/starter.zip).
@@ -26,6 +28,10 @@ Maak een component `ButtonList` aan met de volgende functionaliteit:
 :::note
 Je hoeft nog niet elke counter in een apart component te zetten. Je gaat dit later nog doen.
 :::
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 #### Oplossingsvideo
 

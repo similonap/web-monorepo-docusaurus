@@ -2,13 +2,15 @@
 sidebar_label: "Slots"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Slots
 
 Download het [starterproject](/exercise-files/react/labo-5-slots/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-5-slots/solution.zip).
 
 > 📂 **Naam project:** `lab-state-slot-machine`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-5-slots/starter.zip).
@@ -24,6 +26,10 @@ Je breidt nu de slots machine uit die je gemaakt hebt in labo 2 uit met een aant
 Het spel ziet er nu als volgt uit:
 
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 #### Oplossingsvideo
 

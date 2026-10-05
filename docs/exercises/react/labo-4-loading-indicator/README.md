@@ -2,13 +2,15 @@
 sidebar_label: "Loading indicator"
 ---
 
+import ExercisePreview from '@site/src/components/ExercisePreview';
+import SolutionPreview from './solution/src/App';
+
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Loading indicator
 
 Download het [starterproject](/exercise-files/react/labo-4-loading-indicator/starter.zip) en voer daarna `npm install` uit.
 
-Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-4-loading-indicator/solution.zip).
 
 > 📂 **Naam project:** `lab-state-loading-indicator`  
 > 🔗 **Basis project:** n/a
@@ -29,6 +31,10 @@ Zorg er nu voor dat de applicatie de volgende functionaliteiten heeft:
 - Als de waarde van `loading` `false` is, wordt de loading indicator niet getoond. De button verschijnt terug.
 
 
+
+## Live voorbeeld
+
+<ExercisePreview component={SolutionPreview} />
 
 #### Oplossingsvideo
 
