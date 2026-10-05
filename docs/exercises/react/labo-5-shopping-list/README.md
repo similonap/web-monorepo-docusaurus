@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Shopping List
 
-Download het [starterproject](/exercise-files/react/labo-5-shopping-list/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-shopping-list`  
 > 🔗 **Basis project:** n/a

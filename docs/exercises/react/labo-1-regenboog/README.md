@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Regenboog
 
-Download het [starterproject](/exercise-files/react/labo-1-regenboog/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-basics-rainbow`  
 > 🔗 **Basis project:** n/a

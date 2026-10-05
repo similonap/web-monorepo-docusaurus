@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Input veld
 
-Download het [starterproject](/exercise-files/react/labo-4-input-veld/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-shared-inputs`  
 > 🔗 **Basis project:** n/a

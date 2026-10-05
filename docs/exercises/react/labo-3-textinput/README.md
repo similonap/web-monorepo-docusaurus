@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # TextInput
 
-Download het [starterproject](/exercise-files/react/labo-3-textinput/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-events-text-input`  
 > 🔗 **Basis project:** n/a

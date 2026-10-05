@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Checkbox Grid
 
-Download het [starterproject](/exercise-files/react/labo-3-checkbox-grid/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-events-checkbox-grid`  
 > 🔗 **Basis project:** n/a

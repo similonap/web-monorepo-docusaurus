@@ -6,8 +6,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Wake up Neo
 
-Download het [starterproject](/exercise-files/react/labo-8-wake-up-neo/starter.zip) en voer daarna `npm install` uit.
-
 > 📂 **Naam project:** `lab-context-wake-up-neo`  
 > 🔗 **Basis project:** n/a
 

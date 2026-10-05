@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Kleurkiezer
 
-Download het [starterproject](/exercise-files/react/labo-4-kleurkiezer/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-color-picker`  
 > 🔗 **Basis project:** n/a

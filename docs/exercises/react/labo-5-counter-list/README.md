@@ -9,11 +9,9 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Counter list
 
-Download het [starterproject](/exercise-files/react/labo-5-counter-list/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-counter-list`  
-> 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-5-counter-list/starter.zip).
+> 🔗 **Basis project:** n/a
 
 Maak een nieuwe React applicatie aan en noem deze `lab-state-counter-list`.
 

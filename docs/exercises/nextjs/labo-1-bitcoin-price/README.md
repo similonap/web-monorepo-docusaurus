@@ -4,8 +4,6 @@ sidebar_label: "Bitcoin Price"
 
 # Bitcoin Price
 
-Download het [starterproject](/exercise-files/nextjs/labo-1-bitcoin-price/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-nextjs-bitcoin`  
 > 🔗 **Basis project:** n/a

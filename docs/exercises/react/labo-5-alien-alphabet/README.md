@@ -7,11 +7,9 @@ import SolutionPreview from './solution/src/App';
 
 # Alien Alphabet
 
-Download het [starterproject](/exercise-files/react/labo-5-alien-alphabet/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-alien-alphabet`  
-> 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-5-alien-alphabet/starter.zip).
+> 🔗 **Basis project:** n/a
 
 Maak een nieuwe React applicatie aan en noem deze `lab-state-alien-alphabet`.
 

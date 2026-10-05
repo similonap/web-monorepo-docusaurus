@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Basic context
 
-Download het [starterproject](/exercise-files/react/labo-8-basic-context/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-context-settings`  
 > 🔗 **Basis project:** n/a

@@ -7,11 +7,9 @@ import SolutionPreview from './solution/src/App';
 
 # useInterval hook
 
-Download het [starterproject](/exercise-files/react/labo-6-useinterval-hook/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-hooks-use-interval`  
-> 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-6-useinterval-hook/starter.zip).
+> 🔗 **Basis project:** n/a
 
 Maak een nieuw React project aan en noem deze `lab-hooks-use-timeout`. Schrijf een `useInterval` hook die een functie aanroept elke `delay` milliseconden. De hook moet de volgende parameters aanvaarden:
 - `callback`: de functie die aangeroepen wordt elke `delay` milliseconden

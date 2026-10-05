@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Chat messages
 
-Download het [starterproject](/exercise-files/react/labo-1-chat-messages/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-basics-chat-messages`  
 > 🔗 **Basis project:** n/a

@@ -4,8 +4,6 @@ sidebar_label: "Core Components"
 
 # Core Components
 
-Download het [starterproject](/exercise-files/react-native/labo-1-core-components/starter.zip) en voer daarna `npm install` uit.
-
 ### Maak een nieuw project aan
 
 Maak een nieuw project `CoreComponents` aan met expo. Vervang de inhoud van `App.tsx` door de volgende code:

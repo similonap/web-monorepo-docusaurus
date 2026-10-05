@@ -4,7 +4,7 @@ sidebar_label: "Herhalingsoefening: Spotifi"
 
 # Herhalingsoefening: Spotifi
 
-Download het [starterproject](/exercise-files/nextjs/labo-5-herhalingsoefening-spotifi/starter.zip) en voer daarna `npm install` uit.
+Download het [starterproject](/exercise-files/nextjs/labo-5-herhalingsoefening-spotifi/starter.zip).
 
 > 📂 **Naam project:** `lab-nextjs-spotifi`
 > 🔗 **Basis project:** 

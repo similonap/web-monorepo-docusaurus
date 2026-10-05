@@ -6,8 +6,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Rainbows met state
 
-Download het [starterproject](/exercise-files/react-native/labo-3-rainbows-met-state/starter.zip) en voer daarna `npm install` uit.
-
 ### Stap 1: Loops
 Zorg dat je colors array 10 waarden bevat. Pas dan jouw Rainbow component aan zodat die over de eerste 6 waarden van de kleuren array loopt. (tip: je vervangt 6 lijnen code door 1 lijn)
 

@@ -4,8 +4,6 @@ sidebar_label: "Rainbow AsyncStorage"
 
 # Rainbow AsyncStorage
 
-Download het [starterproject](/exercise-files/react-native/labo-5-rainbow-asyncstorage/starter.zip) en voer daarna `npm install` uit.
-
 Ga verder met de code van labo 5. Breidt de applicatie uit met de volgende functionaliteit:
 - Als de gebruiker de tekst veranderd in het tekstveld, wordt deze opgeslagen in AsyncStorage.
 - Als de gebruiker veranderd tussen pastel en niet pastel kleuren, wordt dit opgeslagen in AsyncStorage.

@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Omhoog/Omlaag
 
-Download het [starterproject](/exercise-files/react/labo-4-omhoog-omlaag/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-counter`  
 > 🔗 **Basis project:** n/a

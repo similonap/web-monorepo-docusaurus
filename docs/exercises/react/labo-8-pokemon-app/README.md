@@ -9,11 +9,9 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Pokemon app
 
-Download het [starterproject](/exercise-files/react/labo-8-pokemon-app/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** n/a  
-> 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-8-pokemon-app/starter.zip).
+> 🔗 **Basis project:** n/a
 
 
 ## Live voorbeeld

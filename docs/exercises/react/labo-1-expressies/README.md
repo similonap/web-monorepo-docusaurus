@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Expressies
 
-Download het [starterproject](/exercise-files/react/labo-1-expressies/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-basics-expressies`  
 > 🔗 **Basis project:** n/a

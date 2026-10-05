@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Slotmachine
 
-Download het [starterproject](/exercise-files/react/labo-1-slotmachine/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-basics-slot-machine`  
 > 🔗 **Basis project:** n/a

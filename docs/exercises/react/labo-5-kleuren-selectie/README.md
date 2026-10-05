@@ -9,11 +9,9 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Kleuren Selectie
 
-Download het [starterproject](/exercise-files/react/labo-5-kleuren-selectie/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-color-select`  
-> 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-5-kleuren-selectie/starter.zip).
+> 🔗 **Basis project:** n/a
 
 Maak een nieuwe React applicatie aan en noem deze `lab-state-color-select`.
 

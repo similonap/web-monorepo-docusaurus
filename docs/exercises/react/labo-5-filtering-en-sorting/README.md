@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Filtering en sorting
 
-Download het [starterproject](/exercise-files/react/labo-5-filtering-en-sorting/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-filtering`  
 > 🔗 **Basis project:** n/a

@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Simple Quiz
 
-Download het [starterproject](/exercise-files/react/labo-4-simple-quiz/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-simple-quiz`  
 > 🔗 **Basis project:** n/a

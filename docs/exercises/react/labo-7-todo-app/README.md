@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Todo App
 
-Download het [starterproject](/exercise-files/react/labo-7-todo-app/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-communication-todo-app`  
 > 🔗 **Basis project:** n/a

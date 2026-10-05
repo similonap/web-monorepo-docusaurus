@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Interval
 
-Download het [starterproject](/exercise-files/react/labo-6-interval/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-hooks-interval`  
 > 🔗 **Basis project:** n/a

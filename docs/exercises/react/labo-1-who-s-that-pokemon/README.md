@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Who's that Pokémon?
 
-Download het [starterproject](/exercise-files/react/labo-1-who-s-that-pokemon/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-basics-whos-that-pokemon`  
 > 🔗 **Basis project:** n/a

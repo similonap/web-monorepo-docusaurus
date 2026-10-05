@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Happy Workers
 
-Download het [starterproject](/exercise-files/react/labo-7-happy-workers/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-communication-happy-workers`  
 > 🔗 **Basis project:** n/a

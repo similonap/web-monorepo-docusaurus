@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Lijsten
 
-Download het [starterproject](/exercise-files/react/labo-1-lijsten/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-basics-lists`  
 > 🔗 **Basis project:** n/a

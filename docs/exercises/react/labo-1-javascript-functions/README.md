@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Javascript functions
 
-Download het [starterproject](/exercise-files/react/labo-1-javascript-functions/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** lab-javascript-functions  
 > 🔗 **Basis project:** n/a

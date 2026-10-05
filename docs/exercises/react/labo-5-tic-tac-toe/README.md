@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Tic Tac Toe
 
-Download het [starterproject](/exercise-files/react/labo-5-tic-tac-toe/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-tic-tac-toe`  
 > 🔗 **Basis project:** n/a

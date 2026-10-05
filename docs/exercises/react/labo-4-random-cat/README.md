@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Random Cat
 
-Download het [starterproject](/exercise-files/react/labo-4-random-cat/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-random-cat`  
 > 🔗 **Basis project:** n/a

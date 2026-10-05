@@ -4,8 +4,6 @@ sidebar_label: "RandomMoviePosters"
 
 # RandomMoviePosters
 
-Download het [starterproject](/exercise-files/react-native/labo-1-randommovieposters/starter.zip) en voer daarna `npm install` uit.
-
 Maak een nieuw expo project aan met de naam `RandomMoviePosters`. Deze app toont 6 posters van films. Je mag zelf kiezen waar je deze filmposters vandaan haalt.
 
 Zorg dat de app

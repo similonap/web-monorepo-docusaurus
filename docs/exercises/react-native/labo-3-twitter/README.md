@@ -6,8 +6,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Twitter
 
-Download het [starterproject](/exercise-files/react-native/labo-3-twitter/starter.zip) en voer daarna `npm install` uit.
-
 Maak een nieuwe react native app. 
 
 Zorg dat bij het opstarten van de app twee API calls gebeuren:

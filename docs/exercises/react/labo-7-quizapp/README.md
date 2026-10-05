@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Quizapp
 
-Download het [starterproject](/exercise-files/react/labo-7-quizapp/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-communication-quiz-app`  
 > 🔗 **Basis project:** n/a

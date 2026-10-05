@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Maaltafels
 
-Download het [starterproject](/exercise-files/react/labo-1-maaltafels/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-basics-multiplication-tables`  
 > 🔗 **Basis project:** n/a

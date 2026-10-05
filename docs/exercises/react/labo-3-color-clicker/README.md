@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Color Clicker
 
-Download het [starterproject](/exercise-files/react/labo-3-color-clicker/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-events-color-clicker`  
 > 🔗 **Basis project:** n/a

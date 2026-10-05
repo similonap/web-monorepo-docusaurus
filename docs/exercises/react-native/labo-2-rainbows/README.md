@@ -6,8 +6,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Rainbows
 
-Download het [starterproject](/exercise-files/react-native/labo-2-rainbows/starter.zip) en voer daarna `npm install` uit.
-
 Maak een nieuw project `Rainbows` aan met expo. Vervang de inhoud van `App.tsx` door de volgende code:
 
 ```typescript expo={"dependencies": "rainbow-colors-array-ts"}

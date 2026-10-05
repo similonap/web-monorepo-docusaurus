@@ -3,18 +3,18 @@ sidebar_label: "Facebook cards"
 ---
 
 import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import CodeSandbox from '@site/src/components/CodeSandbox/CodeSandbox';
 
 # Facebook cards
 
-Download het [starterproject](/exercise-files/react/labo-2-facebook-cards/starter.zip) en voer daarna `npm install` uit.
-
 > 📂 **Naam project:** `lab-components-facebook-card`  
-> 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-2-facebook-cards/starter.zip).
+> 🔗 **Basis project:** n/a
 
 Maak een nieuw project aan en noem deze `lab-components-facebook-card`.
 
 Neem de volgende code over. 
 
+<CodeSandbox template="react-facebook-labo" />
 
 Teken eerst op papier hoe je deze facebook card zou opdelen in componenten. Splits deze componenten op in aparte componenten. Zorg dat alle content aanpasbaar is via props.
 

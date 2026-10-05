@@ -6,8 +6,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Rainbow Navigation
 
-Download het [starterproject](/exercise-files/react-native/labo-4-rainbow-navigation/starter.zip) en voer daarna `npm install` uit.
-
 Ga verder met de code van labo 4 en kopieer deze naar een nieuw project.
 
 We bouwen de volgende applicatie:

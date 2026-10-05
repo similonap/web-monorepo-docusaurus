@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Penguins
 
-Download het [starterproject](/exercise-files/react/labo-2-penguins/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-components-penguin-gallery`  
 > 🔗 **Basis project:** n/a

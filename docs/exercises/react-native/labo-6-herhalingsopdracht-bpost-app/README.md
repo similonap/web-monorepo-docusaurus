@@ -4,8 +4,6 @@ sidebar_label: "Herhalingsopdracht: BPost app"
 
 # Herhalingsopdracht: BPost app
 
-Download het [starterproject](/exercise-files/react-native/labo-6-herhalingsopdracht-bpost-app/starter.zip) en voer daarna `npm install` uit.
-
 Maak de volgende app zo goed mogelijk na. De afbeeldingen tonen de verschillende schermen in de app. In de beschrijving onder elk scherm kan je de verschillende functies terugvinden van elk scherm.
 
 Gebruik de volgende APIs om de data in te vullen en aan te passen:

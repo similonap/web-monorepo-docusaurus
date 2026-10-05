@@ -4,19 +4,19 @@ sidebar_label: "Joske het vierkant"
 
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
+import CodeSandbox from '@site/src/components/CodeSandbox/CodeSandbox';
 
 # Joske het vierkant
 
-Download het [starterproject](/exercise-files/react/labo-4-joske-het-vierkant/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-joske`  
-> 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-4-joske-het-vierkant/starter.zip).
+> 🔗 **Basis project:** n/a
 
 Maak een nieuwe React applicatie aan en noem deze `lab-state-joske`.
 
 Je begint met Joske... Het statische vierkant:
 
+<CodeSandbox template="react-joske-labo" />
 
 - Joske is een rood vierkant. Maar zou ook soms graag blauw zijn! Of zelfs groen! Pas Joske aan zodat als je op hem klikt, hij van kleur verandert. De eerste keer wordt hij blauw, de tweede keer groen, de derde keer rood, de vierde keer blauw, enzovoort.
 - Joske zou graag van naam veranderen en Josje worden. Maak een input veld waarin je de naam van Joske kan aanpassen. Tijdens het aanpassen van de naam wordt de naam van Joske aangepast.

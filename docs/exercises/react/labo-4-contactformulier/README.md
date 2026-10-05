@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Contactformulier
 
-Download het [starterproject](/exercise-files/react/labo-4-contactformulier/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-contact-form`  
 > 🔗 **Basis project:** n/a

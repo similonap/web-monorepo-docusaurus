@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Simpele componenten
 
-Download het [starterproject](/exercise-files/react/labo-2-simpele-componenten/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-components-basics`  
 > 🔗 **Basis project:** n/a

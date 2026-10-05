@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Loading indicator
 
-Download het [starterproject](/exercise-files/react/labo-4-loading-indicator/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-loading-indicator`  
 > 🔗 **Basis project:** n/a

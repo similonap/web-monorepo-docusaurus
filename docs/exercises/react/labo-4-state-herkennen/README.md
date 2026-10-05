@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # State herkennen
 
-Download het [starterproject](/exercise-files/react/labo-4-state-herkennen/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** n/a  
 > 🔗 **Basis project:** n/a

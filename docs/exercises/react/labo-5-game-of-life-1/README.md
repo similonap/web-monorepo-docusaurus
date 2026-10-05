@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Game of Life (1)
 
-Download het [starterproject](/exercise-files/react/labo-5-game-of-life-1/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-game-of-life`  
 > 🔗 **Basis project:** n/a

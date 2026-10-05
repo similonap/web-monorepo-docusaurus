@@ -7,11 +7,9 @@ import SolutionPreview from './solution/src/App';
 
 # Counter List
 
-Download het [starterproject](/exercise-files/react/labo-7-counter-list/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-communication-counter-list`  
-> 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-7-counter-list/starter.zip).
+> 🔗 **Basis project:** n/a
 
 We beginnen in deze oefening van de volgende code. Kopieer deze in een nieuw project en noem deze `lab-communication-counter-list`.
 

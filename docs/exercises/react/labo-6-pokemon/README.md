@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Pokemon
 
-Download het [starterproject](/exercise-files/react/labo-6-pokemon/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-hooks-pokemon-pokedex`  
 > 🔗 **Basis project:** n/a

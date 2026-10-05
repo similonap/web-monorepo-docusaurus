@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Checkbox
 
-Download het [starterproject](/exercise-files/react/labo-4-checkbox/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-state-visibility-toggle`  
 > 🔗 **Basis project:** n/a

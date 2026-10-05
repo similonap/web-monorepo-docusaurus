@@ -4,8 +4,6 @@ sidebar_label: "Y-Clone (twitter)"
 
 # Y-Clone (twitter)
 
-Download het [starterproject](/exercise-files/nextjs/labo-1-y-clone-twitter/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-nextjs-y-basic`  
 > 🔗 **Basis project:** n/a

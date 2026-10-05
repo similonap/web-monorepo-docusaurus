@@ -6,8 +6,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Twitter
 
-Download het [starterproject](/exercise-files/react-native/labo-4-twitter/starter.zip) en voer daarna `npm install` uit.
-
 Breidt de Twitter applicatie uit met expo router. De applicatie moet een Stack navigator combineren met een Tab navigator en een Drawer navigator.
 
 De applicatie moet de volgende schermen bevatten:

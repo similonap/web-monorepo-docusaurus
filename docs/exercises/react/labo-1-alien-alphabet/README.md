@@ -7,8 +7,6 @@ import SolutionPreview from './solution/src/App';
 
 # Alien Alphabet
 
-Download het [starterproject](/exercise-files/react/labo-1-alien-alphabet/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-basics-alien-alphabet`  
 > 🔗 **Basis project:** n/a

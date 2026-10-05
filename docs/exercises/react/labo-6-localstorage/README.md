@@ -9,8 +9,6 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # LocalStorage
 
-Download het [starterproject](/exercise-files/react/labo-6-localstorage/starter.zip) en voer daarna `npm install` uit.
-
 
 > 📂 **Naam project:** `lab-hooks-local-storage`  
 > 🔗 **Basis project:** n/a

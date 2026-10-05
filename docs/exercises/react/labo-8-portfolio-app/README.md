@@ -4,8 +4,6 @@ sidebar_label: "Portfolio app"
 
 # Portfolio app
 
-Download het [starterproject](/exercise-files/react/labo-8-portfolio-app/starter.zip) en voer daarna `npm install` uit.
-
 > 📂 **Naam project:** `lab-router-portfolio`  
 > 🔗 **Basis project:** n/a
 
