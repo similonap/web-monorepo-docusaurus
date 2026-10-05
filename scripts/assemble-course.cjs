@@ -156,14 +156,55 @@ function generatedConfig(config, selected) {
   const preset = docsPreset(config);
   return {
     ...config,
-    plugins: [...(config.plugins ?? []), browserOnlyWebContainerPlugin],
+    plugins: [...(config.plugins ?? []), codeSandboxTemplatesPlugin, browserOnlyWebContainerPlugin],
     presets: config.presets.map((entry) => entry !== preset ? entry : [entry[0], {
       ...entry[1], docs: { ...entry[1].docs, path: 'docs', include: selected },
     }]),
   };
 }
 
+function codeSandboxTemplatesPlugin(context) {
+  return {
+    name: 'codesandbox-plugin',
+    async contentLoaded({ actions }) {
+      const templatesRoot = path.join(context.siteDir, 'codesandbox');
+      if (!await exists(templatesRoot)) {
+        actions.setGlobalData({ templates: {} });
+        return;
+      }
+      const templates = {};
+      const binaryExtensions = new Set([
+        '.avif', '.gif', '.ico', '.jpeg', '.jpg', '.mp3', '.mp4', '.ogg', '.pdf',
+        '.png', '.ttf', '.wav', '.webm', '.webp', '.woff', '.woff2',
+      ]);
+      for (const entry of await fs.readdir(templatesRoot, { withFileTypes: true })) {
+        if (!entry.isDirectory()) continue;
+        const root = path.join(templatesRoot, entry.name);
+        const files = {};
+        for (const file of await filesIn(root)) {
+          const contents = await fs.readFile(path.join(root, file));
+          if (file === 'static.json') {
+            Object.assign(files, JSON.parse(contents.toString('utf8')));
+            continue;
+          }
+          const isBinary = binaryExtensions.has(path.extname(file).toLowerCase());
+          files[file] = {
+            content: contents.toString(isBinary ? 'base64' : 'utf8'),
+            isBinary,
+          };
+        }
+        templates[entry.name] = { files };
+      }
+      actions.setGlobalData({ templates });
+    },
+  };
+}
+
 function browserOnlyWebContainerPlugin() {
+  const isolationHeaders = {
+    'Cross-Origin-Opener-Policy': 'same-origin',
+    'Cross-Origin-Embedder-Policy': 'credentialless',
+  };
   return {
     name: 'browser-only-webcontainer',
     configureWebpack(_config, isServer) {
@@ -171,10 +212,9 @@ function browserOnlyWebContainerPlugin() {
         ? { resolve: { alias: { '@webcontainer/api$': false } } }
         : {
             devServer: {
-              headers: {
-                'Cross-Origin-Opener-Policy': 'same-origin',
-                'Cross-Origin-Embedder-Policy': 'require-corp',
-              },
+              headers: (request) => request.url?.includes('/exercises/node-typescript/')
+                ? isolationHeaders
+                : {},
             },
           };
     },
@@ -227,7 +267,8 @@ async function assembleCourse({ courseDir, sourceDir = SOURCE_DIR }) {
         await copyFile(docsRoot, path.join(staging, 'docs'), file);
       }
     }
-    for (const directory of ['src', 'static']) {
+    for (const directory of ['src', 'static', 'codesandbox']) {
+      if (!await exists(path.join(sourceDir, directory))) continue;
       await copyTree(path.join(sourceDir, directory), path.join(staging, directory),
         (file) => directory !== 'static' ||
           (!file.startsWith('exercises/') && !file.startsWith('exercise-files/')));

@@ -5,8 +5,16 @@ const { applyTrailingSlash } = require('@docusaurus/utils-common');
 
 const ISOLATION_HEADERS = {
   'Cross-Origin-Opener-Policy': 'same-origin',
-  'Cross-Origin-Embedder-Policy': 'require-corp',
+  'Cross-Origin-Embedder-Policy': 'credentialless',
 };
+
+function needsBrowserIsolation(requestUrl, baseUrl) {
+  const pathname = new URL(requestUrl ?? '/', 'http://localhost').pathname;
+  const sitePath = baseUrl === '/' || !pathname.startsWith(baseUrl)
+    ? pathname
+    : `/${pathname.slice(baseUrl.length)}`;
+  return sitePath.startsWith('/exercises/node-typescript/');
+}
 
 function option(args, name, fallback) {
   const direct = args.find((value) => value.startsWith(`${name}=`));
@@ -29,7 +37,9 @@ async function serveCourse({ siteDir, args = [] }) {
   const outDir = path.resolve(siteDir, option(args, '--dir', 'build'));
 
   const server = http.createServer((request, response) => {
-    for (const [name, value] of Object.entries(ISOLATION_HEADERS)) response.setHeader(name, value);
+    if (needsBrowserIsolation(request.url, baseUrl)) {
+      for (const [name, value] of Object.entries(ISOLATION_HEADERS)) response.setHeader(name, value);
+    }
 
     if (!request.url?.startsWith(baseUrl)) {
       redirect(response, baseUrl);
@@ -69,4 +79,4 @@ async function serveCourse({ siteDir, args = [] }) {
   return server;
 }
 
-module.exports = { ISOLATION_HEADERS, serveCourse };
+module.exports = { ISOLATION_HEADERS, needsBrowserIsolation, serveCourse };

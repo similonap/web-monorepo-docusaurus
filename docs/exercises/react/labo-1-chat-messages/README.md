@@ -1,0 +1,79 @@
+---
+sidebar_label: "Chat messages"
+---
+
+# Chat messages
+
+Download het [starterproject](/exercise-files/react/labo-1-chat-messages/starter.zip) en voer daarna `npm install` uit.
+
+Wanneer je klaar bent, kan je jouw uitwerking vergelijken met de [voorbeeldoplossing](/exercise-files/react/labo-1-chat-messages/solution.zip).
+
+> 📂 **Naam project:** `lab-basics-chat-messages`  
+> 🔗 **Basis project:** n/a
+
+Maak een nieuwe react applicatie aan `lab-basics-chat-messages`.
+
+#### Opdracht
+
+We willen een chat applicatie maken. We hebben een array met chat berichten. Elk bericht heeft een id, een naam, een bericht en een timestamp. We willen deze berichten tonen in de browser aan de hand van een eenvoudige tabel (zonder styling).
+
+De data kan je gewoon in een variabele zetten. Je kan deze data gebruiken:
+
+```typescript
+const messages = [
+    {
+        from: 'Wolverine',
+        content: 'Hey Mags, heard you tried to bend a spoon with your mind again. You need a hand with that?',
+        date: '2023-09-20 10:15 AM'
+    },
+    {
+        from: 'Magneto',
+        content: 'Very funny, Logan. At least I don\'t need metal claws to pick my teeth.',
+        date: '2023-09-20 10:17 AM'
+    },
+    {
+        from: 'Wolverine',
+        content: 'Touché, old man. But I bet you still can\'t beat me at a game of chess.',
+        date: '2023-09-20 10:20 AM'
+    },
+    {
+        from: 'Magneto',
+        content: 'Chess? How pedestrian. I prefer a game of "Move All the Metal Objects Away From Wolverine."',
+        date: '2023-09-20 10:22 AM'
+    },
+    {
+        from: 'Wolverine',
+        content: 'Haha, nice try, metalhead. But I\'ve got my adamantium skeleton to keep me company.',
+        date: '2023-09-20 10:25 AM'
+    },
+    {
+        from: 'Magneto',
+        content: 'True, but it doesn\'t help you with fashion choices. Those sideburns, really, Logan?',
+        date: '2023-09-20 10:27 AM'
+    },
+    {
+        from: 'Wolverine',
+        content: 'What can I say? They help me channel my inner bad boy.',
+        date: '2023-09-20 10:30 AM'
+    },
+    {
+        from: 'Magneto',
+        content: 'Speaking of bad boys, have you seen what Deadpool\'s up to lately?',
+        date: '2023-09-20 10:32 AM'
+    },
+    {
+        from: 'Wolverine',
+        content: 'Oh, don\'t get me started on that guy. He makes me look like a choirboy.',
+        date: '2023-09-20 10:35 AM'
+    },
+    {
+        from: 'Magneto',
+        content: 'Agreed, Logan. Let\'s team up and take him down. It\'s the only way to save our reputation.',
+        date: '2023-09-20 10:37 AM'
+    }
+];
+```
+
+#### Voorbeeldoplossing
+
+

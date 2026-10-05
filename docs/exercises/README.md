@@ -1,6 +1,15 @@
-# Node / TypeScript
+# Oefeningen
 
-## Basis typescript
+De opdrachten voor React, React Native en Next.js staan in één doorlopende
+laboreeks. Elk labo begint met de theorie die je vooraf moet lezen. Elke opdracht
+bevat een downloadbaar starterproject en, waar beschikbaar in de oorspronkelijke
+cursus, een afzonderlijke voorbeeldoplossing.
+
+- [Webframeworks-labo 1](../labos/webframeworks/labo-1/index.md)
+
+## Node / TypeScript
+
+### Basis typescript
 
 - [Hello Name](./node-typescript/hello-name/README.md)
 - [BMI Calculator](./node-typescript/bmi-calculator/README.md)
@@ -11,7 +20,7 @@
 - [Name from Email](./node-typescript/name-from-email/README.md)
 - [Text Box](./node-typescript/text-box/README.md)
 
-## Arrays
+### Arrays
 
 - [Som van getallen](./node-typescript/som-van-getallen/README.md)
 - [Puntenboek](./node-typescript/puntenboek/README.md)
@@ -20,13 +29,13 @@
 - [Todo List String](./node-typescript/todo-list-string/README.md)
 - [Tick Tac Toe](./node-typescript/tic-tac-toe/README.md)
 
-## Objects
+### Objects
 
 - [Recepten](./node-typescript/recepten/README.md)
 - [Movies Objects](./node-typescript/movies-objects/README.md)
 - [Todo List Objects](./node-typescript/todo-list-objects/README.md)
 
-## Functions
+### Functions
 
 - [Math Fun](./node-typescript/math-fun/README.md)
 - [Short Notation](./node-typescript/short-notation/README.md)
@@ -35,7 +44,7 @@
 - [Filter Numbers](./node-typescript/filter-numbers/README.md)
 - [At Least Two](./node-typescript/at-least-two/README.md)
 
-## Async en fetch
+### Async en fetch
 
 - [Fake Fetch](./node-typescript/fake-fetch/README.md)
 - [Promise All](./node-typescript/promise-all/README.md)

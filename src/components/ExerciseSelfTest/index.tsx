@@ -78,7 +78,7 @@ let webContainerPromise: Promise<WebContainer> | null = null;
 async function getWebContainer(): Promise<WebContainer> {
   if (!webContainerPromise) {
     const boot = import('@webcontainer/api')
-      .then(({ WebContainer }) => WebContainer.boot({ coep: 'require-corp' }));
+      .then(({ WebContainer }) => WebContainer.boot({ coep: 'credentialless' }));
     webContainerPromise = withTimeout(
       boot,
       TIMEOUTS.boot,

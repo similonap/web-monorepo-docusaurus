@@ -11,6 +11,14 @@ deze monorepo. De submodule heet `course-material/` en legt per cursus een
 specifieke monorepo-commit vast. Ze houden geen eigen kopieën van lessen,
 componenten, assets, buildscripts of dependencies bij.
 
+Het materiaal van Webframeworks staat per onderwerp in `docs/webframeworks/`,
+`docs/react/`, `docs/nextjs/` en `docs/react-native/`. De bijbehorende opdrachten
+staan niet langer samen in één labobestand. Elke opdracht heeft een eigen pagina
+onder `docs/exercises/<categorie>/<oefening>/README.md`, een zelfstandig
+`starter/`-project en, wanneer de oorspronkelijke cursus een uitwerking bevatte,
+een zelfstandig `solution/`-project. Een oefening die verderbouwt op een eerdere
+uitwerking krijgt die uitwerking als starter.
+
 ## Installeren en bouwen
 
 Gebruik Node.js 22 of nieuwer:
@@ -72,6 +80,10 @@ De assembly schrijft naar de genegeerde map `.course/` van de doelcursus:
 - Alleen geselecteerde lessen worden gekopieerd en als Docusaurus-pagina gebouwd.
 - Bij geselecteerde oefeningen worden ook startcode en oplossingen gekopieerd;
   `build-exercises.cjs` maakt er downloads van voor zowel ontwikkeling als productie.
+- Codeblokken met `codesandbox={...}` gebruiken de gedeelde templates in
+  `codesandbox/`. Codeblokken met `expo={...}` kunnen rechtstreeks in Expo Snack
+  worden geopend. Beide viewers worden tijdens de course assembly automatisch
+  geactiveerd, ook voor een afzonderlijke cursusrepository.
 - Gedeelde React-componenten, CSS, statische assets, afbeeldingen in `docs/` en
   MDX-partials worden meegeleverd. Deze assets worden bewust gedeeld, ook wanneer
   componenten er dynamisch naar verwijzen.

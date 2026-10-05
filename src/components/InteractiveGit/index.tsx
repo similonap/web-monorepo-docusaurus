@@ -70,7 +70,7 @@ function processCommand(cmd: string, state: GitState): { newState: GitState; lin
     const lines: TerminalLine[] = [{ type: 'command', text: `$ ${cmd}` }];
     let newState = { ...state };
 
-    const parts = cmd.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
+    const parts: string[] = cmd.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) ?? [];
     const unquote = (s: string) => s.replace(/^["']|["']$/g, '');
 
     if (parts[0] !== 'git') {

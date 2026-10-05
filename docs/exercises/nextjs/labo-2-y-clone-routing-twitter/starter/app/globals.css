@@ -1,0 +1,57 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f4f7f9;
+  color: #17202a;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+main {
+  width: min(680px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.post {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #d7e0e5;
+  border-radius: 12px;
+  background: white;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.profile img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile p,
+.date {
+  margin: 0.2rem 0;
+  color: #536471;
+}
+
+button {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #1d9bf0;
+  border-radius: 999px;
+  background: white;
+  color: #1d9bf0;
+  cursor: pointer;
+}
+
+button[aria-pressed='true'] {
+  background: #ffe8f0;
+  color: #f91880;
+}
