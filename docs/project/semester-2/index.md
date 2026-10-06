@@ -1,7 +1,7 @@
 ---
-unlisted: true
-hidden: true
+unlisted: false
+hidden: false
 ---
 
-# Semester 2
+# Milestones
 
