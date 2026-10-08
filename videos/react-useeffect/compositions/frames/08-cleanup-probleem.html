@@ -323,10 +323,10 @@
     }
   </style>
 
-  <div data-hf-id="hf-ehv1" id="root" data-composition-id="08-cleanup-probleem" data-width="1920" data-height="1080" data-duration="19.66">
-    <div data-hf-id="hf-vtzg" class="f08-bg clip" id="f08-bg" data-start="0" data-duration="19.66" data-track-index="0"></div>
+  <div data-hf-id="hf-ehv1" id="root" data-composition-id="08-cleanup-probleem" data-width="1920" data-height="1080" data-duration="18.16">
+    <div data-hf-id="hf-vtzg" class="f08-bg clip" id="f08-bg" data-start="0" data-duration="18.16" data-track-index="0"></div>
 
-    <div data-hf-id="hf-g9v3" class="f08-stage clip" id="f08-stage" data-start="0" data-duration="19.66" data-track-index="1">
+    <div data-hf-id="hf-g9v3" class="f08-stage clip" id="f08-stage" data-start="0" data-duration="18.16" data-track-index="1">
       <div data-hf-id="hf-rgd2" class="f08-kicker" id="f08-kicker"><span data-hf-id="hf-rwzb" class="f08-spike">✱</span>Opgelet</div>
 
       <!-- code surface -->
@@ -519,6 +519,24 @@
       tl.fromTo("#f08-expect", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 17.1);
 
       tl.set({}, {}, DUR);
+        // voice take: 19.16s → 17.66s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.28, 0.24], [0.32, 0.32], [0.8, 1.12], [1.42, 1.36], [1.64, 1.68], [1.74, 1.76], [1.84, 1.84], [1.88, 1.92], [1.96, 2.0], [2.02, 2.24], [2.44, 2.48], [2.48, 2.6], [2.66, 2.72], [2.7, 2.88], [2.94, 3.04], [3.0, 3.16], [3.14, 3.36], [3.32, 3.44], [3.4, 3.52], [3.42, 3.56], [3.48, 3.6], [3.52, 3.68], [3.64, 3.76], [3.68, 3.84], [3.78, 3.92], [4.019, 4.16], [4.42, 4.4], [4.52, 4.44], [4.86, 5.0], [5.4, 5.2], [5.56, 5.36], [5.6, 5.44], [5.74, 5.6], [5.76, 5.68], [5.84, 5.76], [5.88, 6.04], [6.42, 6.32], [6.48, 6.36], [6.56, 6.4], [6.62, 6.48], [6.7, 6.56], [6.88, 6.92], [7.56, 7.28], [7.64, 7.36], [7.94, 7.96], [8.68, 8.24], [8.96, 8.48], [9.0, 8.56], [9.18, 8.72], [9.2, 8.8], [9.46, 8.88], [9.5, 8.96], [9.9, 9.52], [10.34, 9.56], [10.56, 9.76], [10.58, 9.8], [10.68, 9.84], [10.72, 9.92], [11.04, 10.24], [11.1, 10.36], [11.54, 10.72], [11.86, 10.96], [11.94, 11.04], [12.08, 11.2], [12.3, 11.36], [12.32, 11.4], [12.4, 11.44], [12.42, 11.52], [12.56, 11.6], [12.62, 11.68], [12.84, 11.92], [12.94, 12.12], [13.34, 12.72], [14.04, 12.8], [14.14, 12.88], [14.22, 12.96], [14.48, 13.4], [15.16, 13.52], [15.28, 13.6], [15.32, 13.68], [15.52, 13.92], [15.7, 14.0], [15.96, 14.24], [16.0, 14.36], [16.44, 14.72], [16.8, 14.933], [16.86, 14.96], [16.9, 15.04], [17.16, 15.28], [17.18, 15.4], [17.52, 15.68], [17.58, 15.76], [18.06, 16.56], [19.16, 17.66]]);
       window.__timelines["08-cleanup-probleem"] = tl;
     })();
   </script>

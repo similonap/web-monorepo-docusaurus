@@ -1,0 +1,286 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EB_Garamond-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    #root *, #root *::before, #root *::after { box-sizing: border-box; }
+
+    /* cream ground + faint hairline grid */
+    .us01-ground {
+      position: absolute;
+      inset: 0;
+      background-color: #FAF9F5;
+      background-image:
+        linear-gradient(rgba(20, 20, 19, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20, 20, 19, 0.045) 1px, transparent 1px);
+      background-size: 64px 64px;
+      background-position: 32px 28px;
+    }
+    .us01-stage { position: absolute; inset: 0; }
+
+    /* group that holds button + cursor; slides left + shrinks in scene 4 */
+    .us01-group { position: absolute; inset: 0; }
+
+    /* the counter button: ink hairline, radius-md, centred on (960, 440) */
+    .us01-btn {
+      position: absolute;
+      left: 740px;
+      top: 290px;
+      width: 440px;
+      height: 300px;
+      background: #EFE9DE;
+      border: 2px solid rgba(20, 20, 19, 0.78);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .us01-window {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+    .us01-digit {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "EB Garamond", serif;
+      font-weight: 400;
+      font-size: 180px;
+      line-height: 1;
+      letter-spacing: -0.025em;
+      color: #141413;
+      padding-bottom: 14px;
+    }
+
+    /* ink ring ripple on click */
+    .us01-ring {
+      position: absolute;
+      left: 740px;
+      top: 290px;
+      width: 440px;
+      height: 300px;
+      border: 2px solid rgba(20, 20, 19, 0.5);
+      border-radius: 12px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* tiny mono +1 floats */
+    .us01-plus {
+      position: absolute;
+      left: 1196px;
+      top: 270px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 34px;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.72);
+      opacity: 0;
+    }
+
+    /* oversized cursor actor (family arrow at 3.5x) */
+    .us01-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 224px;
+      height: 224px;
+      pointer-events: none;
+      z-index: 20;
+      filter: drop-shadow(0 8px 12px rgba(20, 20, 19, 0.22));
+    }
+    .us01-cursor svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      fill: #FAF9F5;
+      stroke: #141413;
+      stroke-width: 1.4;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
+    /* right side: mono label + hero word */
+    .us01-label {
+      position: absolute;
+      left: 1168px;
+      top: 300px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.62);
+      padding: 6px 14px;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 6px;
+      background: #EFE9DE;
+    }
+    .us01-hero {
+      position: absolute;
+      left: 1150px;
+      top: 372px;
+      font-family: "EB Garamond", serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 200px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .us01-underline {
+      position: absolute;
+      left: 1166px;
+      top: 600px;
+      width: 470px;
+      height: 6px;
+      border-radius: 3px;
+      background: #CC785C;
+      transform-origin: left center;
+    }
+  </style>
+
+  <div data-hf-id="hf-m1ft" id="root" data-composition-id="01-hook" data-width="1920" data-height="1080" data-duration="10.46">
+    <div data-hf-id="hf-p1zl" id="01-hook-ground" class="us01-ground clip" data-start="0" data-duration="10.46" data-track-index="0"></div>
+
+    <div data-hf-id="hf-25h2" id="01-hook-stage" class="us01-stage clip" data-start="0" data-duration="10.46" data-track-index="1">
+      <div data-hf-id="hf-09ha" id="01-hook-group" class="us01-group">
+        <div data-hf-id="hf-x2ux" id="01-hook-ring1" class="us01-ring"></div>
+        <div data-hf-id="hf-38kq" id="01-hook-ring2" class="us01-ring"></div>
+        <div data-hf-id="hf-76or" id="01-hook-ring3" class="us01-ring"></div>
+
+        <div data-hf-id="hf-uig4" id="01-hook-btn" class="us01-btn">
+          <div data-hf-id="hf-v7t2" class="us01-window">
+            <div data-hf-id="hf-5t25" id="01-hook-d0" class="us01-digit">0</div>
+            <div data-hf-id="hf-u431" id="01-hook-d1" class="us01-digit">1</div>
+            <div data-hf-id="hf-65j1" id="01-hook-d2" class="us01-digit">2</div>
+            <div data-hf-id="hf-sb1h" id="01-hook-d3" class="us01-digit">3</div>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-zafl" id="01-hook-plus1" class="us01-plus">+1</div>
+        <div data-hf-id="hf-iwoi" id="01-hook-plus2" class="us01-plus">+1</div>
+        <div data-hf-id="hf-nowv" id="01-hook-plus3" class="us01-plus">+1</div>
+
+        <div data-hf-id="hf-47sf" id="01-hook-cursor" class="us01-cursor" aria-hidden="true">
+          <svg data-hf-id="hf-ulu9" viewBox="0 0 24 24"><path data-hf-id="hf-fueh" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-n75j" id="01-hook-label" class="us01-label">react</div>
+      <div data-hf-id="hf-4h9t" id="01-hook-hero" class="us01-hero">state.</div>
+      <div data-hf-id="hf-i8l4" id="01-hook-underline" class="us01-underline"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 11.24;
+      var $ = function (id) { return document.getElementById(id); };
+
+      var group = $("01-hook-group");
+      var btn = $("01-hook-btn");
+      var cursor = $("01-hook-cursor");
+      var d = [$("01-hook-d0"), $("01-hook-d1"), $("01-hook-d2"), $("01-hook-d3")];
+      var rings = [$("01-hook-ring1"), $("01-hook-ring2"), $("01-hook-ring3")];
+      var plus = [$("01-hook-plus1"), $("01-hook-plus2"), $("01-hook-plus3")];
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- Scene 1 (0.0–1.5): "knop" → button settles; "getal" → numeral 0 ----
+      tl.fromTo(btn, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.21);
+      tl.fromTo(d[0], { opacity: 0, y: 0 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.86);
+      tl.set([d[1], d[2], d[3]], { opacity: 0, y: 150 }, 0);
+
+      // ---- Scene 2 (1.5–4.4): cursor glides in, clicks; numeral steps 0→1→2→3 ----
+      var TIP_X = 1110;
+      var TIP_Y = 540;
+      var TIP_ORIGIN = "20.83% 12.5%";
+      var PRESS = 0.07;
+
+      tl.fromTo(cursor,
+        { xPercent: -20.83, yPercent: -12.5, x: 2100, y: 1180, scale: 1 },
+        { xPercent: -20.83, yPercent: -12.5, x: TIP_X, y: TIP_Y, duration: 0.55, ease: "power3.out" },
+        1.5);
+
+      function click(at, i) {
+        // cursor dip
+        tl.to(cursor, { scale: 0.86, duration: PRESS, ease: "power2.in", transformOrigin: TIP_ORIGIN }, at);
+        tl.to(cursor, { scale: 1, duration: 0.15, ease: "power2.out", transformOrigin: TIP_ORIGIN }, at + PRESS);
+        // button dip 0.96 → 1
+        tl.to(btn, { scale: 0.96, duration: PRESS, ease: "power1.in" }, at);
+        tl.to(btn, { scale: 1, duration: 0.15, ease: "power3.out" }, at + PRESS);
+        // ink ring ripple
+        tl.fromTo(rings[i], { scale: 1, opacity: 0.6 }, { scale: 1.22, opacity: 0, duration: 0.6, ease: "power2.out", immediateRender: false }, at + 0.02);
+      }
+      function plusOne(at, i) {
+        tl.fromTo(plus[i], { opacity: 0, y: 10 }, { opacity: 1, y: -14, duration: 0.18, ease: "power2.out" }, at);
+        tl.to(plus[i], { opacity: 0, y: -70, duration: 0.5, ease: "power1.in" }, at + 0.2);
+      }
+      function step(at, from, to) {
+        tl.to(d[from], { y: -150, opacity: 0, duration: 0.25, ease: "power2.in" }, at);
+        tl.fromTo(d[to], { y: 150, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power3.out", immediateRender: false }, at);
+      }
+
+      click(2.12, 0);          // "klikt"
+      step(3.68, 0, 1);        // "omhoog"
+      plusOne(3.68, 0);
+      click(3.95, 1);
+      step(3.97, 1, 2);
+      plusOne(3.97, 1);
+      click(4.2, 2);
+      step(4.22, 2, 3);
+      plusOne(4.22, 2);
+
+      // ---- Scene 3 (4.4–7.4): "Simpel?" → cursor parks just below-right, then stillness ----
+      tl.to(cursor, { x: TIP_X + 46, y: TIP_Y + 40, duration: 0.45, ease: "power2.inOut" }, 4.44);
+
+      // ---- Scene 4 (7.4–11.24): button + cursor to the left third, scale 0.8 ----
+      tl.to(group, { x: 520 - 960, scale: 0.8, transformOrigin: "960px 440px", duration: 0.9, ease: "power3.out" }, 7.49);
+      // "React" → mono label on the right
+      tl.fromTo($("01-hook-label"),{ opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 8.71);
+      // "state." → hero word lands, coral underline draws
+      tl.fromTo($("01-hook-hero"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 10.01);
+      tl.fromTo($("01-hook-underline"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power2.inOut" }, 10.36);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+        // voice take: 11.24s → 9.96s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.16, 0.12], [0.213, 0.16], [0.48, 0.48], [0.54, 0.56], [0.72, 0.64], [0.74, 0.72], [0.8, 0.8], [0.86, 0.92], [1.28, 1.44], [1.547, 1.6], [2.08, 1.76], [2.12, 1.813], [2.64, 2.4], [2.747, 2.44], [2.96, 2.48], [3.0, 2.52], [3.12, 2.56], [3.16, 2.64], [3.44, 2.96], [3.472, 3.0], [3.6, 3.12], [3.68, 3.2], [4.24, 3.8], [4.44, 4.0], [5.28, 4.4], [5.653, 4.88], [6.56, 5.12], [6.62, 5.16], [6.8, 5.28], [6.827, 5.32], [6.88, 5.36], [6.944, 5.4], [7.36, 5.76], [7.38, 5.84], [7.44, 5.92], [7.486, 6.04], [8.08, 6.64], [8.13, 6.72], [8.48, 7.12], [8.52, 7.2], [8.64, 7.28], [8.707, 7.48], [9.04, 7.68], [9.1, 7.8], [9.92, 8.48], [10.013, 8.56], [10.64, 9.36], [11.24, 9.96]]);
+      window.__timelines["01-hook"] = tl;
+    })();
+  </script>
+</template>

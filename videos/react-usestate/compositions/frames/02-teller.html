@@ -1,0 +1,365 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f02t-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f02t-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f02t-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f02t-kicker .f02t-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f02t-panel {
+      position: absolute;
+      left: 80px;
+      top: 180px;
+      width: 1060px;
+      height: 660px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f02t-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f02t-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f02t-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 86px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 32px;
+      line-height: 56px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f02t-row { position: relative; height: 56px; white-space: pre; }
+    .f02t-ln {
+      position: absolute;
+      left: 0;
+      width: 60px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 24px;
+    }
+    .f02t-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f02t-ch { display: inline; }
+    .f02t-kw { color: #CC785C; }
+    .f02t-fn { color: #E8A55A; }
+    .f02t-dim { color: rgba(250, 249, 245, 0.6); }
+    .f02t-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f02t-caret {
+      position: absolute;
+      top: 11px;
+      left: 0;
+      width: 3px;
+      height: 34px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+
+    /* right column: scherm */
+    .f02t-col {
+      position: absolute;
+      left: 1236px;
+      top: 180px;
+      width: 604px;
+      height: 660px;
+    }
+    .f02t-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f02t-card {
+      position: absolute;
+      left: 0;
+      top: 52px;
+      width: 604px;
+      height: 290px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    .f02t-ptag {
+      position: absolute;
+      left: 22px;
+      top: 18px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .f02t-btnwrap {
+      position: absolute;
+      left: 0; right: 0;
+      top: 40px;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .f02t-btn {
+      min-width: 170px;
+      height: 104px;
+      padding: 0 40px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.28);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 48px;
+      line-height: 1;
+      color: #141413;
+    }
+    .f02t-note {
+      position: absolute;
+      left: 4px;
+      top: 392px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      color: #141413;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .f02t-note .f02t-goal-k { color: rgba(20, 20, 19, 0.55); }
+    .f02t-plus { display: inline-block; color: #CC785C; font-weight: 700; }
+  </style>
+
+  <div data-hf-id="hf-b70o" id="root" data-composition-id="02-teller" data-width="1920" data-height="1080" data-duration="9.74">
+    <div data-hf-id="hf-v12i" class="f02t-bg clip" id="f02t-bg" data-start="0" data-duration="9.74" data-track-index="0"></div>
+
+    <div data-hf-id="hf-hgp5" class="f02t-stage clip" id="f02t-stage" data-start="0" data-duration="9.74" data-track-index="1">
+      <div data-hf-id="hf-qgeh" class="f02t-kicker" id="f02t-kicker"><span data-hf-id="hf-me4b" class="f02t-spike">✱</span>Het voorbeeld</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-myb6" class="f02t-panel" id="f02t-panel">
+        <div data-hf-id="hf-vl0l" class="f02t-titlebar">Counter.tsx</div>
+        <div data-hf-id="hf-jdkq" class="f02t-code">
+          <div data-hf-id="hf-zdmv" class="f02t-row"><span data-hf-id="hf-eg1n" class="f02t-ln">1</span><span data-hf-id="hf-flch" class="f02t-txt"><span data-hf-id="hf-0pub" class="f02t-kw">const</span> <span data-hf-id="hf-n6ye" class="f02t-fn">Counter</span> = () <span data-hf-id="hf-nyqj" class="f02t-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-adwn" class="f02t-row"><span data-hf-id="hf-e1qm" class="f02t-ln">2</span><span data-hf-id="hf-oogz" class="f02t-txt" id="f02t-line2"></span><span data-hf-id="hf-73ub" class="f02t-caret" id="f02t-caret2"></span></div>
+          <div data-hf-id="hf-9zlm" class="f02t-row"><span data-hf-id="hf-dnfl" class="f02t-ln">3</span><span data-hf-id="hf-iir6" class="f02t-txt" id="f02t-line3"></span><span data-hf-id="hf-35qa" class="f02t-caret" id="f02t-caret3"></span></div>
+          <div data-hf-id="hf-9lal" class="f02t-row"><span data-hf-id="hf-d94k" class="f02t-ln">4</span><span data-hf-id="hf-1yn9" class="f02t-txt" id="f02t-line4"></span><span data-hf-id="hf-ke0l" class="f02t-caret" id="f02t-caret4"></span></div>
+          <div data-hf-id="hf-cdfs" class="f02t-row"><span data-hf-id="hf-cutj" class="f02t-ln">5</span></div>
+          <div data-hf-id="hf-bz4r" class="f02t-row"><span data-hf-id="hf-cgii" class="f02t-ln">6</span><span data-hf-id="hf-9uvb" class="f02t-txt" id="f02t-line6"></span><span data-hf-id="hf-sa8n" class="f02t-caret" id="f02t-caret6"></span></div>
+          <div data-hf-id="hf-bktq" class="f02t-row"><span data-hf-id="hf-c27h" class="f02t-ln">7</span><span data-hf-id="hf-5wra" class="f02t-txt" id="f02t-line7"></span><span data-hf-id="hf-oc4m" class="f02t-caret" id="f02t-caret7"></span></div>
+          <div data-hf-id="hf-b6ip" class="f02t-row"><span data-hf-id="hf-i0sw" class="f02t-ln">8</span><span data-hf-id="hf-n51l" class="f02t-txt" id="f02t-line8"></span><span data-hf-id="hf-5kex" class="f02t-caret" id="f02t-caret8"></span></div>
+          <div data-hf-id="hf-dynw" class="f02t-row"><span data-hf-id="hf-hmhv" class="f02t-ln">9</span><span data-hf-id="hf-abhl" class="f02t-txt">}</span></div>
+        </div>
+        <div data-hf-id="hf-1iqv" class="f02t-status">Counter · component</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-mfrp" class="f02t-col">
+        <div data-hf-id="hf-2mca" class="f02t-label" id="f02t-lab-scr">scherm</div>
+        <div data-hf-id="hf-khic" class="f02t-card" id="f02t-card">
+          <div data-hf-id="hf-11nv" class="f02t-ptag">&lt;button&gt;</div>
+          <div data-hf-id="hf-ec53" class="f02t-btnwrap">
+            <div data-hf-id="hf-nv46" class="f02t-btn" id="f02t-btn">0</div>
+          </div>
+        </div>
+        <div data-hf-id="hf-40z1" class="f02t-note" id="f02t-note"><span data-hf-id="hf-f6zf" class="f02t-goal-k">doel:</span> klik → <span data-hf-id="hf-znxt" class="f02t-plus" id="f02t-plus">+1</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 9.4;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 32;
+      var X0 = 84;
+      var root = document.querySelector('[data-composition-id="02-teller"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(lineSel, caretSel, segments, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "f02t-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "f02t-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return end;
+      }
+
+      // ---- Scene 1 (0.0–2.4): kicker, then on "component" the code shell ----
+      tl.fromTo("#f02t-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f02t-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.45);
+
+      // ---- Scene 2 (2.4–4.5): "In de knop" → return block types on ----
+      var per = 0.021;
+      var e6 = typeLine("#f02t-line6", "#f02t-caret6", [
+        { t: "  " },
+        { t: "return", c: "f02t-kw" },
+        { t: " (" }
+      ], 2.45, per);
+      var e7 = typeLine("#f02t-line7", "#f02t-caret7", [
+        { t: "    " },
+        { t: "<button", c: "f02t-dim" },
+        { t: " " },
+        { id: "f02t-hl-onclick", parts: [
+          { t: "onClick" },
+          { t: "={" },
+          { t: "handleClick", c: "f02t-fn" },
+          { t: "}" }
+        ] },
+        { t: ">", c: "f02t-dim" },
+        { id: "f02t-hl-count", parts: [{ t: "{count}" }] },
+        { t: "</button>", c: "f02t-dim" }
+      ], e6 + 0.06, per, 0.03);
+      typeLine("#f02t-line8", "#f02t-caret8", [
+        { t: "  );" }
+      ], e7 + 0.06, per, 0.03);
+
+      // "teller" (3.82) → amber wash on {count}
+      tl.to("#f02t-hl-count", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.35, ease: "power1.out" }, 3.82);
+      tl.to("#f02t-hl-count", { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.5, ease: "power1.inOut" }, 5.5);
+
+      // scherm label + card with the rendered button 0
+      tl.fromTo("#f02t-lab-scr", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.9);
+      tl.fromTo("#f02t-card", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 3.95);
+
+      // ---- Scene 3 (4.5–9.4): "telkens je op de knop klikt" → handleClick types on ----
+      var e2 = typeLine("#f02t-line2", "#f02t-caret2", [
+        { t: "  " },
+        { t: "const", c: "f02t-kw" },
+        { t: " " },
+        { t: "handleClick", c: "f02t-fn" },
+        { t: " = () " },
+        { t: "=>", c: "f02t-kw" },
+        { t: " {" }
+      ], 4.94, per);
+      var e3 = typeLine("#f02t-line3", "#f02t-caret3", [
+        { t: "    " },
+        { t: "// teller + 1 ... maar hoe?", c: "f02t-dim" }
+      ], e2 + 0.06, per, 0.03);
+      typeLine("#f02t-line4", "#f02t-caret4", [
+        { t: "  };" }
+      ], e3 + 0.06, per, 0.03);
+
+      // 5.8 → amber wash on onClick={handleClick}
+      tl.to("#f02t-hl-onclick", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.35, ease: "power1.out" }, 5.8);
+
+      // "één omhoog gaan" (7.36) → goal note with coral +1
+      tl.fromTo("#f02t-note", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 7.36);
+      tl.fromTo("#f02t-plus", { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 7.5);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+        // voice take: 9.4s → 9.24s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.16, 0.16], [0.2, 0.28], [0.48, 0.56], [0.5, 0.64], [0.56, 0.72], [0.6, 0.8], [0.72, 0.88], [0.776, 1.2], [1.28, 1.52], [1.34, 1.68], [1.52, 1.84], [1.56, 1.88], [1.68, 2.0], [1.76, 2.08], [2.24, 2.72], [2.453, 2.96], [2.88, 3.04], [2.907, 3.12], [2.96, 3.16], [3.013, 3.2], [3.28, 3.52], [3.347, 3.6], [3.68, 3.84], [3.7, 3.92], [3.76, 4.0], [3.824, 4.08], [4.32, 4.68], [4.507, 4.88], [4.88, 5.04], [4.94, 5.12], [5.28, 5.52], [5.307, 5.56], [5.36, 5.6], [5.387, 5.64], [5.44, 5.68], [5.493, 5.76], [5.6, 5.84], [5.627, 5.88], [5.76, 6.08], [5.82, 6.16], [6.56, 6.64], [6.592, 6.68], [6.72, 6.8], [6.76, 6.84], [6.88, 6.88], [6.928, 6.96], [7.2, 7.36], [7.36, 7.44], [7.68, 7.6], [7.813, 7.76], [8.24, 8.08], [8.304, 8.16], [8.8, 8.64], [9.4, 9.24]]);
+      window.__timelines["02-teller"] = tl;
+    })();
+  </script>
+</template>

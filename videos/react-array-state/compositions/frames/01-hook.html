@@ -1,5 +1,5 @@
 <template id="01-hook-template">
-  <div data-hf-id="hf-euai" id="root" data-composition-id="01-hook" data-start="0" data-duration="7.38" data-width="1920" data-height="1080">
+  <div data-hf-id="hf-euai" id="root" data-composition-id="01-hook" data-start="0" data-duration="6.88" data-width="1920" data-height="1080">
     <style>
       #root {
         position: relative;
@@ -220,9 +220,9 @@
       }
     </style>
 
-    <div data-hf-id="hf-lt0l" id="01-hook-ground" class="clip hk01-ground" data-start="0" data-duration="7.38" data-track-index="0"></div>
+    <div data-hf-id="hf-lt0l" id="01-hook-ground" class="clip hk01-ground" data-start="0" data-duration="6.88" data-track-index="0"></div>
 
-    <div data-hf-id="hf-wwdc" id="01-hook-stage" class="clip hk01-stage" data-start="0" data-duration="7.38" data-track-index="1">
+    <div data-hf-id="hf-wwdc" id="01-hook-stage" class="clip hk01-stage" data-start="0" data-duration="6.88" data-track-index="1">
       <div data-hf-id="hf-erxl" id="01-hook-card" class="hk01-card">
         <div data-hf-id="hf-0hpt" class="hk01-form">
           <div data-hf-id="hf-yb6h" id="01-hook-input" class="hk01-input">
@@ -433,7 +433,7 @@
 
         tl.seek(0);
         window.__timelines = window.__timelines || {};
-        // voice take: 5.04s → 5.92s (anchors from audio_meta.json words)
+        // voice take: 5.04s → 6.38s (anchors from audio_meta.json words)
         var __retime = function (tl, M) {
           // Cues were authored against an earlier voice take; map each child's
           // start and end through the old→new word-anchor table M ([oldT, newT]).
@@ -450,7 +450,7 @@
             c.startTime(ns);
           });
         };
-        __retime(tl, [[0.0, 0.0], [0.1, 0.14], [0.24, 0.3], [0.59, 0.52], [0.89, 0.62], [1.6, 1.58], [1.72, 1.7], [2.12, 2.0], [2.28, 2.28], [2.33, 2.92], [2.88, 4.46], [3.18, 4.58], [4.26, 5.42], [5.04, 5.92]]);
+        __retime(tl, [[0.0, 0.0], [0.1, 0.102], [0.17, 0.16], [0.24, 0.24], [0.558, 0.48], [0.59, 0.52], [0.83, 0.56], [0.89, 0.68], [1.171, 1.12], [1.6, 1.52], [1.7, 1.68], [1.72, 1.707], [2.067, 1.92], [2.12, 2.0], [2.177, 2.08], [2.28, 2.16], [2.3, 2.56], [2.33, 3.04], [2.451, 3.92], [2.88, 3.96], [3.08, 4.0], [3.18, 4.08], [3.874, 4.48], [4.26, 4.52], [4.822, 5.28], [5.04, 5.42], [6.0, 6.38]]);
         window.__timelines["01-hook"] = tl;
       })();
     </script>

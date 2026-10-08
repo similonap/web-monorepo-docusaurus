@@ -17,7 +17,7 @@ style_preset: code-editorial
 A lesson clip for the course, accompanying the useEffect section
 (`web-monorepo-docusaurus/docs/react/hooks/useEffect.md`). Sibling of the
 `react-array-state` clip: same style (code-editorial frame.md, cream/ink/coral,
-navy code surface), same voice (ElevenLabs "Jeroen Vlaams", nl-BE), same
+navy code surface), same voice (ElevenLabs "Andie"), same
 captions skin.
 
 Story (requested by the teacher): start with `setInterval` written directly in
@@ -33,6 +33,6 @@ function), Strict Mode, recap.
 ## Customizations
 
 - Style identical to react-array-state (copied frame.md, fonts, sfx, caption skin).
-- Voice: ElevenLabs eleven_v3, Jeroen Vlaams - Warm & Friendly (Yv0oyZ3obP9foTH7emqG).
+- Voice: ElevenLabs eleven_v4, Andie (8OezxDDjGa2d9W45o5Qs), stability 0.5.
 - Code follows the course's TypeScript style (`useState(0)`, `setNumber(number => number + 1)`).
 - Captions on; no music bed (same as react-array-state).

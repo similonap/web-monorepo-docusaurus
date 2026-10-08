@@ -304,10 +304,10 @@
     }
   </style>
 
-  <div data-hf-id="hf-5hy4" id="root" data-composition-id="06-useeffect" data-width="1920" data-height="1080" data-duration="17.86">
-    <div data-hf-id="hf-abkk" class="f06-bg clip" id="f06-bg" data-start="0" data-duration="17.86" data-track-index="0"></div>
+  <div data-hf-id="hf-5hy4" id="root" data-composition-id="06-useeffect" data-width="1920" data-height="1080" data-duration="16.1">
+    <div data-hf-id="hf-abkk" class="f06-bg clip" id="f06-bg" data-start="0" data-duration="16.1" data-track-index="0"></div>
 
-    <div data-hf-id="hf-85zr" class="f06-stage clip" id="f06-stage" data-start="0" data-duration="17.86" data-track-index="1">
+    <div data-hf-id="hf-85zr" class="f06-stage clip" id="f06-stage" data-start="0" data-duration="16.1" data-track-index="1">
       <div data-hf-id="hf-bzw9" class="f06-kicker" id="f06-kicker"><span data-hf-id="hf-cshd" class="f06-spike">✱</span>De oplossing</div>
 
       <!-- code surface -->
@@ -497,6 +497,24 @@
 
       // hold to full duration
       tl.set({}, {}, DUR);
+        // voice take: 17.36s → 15.6s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.5, 0.56], [0.56, 0.64], [0.66, 0.72], [0.68, 0.8], [0.8, 0.88], [1.14, 1.04], [1.98, 2.04], [2.54, 2.24], [2.62, 2.32], [2.68, 2.4], [2.92, 2.56], [2.94, 2.64], [3.08, 2.72], [3.16, 2.8], [3.48, 3.12], [3.56, 3.16], [3.74, 3.6], [4.18, 3.64], [4.26, 3.68], [4.34, 3.76], [4.76, 4.16], [4.94, 4.2], [5.14, 4.4], [5.18, 4.44], [5.32, 4.48], [5.4, 4.56], [5.6, 4.8], [5.92, 5.04], [6.24, 5.28], [6.28, 5.36], [6.42, 5.44], [6.5, 5.52], [6.86, 6.04], [7.44, 6.32], [7.72, 6.56], [7.96, 6.64], [8.08, 6.72], [8.119, 6.76], [8.18, 6.8], [8.22, 6.96], [8.5, 7.12], [8.54, 7.32], [8.9, 7.72], [9.8, 7.92], [9.9, 8.08], [9.92, 8.16], [10.06, 8.24], [10.12, 8.4], [10.4, 8.56], [10.46, 8.64], [10.8, 8.96], [10.94, 9.08], [11.14, 9.2], [11.2, 9.24], [11.48, 9.52], [11.52, 9.8], [12.02, 10.4], [12.36, 10.44], [12.5, 10.72], [12.82, 10.76], [12.98, 10.88], [13.1, 11.04], [13.38, 11.56], [13.88, 11.76], [14.04, 11.92], [14.14, 12.0], [14.48, 12.64], [14.74, 12.76], [14.92, 12.88], [14.98, 12.96], [15.22, 13.2], [15.24, 13.24], [15.3, 13.28], [15.34, 13.36], [15.48, 13.44], [15.52, 13.52], [15.96, 13.92], [16.0, 14.0], [16.239, 14.48], [17.36, 15.6]]);
       window.__timelines["06-useeffect"] = tl;
     })();
   </script>

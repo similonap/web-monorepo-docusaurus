@@ -1,5 +1,5 @@
 <template>
-  <div data-hf-id="hf-05yo" id="root" data-composition-id="04-regel" data-start="0" data-duration="10.26" data-width="1920" data-height="1080">
+  <div data-hf-id="hf-05yo" id="root" data-composition-id="04-regel" data-start="0" data-duration="9.12" data-width="1920" data-height="1080">
     <style>
       @font-face {
         font-family: "EB Garamond";
@@ -89,9 +89,9 @@
     </style>
 
     <!-- background: flat cream field, full duration -->
-    <div data-hf-id="hf-jy4h" id="04-regel-ground" class="clip" data-start="0" data-duration="10.26" data-track-index="0"></div>
+    <div data-hf-id="hf-jy4h" id="04-regel-ground" class="clip" data-start="0" data-duration="9.12" data-track-index="0"></div>
 
-    <div data-hf-id="hf-j15b" id="04-regel-stage" class="clip" data-start="0" data-duration="10.26" data-track-index="1">
+    <div data-hf-id="hf-j15b" id="04-regel-stage" class="clip" data-start="0" data-duration="9.12" data-track-index="1">
       <!-- the ✱ spike mark (drawn, never a font glyph) -->
       <svg data-hf-id="hf-hdr0" id="04-regel-spike" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <line data-hf-id="hf-6g1y" x1="50" y1="10" x2="50" y2="90" />
@@ -187,7 +187,7 @@
         tl.to({}, { duration: DUR }, 0);
 
         window.__timelines = window.__timelines || {};
-        // voice take: 7.68s → 8.96s (anchors from audio_meta.json words)
+        // voice take: 7.68s → 8.62s (anchors from audio_meta.json words)
         var __retime = function (tl, M) {
           // Cues were authored against an earlier voice take; map each child's
           // start and end through the old→new word-anchor table M ([oldT, newT]).
@@ -204,7 +204,7 @@
             c.startTime(ns);
           });
         };
-        __retime(tl, [[0.0, 0.0], [0.1, 0.08], [0.48, 0.8], [0.72, 1.04], [1.4, 1.94], [1.98, 2.56], [2.18, 3.16], [3.44, 4.46], [3.84, 4.58], [4.24, 4.92], [4.48, 5.46], [4.86, 5.74], [5.2, 6.04], [5.63, 6.78], [6.08, 7.02], [6.27, 7.56], [6.53, 7.86], [6.71, 8.08], [6.84, 8.2], [7.06, 8.36], [7.68, 8.96]]);
+        __retime(tl, [[0.0, 0.0], [0.1, 0.107], [0.279, 0.56], [0.48, 0.64], [0.64, 0.8], [0.72, 0.88], [0.962, 1.68], [1.4, 1.76], [1.699, 2.16], [1.98, 2.24], [2.047, 2.48], [2.18, 2.64], [2.781, 3.6], [3.44, 3.64], [3.64, 3.68], [3.84, 3.76], [4.146, 4.08], [4.24, 4.24], [4.427, 4.64], [4.48, 4.76], [4.779, 4.88], [4.86, 4.92], [5.109, 5.12], [5.2, 5.2], [5.386, 5.76], [5.63, 5.84], [5.855, 5.92], [6.08, 6.0], [6.129, 6.16], [6.27, 6.24], [6.495, 6.4], [6.53, 6.48], [6.595, 6.56], [6.71, 6.6], [6.797, 6.64], [6.84, 6.72], [6.978, 6.8], [7.06, 6.88], [7.37, 7.52], [7.68, 7.82], [8.48, 8.62]]);
         window.__timelines[FRAME] = tl;
       })();
     </script>

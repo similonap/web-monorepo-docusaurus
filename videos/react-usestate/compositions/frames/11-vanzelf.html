@@ -1,0 +1,475 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .v11-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .v11-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .v11-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .v11-kicker .v11-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .v11-panel {
+      position: absolute;
+      left: 80px;
+      top: 190px;
+      width: 1060px;
+      height: 668px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .v11-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .v11-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .v11-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 74px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      line-height: 48px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .v11-row {
+      position: relative;
+      height: 48px;
+      white-space: pre;
+    }
+    .v11-ln {
+      position: absolute;
+      left: 0;
+      width: 62px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 24px;
+    }
+    .v11-txt {
+      position: absolute;
+      left: 88px;
+      top: 0;
+      white-space: pre;
+    }
+    .v11-kw { color: #CC785C; }
+    .v11-fn { color: #E8A55A; }
+    .v11-str { color: #5DB8A6; }
+    .v11-dim { color: rgba(250, 249, 245, 0.6); }
+    .v11-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+
+    /* right column: scherm card */
+    .v11-label {
+      position: absolute;
+      left: 1200px;
+      top: 186px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .v11-card {
+      position: absolute;
+      left: 1200px;
+      top: 236px;
+      width: 640px;
+      height: 290px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .v11-mini {
+      position: absolute;
+      left: 36px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      letter-spacing: 0.04em;
+      color: rgba(20, 20, 19, 0.5);
+    }
+    .v11-input {
+      position: absolute;
+      left: 36px;
+      top: 54px;
+      width: 568px;
+      height: 84px;
+      box-sizing: border-box;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      font-family: "Inter", sans-serif;
+      font-size: 38px;
+      color: #141413;
+    }
+    .v11-input-text { white-space: pre; }
+    .v11-caret {
+      display: inline-block;
+      width: 3px;
+      height: 42px;
+      margin-left: 2px;
+      background: #141413;
+      vertical-align: middle;
+    }
+    .v11-pline {
+      position: absolute;
+      left: 36px;
+      top: 192px;
+      display: inline-block;
+      font-family: "Inter", sans-serif;
+      font-size: 38px;
+      line-height: 52px;
+      color: #141413;
+      white-space: pre;
+      isolation: isolate;
+      z-index: 1;
+    }
+    .v11-ring {
+      position: absolute;
+      left: -14px;
+      right: -14px;
+      top: -8px;
+      bottom: -8px;
+      border: 3px solid #E8A55A;
+      border-radius: 8px;
+      background: rgba(232, 165, 90, 0.12);
+      z-index: -1;
+    }
+    .v11-badge {
+      position: absolute;
+      right: 36px;
+      top: 200px;
+      padding: 8px 16px 7px;
+      border-radius: 6px;
+      background: #CC785C;
+      color: #FAF9F5;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 22px;
+      letter-spacing: 0.04em;
+    }
+    .v11-rtag {
+      position: absolute;
+      left: 1640px;
+      top: 216px;
+      width: 180px;
+      height: 40px;
+      box-sizing: border-box;
+      border: 1px solid rgba(20, 20, 19, 0.28);
+      border-radius: 9999px;
+      background: #ECE3D4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: #141413;
+    }
+
+    /* state chip */
+    .v11-chip {
+      position: absolute;
+      left: 1200px;
+      top: 604px;
+      width: 440px;
+      height: 76px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: "JetBrains Mono", monospace;
+      color: #141413;
+    }
+    .v11-chip-lab {
+      position: absolute;
+      left: 24px;
+      top: 0;
+      line-height: 74px;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: rgba(20, 20, 19, 0.5);
+    }
+    .v11-chip-key {
+      position: absolute;
+      left: 118px;
+      top: 0;
+      line-height: 74px;
+      font-size: 30px;
+    }
+    .v11-val {
+      position: absolute;
+      left: 226px;
+      top: 0;
+      line-height: 74px;
+      font-size: 30px;
+      white-space: pre;
+    }
+
+    /* arrow + label */
+    .v11-arrow {
+      position: absolute;
+      left: 0; top: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .v11-arrow-lab {
+      position: absolute;
+      left: 1352px;
+      top: 543px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: rgba(20, 20, 19, 0.72);
+    }
+
+    /* click ripple + oversized cursor */
+    .v11-ripple {
+      position: absolute;
+      left: 1250px;
+      top: 300px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid rgba(20, 20, 19, 0.35);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .v11-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 168px;
+      height: 168px;
+      pointer-events: none;
+      z-index: 20;
+      filter: drop-shadow(0 8px 12px rgba(20, 20, 19, 0.22));
+    }
+    .v11-cursor svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      fill: #FAF9F5;
+      stroke: #141413;
+      stroke-width: 1.4;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+  </style>
+
+  <div data-hf-id="hf-v11r" id="root" data-composition-id="11-vanzelf" data-width="1920" data-height="1080" data-duration="10.62">
+    <div data-hf-id="hf-v11b" class="v11-bg clip" id="v11-bg" data-start="0" data-duration="10.62" data-track-index="0"></div>
+
+    <div data-hf-id="hf-v11s" class="v11-stage clip" id="v11-stage" data-start="0" data-duration="10.62" data-track-index="1">
+      <div data-hf-id="hf-v11k" class="v11-kicker" id="v11-kicker"><span data-hf-id="hf-v11p" class="v11-spike">✱</span>Vanzelf</div>
+
+      <!-- code surface (NameInput.tsx), dimmed except line 8 -->
+      <div data-hf-id="hf-v11cp" class="v11-panel" id="v11-panel">
+        <div data-hf-id="hf-v11tb" class="v11-titlebar">NameInput.tsx</div>
+        <div data-hf-id="hf-v11cd" class="v11-code">
+          <div data-hf-id="hf-v11l1" class="v11-row v11-dimrow"><span data-hf-id="hf-v11n1" class="v11-ln">1</span><span data-hf-id="hf-v11t1" class="v11-txt"><span data-hf-id="hf-v11a1" class="v11-kw">const</span> NameInput = () =&gt; {</span></div>
+          <div data-hf-id="hf-v11l2" class="v11-row v11-dimrow"><span data-hf-id="hf-v11n2" class="v11-ln">2</span><span data-hf-id="hf-v11t2" class="v11-txt">  <span data-hf-id="hf-v11a2" class="v11-kw">const</span> [name, <span data-hf-id="hf-v11b2" class="v11-fn">setName</span>] = <span data-hf-id="hf-v11c2" class="v11-fn">useState</span><span data-hf-id="hf-v11d2" class="v11-dim">&lt;string&gt;</span>(<span data-hf-id="hf-v11e2" class="v11-str">''</span>);</span></div>
+          <div data-hf-id="hf-v11l3" class="v11-row v11-dimrow"><span data-hf-id="hf-v11n3" class="v11-ln">3</span></div>
+          <div data-hf-id="hf-v11l4" class="v11-row v11-dimrow"><span data-hf-id="hf-v11n4" class="v11-ln">4</span><span data-hf-id="hf-v11t4" class="v11-txt">  <span data-hf-id="hf-v11a4" class="v11-kw">return</span> (</span></div>
+          <div data-hf-id="hf-v11l5" class="v11-row v11-dimrow"><span data-hf-id="hf-v11n5" class="v11-ln">5</span><span data-hf-id="hf-v11t5" class="v11-txt">    <span data-hf-id="hf-v11a5" class="v11-dim">&lt;&gt;</span></span></div>
+          <div data-hf-id="hf-v11l6" class="v11-row v11-dimrow"><span data-hf-id="hf-v11n6" class="v11-ln">6</span><span data-hf-id="hf-v11t6" class="v11-txt">      <span data-hf-id="hf-v11a6" class="v11-dim">&lt;input</span> type=<span data-hf-id="hf-v11b6" class="v11-str">"text"</span></span></div>
+          <div data-hf-id="hf-v11l7" class="v11-row v11-dimrow"><span data-hf-id="hf-v11n7" class="v11-ln">7</span><span data-hf-id="hf-v11t7" class="v11-txt">        onChange={(e) =&gt; <span data-hf-id="hf-v11a7" class="v11-fn">setName</span>(e.target.value)} <span data-hf-id="hf-v11b7" class="v11-dim">/&gt;</span></span></div>
+          <div data-hf-id="hf-v11l8" class="v11-row" id="v11-row8"><span data-hf-id="hf-v11n8" class="v11-ln">8</span><span data-hf-id="hf-v11t8" class="v11-txt">      <span data-hf-id="hf-v11a8" class="v11-dim">&lt;p&gt;</span>Je typte: <span data-hf-id="hf-v11b8" class="v11-hl" id="v11-namehl">{name}</span><span data-hf-id="hf-v11c8" class="v11-dim">&lt;/p&gt;</span></span></div>
+          <div data-hf-id="hf-v11l9" class="v11-row v11-dimrow"><span data-hf-id="hf-v11n9" class="v11-ln">9</span><span data-hf-id="hf-v11t9" class="v11-txt">    <span data-hf-id="hf-v11a9" class="v11-dim">&lt;/&gt;</span></span></div>
+          <div data-hf-id="hf-v11l10" class="v11-row v11-dimrow"><span data-hf-id="hf-v11n10" class="v11-ln">10</span><span data-hf-id="hf-v11t10" class="v11-txt">  );</span></div>
+          <div data-hf-id="hf-v11l11" class="v11-row v11-dimrow"><span data-hf-id="hf-v11n11" class="v11-ln">11</span><span data-hf-id="hf-v11t11" class="v11-txt">}</span></div>
+        </div>
+        <div data-hf-id="hf-v11st" class="v11-status">name · onChange</div>
+      </div>
+
+      <!-- right column: scherm card -->
+      <div data-hf-id="hf-v11lb" class="v11-label">scherm</div>
+      <div data-hf-id="hf-v11cr" class="v11-card" id="v11-card">
+        <div data-hf-id="hf-v11mi" class="v11-mini" style="top:22px">input</div>
+        <div data-hf-id="hf-v11in" class="v11-input" id="v11-input"><span data-hf-id="hf-v11it" class="v11-input-text" id="v11-input-text"></span><span data-hf-id="hf-v11ca" class="v11-caret" id="v11-caret"></span></div>
+        <div data-hf-id="hf-v11mp" class="v11-mini" style="top:160px">p</div>
+        <div data-hf-id="hf-v11pl" class="v11-pline" id="v11-pline"><span data-hf-id="hf-v11rg" class="v11-ring" id="v11-ring"></span>Je typte: <span data-hf-id="hf-v11pn" id="v11-pname"></span></div>
+        <div data-hf-id="hf-v11bd" class="v11-badge" id="v11-badge">0 regels extra</div>
+      </div>
+      <div data-hf-id="hf-v11rt" class="v11-rtag" id="v11-rtag">render #<span data-hf-id="hf-v11rn" id="v11-rnum">2</span></div>
+
+      <!-- state chip -->
+      <div data-hf-id="hf-v11ch" class="v11-chip" id="v11-chip">
+        <span data-hf-id="hf-v11cl" class="v11-chip-lab">state</span>
+        <span data-hf-id="hf-v11ck" class="v11-chip-key">name:</span>
+        <span data-hf-id="hf-v11v0" class="v11-val" id="v11-val0">""</span>
+        <span data-hf-id="hf-v11v1" class="v11-val" id="v11-val1">"S"</span>
+        <span data-hf-id="hf-v11v2" class="v11-val" id="v11-val2">"Sa"</span>
+        <span data-hf-id="hf-v11v3" class="v11-val" id="v11-val3">"Sam"</span>
+      </div>
+
+      <!-- amber arrow: state chip -> p line -->
+      <svg data-hf-id="hf-v11ar" class="v11-arrow" viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true">
+        <g data-hf-id="hf-v11ag" fill="none" stroke="#E8A55A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <path data-hf-id="hf-v11ap" id="v11-arc" d="M1322 600 C1336 566 1326 536 1306 504" />
+          <path data-hf-id="hf-v11ah" id="v11-head" d="M1302 522 L1306 504 L1322 513" />
+        </g>
+      </svg>
+      <div data-hf-id="hf-v11al" class="v11-arrow-lab" id="v11-arrow-lab">leest de state</div>
+
+      <div data-hf-id="hf-v11rp" class="v11-ripple" id="v11-ripple"></div>
+      <div data-hf-id="hf-v11cu" class="v11-cursor" id="v11-cursor" aria-hidden="true">
+        <svg data-hf-id="hf-v11cs" viewBox="0 0 24 24"><path data-hf-id="hf-v11cpth" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 9.4;
+      var root = document.querySelector('[data-composition-id="11-vanzelf"]');
+      var q = function (s) { return root.querySelector(s); };
+      var qa = function (s) { return root.querySelectorAll(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- Scene 1 (0.0–2.3): kicker, code dims, cursor clicks into the input, "Sam" typed ----
+      tl.fromTo("#v11-kicker", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo(qa(".v11-dimrow"), { opacity: 1 }, { opacity: 0.6, duration: 0.4, ease: "power1.out" }, 0);
+
+      // initial states (continuity from frame 10: empty input, empty p, name: "")
+      tl.set("#v11-caret", { opacity: 0 }, 0);
+      tl.set("#v11-input-text", { textContent: "" }, 0);
+      tl.set("#v11-pname", { textContent: "" }, 0);
+      tl.set(["#v11-val1", "#v11-val2", "#v11-val3"], { opacity: 0, y: 30 }, 0);
+      tl.set("#v11-val0", { opacity: 1, y: 0 }, 0);
+
+      // cursor glides in from lower right and clicks into the input
+      var TIP_X = 1290;
+      var TIP_Y = 336;
+      var TIP_ORIGIN = "20.83% 12.5%";
+      var CLICK_AT = 0.3;
+      tl.fromTo("#v11-cursor",
+        { xPercent: -20.83, yPercent: -12.5, x: 1640, y: 640, scale: 1 },
+        { xPercent: -20.83, yPercent: -12.5, x: TIP_X, y: TIP_Y, duration: 0.3, ease: "power3.out" }, 0);
+      tl.to("#v11-cursor", { scale: 0.86, duration: 0.08, ease: "power2.in", transformOrigin: TIP_ORIGIN }, CLICK_AT);
+      tl.to("#v11-cursor", { scale: 1, duration: 0.2, ease: "power2.out", transformOrigin: TIP_ORIGIN }, CLICK_AT + 0.08);
+      tl.fromTo("#v11-ripple", { scale: 0.4, opacity: 0.9 }, { scale: 3, opacity: 0, duration: 0.6, ease: "power2.out", immediateRender: false }, CLICK_AT + 0.02);
+      tl.to("#v11-input", { borderColor: "rgba(20, 20, 19, 0.55)", duration: 0.2, ease: "power1.out" }, CLICK_AT + 0.04);
+      tl.set("#v11-caret", { opacity: 1 }, CLICK_AT + 0.06);
+      // cursor eases aside (below the card, right of the chip) so the input stays readable
+      tl.to("#v11-cursor", { x: 1700, y: 700, duration: 0.5, ease: "power2.inOut" }, 0.62);
+
+      // keystrokes: input grows, render tag pulses, p re-renders, chip value flips
+      var keys = [
+        { at: 0.5, txt: "S", n: 2, from: "#v11-val0", to: "#v11-val1" },
+        { at: 0.8, txt: "Sa", n: 3, from: "#v11-val1", to: "#v11-val2" },
+        { at: 1.1, txt: "Sam", n: 4, from: "#v11-val2", to: "#v11-val3" }
+      ];
+      tl.fromTo("#v11-rtag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.2, ease: "power3.out" }, 0.5);
+      keys.forEach(function (k) {
+        tl.set("#v11-input-text", { textContent: k.txt }, k.at);
+        tl.fromTo("#v11-input", { scale: 0.992 }, { scale: 1, duration: 0.14, ease: "power2.out", immediateRender: false }, k.at);
+        // state flips (old slides up/out, new slides in)
+        tl.to(k.from, { opacity: 0, y: -30, duration: 0.22, ease: "power2.in" }, k.at + 0.02);
+        tl.fromTo(k.to, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.25, ease: "power3.out", immediateRender: false }, k.at + 0.04);
+        // re-render: tag number + pulse, p line updates in sync
+        tl.set("#v11-rnum", { textContent: String(k.n) }, k.at + 0.08);
+        tl.fromTo("#v11-rtag", { scale: 1.12 }, { scale: 1, duration: 0.22, ease: "power2.out", immediateRender: false }, k.at + 0.08);
+        tl.set("#v11-pname", { textContent: k.txt }, k.at + 0.1);
+      });
+
+      // ---- Scene 2 (2.3–4.5): amber ring on the p line ("de p-tag toont meteen je tekst") ----
+      tl.fromTo("#v11-ring", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" }, 2.56);
+      tl.fromTo("#v11-pline", { scale: 1 }, { scale: 1.04, duration: 0.25, ease: "power2.out", transformOrigin: "0% 50%", immediateRender: false }, 3.83);
+      tl.to("#v11-pline", { scale: 1, duration: 0.45, ease: "power3.out" }, 4.08);
+
+      // ---- Scene 3 (4.5–9.4): coral badge, then amber arrow chip -> p + {name} wash ----
+      tl.fromTo("#v11-badge", { opacity: 0, x: 16 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 5.18);
+
+      var arc = q("#v11-arc");
+      var len = 120;
+      try { len = Math.ceil(arc.getTotalLength()) || 120; } catch (e) {}
+      tl.fromTo(arc, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 7.39);
+      tl.fromTo("#v11-head", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, 7.92);
+      tl.fromTo("#v11-arrow-lab", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 7.8);
+      tl.to("#v11-namehl", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.4, ease: "power1.out" }, 8.31);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+        // voice take: 9.4s → 10.12s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.16, 0.24], [0.213, 0.28], [0.32, 0.32], [0.368, 0.4], [0.72, 0.96], [0.74, 1.08], [0.8, 1.2], [0.848, 1.32], [1.2, 1.6], [1.253, 1.8], [1.52, 2.0], [1.573, 2.12], [2.24, 2.8], [2.267, 2.84], [2.32, 2.88], [2.373, 2.96], [2.48, 3.04], [2.56, 3.12], [2.96, 3.52], [3.013, 3.6], [3.28, 3.84], [3.34, 4.0], [3.68, 4.32], [3.707, 4.4], [3.76, 4.48], [3.827, 4.6], [4.4, 5.08], [4.507, 5.28], [4.8, 5.44], [4.827, 5.48], [5.04, 5.6], [5.067, 5.68], [5.12, 5.76], [5.184, 5.92], [5.44, 6.08], [5.52, 6.24], [5.84, 6.48], [5.888, 6.56], [6.08, 6.64], [6.128, 6.72], [6.64, 7.28], [6.667, 7.32], [6.72, 7.36], [6.84, 7.44], [7.28, 7.92], [7.387, 8.0], [7.76, 8.32], [7.8, 8.4], [8.08, 8.64], [8.133, 8.68], [8.24, 8.72], [8.307, 8.8], [8.8, 9.52], [9.4, 10.12]]);
+      window.__timelines["11-vanzelf"] = tl;
+    })();
+  </script>
+</template>

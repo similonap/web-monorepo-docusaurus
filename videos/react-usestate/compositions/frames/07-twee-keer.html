@@ -1,0 +1,451 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .p07-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .p07-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .p07-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .p07-kicker .p07-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .p07-panel {
+      position: absolute;
+      left: 80px;
+      top: 190px;
+      width: 1100px;
+      height: 680px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .p07-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .p07-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .p07-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 80px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      line-height: 52px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .p07-row { position: relative; height: 52px; white-space: pre; }
+    .p07-ln {
+      position: absolute;
+      left: 0;
+      width: 50px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 22px;
+    }
+    .p07-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .p07-ch { display: inline; }
+    .p07-kw { color: #CC785C; }
+    .p07-fn { color: #E8A55A; }
+    .p07-num { color: #E8A55A; }
+    .p07-dim { color: rgba(250, 249, 245, 0.6); }
+    .p07-wash {
+      position: absolute;
+      left: 142px;
+      top: 6px;
+      width: 354px;
+      height: 40px;
+      border-radius: 4px;
+      background: rgba(232, 165, 90, 0.24);
+      opacity: 0;
+    }
+    .p07-caret {
+      position: absolute;
+      top: 9px;
+      left: 0;
+      width: 3px;
+      height: 34px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+
+    /* expectation chip (above the scherm card) */
+    .p07-expect {
+      position: absolute;
+      left: 1200px;
+      top: 104px;
+      height: 64px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #141413;
+      white-space: nowrap;
+      transform-origin: 0% 50%;
+    }
+    .p07-expect-txt { position: relative; }
+    .p07-expect-lab { color: rgba(20, 20, 19, 0.55); }
+    .p07-strike {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 30px;
+      height: 4px;
+      border-radius: 2px;
+      background: #CC785C;
+      transform-origin: 0% 50%;
+    }
+
+    /* scherm card */
+    .p07-label {
+      position: absolute;
+      left: 1200px;
+      top: 196px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .p07-card {
+      position: absolute;
+      left: 1200px;
+      top: 244px;
+      width: 640px;
+      height: 276px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .p07-btn {
+      position: absolute;
+      left: 64px;
+      top: 83px;
+      width: 150px;
+      height: 110px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.32);
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 52px;
+      color: #141413;
+    }
+    .p07-num-v {
+      position: absolute;
+      left: 0; right: 0;
+      top: 0;
+      height: 108px;
+      line-height: 108px;
+      text-align: center;
+    }
+    .p07-ripple {
+      position: absolute;
+      left: 119px;
+      top: 118px;
+      width: 40px;
+      height: 40px;
+      border: 3px solid #141413;
+      border-radius: 9999px;
+      opacity: 0;
+    }
+    .p07-real {
+      position: absolute;
+      left: 262px;
+      top: 106px;
+      height: 64px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      background: #CC785C;
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 700;
+      color: #FAF9F5;
+      white-space: nowrap;
+      transform-origin: 0% 50%;
+    }
+    .p07-render {
+      position: absolute;
+      right: 28px;
+      top: -19px;
+      height: 38px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      color: rgba(20, 20, 19, 0.7);
+    }
+
+    /* state chip (what React remembers) */
+    .p07-state {
+      position: absolute;
+      left: 1200px;
+      top: 572px;
+      height: 64px;
+      padding: 0 26px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .p07-state-lab { color: rgba(20, 20, 19, 0.55); }
+    .p07-state-val { position: relative; display: inline-block; width: 150px; height: 40px; overflow: hidden; }
+    .p07-state-v { position: absolute; left: 0; top: 0; line-height: 40px; }
+
+    /* cursor */
+    .p07-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 84px;
+      height: 112px;
+      z-index: 50;
+      pointer-events: none;
+      transform-origin: 0 0;
+    }
+  </style>
+
+  <div data-hf-id="hf-ka7i" id="root" data-composition-id="07-twee-keer" data-width="1920" data-height="1080" data-duration="11.34">
+    <div data-hf-id="hf-v1wk" class="p07-bg clip" id="p07-bg" data-start="0" data-duration="11.34" data-track-index="0"></div>
+
+    <div data-hf-id="hf-p9x5" class="p07-stage clip" id="p07-stage" data-start="0" data-duration="11.34" data-track-index="1">
+      <div data-hf-id="hf-2eeu" class="p07-kicker" id="p07-kicker"><span data-hf-id="hf-1sk8" class="p07-spike">✱</span>Opgelet</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-6cbm" class="p07-panel" id="p07-panel">
+        <div data-hf-id="hf-82kq" class="p07-titlebar">Counter.tsx</div>
+        <div data-hf-id="hf-cvp3" class="p07-code">
+          <div data-hf-id="hf-unck" class="p07-row"><span data-hf-id="hf-yuoq" class="p07-ln">1</span><span data-hf-id="hf-90e1" class="p07-txt"><span data-hf-id="hf-1l26" class="p07-kw">const</span> <span data-hf-id="hf-drx7" class="p07-fn">Counter</span> = () =&gt; {</span></div>
+          <div data-hf-id="hf-t68c" class="p07-row"><span data-hf-id="hf-z8zr" class="p07-ln">2</span><span data-hf-id="hf-lm4k" class="p07-txt">  <span data-hf-id="hf-rs8y" class="p07-kw">const</span> [count, setCount] = <span data-hf-id="hf-olap" class="p07-fn">useState</span><span data-hf-id="hf-6qvw" class="p07-dim">&lt;number&gt;</span>(<span data-hf-id="hf-rwg5" class="p07-num">0</span>);</span></div>
+          <div data-hf-id="hf-rzb9" class="p07-row"><span data-hf-id="hf-znas" class="p07-ln">3</span></div>
+          <div data-hf-id="hf-sdma" class="p07-row"><span data-hf-id="hf-01lt" class="p07-ln">4</span><span data-hf-id="hf-jqx9" class="p07-txt">  <span data-hf-id="hf-s6jz" class="p07-kw">const</span> <span data-hf-id="hf-j2zh" class="p07-fn">handleClick</span> = () =&gt; {</span></div>
+          <div data-hf-id="hf-ud5f" class="p07-row"><span data-hf-id="hf-0fwu" class="p07-ln">5</span><span data-hf-id="hf-5ebc" class="p07-wash" id="p07-wash5"></span><span data-hf-id="hf-gnro" class="p07-txt" id="p07-line5"></span><span data-hf-id="hf-39mi" class="p07-caret" id="p07-caret5"></span></div>
+          <div data-hf-id="hf-urgg" class="p07-row"><span data-hf-id="hf-0u7v" class="p07-ln">6</span><span data-hf-id="hf-e277" class="p07-wash" id="p07-wash6"></span><span data-hf-id="hf-pbnj" class="p07-txt" id="p07-line6"></span><span data-hf-id="hf-zbih" class="p07-caret" id="p07-caret6"></span></div>
+          <div data-hf-id="hf-tkjd" class="p07-row"><span data-hf-id="hf-18iw" class="p07-ln">7</span><span data-hf-id="hf-ny5j" class="p07-txt">  };</span></div>
+          <div data-hf-id="hf-tyue" class="p07-row"><span data-hf-id="hf-1mtx" class="p07-ln">8</span></div>
+          <div data-hf-id="hf-plh3" class="p07-row"><span data-hf-id="hf-214y" class="p07-ln">9</span><span data-hf-id="hf-5evq" class="p07-txt">  <span data-hf-id="hf-z1ox" class="p07-kw">return</span> &lt;button onClick={<span data-hf-id="hf-nsoh" class="p07-fn">handleClick</span>}&gt;{count}&lt;/button&gt;;</span></div>
+          <div data-hf-id="hf-pzs4" class="p07-row"><span data-hf-id="hf-kjmm" class="p07-ln">10</span><span data-hf-id="hf-gd9i" class="p07-txt">}</span></div>
+        </div>
+        <div data-hf-id="hf-30s7" class="p07-status">handleClick · 2× setCount</div>
+      </div>
+
+      <!-- expectation chip -->
+      <div data-hf-id="hf-ri2y" class="p07-expect" id="p07-expect">
+        <span data-hf-id="hf-pcpr" class="p07-expect-txt" id="p07-expect-txt"><span data-hf-id="hf-25xg" class="p07-expect-lab">verwacht:</span> 2</span>
+        <div data-hf-id="hf-glj6" class="p07-strike" id="p07-strike"></div>
+      </div>
+
+      <!-- scherm card -->
+      <div data-hf-id="hf-uzt2" class="p07-label" id="p07-label">scherm</div>
+      <div data-hf-id="hf-np36" class="p07-card" id="p07-card">
+        <div data-hf-id="hf-eylr" class="p07-render" id="p07-render">render #2</div>
+        <div data-hf-id="hf-6m3a" class="p07-btn" id="p07-btn">
+          <div data-hf-id="hf-iiur" class="p07-num-v" id="p07-n0">0</div>
+          <div data-hf-id="hf-rykb" class="p07-num-v" id="p07-n1">1</div>
+        </div>
+        <div data-hf-id="hf-ze5u" class="p07-ripple" id="p07-ripple"></div>
+        <div data-hf-id="hf-0gcp" class="p07-real" id="p07-real">werkelijk: 1</div>
+      </div>
+
+      <!-- state chip -->
+      <div data-hf-id="hf-wsl8" class="p07-state" id="p07-state">
+        <span data-hf-id="hf-f8hj" class="p07-state-lab">state</span>
+        <span data-hf-id="hf-8ssi" class="p07-state-val"><span data-hf-id="hf-q5vd" class="p07-state-v" id="p07-s0">count: 0</span><span data-hf-id="hf-fj83" class="p07-state-v" id="p07-s1">count: 1</span></span>
+      </div>
+
+      <svg data-hf-id="hf-j4qw" class="p07-cursor" id="p07-cursor" viewBox="0 0 54 72">
+        <path data-hf-id="hf-9u2i" d="M2 2 L2 58 L16 45 L26 68 L36 63 L26 41 L45 41 Z" fill="#141413" stroke="#FAF9F5" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "07-twee-keer";
+      var DUR = 9.88;
+      var root = document.querySelector('[data-composition-id="' + ID + '"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      var X0 = 76;            // text left inside a row
+      var CH = 30 * 0.6;      // JetBrains Mono advance at 30px
+      function typeLine(lineSel, caretSel, segments, start, per) {
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          for (var i = 0; i < seg.t.length; i++) {
+            var s = document.createElement("span");
+            s.className = "p07-ch" + (seg.c ? " " + seg.c : "");
+            s.textContent = seg.t[i];
+            line.appendChild(s);
+            chars.push(s);
+          }
+        });
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 }, Math.max(0, start - 0.1));
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (i + 1) * CH }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.12);
+        return end;
+      }
+      var SEG = [
+        { t: "    " },
+        { t: "setCount", c: "p07-fn" },
+        { t: "(count + " },
+        { t: "1", c: "p07-num" },
+        { t: ");" }
+      ]; // 24 chars
+
+      // ---- Scene 1 (0.0–3.9): kicker + code; "twee keer setCount" types lines 5 and 6 ----
+      tl.fromTo("#p07-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      tl.fromTo("#p07-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.08);
+      typeLine("#p07-line5", "#p07-caret5", SEG, 0.53, 0.4 / 24);
+      typeLine("#p07-line6", "#p07-caret6", SEG, 1.02, 0.4 / 24);
+      // "count plus één": amber wash on both calls
+      tl.fromTo(["#p07-wash5", "#p07-wash6"], { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out", stagger: 0.08 }, 2.39);
+
+      // ---- Scene 2 (3.9–6.4): scherm card (from 0.3s), expectation chip on "Je verwacht" ----
+      tl.fromTo("#p07-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.3);
+      tl.fromTo("#p07-card", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.32);
+      tl.fromTo("#p07-state", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.5);
+      tl.fromTo("#p07-n1", { opacity: 0, y: 70 }, { opacity: 0, y: 70, duration: 0.01 }, 0);
+      tl.fromTo("#p07-s1", { opacity: 0, y: 30 }, { opacity: 0, y: 30, duration: 0.01 }, 0);
+      tl.fromTo("#p07-render", { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.fromTo("#p07-strike", { scaleX: 0 }, { scaleX: 0, duration: 0.01 }, 0);
+      tl.fromTo("#p07-real", { opacity: 0, scale: 1.15 }, { opacity: 0, scale: 1.15, duration: 0.01 }, 0);
+      tl.fromTo("#p07-expect", { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 4.05);
+      // "per twee": the expectation pulses
+      tl.to("#p07-expect", { scale: 1.08, duration: 0.18, ease: "power2.out" }, 5.06);
+      tl.to("#p07-expect", { scale: 1, duration: 0.4, ease: "power3.out" }, 5.24);
+      // focus moves right: the code wash settles back
+      tl.to(["#p07-wash5", "#p07-wash6"], { opacity: 0.45, duration: 0.6, ease: "power1.inOut" }, 5.6);
+
+      // ---- Scene 3 (6.4–9.88): click, 0 -> 1, coral verdict ----
+      var cur = "#p07-cursor";
+      var TIP_X = 1340, TIP_Y = 385; // button centre
+      tl.fromTo(cur, { x: 1700, y: 760, opacity: 0, scale: 1 }, { x: TIP_X, y: TIP_Y, opacity: 1, duration: 0.55, ease: "power3.out" }, 6.38);
+      var CLICK = 6.98;
+      tl.to(cur, { scale: 0.85, duration: 0.08, ease: "power2.in" }, CLICK);
+      tl.to(cur, { scale: 1, duration: 0.12, ease: "power2.out" }, CLICK + 0.08);
+      tl.to("#p07-btn", { scale: 0.95, duration: 0.08, ease: "power2.in" }, CLICK);
+      tl.to("#p07-btn", { scale: 1, duration: 0.14, ease: "power2.out" }, CLICK + 0.08);
+      tl.fromTo("#p07-ripple", { opacity: 0, scale: 0 }, { opacity: 0, scale: 0, duration: 0.01 }, 0);
+      tl.set("#p07-ripple", { opacity: 0.9, scale: 0.4 }, CLICK + 0.02);
+      tl.to("#p07-ripple", { scale: 3.4, opacity: 0, duration: 0.6, ease: "power2.out" }, CLICK + 0.02);
+      // cursor eases off the button so the result stays readable
+      tl.to(cur, { x: 1470, y: 470, duration: 0.6, ease: "power2.inOut" }, 7.25);
+
+      // 7.7: the numeral flips 0 -> 1 (re-render), state follows
+      var FLIP = 7.7;
+      tl.to("#p07-n0", { y: -70, opacity: 0, duration: 0.25, ease: "power2.in" }, FLIP);
+      tl.to("#p07-n1", { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" }, FLIP + 0.05);
+      tl.to("#p07-s0", { y: -30, opacity: 0, duration: 0.25, ease: "power2.in" }, FLIP);
+      tl.to("#p07-s1", { y: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, FLIP + 0.05);
+      tl.to("#p07-render", { opacity: 1, duration: 0.25, ease: "power1.out" }, FLIP);
+      tl.fromTo("#p07-render", { scale: 1.12 }, { scale: 1, duration: 0.4, ease: "power3.out", immediateRender: false }, FLIP);
+
+      // "maar per één": coral strike over the expectation + coral result chip
+      tl.to("#p07-strike", { scaleX: 1, duration: 0.35, ease: "power2.inOut" }, 8.19);
+      tl.to("#p07-expect-txt", { opacity: 0.45, duration: 0.35, ease: "power1.out" }, 8.25);
+      tl.to("#p07-real", { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 8.3);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+        // voice take: 9.88s → 10.84s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.16, 0.24], [0.2, 0.32], [0.32, 0.48], [0.373, 0.56], [0.48, 0.64], [0.528, 0.72], [0.72, 0.96], [0.768, 1.04], [0.96, 1.2], [1.02, 1.28], [1.52, 1.76], [1.58, 1.84], [2.16, 2.48], [2.2, 2.6], [2.32, 2.72], [2.387, 2.88], [2.72, 3.12], [2.784, 3.2], [3.04, 3.44], [3.12, 3.52], [3.92, 3.84], [3.947, 4.32], [4.0, 4.4], [4.048, 4.48], [4.4, 4.8], [4.42, 4.88], [4.48, 4.96], [4.533, 5.04], [4.64, 5.12], [4.672, 5.227], [5.04, 5.44], [5.06, 5.56], [5.12, 5.68], [5.2, 5.72], [5.52, 5.92], [5.6, 6.0], [5.92, 6.4], [5.984, 6.48], [6.32, 7.04], [6.416, 7.08], [6.8, 7.36], [6.853, 7.44], [6.96, 7.6], [6.98, 7.653], [7.68, 8.4], [7.707, 8.52], [7.76, 8.64], [7.8, 8.8], [7.92, 8.96], [7.968, 9.0], [8.16, 9.2], [8.192, 9.24], [8.32, 9.36], [8.38, 9.48], [8.56, 9.6], [8.64, 9.68], [9.28, 10.24], [9.88, 10.84]]);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

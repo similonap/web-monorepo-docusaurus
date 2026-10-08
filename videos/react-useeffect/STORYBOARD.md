@@ -26,7 +26,7 @@ music: none
 
 - scene: A tiny app card with a big counter that ticks 0 → 1 → 2 → 3 once per second. "Klinkt simpel" — calm. On "één verkeerde regel" one code line `setInterval(…)` slides in under the card with a coral underline. On "loopt je hele pagina vast" the counter races to absurd numbers and the card freezes: dims, and a coral mono chip `pagina reageert niet` lands.
 - voiceover: "Een teller die elke seconde één omhoog gaat. Klinkt simpel. Maar met één verkeerde regel… loopt je hele pagina vast."
-- duration: 9.68s
+- duration: 9.38s
 - transition_in: cut
 - status: animated
 - src: compositions/frames/01-hook.html
@@ -52,7 +52,7 @@ Scene 4 (6.9–9.68s): on "loopt" (6.96s) the numeral accelerates: 5, 7, 12, 31,
 
 - scene: Code surface types the Timer component with `setInterval` directly in the component body (not in an effect). Right column: the rendered output (`<p>` showing the number) and a "timers" list with one chip `timer #1 · 1000ms`. The timer ticks, the number goes 0 → 1. "Tot zover niets aan de hand."
 - voiceover: "Stel je voor: je zet een setInterval gewoon in je component. Na een seconde tikt de timer, en die verhoogt de state. Tot zover niets aan de hand."
-- duration: 11.56s
+- duration: 10.86s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/02-zonder-effect.html
@@ -90,7 +90,7 @@ Scene 4 (8.9–11.56s): "Tot zover niets aan de hand" (9.1s): a small ink `✓ 1
 
 - scene: A cycle diagram: `state-update` → `render` → `setInterval()` → back to state-update. During "de hele functie opnieuw uitgevoerd" a highlight scans the component body line by line (re-execution). "dus ook setInterval" — the setInterval node lights. "Er komt een tweede timer bij" — a second, coral timer chip drops into the timers list.
 - voiceover: "Maar een state-update betekent: React rendert je component opnieuw. En bij die render wordt de hele functie opnieuw uitgevoerd — dus ook setInterval. Er komt een tweede timer bij."
-- duration: 14.4s
+- duration: 13.24s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/03-render-lus.html
@@ -117,7 +117,7 @@ Scene 5 (11.5–14.4s): on "tweede timer" (12.3s) a coral chip `timer #2 · 1000
 
 - scene: Exponential blow-up. A big counter "actieve timers" doubles on the spoken numbers: 1 → 2 → 4 → 8 → 16, then rushes to 1024. Next to it a grid of 32×32 tiny timer dots fills in doubling batches. The "teller" value races. On "browser loopt vast" the whole stage freezes and a coral stamp `VASTGELOPEN` lands.
 - voiceover: "En elke timer veroorzaakt weer een render, en elke render weer een nieuwe timer. Twee, vier, acht, zestien… Na tien seconden lopen er meer dan duizend timers. Je teller schiet weg, en je browser loopt vast."
-- duration: 18.56s
+- duration: 16.12s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/04-uit-de-hand.html
@@ -144,7 +144,7 @@ Scene 5 (15.9–18.56s): on "browser loopt vast" (15.96s) everything freezes at 
 
 - scene: Headline "setInterval is een side effect." Then the course's Greet example: three lines annotated — `const message = …` → label `output`; `document.title = …` → label `side effect` (coral); `return <div>…` → `output`. Example chips: timer, fetch, document.title. Then "geen controle over hoe vaak React rendert": render tags drop onto a timeline at irregular intervals.
 - voiceover: "Het probleem: setInterval is een side effect. Code die niets bijdraagt aan wat je component toont — een timer, een fetch, de titel van je pagina aanpassen. En je hebt geen controle over hoe vaak React rendert."
-- duration: 16.4s
+- duration: 15s
 - transition_in: blur-crossfade
 - status: animated
 - src: compositions/frames/05-side-effect.html
@@ -177,7 +177,7 @@ Scene 4 (11.4–16.4s): on "geen controle" (12.42s) a hairline timeline draws ac
 
 - scene: The setInterval code is wrapped in `useEffect(() => { … }, [])`. Right: a render timeline where `render` tags keep landing, an `effect` marker runs only after the first render, and the timers list stays at exactly one chip `timer #1`.
 - voiceover: "Daarvoor is er useEffect. Je geeft een functie mee, en React voert die uit ná het renderen — los van de render zelf. Met een lege array als tweede argument: maar één keer. Eén timer, hoe vaak er ook gerenderd wordt."
-- duration: 17.36s
+- duration: 15.6s
 - transition_in: push-slide
 - status: animated
 - src: compositions/frames/06-useeffect.html
@@ -216,7 +216,7 @@ Scene 4 (13.6–17.36s): on "Eén timer" (13.88s) timers list shows `timer #1 ·
 
 - scene: Triptych of three cards: (1) `useEffect(fn)` → "na elke render"; (2) `useEffect(fn, [])` → "één keer, na de eerste render"; (3) `useEffect(fn, [count])` → "telkens count verandert". Each card has a mini timeline of 5 render ticks with effect dots showing when the effect runs.
 - voiceover: "Die array heet de dependency array, en die bepaalt wanneer je effect loopt. Geen array: na elke render. Een lege array: één keer, na de eerste render. En met count erin: telkens wanneer count verandert."
-- duration: 16.28s
+- duration: 16.08s
 - transition_in: push-slide
 - status: animated
 - src: compositions/frames/07-dependency-array.html
@@ -242,7 +242,7 @@ Scene 4 (11.7–16.28s): on "met count erin" (11.84s) card 3 lands right: `useEf
 
 - scene: Code: Timer with `interval` prop, `useEffect(() => { let handle = setInterval(…, interval); }, [interval]);` — no cleanup. Right: a slider (1000ms) that moves to 500ms then 200ms. Each move adds a new timer chip; old chips keep ticking. "De oude? Die wordt nooit gestopt" — old chips turn coral and keep pulsing.
 - voiceover: "Maar opgelet. Stel dat de interval een prop is, die je met een slider kiest. Dan zet je interval in de dependency array. Elke keer je schuift, loopt het effect opnieuw en start er een nieuwe timer. De oude? Die wordt nooit gestopt — en blijft gewoon doortellen."
-- duration: 19.16s
+- duration: 17.66s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/08-cleanup-probleem.html
@@ -281,7 +281,7 @@ Scene 4 (13.9–19.16s): on "De oude?" (14.22s) chips #1 and #2 get coral hairli
 
 - scene: The same code gains `return () => { clearInterval(handle); };`. Right: a vertical sequence: `effect (1000ms)` → `cleanup ✕` → `effect (500ms)` → `cleanup ✕` → `effect (200ms)`; then `unmount → cleanup`. Timers list ends with only one live chip; old ones struck through.
 - voiceover: "De oplossing: geef vanuit je effect een cleanup-functie terug. Daarin roep je clearInterval op, met de handle van je timer. React voert die cleanup uit vóór het effect opnieuw loopt, en wanneer je component verdwijnt. Zo loopt er altijd maar één timer."
-- duration: 19.96s
+- duration: 17.6s
 - transition_in: push-slide
 - status: animated
 - src: compositions/frames/09-cleanup-oplossing.html
@@ -318,7 +318,7 @@ Scene 4 (16.4–19.96s): on "altijd maar één timer" (17.3s) the timers list (b
 
 - scene: The course's API example: useEffect with an inner `async` fetchFunction and `[]`. A ghost line `useEffect(async () => …)` gets struck through with a coral ✕. Right: an API card `worldtimeapi.org` returns JSON that drops into a small rendered list.
 - voiceover: "Je gebruikt useEffect ook om data op te halen uit een API — één keer, met een lege array. Let op: de callback zelf mag niet async zijn. Dus maak je binnenin een async functie, en roep je die meteen op."
-- duration: 17.16s
+- duration: 15.42s
 - transition_in: blur-crossfade
 - status: animated
 - src: compositions/frames/10-data-ophalen.html
@@ -354,7 +354,7 @@ Scene 4 (11.3–17.16s): on "binnenin een async functie" (12.5s) lines 2–6 typ
 
 - scene: A console panel shows `effect gestart` twice in development. `<StrictMode><App /></StrictMode>` snippet. Sequence: mount → effect → cleanup → effect (label `alleen in development`). A toggle `StrictMode` stays ON; final check "ruim netjes op".
 - voiceover: "Zie je in development je effect toch twee keer lopen? Dat is Strict Mode. React test zo of je cleanup klopt. Zet het dus niet af — ruim gewoon netjes op."
-- duration: 13.24s
+- duration: 11.44s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/11-strict-mode.html
@@ -379,7 +379,7 @@ Scene 4 (8.9–13.24s): on "Zet het dus niet af" (9.0s) a toggle `StrictMode` ap
 
 - scene: Recap card: headline "Wat je start, ruim je op." Three chips: `useEffect(() => …)` "side effects", `[deps]` "wanneer", `return () => clearInterval(…)` "cleanup". Ends on the coral ✱ mark.
 - voiceover: "Kort samengevat: side effects horen in useEffect. De dependency array bepaalt wanneer het loopt. En wat je start, ruim je op — met een cleanup-functie."
-- duration: 14.4s
+- duration: 11.22s
 - transition_in: blur-crossfade
 - status: animated
 - src: compositions/frames/12-samenvatting.html

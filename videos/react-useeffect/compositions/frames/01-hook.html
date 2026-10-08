@@ -203,10 +203,10 @@
     }
   </style>
 
-  <div data-hf-id="hf-q8dc" id="root" data-composition-id="01-hook" data-width="1920" data-height="1080" data-start="0" data-duration="10.18">
-    <div data-hf-id="hf-sjlu" class="f01-bg clip" id="f01-bg" data-start="0" data-duration="10.18" data-track-index="0"></div>
+  <div data-hf-id="hf-q8dc" id="root" data-composition-id="01-hook" data-width="1920" data-height="1080" data-start="0" data-duration="9.88">
+    <div data-hf-id="hf-sjlu" class="f01-bg clip" id="f01-bg" data-start="0" data-duration="9.88" data-track-index="0"></div>
 
-    <div data-hf-id="hf-1gjz" class="f01-stage clip" id="f01-stage" data-start="0" data-duration="10.18" data-track-index="1">
+    <div data-hf-id="hf-1gjz" class="f01-stage clip" id="f01-stage" data-start="0" data-duration="9.88" data-track-index="1">
       <div data-hf-id="hf-alwy" class="f01-kicker" id="f01-kicker"><span data-hf-id="hf-h0qg" class="f01-spike">✱</span>Een teller</div>
 
       <div data-hf-id="hf-7iea" class="f01-card" id="f01-card">
@@ -363,6 +363,24 @@
 
       // hold still to full duration (incl. 0.5s transition tail)
       tl.set({}, {}, DUR);
+        // voice take: 9.68s → 9.38s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.2, 0.16], [0.24, 0.2], [0.54, 0.48], [0.76, 0.56], [0.9, 0.8], [0.98, 0.88], [1.2, 1.04], [1.26, 1.12], [1.68, 1.68], [1.96, 1.76], [2.16, 1.92], [2.38, 2.0], [2.74, 2.32], [2.8, 2.4], [3.08, 2.92], [3.6, 3.12], [3.86, 3.36], [3.92, 3.44], [4.3, 4.04], [4.86, 4.24], [5.0, 4.4], [5.04, 4.56], [5.34, 4.72], [5.44, 4.8], [5.62, 4.96], [5.66, 5.04], [6.12, 5.52], [6.18, 5.64], [6.56, 6.32], [6.96, 6.36], [7.2, 6.56], [7.24, 6.68], [7.36, 6.8], [7.44, 6.88], [7.66, 7.12], [7.78, 7.2], [8.22, 7.6], [8.26, 7.68], [8.62, 8.32], [9.68, 9.38]]);
       window.__timelines["01-hook"] = tl;
     })();
   </script>

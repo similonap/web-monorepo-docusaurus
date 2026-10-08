@@ -218,9 +218,9 @@
   </style>
 
   <div data-hf-id="hf-vz2e" id="root" data-composition-id="10-samenvatting" data-width="1920" data-height="1080">
-    <div data-hf-id="hf-h734" class="10-samenvatting-bg clip" data-start="0" data-duration="11.56" data-track-index="0"></div>
+    <div data-hf-id="hf-h734" class="10-samenvatting-bg clip" data-start="0" data-duration="10.24" data-track-index="0"></div>
 
-    <div data-hf-id="hf-umxy" class="10-samenvatting-stage clip" data-start="0" data-duration="11.56" data-track-index="1">
+    <div data-hf-id="hf-umxy" class="10-samenvatting-stage clip" data-start="0" data-duration="10.24" data-track-index="1">
       <div data-hf-id="hf-i632" class="10-samenvatting-kicker">Samenvatting</div>
 
       <div data-hf-id="hf-0pxw" class="10-samenvatting-head">
@@ -364,7 +364,7 @@
       tl.fromTo(one("stage"), { opacity: 1 }, { opacity: 0, duration: 0.4, ease: "power2.inOut", immediateRender: false }, 9.04);
 
       window.__timelines = window.__timelines || {};
-      // voice take: 9.44s → 10.8s (anchors from audio_meta.json words)
+      // voice take: 9.44s → 10.24s (anchors from audio_meta.json words)
       var __retime = function (tl, M) {
         // Cues were authored against an earlier voice take; map each child's
         // start and end through the old→new word-anchor table M ([oldT, newT]).
@@ -381,7 +381,7 @@
           c.startTime(ns);
         });
       };
-      __retime(tl, [[0.0, 0.0], [0.06, 0.08], [0.28, 0.34], [1.08, 1.42], [1.93, 2.02], [2.24, 2.28], [2.94, 3.04], [3.36, 3.78], [3.5, 3.98], [3.92, 4.84], [4.56, 5.62], [4.83, 5.84], [5.24, 7.18], [5.75, 7.7], [6.26, 7.88], [6.73, 8.18], [7.52, 8.96], [7.72, 9.16], [8.13, 9.92], [8.48, 10.32], [8.65, 10.44], [9.44, 10.8]]);
+      __retime(tl, [[0.0, 0.0], [0.06, 0.069], [0.229, 0.24], [0.28, 0.32], [0.71, 1.36], [1.08, 1.4], [1.845, 1.76], [1.93, 1.84], [2.097, 1.92], [2.24, 2.0], [2.516, 2.72], [2.94, 2.84], [3.315, 3.32], [3.36, 3.36], [3.458, 3.52], [3.5, 3.6], [3.666, 4.32], [3.92, 4.4], [4.494, 5.04], [4.56, 5.12], [4.756, 5.2], [4.83, 5.28], [4.903, 5.84], [5.24, 6.08], [5.691, 6.56], [5.75, 6.64], [6.09, 6.72], [6.26, 6.8], [6.634, 7.04], [6.73, 7.24], [7.054, 7.44], [7.52, 7.84], [7.64, 7.92], [7.72, 8.0], [7.947, 8.4], [8.13, 8.56], [8.428, 8.64], [8.48, 8.72], [8.565, 8.76], [8.65, 8.8], [9.352, 9.44], [9.44, 9.48], [10.2, 10.24]]);
       window.__timelines[ID] = tl;
     })();
   </script>

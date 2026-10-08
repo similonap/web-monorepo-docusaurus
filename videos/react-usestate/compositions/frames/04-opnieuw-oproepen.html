@@ -1,0 +1,383 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f04-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f04-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f04-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f04-kicker .f04-spike { color: #CC785C; margin-right: 14px; }
+
+    /* column labels above each node */
+    .f04-label {
+      position: absolute;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.6);
+      white-space: nowrap;
+    }
+
+    /* arrows */
+    .f04-arrows {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    /* travelling value dot (sits under the nodes) */
+    .f04-dot {
+      position: absolute;
+      left: 0;
+      top: 376px;
+      width: 48px;
+      height: 48px;
+      border-radius: 9999px;
+      background: #E8A55A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 1;
+      color: #141413;
+      opacity: 0;
+    }
+
+    /* pipeline nodes */
+    .f04-node {
+      position: absolute;
+      top: 300px;
+      height: 200px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f04-node1 { left: 80px; width: 330px; }
+    .f04-node2 { left: 530px; width: 520px; }
+
+    .f04-fn {
+      position: absolute;
+      left: 0; right: 0;
+      top: 40px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 42px;
+      line-height: 50px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f04-call {
+      position: absolute;
+      left: 0; right: 0;
+      top: 98px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      line-height: 26px;
+      color: rgba(20, 20, 19, 0.5);
+      white-space: nowrap;
+    }
+    .f04-arg {
+      position: absolute;
+      left: 0; right: 0;
+      top: 138px;
+      height: 34px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 34px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f04-arg-line { position: absolute; left: 0; right: 0; top: 0; }
+    .f04-amb { padding: 0 4px; border-radius: 4px; background: rgba(232, 165, 90, 0.32); }
+    .f04-badge {
+      position: absolute;
+      right: -26px;
+      top: -22px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: #CC785C;
+      color: #FAF9F5;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      line-height: 28px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    .f04-jsx {
+      position: absolute;
+      left: 30px;
+      right: 30px;
+      top: 52px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 48px;
+      color: #141413;
+      font-variant-ligatures: none;
+      white-space: pre;
+    }
+    .f04-jrow { position: relative; height: 48px; }
+    .f04-tag { color: rgba(20, 20, 19, 0.55); }
+    .f04-var {
+      display: inline-block;
+      border-radius: 4px;
+      background: rgba(232, 165, 90, 0);
+    }
+
+    /* scherm card */
+    .f04-screen {
+      position: absolute;
+      left: 1200px;
+      top: 230px;
+      width: 640px;
+      height: 340px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f04-btn-wrap {
+      position: absolute;
+      left: 0; right: 0;
+      top: 74px;
+      display: flex;
+      justify-content: center;
+    }
+    .f04-btn {
+      position: relative;
+      min-width: 132px;
+      height: 88px;
+      box-sizing: border-box;
+      padding: 0 40px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.45);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 46px;
+      color: #141413;
+    }
+    .f04-roll {
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+      height: 1.2em;
+      line-height: 1.2em;
+      vertical-align: bottom;
+    }
+    .f04-roll-old { display: inline-block; }
+    .f04-roll-new { position: absolute; left: 0; top: 0; }
+    .f04-ring {
+      position: absolute;
+      border: 2px solid #E8A55A;
+      border-radius: 12px;
+      opacity: 0;
+    }
+    .f04-btn .f04-ring { left: -12px; right: -12px; top: -12px; bottom: -12px; }
+    .f04-p {
+      position: absolute;
+      left: 0; right: 0;
+      top: 214px;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 400;
+      font-size: 36px;
+      line-height: 44px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f04-pspot { position: relative; display: inline-block; padding: 0 2px; }
+    .f04-pspot .f04-ring { left: -10px; right: -10px; top: -4px; bottom: -4px; border-radius: 8px; }
+  </style>
+
+  <div data-hf-id="hf-7cdq" id="root" data-composition-id="04-opnieuw-oproepen" data-width="1920" data-height="1080" data-duration="13.18">
+    <div data-hf-id="hf-8590" class="f04-bg clip" id="f04-bg" data-start="0" data-duration="13.18" data-track-index="0"></div>
+
+    <div data-hf-id="hf-mcc1" class="f04-stage clip" id="f04-stage" data-start="0" data-duration="13.18" data-track-index="1">
+      <div data-hf-id="hf-e40u" class="f04-kicker" id="f04-kicker"><span data-hf-id="hf-jd9n" class="f04-spike">✱</span>Hoe React tekent</div>
+
+      <!-- arrows (svg path draw) -->
+      <svg data-hf-id="hf-d9x7" class="f04-arrows" viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true">
+        <g data-hf-id="hf-enjf" fill="none" stroke="rgba(20,20,19,0.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path data-hf-id="hf-4x6a" id="f04-arr1" d="M418 400 L520 400" />
+          <path data-hf-id="hf-4wml" id="f04-head1" d="M506 389 L521 400 L506 411" />
+          <path data-hf-id="hf-o3fe" id="f04-arr2" d="M1058 400 L1190 400" />
+          <path data-hf-id="hf-pcxi" id="f04-head2" d="M1176 389 L1191 400 L1176 411" />
+        </g>
+      </svg>
+
+      <!-- value dots: under the nodes, visible on the arrows -->
+      <div data-hf-id="hf-z9o2" class="f04-dot" id="f04-dot0">0</div>
+      <div data-hf-id="hf-w3fm" class="f04-dot" id="f04-dot1">1</div>
+
+      <!-- node 1: the component function -->
+      <div data-hf-id="hf-xo3e" class="f04-label" id="f04-lab1" style="left:80px;top:256px">functie</div>
+      <div data-hf-id="hf-z553" class="f04-node f04-node1" id="f04-node1">
+        <div data-hf-id="hf-0i4y" class="f04-fn">Counter()</div>
+        <div data-hf-id="hf-rcla" class="f04-call">oproep #1</div>
+        <div data-hf-id="hf-9oc1" class="f04-arg">
+          <div data-hf-id="hf-f3qh" class="f04-arg-line" id="f04-arg-a">count: <span data-hf-id="hf-o126" class="f04-amb">0</span> → <span data-hf-id="hf-nmr5" class="f04-amb">1</span>?</div>
+          <div data-hf-id="hf-12v5" class="f04-arg-line" id="f04-arg-b">count: <span data-hf-id="hf-eqcl" class="f04-amb">1</span></div>
+        </div>
+        <div data-hf-id="hf-2s5c" class="f04-badge" id="f04-badge">oproep #2</div>
+      </div>
+
+      <!-- node 2: the returned JSX -->
+      <div data-hf-id="hf-7eix" class="f04-label" id="f04-lab2" style="left:530px;top:256px">geeft terug</div>
+      <div data-hf-id="hf-5ri1" class="f04-node f04-node2" id="f04-node2">
+        <div data-hf-id="hf-le4u" class="f04-jsx">
+          <div data-hf-id="hf-pxyl" class="f04-jrow"><span data-hf-id="hf-afz0" class="f04-tag">&lt;button&gt;</span><span data-hf-id="hf-iao2" class="f04-var" id="f04-v1">{count}</span><span data-hf-id="hf-x9a3" class="f04-tag">&lt;/button&gt;</span></div>
+          <div data-hf-id="hf-b5ag" class="f04-jrow" id="f04-jrow2"><span data-hf-id="hf-apaw" class="f04-tag">&lt;p&gt;</span>Je klikte <span data-hf-id="hf-hkrv" class="f04-var" id="f04-v2">{count}</span> keer<span data-hf-id="hf-vbsx" class="f04-tag">&lt;/p&gt;</span></div>
+        </div>
+      </div>
+
+      <!-- node 3: scherm card -->
+      <div data-hf-id="hf-hmad" class="f04-label" id="f04-lab3" style="left:1200px;top:186px">scherm</div>
+      <div data-hf-id="hf-u8d6" class="f04-screen" id="f04-screen">
+        <div data-hf-id="hf-di0i" class="f04-btn-wrap">
+          <div data-hf-id="hf-s1mc" class="f04-btn" id="f04-btn">
+            <span data-hf-id="hf-r8nv" class="f04-roll"><span data-hf-id="hf-bjn0" class="f04-roll-old" id="f04-b-old">0</span><span data-hf-id="hf-b9yh" class="f04-roll-new" id="f04-b-new">1</span></span>
+            <span data-hf-id="hf-lvtw" class="f04-ring" id="f04-ring1"></span>
+          </div>
+        </div>
+        <div data-hf-id="hf-u1j8" class="f04-p" id="f04-p">Je klikte <span data-hf-id="hf-cgmu" class="f04-pspot"><span data-hf-id="hf-69jv" class="f04-roll"><span data-hf-id="hf-2lg6" class="f04-roll-old" id="f04-p-old">0</span><span data-hf-id="hf-ganv" class="f04-roll-new" id="f04-p-new">1</span></span><span data-hf-id="hf-wrbj" class="f04-ring" id="f04-ring2"></span></span> keer</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 12.2;
+      var root = document.querySelector('[data-composition-id="04-opnieuw-oproepen"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function pathLen(el, fallback) {
+        var len = fallback;
+        try { len = Math.ceil(el.getTotalLength()) || fallback; } catch (e) {}
+        return len;
+      }
+      function drawArrow(lineSel, headSel, at, dur) {
+        var line = q(lineSel);
+        var len = pathLen(line, 140);
+        tl.fromTo(line, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: dur, ease: "power2.inOut" }, at);
+        tl.fromTo(q(headSel), { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, at + dur - 0.08);
+      }
+      function settle(sel, at) {
+        tl.fromTo(q(sel), { opacity: 0, y: 16, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "power3.out" }, at);
+      }
+      function label(sel, at) {
+        tl.fromTo(q(sel), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, at);
+      }
+      // value dot travels the whole pipeline (x 400 -> 1200); passes under node 2,
+      // where the {count} slots light up amber as it goes through
+      function travel(dotSel, at) {
+        var dot = q(dotSel);
+        tl.fromTo(dot, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: "none" }, at);
+        tl.fromTo(dot, { x: 386 }, { x: 1176, duration: 1.0, ease: "none", immediateRender: false }, at);
+        tl.to(dot, { opacity: 0, duration: 0.12, ease: "none" }, at + 0.9);
+        tl.fromTo([q("#f04-v1"), q("#f04-v2")], { backgroundColor: "rgba(232,165,90,0)" }, { backgroundColor: "rgba(232,165,90,0.32)", duration: 0.15, ease: "power1.out", immediateRender: false }, at + 0.2);
+        tl.to([q("#f04-v1"), q("#f04-v2")], { backgroundColor: "rgba(232,165,90,0)", duration: 0.35, ease: "power1.out" }, at + 0.75);
+      }
+
+      // initial hidden states (fromTo-based, seek-safe)
+      tl.set([q("#f04-arr1"), q("#f04-arr2")], { strokeDasharray: 200, strokeDashoffset: 200 }, 0);
+      tl.set([q("#f04-head1"), q("#f04-head2")], { opacity: 0 }, 0);
+      tl.set([q("#f04-arg-a"), q("#f04-arg-b"), q("#f04-jrow2"), q("#f04-p"), q("#f04-ring1"), q("#f04-ring2"), q("#f04-badge")], { opacity: 0 }, 0);
+      tl.set([q("#f04-b-new"), q("#f04-p-new")], { yPercent: 100 }, 0);
+
+      // ---- Scene 1 (0.0-3.3): kicker; scherm card; Counter(); arrows; dot "0" flows ----
+      tl.fromTo(q("#f04-kicker"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      settle("#f04-screen", 0.45);
+      label("#f04-lab3", 0.55);
+      settle("#f04-node1", 1.6);
+      label("#f04-lab1", 1.7);
+      drawArrow("#f04-arr1", "#f04-head1", 2.45, 0.32);
+      settle("#f04-node2", 2.62);
+      label("#f04-lab2", 2.7);
+      drawArrow("#f04-arr2", "#f04-head2", 2.8, 0.35);
+      travel("#f04-dot0", 3.05);
+
+      // ---- Scene 2 (3.3-7.6): argument line; <p> line appears; amber rings on both value spots ----
+      tl.fromTo(q("#f04-arg-a"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 3.38);
+      tl.fromTo(q("#f04-p"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 5.33);
+      tl.fromTo(q("#f04-jrow2"), { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 5.4);
+      tl.fromTo(q("#f04-ring1"), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 6.24);
+      tl.fromTo(q("#f04-ring2"), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 6.39);
+
+      // ---- Scene 3 (7.6-12.2): Counter() pulses, coral "oproep #2"; dot "1" flows; both spots flip 0 -> 1 ----
+      tl.fromTo(q("#f04-node1"), { scale: 1 }, { scale: 1.04, duration: 0.2, ease: "power2.out", immediateRender: false }, 7.67);
+      tl.to(q("#f04-node1"), { scale: 1, duration: 0.4, ease: "power2.inOut" }, 7.87);
+      tl.fromTo(q("#f04-badge"), { opacity: 0, y: -10, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, 7.8);
+      tl.to(q("#f04-arg-a"), { opacity: 0, y: -10, duration: 0.25, ease: "power2.in" }, 9.2);
+      tl.fromTo(q("#f04-arg-b"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 9.33);
+      travel("#f04-dot1", 9.33);
+      tl.fromTo([q("#f04-b-old"), q("#f04-p-old")], { yPercent: 0 }, { yPercent: -100, duration: 0.25, ease: "power2.inOut", immediateRender: false }, 10.69);
+      tl.fromTo([q("#f04-b-new"), q("#f04-p-new")], { yPercent: 100 }, { yPercent: 0, duration: 0.25, ease: "power2.inOut", immediateRender: false }, 10.69);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+        // voice take: 12.2s → 12.68s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.16, 0.16], [0.187, 0.2], [0.24, 0.24], [0.293, 0.32], [0.4, 0.4], [0.427, 0.44], [0.48, 0.48], [0.52, 0.56], [0.8, 0.88], [0.84, 0.92], [1.2, 1.36], [1.253, 1.44], [1.36, 1.52], [1.38, 1.6], [1.44, 1.68], [1.493, 1.76], [1.6, 1.84], [1.648, 2.12], [2.4, 2.72], [2.453, 2.8], [3.2, 3.6], [3.38, 3.84], [4.24, 4.32], [4.267, 4.36], [4.32, 4.4], [4.368, 4.44], [4.88, 5.04], [4.9, 5.12], [4.96, 5.2], [5.024, 5.24], [5.28, 5.52], [5.333, 5.68], [5.6, 5.84], [5.64, 5.92], [5.76, 6.0], [5.78, 6.04], [5.84, 6.08], [5.888, 6.16], [6.16, 6.48], [6.24, 6.56], [6.56, 6.88], [6.66, 7.04], [6.96, 7.2], [7.0, 7.28], [7.52, 7.96], [7.667, 8.24], [8.4, 8.64], [8.432, 8.68], [8.56, 8.8], [8.613, 8.88], [8.72, 8.96], [8.76, 9.04], [9.04, 9.28], [9.1, 9.36], [9.28, 9.52], [9.333, 9.64], [9.68, 10.0], [9.72, 10.08], [10.4, 10.72], [10.44, 10.8], [10.56, 10.88], [10.587, 10.92], [10.64, 10.96], [10.686, 11.04], [10.96, 11.28], [11.024, 11.36], [11.6, 12.08], [12.2, 12.68]]);
+      window.__timelines["04-opnieuw-oproepen"] = tl;
+    })();
+  </script>
+</template>

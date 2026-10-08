@@ -1,5 +1,5 @@
 <template id="03-referentie-template">
-  <div data-hf-id="hf-e28h" id="root" data-composition-id="03-referentie" data-width="1920" data-height="1080" data-duration="14.04">
+  <div data-hf-id="hf-e28h" id="root" data-composition-id="03-referentie" data-width="1920" data-height="1080" data-duration="13.42">
     <style>
       @font-face {
         font-family: "EB Garamond";
@@ -257,9 +257,9 @@
       }
     </style>
 
-    <div data-hf-id="hf-w91i" class="bg clip" data-start="0" data-duration="14.04" data-track-index="0"></div>
+    <div data-hf-id="hf-w91i" class="bg clip" data-start="0" data-duration="13.42" data-track-index="0"></div>
 
-    <div data-hf-id="hf-y14s" class="stage clip" data-start="0" data-duration="14.04" data-track-index="1">
+    <div data-hf-id="hf-y14s" class="stage clip" data-start="0" data-duration="13.42" data-track-index="1">
       <div data-hf-id="hf-cd6l" class="kicker" id="03-referentie-kicker"><span data-hf-id="hf-3274" class="spike">✱</span>Waarom · referentie</div>
 
       <!-- bracket: both tags point at the same object -->
@@ -490,7 +490,7 @@
         tl.set({}, {}, DURATION);
 
         window.__timelines = window.__timelines || {};
-        // voice take: 12s → 12.4s (anchors from audio_meta.json words)
+        // voice take: 12s → 12.82s (anchors from audio_meta.json words)
         var __retime = function (tl, M) {
           // Cues were authored against an earlier voice take; map each child's
           // start and end through the old→new word-anchor table M ([oldT, newT]).
@@ -507,7 +507,7 @@
             c.startTime(ns);
           });
         };
-        __retime(tl, [[0.0, 0.0], [0.08, 0.08], [0.47, 0.52], [0.86, 0.9], [1.2, 1.2], [1.37, 1.34], [1.54, 1.48], [2.16, 2.32], [2.32, 2.46], [2.77, 3.06], [3.14, 3.86], [3.4, 4.059], [3.66, 4.32], [4.08, 4.94], [4.4, 5.36], [4.61, 5.5], [5.32, 6.84], [5.565, 7.04], [5.81, 7.24], [6.055, 7.68], [6.3, 7.76], [6.52, 7.88], [6.82, 8.16], [7.3, 8.5], [8.38, 9.02], [8.88, 9.94], [9.54, 10.2], [9.71, 10.46], [10.3, 11.52], [12, 12.4]]);
+        __retime(tl, [[0.0, 0.0], [0.08, 0.091], [0.381, 0.48], [0.47, 0.52], [0.798, 0.88], [0.86, 0.92], [1.132, 1.2], [1.2, 1.24], [1.321, 1.28], [1.37, 1.36], [1.491, 1.44], [1.54, 1.64], [1.791, 2.16], [2.16, 2.24], [2.297, 2.32], [2.32, 2.4], [2.725, 2.88], [2.77, 2.96], [2.89, 3.68], [3.14, 3.8], [3.297, 3.92], [3.4, 4.04], [3.6, 4.16], [3.66, 4.32], [4.053, 4.72], [4.08, 4.8], [4.354, 5.12], [4.4, 5.2], [4.58, 5.28], [4.61, 5.36], [4.843, 6.24], [5.32, 6.32], [5.516, 6.4], [5.565, 6.48], [5.737, 6.64], [5.81, 6.8], [6.022, 6.96], [6.055, 7.0], [6.239, 7.04], [6.3, 7.12], [6.447, 7.2], [6.52, 7.28], [6.734, 7.44], [6.82, 7.56], [7.272, 7.84], [7.3, 7.96], [8.255, 8.4], [8.38, 8.64], [8.619, 9.2], [8.88, 9.24], [9.388, 9.6], [9.54, 9.68], [9.671, 9.84], [9.71, 9.92], [9.922, 10.64], [10.3, 10.68], [10.725, 10.88], [10.802, 10.96], [11.807, 11.68], [12.0, 11.78], [13.04, 12.82]]);
         window.__timelines[FRAME_ID] = tl;
       })();
     </script>

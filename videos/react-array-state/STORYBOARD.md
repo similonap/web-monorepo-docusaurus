@@ -24,7 +24,7 @@ music: calm minimal focused lo-fi underscore for a coding tutorial
 
 - scene: A tiny app — number input, Add button, a table of 0 1 2 3 4. A cursor clicks Add; the table does not change. A small coral "?" appears.
 - voiceover: "Je typt een getal. Je klikt op Add. En… er gebeurt niets."
-- duration: 6.88s
+- duration: 6.38s
 - transition_in: cut
 - status: animated
 - src: compositions/frames/01-hook.html
@@ -50,7 +50,7 @@ Scene 4 (2.6–5.04s): the table does not change; on "niets" (4.3s) a small cora
 
 - scene: Code panel shows `const [numbers, setNumbers] = useState<number[]>([0,1,2,3,4]);` above addClicked, then types `numbers.push(number);` inside addClicked. Next to it the array boxes: a 6th box appears in the array — but the rendered table on the side stays at five rows. Then a second line `setNumbers(numbers);` types in; still nothing. Coral "FOUT" stamps on both.
 - voiceover: "De code ziet er logisch uit: numbers punt push. De array verandert wél — maar het scherm niet. Ook set numbers erachter roepen helpt niet."
-- duration: 11.44s
+- duration: 10.9s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/02-push-fout.html
@@ -78,7 +78,7 @@ Scene 6 (8.6–9.84s): on "helpt niet" one coral `FOUT` stamp lands over both li
 
 - scene: The array as one box with a label "referentie #A". Before and after push: the contents change but the label stays #A. React (an eye/compare glyph) checks `oud === nieuw` → `true` → "niets te doen". Then a second, new box labelled #B appears: `oud === nieuw` → `false` → re-render.
 - voiceover: "React kijkt niet in je array. Het vergelijkt enkel: is dit dezelfde array als daarnet? Na een push is het nog altijd hetzelfde object. Dus denkt React: niets veranderd."
-- duration: 13.44s
+- duration: 12.82s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/03-referentie.html
@@ -104,7 +104,7 @@ Scene 4 (8.8–12.0s): readout resolves to `true` and on "niets veranderd" the c
 
 - scene: One serif line on cream: "State is readonly." Beneath, builds in: "Geef React een nieuwe array — nooit een aangepaste." The word "nieuwe" in coral.
 - voiceover: "Daarom één regel: state is readonly. Je maakt altijd een nieuwe array, en die geef je aan de setter."
-- duration: 9.76s
+- duration: 8.62s
 - transition_in: blur-crossfade
 - status: animated
 - src: compositions/frames/04-regel.html
@@ -130,7 +130,7 @@ Scene 4 (5.6–7.68s): "…en geef die aan de setter." completes on its cue (7.1
 
 - scene: Recipe card 1/3 "Toevoegen". Code types `setNumbers(prev => [...prev, number]);`. Visual: the old boxes 0–4 are copied one by one into a new box (#B) by the `...`, then the new number slides onto the end. Table now shows six rows.
 - voiceover: "Toevoegen doe je met de spread syntax. Drie puntjes kopiëren alle oude elementen in een nieuwe array — en daarachter zet je het nieuwe getal."
-- duration: 11.4s
+- duration: 10.54s
 - transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/05-toevoegen.html
@@ -157,7 +157,7 @@ Scene 5 (7.2–9.52s): on "het nieuwe getal" (8.5s) a coral tile `5` slides onto
 
 - scene: Recipe card 2/3 "Verwijderen". Code types `setNumbers(prev => prev.filter((number, index) => index !== i));`. Visual: each box passes a small gate; the one at index i is rejected (coral), the rest land in a new array #C.
 - voiceover: "Verwijderen? Gebruik filter. Je houdt elk element, behalve dat ene op index i. En filter geeft altijd een nieuwe array terug."
-- duration: 10.92s
+- duration: 10.64s
 - transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/06-verwijderen.html
@@ -184,7 +184,7 @@ Scene 5 (6.5–9.2s): on "nieuwe array" (7.7s) the survivors settle into strip `
 
 - scene: Recipe card 3/3 "Wijzigen". Code types `setNumbers(prev => prev.map((oldNumber, index) => index === i ? newNumber : oldNumber));`. Visual: every box flows into a new array unchanged, except box i which is swapped for the new value (coral) on the way through.
 - voiceover: "Wijzigen doe je met map. Elk element gaat mee naar een nieuwe array. Alleen op index i zet je de nieuwe waarde."
-- duration: 9.76s
+- duration: 9s
 - transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/07-wijzigen.html
@@ -210,7 +210,7 @@ Scene 4 (5.0–7.68s): on "index i" the tile at index 1 flips (hacker-flip-3d, s
 
 - scene: Code compares two lines: `setNumbers([...numbers, n])` vs `setNumbers(prev => [...prev, n])`. A fast double-click fires two updates: in the first version both read the same stale `numbers` (one item lost, coral), in the second each gets the latest `prev` (both items land).
 - voiceover: "Viel het je op? In elk recept geven we de setter een functie. Met prev werk je altijd op de nieuwste versie van je state — ook als er snel na elkaar meerdere updates gebeuren."
-- duration: 12.8s
+- duration: 12.5s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/08-functionele-update.html
@@ -236,7 +236,7 @@ Scene 4 (7.9–10.8s): on "snel na elkaar" two quick clicks fire (cursor-click-r
 
 - scene: A list of three rows with inputs (Appel, Peer, Kiwi) keyed by index 0 1 2. Delete "Appel": the keys shift (Peer becomes key 0) and the typed-in input text sticks to the wrong row (coral). Then the same list with ids (a7, b2, c9): delete works, each row keeps its own state.
 - voiceover: "In de eenvoudige voorbeelden gebruiken we key is index — en dat werkt. Maar zodra je items verwijdert, schuiven de indexen op, en kan React rijen door elkaar halen. Geef dan elk item een vaste id als key."
-- duration: 17.2s
+- duration: 15.76s
 - transition_in: cut
 - status: animated
 - src: compositions/frames/09-keys.html
@@ -263,7 +263,7 @@ Scene 5 (11.5–15.28s): on "vaste id" a second list on the right replays with l
 
 - scene: Callback to frame 4's rule at top. Three recipe chips assemble below: "Toevoegen → [...arr, x]", "Verwijderen → filter", "Wijzigen → map", plus a small "prev =>" and "key = id" footnote row. Ends on the coral ✱ mark.
 - voiceover: "Kort samengevat: toevoegen met spread, verwijderen met filter, wijzigen met map. Altijd een nieuwe array — en React doet de rest."
-- duration: 11.56s
+- duration: 10.24s
 - transition_in: blur-crossfade
 - status: animated
 - src: compositions/frames/10-samenvatting.html

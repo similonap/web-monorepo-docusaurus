@@ -1,0 +1,551 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f09-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f09-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f09-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f09-kicker .f09-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f09-panel {
+      position: absolute;
+      left: 80px;
+      top: 190px;
+      width: 1060px;
+      height: 470px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f09-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f09-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f09-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 104px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 36px;
+      line-height: 70px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f09-row { position: relative; height: 70px; white-space: pre; }
+    .f09-ln {
+      position: absolute;
+      left: 0;
+      width: 72px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 26px;
+    }
+    .f09-txt { position: absolute; left: 100px; top: 0; white-space: pre; }
+    .f09-kw { color: #CC785C; }
+    .f09-fn { color: #E8A55A; }
+    .f09-num { color: #E8A55A; }
+    .f09-id { color: #ECE3D4; }
+    .f09-dim { color: rgba(250, 249, 245, 0.6); }
+    .f09-cb {
+      border-radius: 6px;
+      padding: 4px 0;
+      background-color: rgba(204, 120, 92, 0);
+    }
+    .f09-param {
+      border-radius: 4px;
+      background-color: rgba(232, 165, 90, 0);
+    }
+    .f09-caret {
+      display: inline-block;
+      width: 3px;
+      height: 40px;
+      margin-left: -1px;
+      margin-right: -2px;
+      background: #FAF9F5;
+      vertical-align: middle;
+      opacity: 0;
+    }
+
+    /* right column: React's update chain */
+    .f09-col {
+      position: absolute;
+      left: 1200px;
+      top: 190px;
+      width: 640px;
+      height: 600px;
+    }
+    .f09-label {
+      position: absolute;
+      left: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f09-lab-react { top: 0; }
+    .f09-step {
+      position: absolute;
+      left: 0;
+      width: 640px;
+      height: 84px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f09-step1 { top: 50px; }
+    .f09-step2 { top: 198px; }
+    .f09-sidx {
+      position: absolute;
+      left: 24px;
+      top: 0;
+      height: 84px;
+      line-height: 84px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      font-weight: 500;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .f09-sline {
+      position: absolute;
+      left: 76px;
+      top: 0;
+      height: 84px;
+      line-height: 84px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 34px;
+      color: #141413;
+      white-space: pre;
+      font-variant-ligatures: none;
+    }
+    .f09-sline .f09-mdim { color: rgba(20, 20, 19, 0.5); }
+    .f09-nb {
+      border-radius: 4px;
+      background-color: rgba(232, 165, 90, 0);
+    }
+    .f09-stag {
+      position: absolute;
+      right: 24px;
+      top: 0;
+      height: 84px;
+      line-height: 84px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .f09-link {
+      position: absolute;
+      left: 0;
+      top: 134px;
+      width: 640px;
+      height: 64px;
+      overflow: visible;
+    }
+
+    /* scherm card */
+    .f09-lab-scr { top: 326px; }
+    .f09-card {
+      position: absolute;
+      left: 0;
+      top: 372px;
+      width: 640px;
+      height: 200px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f09-rtag {
+      position: absolute;
+      right: 24px;
+      top: -17px;
+      padding: 2px 12px;
+      border: 1px solid rgba(20, 20, 19, 0.28);
+      border-radius: 6px;
+      background: #ECE3D4;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      line-height: 28px;
+      color: #141413;
+    }
+    .f09-rtag-box { position: relative; display: inline-block; width: 120px; height: 28px; overflow: hidden; vertical-align: top; }
+    .f09-rtag-box span { position: absolute; left: 0; top: 0; white-space: nowrap; }
+    .f09-btn {
+      position: absolute;
+      left: 230px;
+      top: 52px;
+      width: 180px;
+      height: 96px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.35);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08);
+    }
+    .f09-btn-n {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 180px;
+      height: 96px;
+      line-height: 96px;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 44px;
+      color: #141413;
+    }
+    .f09-ripple {
+      position: absolute;
+      left: 1470px;
+      top: 612px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px solid rgba(20, 20, 19, 0.35);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .f09-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 54px;
+      height: 72px;
+      z-index: 50;
+      pointer-events: none;
+      transform-origin: 0 0;
+    }
+
+    /* takeaway rule line */
+    .f09-hair {
+      position: absolute;
+      left: 80px;
+      top: 752px;
+      width: 1060px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.2);
+      transform-origin: left center;
+    }
+    .f09-rule {
+      position: absolute;
+      left: 80px;
+      top: 784px;
+      height: 64px;
+      display: flex;
+      align-items: baseline;
+      white-space: nowrap;
+    }
+    .f09-rule-q {
+      font-family: "Inter", sans-serif;
+      font-weight: 400;
+      font-size: 42px;
+      line-height: 64px;
+      color: #141413;
+    }
+    .f09-rule-a {
+      margin-left: 26px;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 500;
+      font-size: 36px;
+      line-height: 64px;
+      color: #141413;
+      font-variant-ligatures: none;
+    }
+    .f09-rule-a .f09-mdim { color: rgba(20, 20, 19, 0.5); }
+  </style>
+
+  <div data-hf-id="hf-f09r" id="root" data-composition-id="09-callback" data-width="1920" data-height="1080" data-duration="20.08">
+    <div data-hf-id="hf-f09b" class="f09-bg clip" id="f09-bg" data-start="0" data-duration="20.08" data-track-index="0"></div>
+
+    <div data-hf-id="hf-f09s" class="f09-stage clip" id="f09-stage" data-start="0" data-duration="20.08" data-track-index="1">
+      <div data-hf-id="hf-f09k" class="f09-kicker" id="f09-kicker"><span data-hf-id="hf-f09k1" class="f09-spike">✱</span>De oplossing</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-f09p" class="f09-panel" id="f09-panel">
+        <div data-hf-id="hf-f09t" class="f09-titlebar">Counter.tsx</div>
+        <div data-hf-id="hf-f09c" class="f09-code">
+          <div data-hf-id="hf-f09r1" class="f09-row"><span data-hf-id="hf-f09n1" class="f09-ln">4</span><span data-hf-id="hf-f09x1" class="f09-txt"><span data-hf-id="hf-f09x1a" class="f09-kw">const</span> <span data-hf-id="hf-f09x1b" class="f09-fn">handleClick</span> = () =&gt; {</span></div>
+          <div data-hf-id="hf-f09r2" class="f09-row"><span data-hf-id="hf-f09n2" class="f09-ln">5</span><span data-hf-id="hf-f09x2" class="f09-txt" id="f09-line2"></span></div>
+          <div data-hf-id="hf-f09r3" class="f09-row"><span data-hf-id="hf-f09n3" class="f09-ln">6</span><span data-hf-id="hf-f09x3" class="f09-txt" id="f09-line3"></span></div>
+          <div data-hf-id="hf-f09r4" class="f09-row"><span data-hf-id="hf-f09n4" class="f09-ln">7</span><span data-hf-id="hf-f09x4" class="f09-txt">};</span></div>
+        </div>
+        <div data-hf-id="hf-f09st" class="f09-status">handleClick · onClick</div>
+      </div>
+
+      <!-- right column: React's update chain -->
+      <div data-hf-id="hf-f09col" class="f09-col">
+        <div data-hf-id="hf-f09lr" class="f09-label f09-lab-react" id="f09-lab-react">React</div>
+
+        <div data-hf-id="hf-f09s1" class="f09-step f09-step1" id="f09-step1">
+          <div data-hf-id="hf-f09s1i" class="f09-sidx">1</div>
+          <div data-hf-id="hf-f09s1a" class="f09-sline" id="f09-s1a">prevCount <span data-hf-id="hf-f09s1a1" class="f09-mdim">=</span> 0</div>
+          <div data-hf-id="hf-f09s1b" class="f09-sline" id="f09-s1b"><span data-hf-id="hf-f09n0" class="f09-nb" id="f09-n0">0</span> <span data-hf-id="hf-f09s1b1" class="f09-mdim">→</span> <span data-hf-id="hf-f09n1a" class="f09-nb" id="f09-n1a">1</span></div>
+          <div data-hf-id="hf-f09s1t" class="f09-stag">regel 5</div>
+        </div>
+
+        <svg data-hf-id="hf-f09lk" class="f09-link" id="f09-link" viewBox="0 0 640 64" width="640" height="64">
+          <path data-hf-id="hf-f09lkp" id="f09-link-path" d="M168,2 L168,24 Q168,32 160,32 L94,32 Q86,32 86,40 L86,58" fill="none" stroke="rgba(20,20,19,0.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path data-hf-id="hf-f09lkh" id="f09-link-head" d="M79,52 L86,61 L93,52" fill="none" stroke="rgba(20,20,19,0.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+
+        <div data-hf-id="hf-f09s2" class="f09-step f09-step2" id="f09-step2">
+          <div data-hf-id="hf-f09s2i" class="f09-sidx">2</div>
+          <div data-hf-id="hf-f09s2a" class="f09-sline" id="f09-s2a">prevCount <span data-hf-id="hf-f09s2a1" class="f09-mdim">=</span> 1</div>
+          <div data-hf-id="hf-f09s2b" class="f09-sline" id="f09-s2b"><span data-hf-id="hf-f09n1b" class="f09-nb" id="f09-n1b">1</span> <span data-hf-id="hf-f09s2b1" class="f09-mdim">→</span> <span data-hf-id="hf-f09n2" class="f09-nb" id="f09-n2">2</span></div>
+          <div data-hf-id="hf-f09s2t" class="f09-stag">regel 6</div>
+        </div>
+
+        <div data-hf-id="hf-f09ls" class="f09-label f09-lab-scr" id="f09-lab-scr">scherm</div>
+        <div data-hf-id="hf-f09cd" class="f09-card" id="f09-card">
+          <div data-hf-id="hf-f09rt" class="f09-rtag" id="f09-rtag"><span data-hf-id="hf-f09rtb" class="f09-rtag-box"><span data-hf-id="hf-f09rt1" id="f09-rt1">render #1</span><span data-hf-id="hf-f09rt2" id="f09-rt2">render #2</span></span></div>
+          <div data-hf-id="hf-f09bt" class="f09-btn" id="f09-btn">
+            <div data-hf-id="hf-f09b0" class="f09-btn-n" id="f09-b0">0</div>
+            <div data-hf-id="hf-f09b1" class="f09-btn-n" id="f09-b1">1</div>
+            <div data-hf-id="hf-f09b2" class="f09-btn-n" id="f09-b2">2</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- takeaway -->
+      <div data-hf-id="hf-f09h" class="f09-hair" id="f09-hair"></div>
+      <div data-hf-id="hf-f09ru" class="f09-rule">
+        <span data-hf-id="hf-f09rq" class="f09-rule-q" id="f09-rule-q">nieuwe state hangt af van de vorige?</span>
+        <span data-hf-id="hf-f09ra" class="f09-rule-a" id="f09-rule-a"><span data-hf-id="hf-f09ra1" class="f09-mdim">→</span> setX(prev <span data-hf-id="hf-f09ra2" class="f09-mdim">=&gt;</span> …)</span>
+      </div>
+
+      <div data-hf-id="hf-f09rp" class="f09-ripple" id="f09-ripple"></div>
+      <svg data-hf-id="hf-f09cu" class="f09-cursor" id="f09-cursor" viewBox="0 0 54 72">
+        <path data-hf-id="hf-f09cup" d="M2 2 L2 58 L16 45 L26 68 L36 63 L26 41 L45 41 Z" fill="#141413" stroke="#FAF9F5" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "09-callback";
+      var DUR = 20.04;
+      var R = document.querySelector('[data-composition-id="' + ID + '"]');
+      var q1 = function (s) { return R.querySelector(s); };
+      var qa = function (s) { return R.querySelectorAll(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- build a setCount line: prefix + old arg (deletes back) + new callback arg (types on) + caret + suffix ----
+      function addText(host, text, cls) {
+        var s = document.createElement("span");
+        if (cls) s.className = cls;
+        s.textContent = text;
+        host.appendChild(s);
+        return s;
+      }
+      function addChars(host, text, cls, list) {
+        for (var i = 0; i < text.length; i++) {
+          var s = document.createElement("span");
+          if (cls) s.className = cls;
+          s.textContent = text[i];
+          host.appendChild(s);
+          list.push(s);
+        }
+      }
+      function buildLine(sel) {
+        var line = q1(sel);
+        addText(line, "  ");
+        addText(line, "setCount", "f09-fn");
+        addText(line, "(");
+        var oldChars = [];
+        addChars(line, "count", "f09-id", oldChars);
+        addChars(line, " + ", "", oldChars);
+        addChars(line, "1", "f09-num", oldChars);
+        var cb = document.createElement("span");
+        cb.className = "f09-cb";
+        line.appendChild(cb);
+        var newChars = [];
+        var param = document.createElement("span");
+        param.className = "f09-param";
+        cb.appendChild(param);
+        addChars(param, "prevCount", "f09-id", newChars);
+        addChars(cb, " ", "", newChars);
+        addChars(cb, "=>", "f09-dim", newChars);
+        addChars(cb, " ", "", newChars);
+        addChars(cb, "prevCount", "f09-id", newChars);
+        addChars(cb, " + ", "", newChars);
+        addChars(cb, "1", "f09-num", newChars);
+        var caret = document.createElement("span");
+        caret.className = "f09-caret";
+        line.appendChild(caret);
+        addText(line, ");");
+        return { oldChars: oldChars, newChars: newChars, caret: caret, cb: cb, param: param };
+      }
+      var L2 = buildLine("#f09-line2");
+      var L3 = buildLine("#f09-line3");
+      [L2, L3].forEach(function (L) { tl.set(L.newChars, { display: "none" }, 0); });
+
+      // reverse-type the old argument, then type the callback on (code-typing mechanics)
+      function rewrite(L, delAt, typeAt, delStep, typeStep) {
+        tl.set(L.caret, { opacity: 1 }, delAt - 0.12);
+        var n = L.oldChars.length;
+        for (var i = 0; i < n; i++) {
+          tl.set(L.oldChars[n - 1 - i], { display: "none" }, delAt + i * delStep);
+        }
+        L.newChars.forEach(function (c, i) {
+          tl.set(c, { display: "inline" }, typeAt + i * typeStep);
+        });
+        var end = typeAt + L.newChars.length * typeStep;
+        tl.set(L.caret, { opacity: 0 }, end + 0.3);
+        return end;
+      }
+
+      // ---- Scene 1 (0.0–3.2): kicker; handler on screen; rewrite to the callback form ----
+      tl.fromTo("#f09-panel", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo("#f09-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      rewrite(L2, 0.85, 1.0, 0.015, 0.028);
+      rewrite(L3, 1.76, 1.9, 0.014, 0.026);
+      // the one voltage: coral wash on both callbacks
+      tl.to([L2.cb, L3.cb], { backgroundColor: "rgba(204, 120, 92, 0.32)", duration: 0.45, ease: "power2.out" }, 2.62);
+
+      // ---- Scene 2 (3.2–8.6): React hands over prevCount = 0, step 1 resolves to 0 → 1 ----
+      tl.fromTo("#f09-lab-react", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.27);
+      tl.fromTo("#f09-step1", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 3.4);
+      tl.set("#f09-s1b", { opacity: 0 }, 0);
+      tl.set("#f09-s2b", { opacity: 0 }, 0);
+      // "prevCount": amber wash on the parameter in the code
+      tl.to([L2.cb, L3.cb], { backgroundColor: "rgba(204, 120, 92, 0.16)", duration: 0.4, ease: "power1.out" }, 5.47);
+      tl.to([L2.param, L3.param], { backgroundColor: "rgba(232, 165, 90, 0.42)", duration: 0.4, ease: "power1.out" }, 5.47);
+      // "de nieuwe terug": step 1 swaps prevCount = 0 for 0 → 1
+      tl.to("#f09-s1a", { y: -40, opacity: 0, duration: 0.25, ease: "power2.in" }, 7.47);
+      tl.fromTo("#f09-s1b", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out", immediateRender: false }, 7.6);
+
+      // ---- Scene 3 (8.6–13.8): step 2 builds on step 1; 0, 1, 2; the click goes 0 → 2 ----
+      var lp = q1("#f09-link-path");
+      var lpLen = 160;
+      try { lpLen = Math.ceil(lp.getTotalLength()) || 160; } catch (e) {}
+      tl.set(lp, { strokeDasharray: lpLen, strokeDashoffset: lpLen }, 0);
+      tl.to(lp, { strokeDashoffset: 0, duration: 0.45, ease: "power2.inOut" }, 9.4);
+      tl.fromTo("#f09-link-head", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power1.out" }, 9.78);
+      tl.fromTo("#f09-step2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 9.62);
+      tl.to("#f09-s2a", { y: -40, opacity: 0, duration: 0.25, ease: "power2.in" }, 10.7);
+      tl.fromTo("#f09-s2b", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out", immediateRender: false }, 10.83);
+
+      // scherm card arrives just before the demo click
+      tl.fromTo("#f09-lab-scr", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 11.0);
+      tl.fromTo("#f09-card", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 11.05);
+      tl.set(["#f09-b1", "#f09-b2", "#f09-rt2"], { opacity: 0 }, 0);
+
+      // "nul, één, twee": the numbers light amber along the chain
+      var AMB = "rgba(232, 165, 90, 0.42)";
+      tl.to("#f09-n0", { backgroundColor: AMB, duration: 0.25, ease: "power2.out" }, 11.6);
+      tl.to(["#f09-n1a", "#f09-n1b"], { backgroundColor: AMB, duration: 0.25, ease: "power2.out" }, 12.4);
+      tl.to("#f09-n2", { backgroundColor: AMB, duration: 0.25, ease: "power2.out" }, 13.0);
+
+      // cursor: glide in, click at 12.2 (dip + ripple), ease off
+      var cur = q1("#f09-cursor");
+      tl.fromTo(cur, { x: 1780, y: 880, opacity: 0 }, { x: 1520, y: 660, opacity: 1, duration: 0.6, ease: "power3.out" }, 11.45);
+      tl.to(cur, { scale: 0.85, duration: 0.07, ease: "power2.in" }, 12.2);
+      tl.to(cur, { scale: 1, duration: 0.07, ease: "power2.out" }, 12.27);
+      tl.to("#f09-btn", { scale: 0.95, duration: 0.07, ease: "power2.in" }, 12.2);
+      tl.to("#f09-btn", { scale: 1, duration: 0.07, ease: "power2.out" }, 12.27);
+      tl.set("#f09-ripple", { opacity: 1, scale: 0 }, 12.22);
+      tl.to("#f09-ripple", { scale: 3.2, opacity: 0, duration: 0.6, ease: "power2.out", immediateRender: false }, 12.22);
+      tl.to(cur, { x: 1600, y: 740, duration: 0.6, ease: "power2.inOut" }, 12.6);
+
+      // numeral flips 0 → 1 → 2 (old slides up/out, new slides in)
+      function flip(fromSel, toSel, t) {
+        tl.to(fromSel, { y: -60, opacity: 0, duration: 0.2, ease: "power2.in" }, t);
+        tl.fromTo(toSel, { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power3.out", immediateRender: false }, t + 0.05);
+      }
+      flip("#f09-b0", "#f09-b1", 12.4);
+      flip("#f09-b1", "#f09-b2", 12.95);
+      // render tag: one re-render, pulse on the card's top edge
+      tl.to("#f09-rt1", { y: -28, opacity: 0, duration: 0.2, ease: "power2.in" }, 13.0);
+      tl.fromTo("#f09-rt2", { y: 28, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power3.out", immediateRender: false }, 13.05);
+      tl.fromTo("#f09-rtag", { scale: 1 }, { scale: 1.12, duration: 0.2, ease: "power2.out", immediateRender: false }, 13.05);
+      tl.to("#f09-rtag", { scale: 1, duration: 0.35, ease: "power2.inOut" }, 13.25);
+
+      // ---- Scene 4 (13.8–20.04): the rule ----
+      tl.fromTo("#f09-hair", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, 13.81);
+      tl.fromTo("#f09-rule-q", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 13.9);
+      tl.fromTo("#f09-rule-a", { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 18.63);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+        // voice take: 20.04s → 19.48s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.08, 0.16], [0.16, 0.24], [0.72, 1.12], [0.853, 1.2], [1.2, 1.36], [1.24, 1.44], [1.36, 1.52], [1.4, 1.6], [1.68, 1.92], [1.74, 1.96], [1.92, 2.24], [1.96, 2.36], [2.08, 2.48], [2.14, 2.56], [3.2, 3.52], [3.267, 3.76], [3.6, 4.16], [3.62, 4.2], [3.84, 4.4], [3.867, 4.44], [3.92, 4.48], [3.96, 4.56], [4.08, 4.64], [4.107, 4.72], [4.16, 4.8], [4.213, 4.88], [4.48, 5.12], [4.537, 5.32], [4.96, 5.6], [5.008, 5.68], [5.36, 6.32], [5.472, 6.48], [6.56, 7.28], [6.64, 7.36], [6.8, 7.52], [6.84, 7.6], [7.04, 7.76], [7.08, 7.92], [7.28, 8.08], [7.333, 8.16], [7.44, 8.24], [7.474, 8.28], [7.68, 8.48], [7.747, 8.56], [8.52, 9.2], [8.667, 9.24], [8.96, 9.44], [9.0, 9.48], [9.2, 9.68], [9.253, 9.76], [9.36, 9.84], [9.4, 9.88], [9.68, 10.16], [9.737, 10.24], [10.08, 10.64], [10.12, 10.8], [10.4, 11.12], [10.427, 11.2], [10.48, 11.28], [10.533, 11.36], [10.64, 11.44], [10.697, 11.52], [11.52, 12.24], [11.6, 12.4], [12.32, 13.04], [12.4, 13.12], [12.96, 13.68], [13.008, 13.733], [13.52, 14.48], [13.808, 14.6], [15.04, 14.773], [15.067, 14.827], [15.12, 14.88], [15.166, 14.96], [15.44, 15.12], [15.507, 15.2], [15.84, 15.52], [15.893, 15.6], [16.0, 15.68], [16.04, 15.72], [16.16, 15.76], [16.187, 15.84], [16.24, 15.92], [16.32, 16.0], [16.8, 16.72], [16.987, 16.8], [17.52, 17.04], [17.56, 17.2], [17.68, 17.36], [17.771, 17.52], [18.32, 17.84], [18.38, 17.92], [18.56, 18.08], [18.631, 18.32], [19.44, 18.88], [20.04, 19.48]]);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

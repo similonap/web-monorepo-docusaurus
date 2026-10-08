@@ -1,0 +1,392 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f10-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f10-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f10-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f10-kicker .f10-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f10-panel {
+      position: absolute;
+      left: 80px;
+      top: 180px;
+      width: 1100px;
+      height: 700px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f10-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f10-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f10-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 78px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 32px;
+      line-height: 52px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f10-row { position: relative; height: 52px; white-space: pre; }
+    .f10-ln {
+      position: absolute;
+      left: 0;
+      width: 52px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 24px;
+    }
+    .f10-txt { position: absolute; left: 80px; top: 0; white-space: pre; }
+    .f10-ch { display: inline; }
+    .f10-kw { color: #CC785C; }
+    .f10-fn { color: #E8A55A; }
+    .f10-str { color: #5DB8A6; }
+    .f10-dim { color: rgba(250, 249, 245, 0.6); }
+    .f10-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f10-caret {
+      position: absolute;
+      top: 9px;
+      left: 0;
+      width: 3px;
+      height: 34px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+
+    /* right column */
+    .f10-col {
+      position: absolute;
+      left: 1220px;
+      top: 180px;
+      width: 620px;
+      height: 700px;
+    }
+    .f10-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f10-card {
+      position: absolute;
+      left: 0;
+      top: 52px;
+      width: 620px;
+      height: 280px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    .f10-tagsm {
+      position: absolute;
+      left: 40px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .f10-input {
+      position: absolute;
+      left: 40px;
+      top: 62px;
+      width: 540px;
+      height: 76px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 6px;
+    }
+    .f10-icaret {
+      position: absolute;
+      left: 22px;
+      top: 20px;
+      width: 2px;
+      height: 36px;
+      background: #141413;
+    }
+    .f10-pline {
+      position: absolute;
+      left: 40px;
+      top: 200px;
+      font-family: "Inter", sans-serif;
+      font-size: 34px;
+      line-height: 44px;
+      font-weight: 400;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f10-chip {
+      position: absolute;
+      left: 0;
+      top: 400px;
+      height: 64px;
+      padding: 0 28px 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f10-chiplab {
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      color: rgba(20, 20, 19, 0.5);
+    }
+    .f10-note {
+      position: absolute;
+      left: 4px;
+      top: 500px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      color: #141413;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .f10-note .f10-arrow { color: rgba(20, 20, 19, 0.5); }
+  </style>
+
+  <div data-hf-id="hf-na42" id="root" data-composition-id="10-inputveld" data-width="1920" data-height="1080" data-duration="14.86">
+    <div data-hf-id="hf-adro" class="f10-bg clip" id="f10-bg" data-start="0" data-duration="14.86" data-track-index="0"></div>
+
+    <div data-hf-id="hf-idfd" class="f10-stage clip" id="f10-stage" data-start="0" data-duration="14.86" data-track-index="1">
+      <div data-hf-id="hf-mm0e" class="f10-kicker" id="f10-kicker"><span data-hf-id="hf-4nki" class="f10-spike">✱</span>Voorbeeld 2</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-f6ei" class="f10-panel" id="f10-panel">
+        <div data-hf-id="hf-3mol" class="f10-titlebar">NameInput.tsx</div>
+        <div data-hf-id="hf-d7h9" class="f10-code">
+          <div data-hf-id="hf-w662" class="f10-row"><span data-hf-id="hf-pp9o" class="f10-ln">1</span><span data-hf-id="hf-5z4g" class="f10-txt"><span data-hf-id="hf-lmxg" class="f10-kw">const</span> <span data-hf-id="hf-hkdk" class="f10-fn">NameInput</span> = () <span data-hf-id="hf-saua" class="f10-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-qwny" class="f10-row"><span data-hf-id="hf-oicl" class="f10-ln">2</span><span data-hf-id="hf-msy7" class="f10-txt" id="f10-line2"></span><span data-hf-id="hf-buqt" class="f10-caret" id="f10-caret2"></span></div>
+          <div data-hf-id="hf-rayz" class="f10-row"><span data-hf-id="hf-ownm" class="f10-ln">3</span></div>
+          <div data-hf-id="hf-rpa0" class="f10-row"><span data-hf-id="hf-qw6r" class="f10-ln">4</span><span data-hf-id="hf-eu67" class="f10-txt">  <span data-hf-id="hf-sgu7" class="f10-kw">return</span> (</span></div>
+          <div data-hf-id="hf-ox4t" class="f10-row"><span data-hf-id="hf-rahs" class="f10-ln">5</span><span data-hf-id="hf-hyq5" class="f10-txt">    <span data-hf-id="hf-xkp5" class="f10-dim">&lt;&gt;</span></span></div>
+          <div data-hf-id="hf-pbfu" class="f10-row"><span data-hf-id="hf-q3kp" class="f10-ln">6</span><span data-hf-id="hf-1mjv" class="f10-txt" id="f10-line6"></span><span data-hf-id="hf-qoch" class="f10-caret" id="f10-caret6"></span></div>
+          <div data-hf-id="hf-ppqv" class="f10-row"><span data-hf-id="hf-qhvq" class="f10-ln">7</span><span data-hf-id="hf-xofu" class="f10-txt" id="f10-line7"></span><span data-hf-id="hf-pwoo" class="f10-caret" id="f10-caret7"></span></div>
+          <div data-hf-id="hf-q41w" class="f10-row"><span data-hf-id="hf-m4if" class="f10-ln">8</span><span data-hf-id="hf-6cbp" class="f10-txt" id="f10-line8"></span><span data-hf-id="hf-sbdb" class="f10-caret" id="f10-caret8"></span></div>
+          <div data-hf-id="hf-tot5" class="f10-row"><span data-hf-id="hf-mitg" class="f10-ln">9</span><span data-hf-id="hf-t0zl" class="f10-txt">    <span data-hf-id="hf-goo8" class="f10-dim">&lt;/&gt;</span></span></div>
+          <div data-hf-id="hf-u346" class="f10-row"><span data-hf-id="hf-i8es" class="f10-ln">10</span><span data-hf-id="hf-f06t" class="f10-txt">  );</span></div>
+          <div data-hf-id="hf-61m2" class="f10-row"><span data-hf-id="hf-hu3r" class="f10-ln">11</span><span data-hf-id="hf-l174" class="f10-txt">}</span></div>
+        </div>
+        <div data-hf-id="hf-0f8v" class="f10-status">NameInput · component</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-i5io" class="f10-col">
+        <div data-hf-id="hf-clx6" class="f10-label" id="f10-lab-scr">scherm</div>
+        <div data-hf-id="hf-fvj6" class="f10-card" id="f10-card">
+          <div data-hf-id="hf-wmsp" class="f10-tagsm" style="top:22px">input</div>
+          <div data-hf-id="hf-nwn6" class="f10-input" id="f10-input"><span data-hf-id="hf-s5xn" class="f10-icaret" id="f10-icaret"></span></div>
+          <div data-hf-id="hf-p57w" class="f10-tagsm" id="f10-ptag" style="top:166px">p</div>
+          <div data-hf-id="hf-elgt" class="f10-pline" id="f10-pline">Je typte:</div>
+        </div>
+
+        <div data-hf-id="hf-zqvi" class="f10-chip" id="f10-chip"><span data-hf-id="hf-y02f" class="f10-chiplab">state</span><span data-hf-id="hf-8418">name: ""</span></div>
+        <div data-hf-id="hf-kpne" class="f10-note" id="f10-note">elke toets <span data-hf-id="hf-oznk" class="f10-arrow">→</span> setName(…)</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.52;
+      var FS = 32;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var root = document.querySelector('[data-composition-id="10-inputveld"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(lineSel, caretSel, segments, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "f10-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+          }
+          seg.parts.forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "f10-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var x0 = 80;
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: x0 }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.06, ease: "power1.out" }, at);
+          tl.set(caret, { x: x0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return end;
+      }
+      function seg(arr, id) { return { parts: arr, id: id }; }
+
+      // ---- Scene 1 (0.0–4.4): kicker; "inputveld" (1.43) code shell + scherm card; "p-tag" (2.68) line 8 ----
+      tl.fromTo("#f10-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f10-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 1.4);
+      tl.fromTo("#f10-lab-scr", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 1.6);
+      tl.fromTo("#f10-card", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 1.65);
+
+      var per = 0.025;
+      typeLine("#f10-line8", "#f10-caret8", [
+        seg([
+          { t: "      " },
+          { t: "<p>", c: "f10-dim" },
+          { t: "Je typte: {name}" },
+          { t: "</p>", c: "f10-dim" }
+        ])
+      ], 2.68, per);
+      tl.fromTo(["#f10-ptag", "#f10-pline"], { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.0);
+
+      // ---- Scene 2 (4.4–9.2): "in state, name" (6.0) line 2; "lege string" (7.65) '' wash; chip 8.0 ----
+      typeLine("#f10-line2", "#f10-caret2", [
+        seg([
+          { t: "  " },
+          { t: "const", c: "f10-kw" },
+          { t: " [name, " },
+          { t: "setName", c: "f10-fn" },
+          { t: "] = " },
+          { t: "useState", c: "f10-fn" },
+          { t: "<string>", c: "f10-dim" },
+          { t: "(" }
+        ]),
+        seg([{ t: "''", c: "f10-str" }], "f10-empty"),
+        seg([{ t: ");" }])
+      ], 6.0, per);
+
+      tl.to("#f10-empty", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.35, ease: "power1.out" }, 7.65);
+      tl.fromTo("#f10-chip", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 8.0);
+
+      // ---- Scene 3 (9.2–14.52): "onChange" (10.03) lines 6–7; onChange wash; "bij elke toets" (11.26) note ----
+      var per2 = 0.018;
+      var e6 = typeLine("#f10-line6", "#f10-caret6", [
+        seg([
+          { t: "      " },
+          { t: "<input", c: "f10-dim" },
+          { t: " type=" },
+          { t: "\"text\"", c: "f10-str" }
+        ])
+      ], 9.95, per2);
+      var e7 = typeLine("#f10-line7", "#f10-caret7", [
+        seg([{ t: "        " }]),
+        seg([
+          { t: "onChange" },
+          { t: "={(e) " },
+          { t: "=>", c: "f10-kw" },
+          { t: " " },
+          { t: "setName", c: "f10-fn" },
+          { t: "(e.target.value)}" }
+        ], "f10-onchange"),
+        seg([{ t: " " }, { t: "/>", c: "f10-dim" }])
+      ], e6 + 0.05, per2, 0.03);
+
+      tl.to("#f10-onchange", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.35, ease: "power1.out" }, e7 - 0.1);
+      tl.fromTo("#f10-note", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 11.26);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+        // voice take: 14.52s → 14.36s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.32, 0.32], [0.368, 0.44], [0.88, 1.28], [1.0, 1.36], [1.36, 1.44], [1.427, 1.52], [2.16, 2.4], [2.267, 2.44], [2.48, 2.48], [2.5, 2.52], [2.56, 2.56], [2.68, 2.72], [3.12, 3.2], [3.16, 3.28], [3.28, 3.44], [3.333, 3.52], [3.6, 3.76], [3.64, 3.84], [3.76, 3.92], [3.787, 4.0], [3.84, 4.08], [3.893, 4.16], [4.32, 4.72], [4.507, 4.96], [4.88, 5.12], [4.933, 5.2], [5.2, 5.52], [5.24, 5.64], [5.52, 5.92], [5.573, 5.96], [5.68, 6.0], [5.76, 6.12], [5.92, 6.24], [6.0, 6.48], [6.48, 6.96], [6.576, 7.12], [7.12, 7.52], [7.2, 7.6], [7.44, 7.68], [7.48, 7.76], [7.6, 7.84], [7.653, 8.0], [7.92, 8.16], [7.977, 8.32], [8.32, 8.48], [8.38, 8.56], [8.56, 8.72], [8.613, 8.92], [8.96, 9.4], [9.2, 9.68], [9.92, 9.84], [10.027, 9.92], [10.72, 10.64], [10.88, 10.72], [11.12, 10.88], [11.147, 10.92], [11.2, 10.96], [11.26, 11.08], [11.44, 11.2], [11.493, 11.28], [11.76, 11.44], [11.813, 11.6], [12.16, 11.92], [12.213, 12.0], [12.32, 12.08], [12.366, 12.16], [12.64, 12.4], [12.707, 12.48], [13.04, 12.8], [13.093, 12.84], [13.2, 12.88], [13.227, 12.96], [13.28, 13.04], [13.36, 13.24], [13.92, 13.76], [14.52, 14.36]]);
+      window.__timelines["10-inputveld"] = tl;
+    })();
+  </script>
+</template>

@@ -282,10 +282,10 @@
     }
   </style>
 
-  <div data-hf-id="hf-rmu1" id="root" data-composition-id="02-push-fout" data-width="1920" data-height="1080" data-duration="11.94">
-    <div data-hf-id="hf-5n3y" class="p02-bg clip" id="p02-bg" data-start="0" data-duration="11.94" data-track-index="0"></div>
+  <div data-hf-id="hf-rmu1" id="root" data-composition-id="02-push-fout" data-width="1920" data-height="1080" data-duration="11.4">
+    <div data-hf-id="hf-5n3y" class="p02-bg clip" id="p02-bg" data-start="0" data-duration="11.4" data-track-index="0"></div>
 
-    <div data-hf-id="hf-fsoh" class="p02-stage clip" id="p02-stage" data-start="0" data-duration="11.94" data-track-index="1">
+    <div data-hf-id="hf-fsoh" class="p02-stage clip" id="p02-stage" data-start="0" data-duration="11.4" data-track-index="1">
       <div data-hf-id="hf-0evj" class="p02-kicker" id="p02-kicker"><span data-hf-id="hf-iocr" class="p02-spike">✱</span>Zo niet</div>
 
       <!-- code surface -->
@@ -434,7 +434,7 @@
 
       // hold to full duration
       tl.set({}, {}, DUR);
-      // voice take: 9.84s → 10.32s (anchors from audio_meta.json words)
+      // voice take: 9.84s → 10.9s (anchors from audio_meta.json words)
       var __retime = function (tl, M) {
         // Cues were authored against an earlier voice take; map each child's
         // start and end through the old→new word-anchor table M ([oldT, newT]).
@@ -451,7 +451,7 @@
           c.startTime(ns);
         });
       };
-      __retime(tl, [[0.0, 0.0], [0.08, 0.12], [0.23, 0.26], [0.54, 0.6], [0.9, 0.78], [1.08, 1.06], [1.91, 1.5], [2.12, 2.32], [3.22, 4.52], [3.605, 4.84], [3.99, 5.18], [4.45, 5.62], [4.83, 6.46], [5.13, 6.58], [5.38, 6.7], [5.86, 7.0], [6.34, 8.0], [7.32, 8.42], [7.55, 9.08], [8.17, 9.6], [8.65, 9.88], [9.24, 10.12], [9.84, 10.32]]);
+      __retime(tl, [[0.0, 0.0], [0.08, 0.107], [0.144, 0.16], [0.23, 0.32], [0.504, 0.48], [0.54, 0.52], [0.86, 0.64], [0.9, 0.72], [0.951, 0.8], [1.08, 0.88], [1.759, 1.28], [1.91, 1.4], [1.966, 1.84], [2.12, 1.92], [2.81, 3.52], [3.22, 3.76], [3.413, 3.84], [3.605, 3.92], [3.967, 4.24], [3.99, 4.32], [4.408, 4.72], [4.45, 4.76], [4.55, 5.04], [4.83, 5.413], [5.08, 5.52], [5.13, 5.56], [5.297, 5.6], [5.38, 5.68], [5.796, 6.0], [5.86, 6.04], [5.966, 6.6], [6.34, 6.88], [6.76, 7.04], [7.32, 7.28], [7.536, 8.0], [7.55, 8.08], [7.979, 8.4], [8.17, 8.44], [8.581, 8.72], [8.65, 8.88], [9.191, 9.2], [9.24, 9.28], [9.78, 9.76], [9.84, 9.78], [10.96, 10.9]]);
       window.__timelines["02-push-fout"] = tl;
     })();
   </script>

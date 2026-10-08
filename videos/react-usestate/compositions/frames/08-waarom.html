@@ -1,0 +1,444 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .w08-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .w08-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .w08-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .w08-kicker .w08-spike { color: #CC785C; margin-right: 14px; }
+
+    /* shared: render pill + count badge */
+    .w08-pill {
+      position: absolute;
+      height: 44px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      background: #ECE3D4;
+      border: 1px solid rgba(20, 20, 19, 0.28);
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.02em;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .w08-badge {
+      position: absolute;
+      height: 56px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-sizing: border-box;
+      background: rgba(232, 165, 90, 0.24);
+      border: 1px solid rgba(184, 120, 50, 0.45);
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #141413;
+      white-space: nowrap;
+      transform-origin: 100% 50%;
+    }
+    .w08-lock { width: 22px; height: 28px; display: block; overflow: visible; }
+
+    /* render #1 snapshot card */
+    .w08-card1 {
+      position: absolute;
+      left: 80px;
+      top: 180px;
+      width: 1000px;
+      height: 520px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      transform-origin: 50% 60%;
+    }
+    .w08-card1 .w08-pill { left: 36px; top: 42px; }
+    .w08-card1 .w08-badge { right: 36px; top: 36px; }
+
+    /* code surface inside the card */
+    .w08-panel {
+      position: absolute;
+      left: 36px;
+      top: 116px;
+      width: 928px;
+      height: 368px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .w08-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 50px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 21px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .w08-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 38px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 18px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .w08-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 70px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 36px;
+      line-height: 60px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .w08-row { position: relative; height: 60px; white-space: pre; }
+    .w08-ln {
+      position: absolute;
+      left: 0;
+      width: 48px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 24px;
+    }
+    .w08-txt { position: absolute; left: 80px; top: 0; white-space: pre; }
+    .w08-tk { display: inline-block; }
+    .w08-wash {
+      position: absolute;
+      left: 70px;
+      top: 6px;
+      width: 820px;
+      height: 48px;
+      border-radius: 4px;
+      background: rgba(232, 165, 90, 0.24);
+      transform-origin: 0% 50%;
+    }
+    .w08-kw { color: #CC785C; }
+    .w08-fn { color: #E8A55A; }
+    .w08-num { color: #E8A55A; }
+    .w08-dim { color: rgba(250, 249, 245, 0.6); }
+
+    /* note under the card */
+    .w08-note {
+      position: absolute;
+      left: 80px;
+      top: 736px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.7);
+      white-space: nowrap;
+    }
+    .w08-note-rule { width: 40px; height: 1px; background: rgba(20, 20, 19, 0.35); }
+    .w08-note b { font-weight: 700; color: #141413; }
+
+    /* right column: naar React */
+    .w08-arrows {
+      position: absolute;
+      left: 0; top: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .w08-label {
+      position: absolute;
+      left: 1200px;
+      top: 194px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.62);
+      white-space: nowrap;
+    }
+    .w08-chip {
+      position: absolute;
+      left: 1200px;
+      width: 300px;
+      height: 76px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #CC785C;
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      color: #FAF9F5;
+      white-space: nowrap;
+    }
+    .w08-chip1 { top: 252px; }
+    .w08-chip2 { top: 400px; }
+    .w08-eq {
+      position: absolute;
+      left: 1200px;
+      width: 300px;
+      top: 330px;
+      height: 70px;
+      line-height: 70px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 40px;
+      color: rgba(20, 20, 19, 0.55);
+    }
+
+    /* render #2 card */
+    .w08-card2 {
+      position: absolute;
+      left: 1200px;
+      top: 540px;
+      width: 640px;
+      height: 300px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      transform-origin: 50% 60%;
+    }
+    .w08-card2 .w08-pill { left: 32px; top: 34px; }
+    .w08-card2 .w08-badge { right: 32px; top: 28px; }
+    .w08-lockup {
+      position: absolute;
+      left: 32px;
+      top: 106px;
+      display: flex;
+      align-items: baseline;
+      gap: 22px;
+    }
+    .w08-fig {
+      font-family: "EB Garamond", Georgia, serif;
+      font-weight: 400;
+      font-size: 170px;
+      line-height: 0.95;
+      letter-spacing: -0.025em;
+      color: #141413;
+    }
+    .w08-unit {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 34px;
+      color: rgba(20, 20, 19, 0.62);
+    }
+  </style>
+
+  <div data-hf-id="hf-q31h" id="root" data-composition-id="08-waarom" data-width="1920" data-height="1080" data-duration="15.66">
+    <div data-hf-id="hf-wb8s" id="w08-bg" class="w08-bg clip" data-start="0" data-duration="15.66" data-track-index="0"></div>
+
+    <div data-hf-id="hf-n1p5" id="w08-stage" class="w08-stage clip" data-start="0" data-duration="15.66" data-track-index="1">
+      <div data-hf-id="hf-hrcl" class="w08-kicker"><span data-hf-id="hf-o6vs" class="w08-spike">✱</span>Waarom?</div>
+
+      <!-- render #1 snapshot card -->
+      <div data-hf-id="hf-4abg" class="w08-card1" id="w08-card1">
+        <div data-hf-id="hf-or5t" class="w08-pill" id="w08-pill1">render #1</div>
+        <div data-hf-id="hf-pc81" class="w08-badge" id="w08-badge1">
+          <svg data-hf-id="hf-cc8g" class="w08-lock" id="w08-lock" viewBox="0 0 22 28">
+            <path data-hf-id="hf-gfgx" id="w08-shackle" d="M5 12 V8 a6 6 0 0 1 12 0 V12" fill="none" stroke="#141413" stroke-width="1.6" stroke-linecap="round" />
+            <rect data-hf-id="hf-4aw0" id="w08-lockbody" x="1.5" y="12" width="19" height="14" rx="2.5" fill="none" stroke="#141413" stroke-width="1.6" />
+            <circle data-hf-id="hf-rg73" id="w08-keyhole" cx="11" cy="18.5" r="1.6" fill="#141413" />
+          </svg>
+          <span data-hf-id="hf-vfhz">count = 0</span>
+        </div>
+
+        <div data-hf-id="hf-8fxu" class="w08-panel" id="w08-panel">
+          <div data-hf-id="hf-yhhm" class="w08-titlebar">Counter.tsx</div>
+          <div data-hf-id="hf-4x9z" class="w08-code">
+            <div data-hf-id="hf-9r8p" class="w08-row" id="w08-r1">
+              <span data-hf-id="hf-ze8q" class="w08-ln">1</span>
+              <span data-hf-id="hf-f1j3" class="w08-txt"><span data-hf-id="hf-zg4z" class="w08-kw">function</span> <span data-hf-id="hf-15ul" class="w08-fn">handleClick</span><span data-hf-id="hf-bn27" class="w08-dim">() {</span></span>
+            </div>
+            <div data-hf-id="hf-dpcq" class="w08-row" id="w08-r2">
+              <div data-hf-id="hf-df0g" class="w08-wash" id="w08-wash2"></div>
+              <span data-hf-id="hf-zsjr" class="w08-ln">2</span>
+              <span data-hf-id="hf-mw38" class="w08-txt" id="w08-a2">  <span data-hf-id="hf-47fu" class="w08-fn">setCount</span><span data-hf-id="hf-qenb" class="w08-dim">(</span><span data-hf-id="hf-b0hg" class="w08-tk" id="w08-a2tok">count</span><span data-hf-id="hf-kyim"> + </span><span data-hf-id="hf-4b5e" class="w08-num">1</span><span data-hf-id="hf-ivp9" class="w08-dim">);</span></span>
+              <span data-hf-id="hf-kxxs" class="w08-txt" id="w08-b2" style="opacity:0">  <span data-hf-id="hf-66we" class="w08-fn">setCount</span><span data-hf-id="hf-3vif" class="w08-dim">(</span><span data-hf-id="hf-gmyy" class="w08-tk w08-num" id="w08-b2tok">0</span><span data-hf-id="hf-hwry" class="w08-tk" id="w08-b2suf"><span data-hf-id="hf-dhi5" class="w08-tk" id="w08-b2plus"> + <span data-hf-id="hf-e4vq" class="w08-num">1</span></span><span data-hf-id="hf-7dox" class="w08-dim">);</span></span></span>
+              <span data-hf-id="hf-w1yb" class="w08-txt" id="w08-c2" style="opacity:0">  <span data-hf-id="hf-6l7f" class="w08-fn">setCount</span><span data-hf-id="hf-3h7e" class="w08-dim">(</span><span data-hf-id="hf-j0va" class="w08-tk w08-num" id="w08-c2tok">1</span><span data-hf-id="hf-z4fp" class="w08-tk w08-dim" id="w08-c2suf">);</span></span>
+            </div>
+            <div data-hf-id="hf-hngr" class="w08-row" id="w08-r3">
+              <div data-hf-id="hf-e6o9" class="w08-wash" id="w08-wash3"></div>
+              <span data-hf-id="hf-06us" class="w08-ln">3</span>
+              <span data-hf-id="hf-nnr1" class="w08-txt" id="w08-a3">  <span data-hf-id="hf-6zig" class="w08-fn">setCount</span><span data-hf-id="hf-32wd" class="w08-dim">(</span><span data-hf-id="hf-1575" class="w08-tk" id="w08-a3tok">count</span><span data-hf-id="hf-3k4i"> + </span><span data-hf-id="hf-ej6r" class="w08-num">1</span><span data-hf-id="hf-8km0" class="w08-dim">);</span></span>
+              <span data-hf-id="hf-lro1" class="w08-txt" id="w08-b3" style="opacity:0">  <span data-hf-id="hf-47d9" class="w08-fn">setCount</span><span data-hf-id="hf-5v1k" class="w08-dim">(</span><span data-hf-id="hf-488b" class="w08-tk w08-num" id="w08-b3tok">0</span><span data-hf-id="hf-3f8l" class="w08-tk" id="w08-b3suf"><span data-hf-id="hf-aqvi" class="w08-tk" id="w08-b3plus"> + <span data-hf-id="hf-exhs" class="w08-num">1</span></span><span data-hf-id="hf-86az" class="w08-dim">);</span></span></span>
+              <span data-hf-id="hf-b3ea" class="w08-txt" id="w08-c3" style="opacity:0">  <span data-hf-id="hf-4loa" class="w08-fn">setCount</span><span data-hf-id="hf-5gqj" class="w08-dim">(</span><span data-hf-id="hf-2ptn" class="w08-tk w08-num" id="w08-c3tok">1</span><span data-hf-id="hf-2fr6" class="w08-tk w08-dim" id="w08-c3suf">);</span></span>
+            </div>
+            <div data-hf-id="hf-u5z8" class="w08-row" id="w08-r4">
+              <span data-hf-id="hf-0l5t" class="w08-ln">4</span>
+              <span data-hf-id="hf-gb5r" class="w08-txt"><span data-hf-id="hf-9bh4" class="w08-dim">}</span></span>
+            </div>
+          </div>
+          <div data-hf-id="hf-v527" class="w08-status">render #1 · count = 0</div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-d49u" class="w08-note" id="w08-note"><span data-hf-id="hf-n6qo" class="w08-note-rule"></span><span data-hf-id="hf-3uok"><b data-hf-id="hf-a6b8">const</b>: vast tijdens deze render</span></div>
+
+      <!-- arrows from the two lines to React -->
+      <svg data-hf-id="hf-bgap" class="w08-arrows" viewBox="0 0 1920 1080">
+        <path data-hf-id="hf-sik5" id="w08-arr1" d="M1092 460 C 1144 460, 1136 290, 1186 290" fill="none" stroke="rgba(20,20,19,0.45)" stroke-width="1.6" stroke-linecap="round" />
+        <path data-hf-id="hf-q164" id="w08-head1" d="M1176 282 L1188 290 L1176 298" fill="none" stroke="rgba(20,20,19,0.45)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        <path data-hf-id="hf-oyxq" id="w08-arr2" d="M1092 520 C 1144 520, 1136 438, 1186 438" fill="none" stroke="rgba(20,20,19,0.45)" stroke-width="1.6" stroke-linecap="round" />
+        <path data-hf-id="hf-jum7" id="w08-head2" d="M1176 430 L1188 438 L1176 446" fill="none" stroke="rgba(20,20,19,0.45)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+
+      <div data-hf-id="hf-itrr" class="w08-label" id="w08-label">naar React</div>
+      <div data-hf-id="hf-pnnl" class="w08-chip w08-chip1" id="w08-chip1">setCount(1)</div>
+      <div data-hf-id="hf-2z6t" class="w08-eq" id="w08-eq">=</div>
+      <div data-hf-id="hf-6anz" class="w08-chip w08-chip2" id="w08-chip2">setCount(1)</div>
+
+      <!-- render #2 card -->
+      <div data-hf-id="hf-leyy" class="w08-card2" id="w08-card2">
+        <div data-hf-id="hf-wely" class="w08-pill">render #2</div>
+        <div data-hf-id="hf-tac2" class="w08-badge" id="w08-badge2"><span data-hf-id="hf-vtt0">count = 1</span></div>
+        <div data-hf-id="hf-sewa" class="w08-lockup" id="w08-lockup"><span data-hf-id="hf-syig" class="w08-fig">1</span><span data-hf-id="hf-dphi" class="w08-unit">count</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "08-waarom";
+      var root = document.querySelector('[data-composition-id="' + ID + '"]');
+      function $(id) { return root.querySelector("#w08-" + id); }
+
+      var E = "power3.out";
+      var CH = 21.6;           // JetBrains Mono advance at 36px (0.6em)
+      var SHIFT = 4 * CH;      // "count" -> "0" and "0 + 1" -> "1" both drop 4 chars
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- Scene 1 (0.0–2.8): kicker, snapshot card, pinned badge, code lines ----
+      tl.fromTo(root.querySelector(".w08-kicker"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.55, ease: E }, 0.08);
+      tl.fromTo($("card1"), { opacity: 0, y: 34, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: E }, 0.35);
+      tl.fromTo($("pill1"), { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, 0.75);
+      // "Count" (0.87): badge pins on
+      tl.fromTo($("badge1"), { opacity: 0, y: -16, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: E }, 0.95);
+      // code rows settle in, the two setCount lines land on "deze render" (2.22)
+      tl.fromTo($("r1"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: E }, 1.3);
+      tl.fromTo($("r4"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: E }, 1.42);
+      tl.fromTo($("r2"), { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, 1.75);
+      tl.fromTo($("r3"), { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, 2.0);
+
+      // ---- Scene 2 (2.8–5.1): padlock on "verandert niet" (3.08), note on "zolang..." (3.72) ----
+      var shackle = $("shackle"), body = $("lockbody");
+      var sLen = shackle.getTotalLength(), bLen = body.getTotalLength();
+      tl.fromTo($("lock"), { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.4, ease: E, transformOrigin: "50% 70%" }, 3.05);
+      tl.fromTo(body, { strokeDasharray: bLen, strokeDashoffset: bLen }, { strokeDashoffset: 0, duration: 0.45, ease: "power2.out" }, 3.08);
+      tl.fromTo(shackle, { strokeDasharray: sLen, strokeDashoffset: sLen, y: -4 }, { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" }, 3.3);
+      tl.to(shackle, { y: 0, duration: 0.25, ease: "power2.in" }, 3.62);
+      tl.fromTo($("keyhole"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: E }, 3.6);
+      tl.fromTo($("note"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, 3.72);
+
+      // ---- Scene 3 (5.1–10.9): substitution in place ----
+      // "setCount van nul plus één" (6.93): amber wash on both lines
+      tl.fromTo($("wash2"), { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: E }, 6.93);
+      tl.fromTo($("wash3"), { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: E }, 7.08);
+
+      function morph(n, t1, t2) {
+        var A = $("a" + n), B = $("b" + n), C = $("c" + n);
+        // count -> 0
+        tl.to($("a" + n + "tok"), { opacity: 0, y: -16, duration: 0.16, ease: "power2.in" }, t1);
+        tl.set(A, { opacity: 0 }, t1 + 0.16);
+        tl.set(B, { opacity: 1 }, t1 + 0.16);
+        tl.fromTo($("b" + n + "tok"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, ease: E }, t1 + 0.16);
+        tl.fromTo($("b" + n + "suf"), { x: SHIFT }, { x: 0, duration: 0.3, ease: E }, t1 + 0.16);
+        // 0 + 1 -> 1
+        tl.to([$("b" + n + "tok"), $("b" + n + "plus")], { opacity: 0, y: -16, duration: 0.16, ease: "power2.in" }, t2);
+        tl.set(B, { opacity: 0 }, t2 + 0.16);
+        tl.set(C, { opacity: 1 }, t2 + 0.16);
+        tl.fromTo($("c" + n + "tok"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, ease: E }, t2 + 0.16);
+        tl.fromTo($("c" + n + "suf"), { x: SHIFT }, { x: 0, duration: 0.3, ease: E }, t2 + 0.16);
+      }
+      morph(2, 7.7, 8.6);
+      morph(3, 7.95, 8.85);
+
+      // "Twee keer de waarde één" (8.98 / 10.24): two identical coral chips go to React
+      var a1 = $("arr1"), a2 = $("arr2");
+      var l1 = a1.getTotalLength(), l2 = a2.getTotalLength();
+      tl.fromTo($("label"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, 8.98);
+      tl.fromTo(a1, { strokeDasharray: l1, strokeDashoffset: l1 }, { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 9.0);
+      tl.fromTo($("head1"), { opacity: 0 }, { opacity: 1, duration: 0.15, ease: E }, 9.32);
+      tl.fromTo($("chip1"), { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.55, ease: E }, 9.3);
+      tl.fromTo(a2, { strokeDasharray: l2, strokeDashoffset: l2 }, { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 9.7);
+      tl.fromTo($("head2"), { opacity: 0 }, { opacity: 1, duration: 0.15, ease: E }, 10.02);
+      tl.fromTo($("chip2"), { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.55, ease: E }, 10.0);
+      tl.fromTo($("eq"), { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.45, ease: E }, 10.24);
+
+      // ---- Scene 4 (10.9–14.28): render #2 on "volgende render" (11.66), badge pulse on "count één" (12.77) ----
+      tl.fromTo($("card2"), { opacity: 0, y: 34, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.75, ease: E }, 11.6);
+      tl.fromTo($("badge2"), { opacity: 0, y: -14, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: E }, 12.0);
+      tl.fromTo($("lockup"), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, 12.2);
+      tl.to($("badge2"), { scale: 1.12, duration: 0.22, ease: "power2.out" }, 12.8);
+      tl.to($("badge2"), { scale: 1, duration: 0.45, ease: "power2.inOut" }, 13.02);
+
+      // hold still to the end
+      tl.set({}, {}, 14.28);
+
+      window.__timelines = window.__timelines || {};
+        // voice take: 14.28s → 15.16s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.8, 0.48], [0.867, 0.96], [1.2, 1.36], [1.227, 1.44], [1.28, 1.52], [1.333, 1.6], [1.44, 1.68], [1.472, 1.72], [1.68, 2.0], [1.72, 2.08], [1.84, 2.16], [1.904, 2.24], [2.16, 2.48], [2.217, 2.68], [2.8, 2.96], [2.86, 3.28], [3.04, 3.36], [3.08, 3.44], [3.52, 3.84], [3.552, 3.92], [3.68, 4.24], [3.72, 4.32], [4.0, 4.64], [4.027, 4.72], [4.08, 4.8], [4.133, 4.88], [4.48, 5.12], [4.507, 5.2], [4.96, 5.8], [5.12, 6.0], [5.44, 6.32], [5.488, 6.64], [5.68, 6.8], [5.744, 6.88], [6.0, 7.12], [6.08, 7.2], [6.32, 7.44], [6.373, 7.52], [6.84, 7.8], [6.93, 8.0], [7.52, 8.64], [7.56, 8.76], [7.68, 8.88], [7.72, 8.96], [8.0, 9.12], [8.112, 9.28], [8.56, 9.52], [8.6, 9.6], [8.8, 10.16], [8.98, 10.2], [9.64, 10.4], [9.664, 10.48], [9.76, 10.64], [9.787, 10.72], [9.84, 10.8], [9.888, 10.84], [10.16, 11.12], [10.24, 11.28], [10.8, 11.72], [10.94, 11.92], [11.36, 12.08], [11.38, 12.16], [11.44, 12.24], [11.493, 12.32], [11.6, 12.4], [11.66, 12.48], [12.08, 12.88], [12.137, 13.08], [12.48, 13.28], [12.56, 13.36], [12.72, 13.52], [12.773, 13.72], [13.04, 13.92], [13.12, 14.0], [13.68, 14.56], [14.28, 15.16]]);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

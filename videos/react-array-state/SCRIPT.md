@@ -1,6 +1,6 @@
 # SCRIPT — react-array-state
 
-**Voice:** ElevenLabs eleven_v3 via the `elevenlabs` CLI — Jeroen Vlaams - Warm & Friendly (`Yv0oyZ3obP9foTH7emqG`, nl-BE) for every line
+**Voice:** ElevenLabs eleven_v4 via the `elevenlabs` CLI — Andie (`8OezxDDjGa2d9W45o5Qs`) for every line
 **Voice settings:** same voice + settings for all 10 lines
 **Voice direction:** Calm, friendly teacher. Clear, unhurried, a small pause at each "—". Code terms in English (push, spread, filter, map, key, prev).
 

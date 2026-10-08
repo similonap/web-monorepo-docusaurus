@@ -157,10 +157,10 @@
     }
   </style>
 
-  <div data-hf-id="hf-5s85" id="root" data-composition-id="12-samenvatting" data-width="1920" data-height="1080" data-duration="14.4">
-    <div data-hf-id="hf-25i9" id="f12-bg" class="f12-bg clip" data-start="0" data-duration="14.4" data-track-index="0"></div>
+  <div data-hf-id="hf-5s85" id="root" data-composition-id="12-samenvatting" data-width="1920" data-height="1080" data-duration="11.22">
+    <div data-hf-id="hf-25i9" id="f12-bg" class="f12-bg clip" data-start="0" data-duration="11.22" data-track-index="0"></div>
 
-    <div data-hf-id="hf-1vuc" id="f12-stage" class="f12-stage clip" data-start="0" data-duration="14.4" data-track-index="1">
+    <div data-hf-id="hf-1vuc" id="f12-stage" class="f12-stage clip" data-start="0" data-duration="11.22" data-track-index="1">
       <div data-hf-id="hf-oivk" class="f12-kicker"><span data-hf-id="hf-2mcr" class="f12-kicker-mark">✱</span>Samengevat</div>
 
       <div data-hf-id="hf-uwwa" class="f12-head">
@@ -286,6 +286,24 @@
       tl.fromTo(one("stage"), { opacity: 1 }, { opacity: 0, duration: 0.4, ease: "power2.inOut", immediateRender: false }, 14.0);
 
       window.__timelines = window.__timelines || {};
+        // voice take: 14.4s → 11.22s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.26, 0.24], [0.32, 0.32], [0.9, 1.44], [1.38, 1.56], [1.7, 1.68], [1.76, 1.76], [2.26, 2.16], [2.54, 2.24], [2.96, 2.64], [3.06, 2.76], [3.18, 2.88], [3.62, 2.96], [4.62, 3.88], [5.38, 4.08], [5.44, 4.16], [5.48, 4.24], [6.14, 4.88], [6.22, 5.04], [6.56, 5.2], [6.6, 5.28], [7.08, 5.76], [7.36, 5.84], [7.86, 6.0], [7.9, 6.08], [8.08, 6.16], [8.119, 6.24], [8.52, 6.96], [9.26, 7.04], [9.38, 7.12], [9.52, 7.2], [9.7, 7.28], [9.74, 7.36], [9.84, 7.44], [9.92, 7.64], [10.26, 8.08], [10.76, 8.16], [10.98, 8.32], [11.02, 8.4], [11.12, 8.48], [11.18, 8.6], [11.38, 8.72], [11.96, 9.147], [12.48, 9.2], [12.54, 9.28], [12.66, 9.36], [12.72, 9.56], [13.58, 10.4], [14.4, 11.22]]);
       window.__timelines[ID] = tl;
     })();
   </script>

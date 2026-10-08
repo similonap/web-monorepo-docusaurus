@@ -1,0 +1,731 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EB_Garamond-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f13-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f13-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f13-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f13-kicker .f13-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f13-panel {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      width: 1080px;
+      height: 690px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f13-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f13-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f13-st {
+      position: absolute;
+      left: 28px;
+      top: 0;
+      line-height: 46px;
+      white-space: nowrap;
+    }
+    .f13-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 80px;
+      height: 560px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 32px;
+      line-height: 50px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f13-wash {
+      position: absolute;
+      left: 0;
+      top: 150px;
+      width: 1080px;
+      height: 50px;
+      background: rgba(204, 120, 92, 0.18);
+      transform-origin: left center;
+    }
+    .f13-wash-edge {
+      position: absolute;
+      left: 0;
+      top: 150px;
+      width: 4px;
+      height: 50px;
+      background: #CC785C;
+      transform-origin: center top;
+    }
+    .f13-ln {
+      position: absolute;
+      left: 0;
+      width: 60px;
+      height: 50px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 24px;
+    }
+    .f13-row {
+      position: absolute;
+      left: 0; right: 0;
+      height: 50px;
+      white-space: pre;
+    }
+    .f13-txt {
+      position: absolute;
+      left: 92px;
+      top: 0;
+      white-space: pre;
+    }
+    .f13-ch { display: inline; }
+    .f13-kw { color: #CC785C; }
+    .f13-fn { color: #E8A55A; }
+    .f13-str { color: #5DB8A6; }
+    .f13-dim { color: rgba(250, 249, 245, 0.6); }
+    .f13-caret {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      width: 3px;
+      height: 34px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+
+    /* labels */
+    .f13-label {
+      position: absolute;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+      white-space: nowrap;
+    }
+
+    /* scherm card group */
+    .f13-scr { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 1520px 360px; }
+    .f13-card {
+      position: absolute;
+      left: 1200px;
+      top: 200px;
+      width: 640px;
+      height: 320px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f13-input {
+      position: absolute;
+      left: 40px;
+      top: 40px;
+      width: 560px;
+      height: 72px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.28);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .f13-intext {
+      position: absolute;
+      left: 22px;
+      top: 0;
+      font-family: "Inter", sans-serif;
+      font-size: 34px;
+      line-height: 70px;
+      color: #141413;
+    }
+    .f13-incaret {
+      position: absolute;
+      left: 22px;
+      top: 18px;
+      width: 2px;
+      height: 36px;
+      background: #141413;
+    }
+    .f13-ring {
+      position: absolute;
+      left: 32px;
+      top: 32px;
+      width: 576px;
+      height: 88px;
+      border: 3px solid #E8A55A;
+      border-radius: 12px;
+      box-sizing: border-box;
+    }
+    .f13-btn {
+      position: absolute;
+      left: 40px;
+      top: 140px;
+      height: 60px;
+      padding: 0 26px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.32);
+      border-radius: 8px;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 28px;
+      line-height: 58px;
+      color: #141413;
+      white-space: nowrap;
+      box-sizing: border-box;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.12);
+    }
+    .f13-p {
+      position: absolute;
+      left: 40px;
+      top: 236px;
+      font-family: "Inter", sans-serif;
+      font-size: 32px;
+      line-height: 44px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f13-pname { display: inline-block; }
+    .f13-rtag {
+      position: absolute;
+      right: 104px;
+      top: 185px;
+      height: 32px;
+      padding: 0 12px;
+      border: 1px solid rgba(20, 20, 19, 0.28);
+      border-radius: 6px;
+      background: #ECE3D4;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      line-height: 30px;
+      color: #141413;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+    .f13-ripple {
+      position: absolute;
+      left: 1292px;
+      top: 320px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px solid rgba(20, 20, 19, 0.35);
+      opacity: 0;
+    }
+
+    /* state chip */
+    .f13-chip {
+      position: absolute;
+      left: 1200px;
+      top: 560px;
+      height: 56px;
+      padding: 0 22px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 54px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f13-chip-lab { color: rgba(20, 20, 19, 0.5); font-size: 20px; letter-spacing: 0.16em; text-transform: uppercase; margin-right: 18px; }
+    .f13-val {
+      position: relative;
+      display: inline-block;
+      vertical-align: top;
+      height: 54px;
+      overflow: hidden;
+    }
+    .f13-val span { display: block; white-space: pre; }
+    .f13-val .f13-v2 { position: absolute; left: 0; top: 0; }
+    .f13-note {
+      position: absolute;
+      right: 80px;
+      top: 572px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.02em;
+      color: #141413;
+      white-space: nowrap;
+    }
+
+    /* cursor */
+    .f13-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 224px;
+      height: 224px;
+      pointer-events: none;
+      z-index: 20;
+      filter: drop-shadow(0 8px 12px rgba(20, 20, 19, 0.22));
+    }
+    .f13-cursor svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      fill: #FAF9F5;
+      stroke: #141413;
+      stroke-width: 1.4;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
+    /* two-way diagram */
+    .f13-node {
+      position: absolute;
+      top: 365px;
+      width: 260px;
+      height: 150px;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 12px;
+      box-sizing: border-box;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f13-node-in { left: 1000px; background: #FAF9F5; }
+    .f13-node-st { left: 1560px; background: #EFE9DE; }
+    .f13-node .f13-label { left: 22px; top: 18px; font-size: 20px; }
+    .f13-mini {
+      position: absolute;
+      left: 22px;
+      top: 64px;
+      width: 214px;
+      height: 56px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.28);
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    .f13-mini-txt {
+      position: absolute;
+      left: 16px;
+      top: 0;
+      font-family: "Inter", sans-serif;
+      font-size: 28px;
+      line-height: 54px;
+      color: #141413;
+      white-space: pre;
+    }
+    .f13-mini-caret {
+      position: absolute;
+      left: 16px;
+      top: 13px;
+      width: 2px;
+      height: 28px;
+      background: #141413;
+    }
+    .f13-mini-ring {
+      position: absolute;
+      left: 14px;
+      top: 56px;
+      width: 230px;
+      height: 72px;
+      border: 3px solid #E8A55A;
+      border-radius: 11px;
+      box-sizing: border-box;
+      opacity: 0;
+    }
+    .f13-sval {
+      position: absolute;
+      left: 22px;
+      top: 66px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      line-height: 54px;
+      color: #141413;
+    }
+    .f13-sval .f13-val { height: 54px; min-width: 10ch; }
+    .f13-diag {
+      position: absolute;
+      left: 0; top: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .f13-alab {
+      position: absolute;
+      left: 1110px;
+      width: 600px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.02em;
+      color: #141413;
+      white-space: nowrap;
+    }
+
+    /* term */
+    .f13-term-lab { left: 1110px; width: 600px; top: 676px; text-align: center; }
+    .f13-term {
+      position: absolute;
+      left: 960px;
+      width: 900px;
+      top: 712px;
+      text-align: center;
+      font-family: "EB Garamond", serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 92px;
+      line-height: 1.05;
+      letter-spacing: -0.012em;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f13-term-rule {
+      position: absolute;
+      left: 1210px;
+      top: 830px;
+      width: 400px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.2);
+      transform-origin: center center;
+    }
+  </style>
+
+  <div data-hf-id="hf-f13r" id="root" data-composition-id="13-dubbele-binding" data-width="1920" data-height="1080" data-duration="17.36">
+    <div data-hf-id="hf-f13b" class="f13-bg clip" id="f13-bg" data-start="0" data-duration="17.36" data-track-index="0"></div>
+
+    <div data-hf-id="hf-f13s" class="f13-stage clip" id="f13-stage" data-start="0" data-duration="17.36" data-track-index="1">
+      <div data-hf-id="hf-f13k" class="f13-kicker" id="f13-kicker"><span data-hf-id="hf-f13k1" class="f13-spike">✱</span>De oplossing</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-f13p" class="f13-panel" id="f13-panel">
+        <div data-hf-id="hf-f13t" class="f13-titlebar">NameInput.tsx</div>
+        <div data-hf-id="hf-f13c" class="f13-code">
+          <div data-hf-id="hf-f13w" class="f13-wash" id="f13-wash"></div>
+          <div data-hf-id="hf-f13we" class="f13-wash-edge" id="f13-wash-edge"></div>
+
+          <!-- static gutter -->
+          <div data-hf-id="hf-f13g1" class="f13-ln" style="top:0px">4</div>
+          <div data-hf-id="hf-f13g2" class="f13-ln" style="top:50px">5</div>
+          <div data-hf-id="hf-f13g3" class="f13-ln" style="top:100px">6</div>
+          <div data-hf-id="hf-f13g4" class="f13-ln" style="top:150px">7</div>
+          <div data-hf-id="hf-f13g5" class="f13-ln" style="top:200px">8</div>
+          <div data-hf-id="hf-f13g6" class="f13-ln" style="top:250px">9</div>
+          <div data-hf-id="hf-f13g7" class="f13-ln" style="top:300px">10</div>
+          <div data-hf-id="hf-f13g8" class="f13-ln" style="top:350px">11</div>
+          <div data-hf-id="hf-f13g9" class="f13-ln" style="top:400px">12</div>
+          <div data-hf-id="hf-f13g10" class="f13-ln" style="top:450px">13</div>
+          <div data-hf-id="hf-f13g11" class="f13-ln" id="f13-ln14" style="top:500px">14</div>
+
+          <!-- lines above the insert -->
+          <div data-hf-id="hf-f13l1" class="f13-row" style="top:0px"><span data-hf-id="hf-f13l1t" class="f13-txt"><span data-hf-id="hf-f13l1k" class="f13-kw">return</span> (</span></div>
+          <div data-hf-id="hf-f13l2" class="f13-row" style="top:50px"><span data-hf-id="hf-f13l2t" class="f13-txt">  &lt;&gt;</span></div>
+          <div data-hf-id="hf-f13l3" class="f13-row" style="top:100px"><span data-hf-id="hf-f13l3t" class="f13-txt">    &lt;input <span data-hf-id="hf-f13l3a" class="f13-dim">type</span>=<span data-hf-id="hf-f13l3s" class="f13-str">"text"</span></span></div>
+
+          <!-- the new line -->
+          <div data-hf-id="hf-f13nv" class="f13-row" style="top:150px"><span data-hf-id="hf-f13nvt" class="f13-txt" id="f13-vline"></span><span data-hf-id="hf-f13nvc" class="f13-caret" id="f13-vcaret"></span></div>
+
+          <!-- lines below the insert (shift down on cue) -->
+          <div data-hf-id="hf-f13low" id="f13-lower" style="position:absolute;left:0;right:0;top:150px;height:350px;">
+            <div data-hf-id="hf-f13l4" class="f13-row" style="top:0px"><span data-hf-id="hf-f13l4t" class="f13-txt">      <span data-hf-id="hf-f13l4a" class="f13-dim">onChange</span>={(e) =&gt; <span data-hf-id="hf-f13l4f" class="f13-fn">setName</span>(e.target.value)} /&gt;</span></div>
+            <div data-hf-id="hf-f13l5" class="f13-row" style="top:50px"><span data-hf-id="hf-f13l5t" class="f13-txt">    &lt;button <span data-hf-id="hf-f13l5a" class="f13-dim">onClick</span>={() =&gt; <span data-hf-id="hf-f13l5f" class="f13-fn">setName</span>(<span data-hf-id="hf-f13l5s" class="f13-str">''</span>)}&gt;</span></div>
+            <div data-hf-id="hf-f13l6" class="f13-row" style="top:100px"><span data-hf-id="hf-f13l6t" class="f13-txt">      Leegmaken</span></div>
+            <div data-hf-id="hf-f13l7" class="f13-row" style="top:150px"><span data-hf-id="hf-f13l7t" class="f13-txt">    &lt;/button&gt;</span></div>
+            <div data-hf-id="hf-f13l8" class="f13-row" style="top:200px"><span data-hf-id="hf-f13l8t" class="f13-txt">    &lt;p&gt;Je typte: {name}&lt;/p&gt;</span></div>
+            <div data-hf-id="hf-f13l9" class="f13-row" style="top:250px"><span data-hf-id="hf-f13l9t" class="f13-txt">  &lt;/&gt;</span></div>
+            <div data-hf-id="hf-f13l10" class="f13-row" style="top:300px"><span data-hf-id="hf-f13l10t" class="f13-txt">);</span></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-f13ss" class="f13-status">
+          <span data-hf-id="hf-f13sa" class="f13-st" id="f13-st-a">input · onChange · geen value</span>
+          <span data-hf-id="hf-f13sb" class="f13-st" id="f13-st-b">input · value={name} · onChange</span>
+        </div>
+      </div>
+
+      <!-- scherm card group (first half) -->
+      <div data-hf-id="hf-f13sg" class="f13-scr" id="f13-scr">
+        <div data-hf-id="hf-f13sl" class="f13-label" id="f13-lab-scr" style="left:1200px;top:156px">scherm</div>
+        <div data-hf-id="hf-f13cd" class="f13-card" id="f13-card">
+          <div data-hf-id="hf-f13in" class="f13-input" id="f13-input">
+            <span data-hf-id="hf-f13it" class="f13-intext" id="f13-intext">Sam</span>
+            <span data-hf-id="hf-f13ic" class="f13-incaret" id="f13-incaret"></span>
+          </div>
+          <div data-hf-id="hf-f13rg" class="f13-ring" id="f13-ring"></div>
+          <div data-hf-id="hf-f13bt" class="f13-btn" id="f13-btn">Leegmaken</div>
+          <div data-hf-id="hf-f13pp" class="f13-p">Je typte: <span data-hf-id="hf-f13pn" class="f13-pname" id="f13-pname">Sam</span></div>
+        </div>
+        <div data-hf-id="hf-f13rt" class="f13-rtag" id="f13-rtag"><span data-hf-id="hf-f13rv" class="f13-val" style="height:30px"><span data-hf-id="hf-f13r1" class="f13-v1" id="f13-r1">render #4</span><span data-hf-id="hf-f13r2" class="f13-v2" id="f13-r2">render #5</span></span></div>
+        <div data-hf-id="hf-f13rp1" class="f13-ripple" id="f13-rip1"></div>
+        <div data-hf-id="hf-f13rp2" class="f13-ripple" id="f13-rip2"></div>
+        <div data-hf-id="hf-f13nt" class="f13-note" id="f13-note">veld = state</div>
+      </div>
+
+      <div data-hf-id="hf-f13ch" class="f13-chip" id="f13-chip"><span data-hf-id="hf-f13chl" class="f13-chip-lab">state</span><span data-hf-id="hf-f13chv" class="f13-val"><span data-hf-id="hf-f13c1" class="f13-v1" id="f13-c1">name: "Sam"</span><span data-hf-id="hf-f13c2" class="f13-v2" id="f13-c2">name: ""</span></span></div>
+
+      <!-- two-way diagram (second half) -->
+      <svg data-hf-id="hf-f13dg" class="f13-diag" id="f13-diag" viewBox="0 0 1920 1080" width="1920" height="1080">
+        <path data-hf-id="hf-f13au" id="f13-arc-up" fill="none" stroke="rgba(20,20,19,0.72)" stroke-width="2.5" stroke-linecap="round" d="M1260,410 C1340,290 1480,290 1560,410" />
+        <path data-hf-id="hf-f13hu" id="f13-head-up" fill="none" stroke="rgba(20,20,19,0.72)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M1541.7,400.5 L1560,410 L1558.3,389.5" />
+        <path data-hf-id="hf-f13ad" id="f13-arc-dn" fill="none" stroke="rgba(20,20,19,0.72)" stroke-width="2.5" stroke-linecap="round" d="M1560,470 C1480,590 1340,590 1260,470" />
+        <path data-hf-id="hf-f13hd" id="f13-head-dn" fill="none" stroke="rgba(20,20,19,0.72)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M1278.3,479.5 L1260,470 L1261.7,490.5" />
+        <circle data-hf-id="hf-f13dt" id="f13-dot" cx="1260" cy="410" r="10" fill="#E8A55A" />
+      </svg>
+      <div data-hf-id="hf-f13lu" class="f13-alab" id="f13-lab-up" style="top:240px">onChange → setName</div>
+      <div data-hf-id="hf-f13ld" class="f13-alab" id="f13-lab-dn" style="top:592px">value={name}</div>
+
+      <div data-hf-id="hf-f13ni" class="f13-node f13-node-in" id="f13-node-in">
+        <div data-hf-id="hf-f13nil" class="f13-label">input</div>
+        <div data-hf-id="hf-f13mi" class="f13-mini">
+          <span data-hf-id="hf-f13mt" class="f13-mini-txt"><span data-hf-id="hf-f13m1" id="f13-m1">L</span><span data-hf-id="hf-f13m2" id="f13-m2">o</span></span>
+          <span data-hf-id="hf-f13mc" class="f13-mini-caret" id="f13-mcaret"></span>
+        </div>
+        <div data-hf-id="hf-f13mr" class="f13-mini-ring" id="f13-mring"></div>
+      </div>
+      <div data-hf-id="hf-f13ns" class="f13-node f13-node-st" id="f13-node-st">
+        <div data-hf-id="hf-f13nsl" class="f13-label">state</div>
+        <div data-hf-id="hf-f13sv" class="f13-sval"><span data-hf-id="hf-f13svv" class="f13-val"><span data-hf-id="hf-f13s1" class="f13-v1" id="f13-s1">name: ""</span><span data-hf-id="hf-f13s2" class="f13-v2" id="f13-s2">name: "Lo"</span></span></div>
+      </div>
+
+      <!-- term -->
+      <div data-hf-id="hf-f13tl" class="f13-label f13-term-lab" id="f13-term-lab">term</div>
+      <div data-hf-id="hf-f13tm" class="f13-term" id="f13-term">controlled component</div>
+      <div data-hf-id="hf-f13tr" class="f13-term-rule" id="f13-term-rule"></div>
+
+      <!-- cursor -->
+      <div data-hf-id="hf-f13cu" class="f13-cursor" id="f13-cursor" aria-hidden="true">
+        <svg data-hf-id="hf-f13cus" viewBox="0 0 24 24"><path data-hf-id="hf-f13cup" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 17.72;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var root = document.querySelector('[data-composition-id="13-dubbele-binding"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(lineSel, caretSel, segments, start, per) {
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          for (var i = 0; i < seg.t.length; i++) {
+            var s = document.createElement("span");
+            s.className = "f13-ch" + (seg.c ? " " + seg.c : "");
+            s.textContent = seg.t[i];
+            line.appendChild(s);
+            chars.push(s);
+          }
+        });
+        var x0 = 92;
+        var chPx = 32 * CW;
+        gsap.set(chars, { opacity: 0 });
+        tl.set(caret, { opacity: 1, x: x0 }, start - 0.15);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.06, ease: "power1.out" }, at);
+          tl.set(caret, { x: x0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.3);
+        return end;
+      }
+
+      // value flip: old slides up/out, new slides in (0.25s)
+      function flip(oldSel, newSel, at) {
+        tl.to(oldSel, { yPercent: -100, opacity: 0, duration: 0.25, ease: "power3.out" }, at);
+        tl.fromTo(newSel, { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.25, ease: "power3.out", immediateRender: false }, at);
+      }
+
+      // ---- initial (hidden) states ----
+      gsap.set(["#f13-c2", "#f13-r2", "#f13-s2"], { yPercent: 100, opacity: 0 });
+      gsap.set(["#f13-ln14", "#f13-st-b", "#f13-incaret", "#f13-ring", "#f13-note"], { opacity: 0 });
+      gsap.set("#f13-wash", { scaleX: 0 });
+      gsap.set("#f13-wash-edge", { scaleY: 0 });
+      gsap.set(["#f13-node-in", "#f13-node-st", "#f13-lab-up", "#f13-lab-dn", "#f13-term-lab", "#f13-term", "#f13-dot", "#f13-head-up", "#f13-head-dn"], { opacity: 0 });
+      gsap.set(["#f13-m1", "#f13-m2"], { opacity: 0 });
+      gsap.set("#f13-term-rule", { scaleX: 0 });
+
+      // ---- Scene 1 (0.0–3.0): code from frame 12; value={name} types on ----
+      tl.fromTo("#f13-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f13-panel", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo(["#f13-lab-scr", "#f13-card", "#f13-rtag"], { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", stagger: 0.05 }, 0.08);
+      tl.fromTo("#f13-chip", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 0.2);
+
+      // "value gelijk aan name" (0.88): lower lines shift down, line 14 appears
+      tl.to("#f13-lower", { y: 50, duration: 0.45, ease: "power3.inOut" }, 0.88);
+      tl.to("#f13-ln14", { opacity: 1, duration: 0.3, ease: "power1.out" }, 1.1);
+      typeLine("#f13-vline", "#f13-vcaret", [
+        { t: "      " }, { t: "value", c: "f13-dim" }, { t: "={name}" }
+      ], 1.3, 0.05);
+      // the one voltage: coral wash on the fix (2.2)
+      tl.fromTo("#f13-wash-edge", { scaleY: 0 }, { scaleY: 1, duration: 0.35, ease: "power3.out", immediateRender: false }, 2.2);
+      tl.fromTo("#f13-wash", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out", immediateRender: false }, 2.25);
+      tl.to("#f13-st-a", { opacity: 0, duration: 0.3, ease: "power1.out" }, 2.4);
+      tl.to("#f13-st-b", { opacity: 1, duration: 0.3, ease: "power1.out" }, 2.45);
+
+      // ---- Scene 2 (3.0–6.3): demo replays; Leegmaken now empties the field too ----
+      var cursor = q("#f13-cursor");
+      var TIP_X = 1342, TIP_Y = 372, CLICK_AT = 3.9, PRESS = 0.1;
+      var TIP_ORIGIN = "20.83% 12.5%";
+      gsap.set(cursor, { xPercent: -20.83, yPercent: -12.5, x: 2080, y: 760, scale: 1 });
+      tl.to("#f13-card", { borderColor: "rgba(20, 20, 19, 0.3)", duration: 0.3, ease: "power1.out" }, 3.09);
+      tl.fromTo(cursor, { x: 2080, y: 760 }, { x: TIP_X, y: TIP_Y, duration: 0.6, ease: "power3.out", immediateRender: false }, 3.12);
+      tl.to(cursor, { scale: 0.86, duration: PRESS, ease: "power2.in", transformOrigin: TIP_ORIGIN }, CLICK_AT);
+      tl.to(cursor, { scale: 1, duration: 0.22, ease: "power2.out", transformOrigin: TIP_ORIGIN }, CLICK_AT + PRESS);
+      tl.to("#f13-btn", { scale: 0.95, duration: PRESS, ease: "power1.in" }, CLICK_AT);
+      tl.to("#f13-btn", { scale: 1, duration: 0.4, ease: "power3.out" }, CLICK_AT + PRESS);
+      tl.fromTo(["#f13-rip1", "#f13-rip2"], { scale: 0.4, opacity: 0.9 }, { scale: 3, opacity: 0, duration: 0.7, ease: "power2.out", stagger: 0.09, immediateRender: false }, CLICK_AT + 0.02);
+      // cursor settles to the right so the card stays readable
+      tl.to(cursor, { x: TIP_X + 210, y: TIP_Y + 14, duration: 0.45, ease: "power2.inOut" }, 4.2);
+
+      // state chip -> "" , render tag pulses
+      flip("#f13-c1", "#f13-c2", 4.05);
+      flip("#f13-r1", "#f13-r2", 4.08);
+      tl.fromTo("#f13-rtag", { scale: 1 }, { scale: 1.12, duration: 0.2, ease: "power2.out", immediateRender: false }, 4.1);
+      tl.to("#f13-rtag", { scale: 1, duration: 0.35, ease: "power2.inOut" }, 4.3);
+      // 4.3: the input empties too (text slides out), and the p empties
+      tl.to("#f13-intext", { y: -40, opacity: 0, duration: 0.3, ease: "power3.out" }, 4.3);
+      tl.to("#f13-pname", { y: -24, opacity: 0, duration: 0.3, ease: "power3.out" }, 4.33);
+      tl.to("#f13-incaret", { opacity: 1, duration: 0.2, ease: "power1.out" }, 4.55);
+      tl.to("#f13-card", { borderColor: "rgba(20, 20, 19, 0.12)", duration: 0.4, ease: "power1.inOut" }, 4.8);
+
+      // "wat er in de state zit" (5.65): amber ring on the empty input + note
+      tl.fromTo("#f13-ring", { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out", immediateRender: false }, 5.65);
+      tl.fromTo("#f13-note", { opacity: 0, x: 14 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, 5.75);
+
+      // ---- Scene 3 (6.3–14.5): the two-way diagram ----
+      // code surface slides left and narrows
+      tl.to("#f13-panel", { scale: 0.78, transformOrigin: "0% 0%", duration: 0.8, ease: "power3.inOut" }, 6.3);
+      // scherm card shrinks into the input node position; chip travels to the state node
+      tl.to("#f13-scr", { x: -390, y: 80, scale: 0.42, opacity: 0, duration: 0.7, ease: "power3.inOut" }, 6.39);
+      tl.to(cursor, { x: TIP_X - 180, y: TIP_Y + 80, scale: 0.6, opacity: 0, duration: 0.6, ease: "power3.inOut" }, 6.39);
+      tl.to("#f13-chip", { x: 380, y: -150, opacity: 0, duration: 0.7, ease: "power3.inOut" }, 6.6);
+      tl.fromTo("#f13-node-in", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out", immediateRender: false }, 6.75);
+      tl.fromTo("#f13-node-st", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out", immediateRender: false }, 7.44);
+
+      // "dubbele binding" (9.24): both arrows draw
+      var up = q("#f13-arc-up"), dn = q("#f13-arc-dn");
+      var upLen = 400, dnLen = 400;
+      try { upLen = Math.ceil(up.getTotalLength()) || 400; } catch (e) {}
+      try { dnLen = Math.ceil(dn.getTotalLength()) || 400; } catch (e) {}
+      gsap.set(up, { strokeDasharray: upLen, strokeDashoffset: upLen });
+      gsap.set(dn, { strokeDasharray: dnLen, strokeDashoffset: dnLen });
+      tl.to(up, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 9.24);
+      tl.to("#f13-head-up", { opacity: 1, duration: 0.2, ease: "power1.out" }, 9.78);
+      tl.fromTo("#f13-lab-up", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, 9.4);
+      tl.to(dn, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 9.5);
+      tl.to("#f13-head-dn", { opacity: 1, duration: 0.2, ease: "power1.out" }, 10.04);
+      tl.fromTo("#f13-lab-dn", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, 9.66);
+
+      // amber dot travels a cubic bezier (deterministic, pure math)
+      var dot = q("#f13-dot");
+      function bez(p, t) {
+        var u = 1 - t;
+        return u * u * u * p[0] + 3 * u * u * t * p[1] + 3 * u * t * t * p[2] + t * t * t * p[3];
+      }
+      function travel(px, py, start, dur) {
+        var proxy = { t: 0 };
+        tl.fromTo(proxy, { t: 0 }, {
+          t: 1, duration: dur, ease: "power2.inOut", immediateRender: false,
+          onUpdate: function () {
+            dot.setAttribute("cx", bez(px, proxy.t).toFixed(2));
+            dot.setAttribute("cy", bez(py, proxy.t).toFixed(2));
+          }
+        }, start);
+        tl.fromTo(dot, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "power1.out", immediateRender: false }, start);
+        tl.to(dot, { opacity: 0, duration: 0.15, ease: "power1.in" }, start + dur - 0.05);
+      }
+
+      // "typen past de state aan" (10.62): typing in the field, dot input -> state, state flips
+      tl.to("#f13-m1", { opacity: 1, duration: 0.05 }, 10.5);
+      tl.set("#f13-mcaret", { x: 17 }, 10.5);
+      tl.to("#f13-m2", { opacity: 1, duration: 0.05 }, 10.62);
+      tl.set("#f13-mcaret", { x: 33 }, 10.62);
+      travel([1260, 1340, 1480, 1560], [410, 290, 290, 410], 10.72, 0.8);
+      flip("#f13-s1", "#f13-s2", 11.5);
+      tl.fromTo("#f13-node-st", { borderColor: "rgba(20, 20, 19, 0.2)" }, { borderColor: "rgba(232, 165, 90, 1)", duration: 0.2, ease: "power1.out", immediateRender: false }, 11.5);
+      tl.to("#f13-node-st", { borderColor: "rgba(20, 20, 19, 0.2)", duration: 0.5, ease: "power1.inOut" }, 11.9);
+
+      // "de state past het veld aan" (12.67 / 13.68): dot state -> input, field confirms
+      travel([1560, 1480, 1340, 1260], [470, 590, 590, 470], 12.7, 0.85);
+      tl.fromTo("#f13-mring", { opacity: 0, scale: 1.05 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power3.out", immediateRender: false }, 13.6);
+
+      // ---- Scene 4 (14.5–17.72): the term lands ----
+      tl.fromTo("#f13-term-lab", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 15.5);
+      tl.fromTo("#f13-term", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", immediateRender: false }, 15.66);
+      tl.to("#f13-term-rule", { scaleX: 1, duration: 0.6, ease: "power3.out" }, 16.3);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+        // voice take: 17.72s → 16.76s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.32, 0.4], [0.36, 0.52], [0.48, 0.64], [0.507, 0.68], [0.56, 0.72], [0.62, 0.8], [0.8, 0.88], [0.88, 0.96], [1.28, 1.52], [1.36, 1.6], [1.84, 1.92], [1.9, 2.0], [2.08, 2.08], [2.192, 2.16], [2.72, 2.84], [3.093, 3.12], [3.84, 3.28], [3.867, 3.36], [4.08, 3.52], [4.12, 3.6], [4.24, 3.68], [4.28, 3.72], [4.48, 4.0], [4.571, 4.08], [5.12, 4.64], [5.16, 4.72], [5.28, 4.8], [5.307, 4.88], [5.36, 4.96], [5.413, 5.0], [5.52, 5.04], [5.547, 5.12], [5.6, 5.2], [5.653, 5.36], [5.92, 5.52], [5.96, 5.56], [6.24, 6.08], [6.387, 6.32], [7.12, 6.8], [7.2, 6.88], [7.36, 6.96], [7.44, 7.04], [8.08, 7.6], [8.173, 7.68], [8.64, 8.08], [8.72, 8.24], [9.04, 8.48], [9.08, 8.56], [9.2, 8.64], [9.24, 8.72], [9.52, 8.96], [9.58, 9.04], [10.56, 9.92], [10.62, 10.04], [10.88, 10.24], [10.976, 10.32], [11.36, 10.56], [11.413, 10.6], [11.52, 10.64], [11.587, 10.84], [11.92, 11.04], [11.98, 11.16], [12.24, 11.6], [12.373, 11.64], [12.64, 11.68], [12.667, 11.76], [12.72, 11.84], [12.787, 11.92], [13.12, 12.24], [13.2, 12.4], [13.52, 12.56], [13.54, 12.64], [13.6, 12.72], [13.68, 12.8], [13.92, 13.04], [14.0, 13.12], [14.64, 13.6], [14.74, 13.84], [15.04, 14.0], [15.067, 14.04], [15.2, 14.24], [15.253, 14.32], [15.36, 14.4], [15.42, 14.48], [15.6, 14.64], [15.658, 14.92], [16.24, 15.2], [16.304, 15.28], [17.12, 16.16], [17.72, 16.76]]);
+      window.__timelines["13-dubbele-binding"] = tl;
+    })();
+  </script>
+</template>

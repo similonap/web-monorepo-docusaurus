@@ -1,0 +1,505 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EB_Garamond-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f06r-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f06r-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f06r-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f06r-kicker .f06r-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f06r-panel {
+      position: absolute;
+      left: 80px;
+      top: 180px;
+      width: 1100px;
+      height: 646px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f06r-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f06r-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f06r-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 84px;
+      height: 486px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 32px;
+      line-height: 54px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f06r-row { position: relative; height: 54px; white-space: pre; }
+    .f06r-ln {
+      position: absolute;
+      left: 0;
+      width: 56px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 24px;
+    }
+    .f06r-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f06r-kw { color: #CC785C; }
+    .f06r-fn { color: #E8A55A; }
+    .f06r-num { color: #E8A55A; }
+    .f06r-dim { color: rgba(250, 249, 245, 0.6); }
+
+    /* amber "now executing" pointer (full line) */
+    .f06r-scan {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 0;
+      height: 54px;
+      border-radius: 4px;
+      background: rgba(232, 165, 90, 0.24);
+      opacity: 0;
+    }
+    /* amber wash on setCount(count + 1): row 5, chars 27..46 at 19.2px */
+    .f06r-wash {
+      position: absolute;
+      left: 598px;
+      top: 220px;
+      width: 373px;
+      height: 46px;
+      border-radius: 4px;
+      background: rgba(232, 165, 90, 0.24);
+      transform-origin: 0% 50%;
+      opacity: 0;
+    }
+    /* floating mono label above the onClick line (sits in row 4's empty tail) */
+    .f06r-sum {
+      position: absolute;
+      left: 760px;
+      top: 168px;
+      height: 42px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      background: #252320;
+      border: 1px solid rgba(232, 165, 90, 0.7);
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.02em;
+      color: #FAF9F5;
+      white-space: pre;
+      opacity: 0;
+    }
+    .f06r-sum .f06r-num { color: #E8A55A; }
+    /* "→ 1" return tag right of useState<number>(0) (row 2) */
+    .f06r-ret {
+      position: absolute;
+      left: 1002px;
+      top: 63px;
+      height: 36px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      background: #252320;
+      border: 1px solid rgba(232, 165, 90, 0.7);
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: #E8A55A;
+      white-space: pre;
+      opacity: 0;
+    }
+
+    /* right column */
+    .f06r-col {
+      position: absolute;
+      left: 1224px;
+      top: 0;
+      width: 616px;
+      height: 900px;
+    }
+    .f06r-label {
+      position: absolute;
+      left: 0;
+      top: 150px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f06r-card {
+      position: absolute;
+      left: 0;
+      top: 200px;
+      width: 616px;
+      height: 300px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f06r-btn {
+      position: absolute;
+      left: 208px;
+      top: 92px;
+      width: 200px;
+      height: 116px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.35);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.12), 0 4px 12px rgba(20, 20, 19, 0.06);
+      overflow: hidden;
+    }
+    .f06r-btn-digit {
+      position: absolute;
+      left: 0; right: 0;
+      top: 0;
+      height: 116px;
+      line-height: 116px;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 56px;
+      color: #141413;
+    }
+    .f06r-btn-focus {
+      position: absolute;
+      inset: -1px;
+      border: 2px solid #141413;
+      border-radius: 8px;
+      opacity: 0;
+    }
+    .f06r-ripple {
+      position: absolute;
+      left: 1492px;
+      top: 310px;
+      width: 80px;
+      height: 80px;
+      border-radius: 9999px;
+      border: 2px solid rgba(20, 20, 19, 0.4);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* render tags on the card's top edge */
+    .f06r-rtag {
+      position: absolute;
+      right: 24px;
+      top: -19px;
+      height: 38px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .f06r-rtag1 {
+      background: #ECE3D4;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      color: rgba(20, 20, 19, 0.5);
+    }
+    .f06r-rtag2 {
+      background: #FAF9F5;
+      border: 2px solid #CC785C;
+      color: #CC785C;
+      opacity: 0;
+    }
+
+    /* state chip */
+    .f06r-chip {
+      position: absolute;
+      left: 0;
+      top: 560px;
+      height: 68px;
+      padding: 0 28px 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #141413;
+      white-space: pre;
+    }
+    .f06r-chip-k { color: rgba(20, 20, 19, 0.5); font-size: 22px; letter-spacing: 0.16em; text-transform: uppercase; }
+    .f06r-chip-sep { width: 1px; height: 30px; background: rgba(20, 20, 19, 0.2); }
+    .f06r-digitbox {
+      position: relative;
+      display: inline-block;
+      width: 17px;
+      height: 40px;
+      overflow: hidden;
+      vertical-align: middle;
+    }
+    .f06r-cd {
+      position: absolute;
+      left: 0;
+      top: 0;
+      line-height: 40px;
+    }
+
+    /* hero word */
+    .f06r-word {
+      position: absolute;
+      left: 0;
+      top: 676px;
+      font-family: "EB Garamond", serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 104px;
+      line-height: 1.05;
+      letter-spacing: -0.012em;
+      color: #141413;
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    /* oversized cursor actor (family arrow at 3.5x) */
+    .f06r-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 224px;
+      height: 224px;
+      pointer-events: none;
+      z-index: 20;
+      filter: drop-shadow(0 8px 12px rgba(20, 20, 19, 0.22));
+    }
+    .f06r-cursor svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      fill: #FAF9F5;
+      stroke: #141413;
+      stroke-width: 1.4;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+  </style>
+
+  <div data-hf-id="hf-qf7h" id="root" data-composition-id="06-renderen" data-width="1920" data-height="1080" data-duration="16.14">
+    <div data-hf-id="hf-24a2" id="06-renderen-bg" class="f06r-bg clip" data-start="0" data-duration="16.14" data-track-index="0"></div>
+
+    <div data-hf-id="hf-5ibf" id="06-renderen-stage" class="f06r-stage clip" data-start="0" data-duration="16.14" data-track-index="1">
+      <div data-hf-id="hf-8dr5" id="06-renderen-kicker" class="f06r-kicker"><span data-hf-id="hf-es2x" class="f06r-spike">✱</span>Renderen</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-eq1w" id="06-renderen-panel" class="f06r-panel">
+        <div data-hf-id="hf-8sdj" class="f06r-titlebar">Counter.tsx</div>
+        <div data-hf-id="hf-kdv4" class="f06r-code">
+          <div data-hf-id="hf-rrya" id="06-renderen-scan" class="f06r-scan"></div>
+          <div data-hf-id="hf-zn92" id="06-renderen-wash" class="f06r-wash"></div>
+          <div data-hf-id="hf-2qtp" class="f06r-row"><span data-hf-id="hf-jdtd" class="f06r-ln">1</span><span data-hf-id="hf-rpy3" class="f06r-txt"><span data-hf-id="hf-g7t9" class="f06r-kw">const</span> <span data-hf-id="hf-86y8" class="f06r-fn">Counter</span> = () <span data-hf-id="hf-m0i5" class="f06r-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-vfy9" class="f06r-row"><span data-hf-id="hf-kkqg" class="f06r-ln">2</span><span data-hf-id="hf-j7y1" class="f06r-txt">  <span data-hf-id="hf-qzsx" class="f06r-kw">const</span> [count, setCount] = <span data-hf-id="hf-q4eg" class="f06r-fn">useState</span><span data-hf-id="hf-9r43" class="f06r-dim">&lt;number&gt;</span>(<span data-hf-id="hf-u75k" class="f06r-num">0</span>);</span></div>
+          <div data-hf-id="hf-wmvc" class="f06r-row"><span data-hf-id="hf-k6ff" class="f06r-ln">3</span></div>
+          <div data-hf-id="hf-w8kb" class="f06r-row"><span data-hf-id="hf-i6wa" class="f06r-ln">4</span><span data-hf-id="hf-z7gg" class="f06r-txt">  <span data-hf-id="hf-c59s" class="f06r-kw">return</span> (</span></div>
+          <div data-hf-id="hf-u916" class="f06r-row"><span data-hf-id="hf-hsl9" class="f06r-ln">5</span><span data-hf-id="hf-eneg" class="f06r-txt">    <span data-hf-id="hf-ha22" class="f06r-dim">&lt;button</span> onClick={() <span data-hf-id="hf-sapt" class="f06r-kw">=&gt;</span> <span data-hf-id="hf-mqaj" class="f06r-fn">setCount</span>(count + <span data-hf-id="hf-tsuj" class="f06r-num">1</span>)}<span data-hf-id="hf-oabg" class="f06r-dim">&gt;</span></span></div>
+          <div data-hf-id="hf-tuq5" class="f06r-row"><span data-hf-id="hf-izic" class="f06r-ln">6</span><span data-hf-id="hf-ad07" class="f06r-txt">      {count}</span></div>
+          <div data-hf-id="hf-v1n8" class="f06r-row"><span data-hf-id="hf-il7b" class="f06r-ln">7</span><span data-hf-id="hf-xl0o" class="f06r-txt">    <span data-hf-id="hf-3ly3" class="f06r-dim">&lt;/button&gt;</span></span></div>
+          <div data-hf-id="hf-unc7" class="f06r-row"><span data-hf-id="hf-mykm" class="f06r-ln">8</span><span data-hf-id="hf-s1ko" class="f06r-txt">  );</span></div>
+          <div data-hf-id="hf-z0pi" class="f06r-row"><span data-hf-id="hf-mk9l" class="f06r-ln">9</span><span data-hf-id="hf-1ff3" class="f06r-txt">}</span></div>
+          <div data-hf-id="hf-wp4m" id="06-renderen-sum" class="f06r-sum"><span data-hf-id="hf-b3bk" class="f06r-num">0</span> + <span data-hf-id="hf-hvvv" class="f06r-num">1</span> = <span data-hf-id="hf-hhku" class="f06r-num">1</span></div>
+          <div data-hf-id="hf-m6dz" id="06-renderen-ret" class="f06r-ret">→ 1</div>
+        </div>
+        <div data-hf-id="hf-vvg1" class="f06r-status">Counter · functiecomponent</div>
+      </div>
+
+      <!-- right column: scherm card + state chip + hero word -->
+      <div data-hf-id="hf-o4y7" class="f06r-col">
+        <div data-hf-id="hf-ip7g" id="06-renderen-label" class="f06r-label">scherm</div>
+        <div data-hf-id="hf-lopi" id="06-renderen-card" class="f06r-card">
+          <div data-hf-id="hf-9yvo" id="06-renderen-btn" class="f06r-btn">
+            <div data-hf-id="hf-qj7m" id="06-renderen-b0" class="f06r-btn-digit">0</div>
+            <div data-hf-id="hf-286q" id="06-renderen-b1" class="f06r-btn-digit">1</div>
+            <div data-hf-id="hf-50bd" id="06-renderen-bfocus" class="f06r-btn-focus"></div>
+          </div>
+          <div data-hf-id="hf-qblp" id="06-renderen-rtag1" class="f06r-rtag f06r-rtag1">render #1</div>
+          <div data-hf-id="hf-u4oi" id="06-renderen-rtag2" class="f06r-rtag f06r-rtag2">render #2</div>
+        </div>
+
+        <div data-hf-id="hf-5y02" id="06-renderen-chip" class="f06r-chip">
+          <span data-hf-id="hf-phub" class="f06r-chip-k">state</span><span data-hf-id="hf-5myl" class="f06r-chip-sep"></span><span data-hf-id="hf-w7ie">count: <span data-hf-id="hf-10ji" class="f06r-digitbox"><span data-hf-id="hf-xg4j" id="06-renderen-c0" class="f06r-cd">0</span><span data-hf-id="hf-lr1n" id="06-renderen-c1" class="f06r-cd">1</span></span></span>
+        </div>
+
+        <div data-hf-id="hf-onvt" id="06-renderen-word" class="f06r-word">renderen</div>
+      </div>
+
+      <div data-hf-id="hf-077u" id="06-renderen-ripple" class="f06r-ripple"></div>
+
+      <div data-hf-id="hf-itol" id="06-renderen-cursor" class="f06r-cursor" aria-hidden="true">
+        <svg data-hf-id="hf-ulu9" viewBox="0 0 24 24"><path data-hf-id="hf-fueh" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 18.2;
+      var LINE_H = 54;
+      var $ = function (id) { return document.getElementById("06-renderen-" + id); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      var cursor = $("cursor");
+      var btn = $("btn");
+      var scan = $("scan");
+
+      // ---- Scene 1 (0.0–4.9): code + scherm on screen; cursor clicks; wash; 0 + 1 = 1 ----
+      tl.fromTo($("kicker"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo($("panel"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo($("label"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.04);
+      tl.fromTo($("card"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.04);
+      tl.fromTo($("chip"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.12);
+      tl.fromTo($("rtag1"), { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.16);
+
+      // digit stacks start in place: 0 shown, 1 parked below
+      tl.fromTo($("b0"), { yPercent: 0 }, { yPercent: 0, duration: 0.01 }, 0);
+      tl.fromTo($("b1"), { yPercent: 100 }, { yPercent: 100, duration: 0.01 }, 0);
+      tl.fromTo($("c0"), { yPercent: 0 }, { yPercent: 0, duration: 0.01 }, 0);
+      tl.fromTo($("c1"), { yPercent: 100 }, { yPercent: 100, duration: 0.01 }, 0);
+
+      // cursor glides in on "Klik" and clicks the scherm button on "knop"
+      var TIP_X = 1540;
+      var TIP_Y = 356;
+      var CLICK_AT = 0.59;
+      var PRESS = 0.1;
+      var TIP_ORIGIN = "20.83% 12.5%";
+      tl.fromTo(
+        cursor,
+        { xPercent: -20.83, yPercent: -12.5, x: 2060, y: 760, scale: 1 },
+        { xPercent: -20.83, yPercent: -12.5, x: TIP_X, y: TIP_Y, duration: 0.5, ease: "power3.out" },
+        0.02
+      );
+      tl.to(cursor, { scale: 0.86, duration: PRESS, ease: "power2.in", transformOrigin: TIP_ORIGIN }, CLICK_AT);
+      tl.to(cursor, { scale: 1, duration: 0.22, ease: "power2.out", transformOrigin: TIP_ORIGIN }, CLICK_AT + PRESS);
+      tl.to(btn, { scale: 0.94, duration: PRESS, ease: "power1.in" }, CLICK_AT);
+      tl.to(btn, { scale: 1, duration: 0.4, ease: "power3.out" }, CLICK_AT + PRESS);
+      tl.fromTo($("ripple"), { scale: 0.5, opacity: 0.9 }, { scale: 3, opacity: 0, duration: 0.7, ease: "power2.out", immediateRender: false }, CLICK_AT + 0.02);
+      // cursor eases just below/right so the button stays readable
+      tl.to(cursor, { x: TIP_X + 70, y: TIP_Y + 88, duration: 0.5, ease: "power2.inOut" }, 1.05);
+
+      // "setCount": amber wash sweeps over setCount(count + 1)
+      tl.fromTo($("wash"), { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: "power3.out" }, 1.94);
+      // "count plus één": floating sum label
+      tl.fromTo($("sum"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 3.37);
+
+      // ---- Scene 2 (4.9–9.8): state chip flips 0 → 1; scan runs the component ----
+      tl.to($("chip"), { scale: 1.05, duration: 0.18, ease: "power2.out" }, 5.31);
+      tl.to($("chip"), { scale: 1, duration: 0.4, ease: "power3.out" }, 5.49);
+      tl.to($("c0"), { yPercent: -100, duration: 0.25, ease: "power2.inOut" }, 5.36);
+      tl.to($("c1"), { yPercent: 0, duration: 0.25, ease: "power2.inOut" }, 5.36);
+      tl.fromTo($("chip"), { backgroundColor: "#EFE9DE" }, { backgroundColor: "#ECE3D4", duration: 0.3, ease: "power1.out", immediateRender: false }, 5.36);
+      // "nieuwe waarde": the stored value nods once
+      tl.to($("c1"), { scale: 1.25, duration: 0.16, ease: "power2.out" }, 7.18);
+      tl.to($("c1"), { scale: 1, duration: 0.35, ease: "power3.out" }, 7.34);
+
+      // the scan takes over from the wash/sum
+      tl.to([$("wash"), $("sum")], { opacity: 0.3, duration: 0.3, ease: "power1.out" }, 7.85);
+      // "roept je functie opnieuw op": amber line scans top to bottom, 0.18s per line
+      tl.fromTo(scan, { opacity: 0, y: 0 }, { opacity: 1, y: 0, duration: 0.08, ease: "power1.out" }, 8.05);
+      for (var i = 1; i < 9; i++) {
+        tl.set(scan, { y: i * LINE_H }, 8.05 + i * 0.18);
+      }
+      tl.to(scan, { opacity: 0.4, duration: 0.3, ease: "power1.out" }, 8.05 + 9 * 0.18);
+
+      // ---- Scene 3 (9.8–12.5): render tag flips to coral render #2; hero word ----
+      tl.to($("rtag1"), { opacity: 0, y: -10, duration: 0.25, ease: "power2.in" }, 9.92);
+      tl.fromTo($("rtag2"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 10.0);
+      tl.to($("rtag2"), { scale: 1.14, duration: 0.2, ease: "power2.out" }, 11.45);
+      tl.to($("rtag2"), { scale: 1, duration: 0.4, ease: "power3.out" }, 11.65);
+      tl.fromTo($("word"), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 11.45);
+
+      // ---- Scene 4 (12.5–18.2): useState returns 1; the button shows 1; hold ----
+      tl.to(scan, { y: LINE_H, opacity: 1, duration: 0.4, ease: "power3.inOut" }, 13.86);
+      tl.fromTo($("ret"), { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 14.16);
+      // "je knop": button gains focus ring
+      tl.fromTo($("bfocus"), { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, 16.27);
+      // "toont één": numeral flips 0 → 1
+      tl.to($("b0"), { yPercent: -100, duration: 0.3, ease: "power2.inOut" }, 17.12);
+      tl.to($("b1"), { yPercent: 0, duration: 0.3, ease: "power2.inOut" }, 17.12);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+        // voice take: 18.2s → 15.64s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.24, 0.24], [0.267, 0.32], [0.32, 0.36], [0.347, 0.4], [0.4, 0.48], [0.453, 0.52], [0.56, 0.56], [0.587, 0.64], [1.36, 1.2], [1.4, 1.28], [1.52, 1.36], [1.547, 1.4], [1.68, 1.6], [1.733, 1.64], [1.84, 1.68], [1.94, 1.92], [2.72, 2.48], [2.8, 2.56], [3.12, 2.96], [3.16, 3.04], [3.28, 3.12], [3.373, 3.2], [3.84, 3.6], [3.936, 3.68], [4.32, 3.92], [4.52, 4.0], [5.12, 4.48], [5.307, 4.72], [6.24, 5.12], [6.293, 5.2], [6.72, 5.68], [6.773, 5.72], [6.88, 5.76], [6.914, 5.8], [7.12, 6.0], [7.184, 6.08], [7.92, 6.64], [7.947, 6.68], [8.0, 6.72], [8.053, 6.8], [8.24, 6.96], [8.293, 7.04], [8.4, 7.12], [8.44, 7.2], [8.8, 7.52], [8.907, 7.64], [9.28, 8.0], [9.413, 8.08], [9.76, 8.48], [9.9, 8.72], [10.32, 8.88], [10.347, 8.92], [10.56, 9.12], [10.613, 9.2], [10.72, 9.28], [10.853, 9.44], [11.36, 9.92], [11.451, 10.0], [12.32, 10.64], [12.528, 10.88], [13.36, 11.12], [13.424, 11.2], [13.68, 11.44], [13.74, 11.52], [14.08, 11.76], [14.16, 11.84], [14.8, 12.56], [14.92, 12.64], [15.12, 12.8], [15.2, 12.88], [15.92, 13.44], [15.973, 13.48], [16.08, 13.52], [16.133, 13.6], [16.24, 13.68], [16.267, 13.72], [16.48, 14.0], [16.56, 14.08], [16.96, 14.4], [17.12, 14.48], [17.6, 15.04], [18.2, 15.64]]);
+      window.__timelines["06-renderen"] = tl;
+    })();
+  </script>
+</template>

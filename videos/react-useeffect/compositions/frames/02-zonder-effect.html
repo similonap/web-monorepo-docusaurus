@@ -232,10 +232,10 @@
     }
   </style>
 
-  <div data-hf-id="hf-romf" id="root" data-composition-id="02-zonder-effect" data-width="1920" data-height="1080" data-duration="12.06">
-    <div data-hf-id="hf-ubwn" class="f02-bg clip" id="f02-bg" data-start="0" data-duration="12.06" data-track-index="0"></div>
+  <div data-hf-id="hf-romf" id="root" data-composition-id="02-zonder-effect" data-width="1920" data-height="1080" data-duration="11.36">
+    <div data-hf-id="hf-ubwn" class="f02-bg clip" id="f02-bg" data-start="0" data-duration="11.36" data-track-index="0"></div>
 
-    <div data-hf-id="hf-dagq" class="f02-stage clip" id="f02-stage" data-start="0" data-duration="12.06" data-track-index="1">
+    <div data-hf-id="hf-dagq" class="f02-stage clip" id="f02-stage" data-start="0" data-duration="11.36" data-track-index="1">
       <div data-hf-id="hf-0p1z" class="f02-kicker" id="f02-kicker"><span data-hf-id="hf-3yhh" class="f02-spike">✱</span>Zo niet</div>
 
       <!-- code surface -->
@@ -384,6 +384,24 @@
 
       // hold still to full duration (incl. 0.5s transition tail)
       tl.set({}, {}, DUR);
+        // voice take: 11.56s → 10.86s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.34, 0.24], [0.38, 0.32], [0.48, 0.4], [0.52, 0.56], [0.84, 1.12], [1.44, 1.16], [1.52, 1.2], [1.56, 1.28], [1.72, 1.44], [1.74, 1.52], [1.86, 1.6], [1.92, 1.72], [2.68, 2.4], [2.8, 2.52], [3.2, 2.88], [3.24, 2.92], [3.32, 2.96], [3.36, 3.04], [3.46, 3.12], [3.5, 3.44], [4.14, 3.96], [4.94, 4.16], [5.02, 4.24], [5.06, 4.28], [5.14, 4.32], [5.18, 4.4], [5.6, 4.88], [5.74, 5.04], [6.0, 5.2], [6.06, 5.28], [6.18, 5.36], [6.22, 5.6], [6.58, 6.0], [6.94, 6.12], [7.08, 6.24], [7.12, 6.32], [7.22, 6.4], [7.26, 6.48], [7.7, 6.88], [7.84, 6.92], [7.94, 6.96], [8.039, 7.16], [8.4, 7.6], [9.1, 7.84], [9.24, 8.0], [9.28, 8.04], [9.66, 8.48], [9.7, 8.72], [9.88, 8.96], [9.94, 9.0], [10.04, 9.04], [10.06, 9.12], [10.14, 9.16], [10.16, 9.2], [10.46, 9.76], [11.56, 10.86]]);
       window.__timelines["02-zonder-effect"] = tl;
     })();
   </script>
