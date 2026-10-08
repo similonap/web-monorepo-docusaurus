@@ -1,0 +1,369 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f01-bg {
+      position: absolute;
+      inset: 0;
+      background-color: #FAF9F5;
+      background-image:
+        linear-gradient(rgba(20, 20, 19, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20, 20, 19, 0.045) 1px, transparent 1px);
+      background-size: 64px 64px;
+      background-position: 32px 28px;
+    }
+    .f01-stage {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* kicker */
+    .f01-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f01-kicker .f01-spike { color: #CC785C; margin-right: 14px; }
+
+    /* counter card (focal) */
+    .f01-card {
+      position: absolute;
+      left: 610px;
+      top: 150px;
+      width: 700px;
+      height: 400px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f01-label {
+      position: absolute;
+      left: 40px;
+      top: 34px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f01-rule {
+      position: absolute;
+      left: 40px;
+      right: 40px;
+      top: 84px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.12);
+    }
+    .f01-window {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100px;
+      height: 270px;
+      overflow: hidden;
+    }
+    .f01-num {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 270px;
+      line-height: 270px;
+      text-align: center;
+      font-family: "EB Garamond", serif;
+      font-weight: 400;
+      font-size: 240px;
+      letter-spacing: -0.025em;
+      font-variant-numeric: lining-nums tabular-nums;
+      color: #141413;
+    }
+    .f01-plus {
+      position: absolute;
+      left: 560px;
+      top: 150px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      color: rgba(20, 20, 19, 0.55);
+      opacity: 0;
+    }
+
+    /* small navy code strip */
+    .f01-panel {
+      position: absolute;
+      left: 360px;
+      top: 612px;
+      width: 1200px;
+      height: 124px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f01-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 42px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f01-row {
+      position: absolute;
+      left: 0; right: 0;
+      top: 56px;
+      height: 52px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 32px;
+      line-height: 52px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+      white-space: pre;
+    }
+    .f01-ln {
+      position: absolute;
+      left: 0;
+      width: 64px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 24px;
+    }
+    .f01-txt {
+      position: absolute;
+      left: 96px;
+      top: 0;
+      white-space: pre;
+    }
+    .f01-ch { display: inline; }
+    .f01-kw { color: #CC785C; }
+    .f01-fn { color: #E8A55A; }
+    .f01-caret {
+      position: absolute;
+      top: 9px;
+      left: 0;
+      width: 3px;
+      height: 34px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f01-under {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1200px;
+      height: 124px;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    /* the coral chip (lands on "vast") */
+    .f01-chip {
+      position: absolute;
+      left: 1160px;
+      top: 116px;
+      padding: 12px 22px 10px;
+      border: 3px solid #CC785C;
+      border-radius: 6px;
+      background: #FAF9F5;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      color: #CC785C;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+  </style>
+
+  <div data-hf-id="hf-q8dc" id="root" data-composition-id="01-hook" data-width="1920" data-height="1080" data-start="0" data-duration="10.18">
+    <div data-hf-id="hf-sjlu" class="f01-bg clip" id="f01-bg" data-start="0" data-duration="10.18" data-track-index="0"></div>
+
+    <div data-hf-id="hf-1gjz" class="f01-stage clip" id="f01-stage" data-start="0" data-duration="10.18" data-track-index="1">
+      <div data-hf-id="hf-alwy" class="f01-kicker" id="f01-kicker"><span data-hf-id="hf-h0qg" class="f01-spike">✱</span>Een teller</div>
+
+      <div data-hf-id="hf-7iea" class="f01-card" id="f01-card">
+        <div data-hf-id="hf-6n86" class="f01-label" id="f01-label">teller</div>
+        <div data-hf-id="hf-r92q" class="f01-rule"></div>
+        <div data-hf-id="hf-i0jw" class="f01-window">
+          <div data-hf-id="hf-xt71" class="f01-num" id="f01-numA">0</div>
+          <div data-hf-id="hf-dn2c" class="f01-num" id="f01-numB"></div>
+        </div>
+        <div data-hf-id="hf-k7qj" class="f01-plus" id="f01-plus1">+1</div>
+        <div data-hf-id="hf-aq3s" class="f01-plus" id="f01-plus2">+1</div>
+        <div data-hf-id="hf-rra5" class="f01-plus" id="f01-plus3">+1</div>
+        <div data-hf-id="hf-k44i" class="f01-plus" id="f01-plus4">+1</div>
+      </div>
+
+      <div data-hf-id="hf-b6bm" class="f01-panel" id="f01-panel">
+        <div data-hf-id="hf-wpbm" class="f01-titlebar">Teller.jsx</div>
+        <div data-hf-id="hf-hqc4" class="f01-row">
+          <span data-hf-id="hf-ue69" class="f01-ln">4</span><span data-hf-id="hf-gf6z" class="f01-txt" id="f01-line"></span><span data-hf-id="hf-sah9" class="f01-caret" id="f01-caret"></span>
+        </div>
+        <svg data-hf-id="hf-tmin" class="f01-under" viewBox="0 0 1200 124" width="1200" height="124">
+          <path data-hf-id="hf-7ayz" id="f01-underline" fill="none" stroke="#CC785C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M98,112 C260,108 420,115 560,111 C700,107 860,114 1004,109" />
+        </svg>
+      </div>
+
+      <div data-hf-id="hf-4uur" class="f01-chip" id="f01-chip">pagina reageert niet</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 10.18;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var root = document.querySelector('[data-composition-id="01-hook"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- Scene 1 (0.0–1.0): card settles in, centred ----
+      tl.fromTo("#f01-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f01-card", { opacity: 0, y: 36, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" }, 0.05);
+      tl.fromTo("#f01-label", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.35);
+
+      // ---- numeral driver: deterministic step list, seek-safe (pure function of t) ----
+      var H = 270;
+      var STEPS = [
+        { t: 0, v: "0" },
+        // Scene 2: calm, once per second
+        { t: 1.3, v: "1" },
+        { t: 2.3, v: "2" },
+        { t: 3.3, v: "3" },
+        { t: 4.3, v: "4" },
+        // Scene 4: on "loopt" it races, steps get faster
+        { t: 6.96, v: "5" },
+        { t: 7.24, v: "7" },
+        { t: 7.48, v: "12" },
+        { t: 7.68, v: "31" },
+        { t: 7.84, v: "96" },
+        { t: 7.97, v: "511" },
+        { t: 8.07, v: "2047" },
+        { t: 8.15, v: "16383" }
+      ];
+      var numA = q("#f01-numA");
+      var numB = q("#f01-numB");
+      function stepDur(i) {
+        var gap = i + 1 < STEPS.length ? STEPS[i + 1].t - STEPS[i].t : 0.25;
+        return Math.min(0.25, gap * 0.75);
+      }
+      function easeOut(p) { return 1 - Math.pow(1 - p, 3); }
+      var driver = { t: 0 };
+      var render = function () {
+        var t = driver.t;
+        var i = 0;
+        for (var k = STEPS.length - 1; k >= 0; k--) {
+          if (t >= STEPS[k].t) { i = k; break; }
+        }
+        if (i === 0) {
+          numA.textContent = STEPS[0].v;
+          numA.style.transform = "translateY(0px)";
+          numB.textContent = "";
+          return;
+        }
+        var p = Math.min(1, Math.max(0, (t - STEPS[i].t) / stepDur(i)));
+        var e = easeOut(p);
+        numA.textContent = STEPS[i - 1].v;
+        numA.style.transform = "translateY(" + (-H * e).toFixed(2) + "px)";
+        numB.textContent = STEPS[i].v;
+        numB.style.transform = "translateY(" + (H * (1 - e)).toFixed(2) + "px)";
+      };
+      tl.fromTo(driver, { t: 0 }, { t: DUR, duration: DUR, ease: "none", onUpdate: render, onStart: render }, 0);
+      render();
+
+      // ---- Scene 2 (1.0–4.6): a tiny "+1" floats up on each calm step ----
+      [1.3, 2.3, 3.3, 4.3].forEach(function (at, i) {
+        var el = q("#f01-plus" + (i + 1));
+        tl.fromTo(el, { opacity: 0, y: 10 }, { opacity: 1, y: -18, duration: 0.3, ease: "power2.out", immediateRender: false }, at);
+        tl.to(el, { opacity: 0, y: -46, duration: 0.45, ease: "power1.in" }, at + 0.3);
+      });
+
+      // ---- Scene 3 (4.6–6.9): code strip slides up, line types on fast, coral underline ----
+      tl.fromTo("#f01-panel", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 5.44);
+
+      function typeLine(lineSel, caretSel, segments, start, per) {
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          for (var i = 0; i < seg.t.length; i++) {
+            var s = document.createElement("span");
+            s.className = "f01-ch" + (seg.c ? " " + seg.c : "");
+            s.textContent = seg.t[i];
+            line.appendChild(s);
+            chars.push(s);
+          }
+        });
+        var x0 = 96;
+        var chPx = 32 * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: x0 }, start - 0.12);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.06, ease: "power1.out" }, at);
+          tl.set(caret, { x: x0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.3);
+        return end;
+      }
+      typeLine("#f01-line", "#f01-caret", [
+        { t: "setInterval", c: "f01-fn" },
+        { t: "(() " },
+        { t: "=>", c: "f01-kw" },
+        { t: " " },
+        { t: "setNumber", c: "f01-fn" },
+        { t: "(n " },
+        { t: "=>", c: "f01-kw" },
+        { t: " n + " },
+        { t: "1", c: "f01-fn" },
+        { t: "), " },
+        { t: "1000", c: "f01-fn" },
+        { t: ");" }
+      ], 5.62, 0.011);
+
+      var under = q("#f01-underline");
+      var len = 1000;
+      try { len = Math.ceil(under.getTotalLength()) || 1000; } catch (e) {}
+      tl.set(under, { strokeDasharray: len, strokeDashoffset: len }, 0);
+      tl.to(under, { strokeDashoffset: 0, duration: 0.45, ease: "power1.inOut" }, 6.2);
+
+      // ---- Scene 4 (6.9–9.68): race (driver above), then on "vast" everything freezes ----
+      tl.fromTo("#f01-card", { opacity: 1, filter: "saturate(1)" }, { opacity: 0.55, filter: "saturate(0.45)", duration: 0.3, ease: "power2.out", immediateRender: false }, 8.26);
+      tl.fromTo("#f01-chip", { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 8.3);
+
+      // hold still to full duration (incl. 0.5s transition tail)
+      tl.set({}, {}, DUR);
+      window.__timelines["01-hook"] = tl;
+    })();
+  </script>
+</template>

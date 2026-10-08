@@ -1,0 +1,212 @@
+<template>
+  <div data-hf-id="hf-05yo" id="root" data-composition-id="04-regel" data-start="0" data-duration="10.26" data-width="1920" data-height="1080">
+    <style>
+      @font-face {
+        font-family: "EB Garamond";
+        src: url("assets/fonts/EBGaramond-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        font-family: "EB Garamond", Georgia, serif;
+        color: #141413;
+      }
+      [id="04-regel-ground"] {
+        position: absolute;
+        inset: 0;
+        background: #faf9f5;
+      }
+      [id="04-regel-stage"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 900px;
+      }
+      [id="04-regel-spike"] {
+        position: absolute;
+        left: 924px;
+        top: 236px;
+        width: 72px;
+        height: 72px;
+      }
+      [id="04-regel-spike"] line {
+        stroke: #cc785c;
+        stroke-width: 15;
+        stroke-linecap: round;
+      }
+      [id="04-regel-head"] {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 370px;
+        text-align: center;
+        font-size: 140px; /* display 7.3cqw */
+        line-height: 1.02;
+        letter-spacing: -0.022em;
+        font-weight: 400;
+        white-space: nowrap;
+      }
+      [id="04-regel-sub"] {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 586px;
+        text-align: center;
+        font-size: 88px; /* headline 4.6cqw */
+        line-height: 1.12;
+        letter-spacing: -0.018em;
+        font-weight: 400;
+      }
+      [class~="04-regel-line"] {
+        display: block;
+        white-space: nowrap;
+      }
+      [class~="04-regel-w"] {
+        display: inline-block;
+        position: relative;
+      }
+      [id="04-regel-rule"] {
+        position: absolute;
+        left: 0;
+        bottom: -0.02em;
+        width: 100%;
+        height: 6px;
+        overflow: visible;
+      }
+      [id="04-regel-rule"] path {
+        fill: none;
+        stroke: #cc785c;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        vector-effect: non-scaling-stroke;
+      }
+    </style>
+
+    <!-- background: flat cream field, full duration -->
+    <div data-hf-id="hf-jy4h" id="04-regel-ground" class="clip" data-start="0" data-duration="10.26" data-track-index="0"></div>
+
+    <div data-hf-id="hf-j15b" id="04-regel-stage" class="clip" data-start="0" data-duration="10.26" data-track-index="1">
+      <!-- the ✱ spike mark (drawn, never a font glyph) -->
+      <svg data-hf-id="hf-hdr0" id="04-regel-spike" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <line data-hf-id="hf-6g1y" x1="50" y1="10" x2="50" y2="90" />
+        <line data-hf-id="hf-nn7i" x1="15.4" y1="30" x2="84.6" y2="70" />
+        <line data-hf-id="hf-her2" x1="15.4" y1="70" x2="84.6" y2="30" />
+      </svg>
+
+      <!-- foreground subject: the rule -->
+      <div data-hf-id="hf-3pyq" id="04-regel-head">
+        <span data-hf-id="hf-6r8g" class="04-regel-w 04-regel-hw">State</span>
+        <span data-hf-id="hf-dhub" class="04-regel-w 04-regel-hw">is</span>
+        <span data-hf-id="hf-j33t" class="04-regel-w 04-regel-hw">readonly.</span>
+      </div>
+
+      <!-- supporting: the sub-line, built on its cues -->
+      <div data-hf-id="hf-e2du" id="04-regel-sub">
+        <span data-hf-id="hf-gbvm" class="04-regel-line">
+          <span data-hf-id="hf-0oxy" class="04-regel-w 04-regel-s1">Maak</span>
+          <span data-hf-id="hf-rr7k" class="04-regel-w 04-regel-s1">altijd</span>
+          <span data-hf-id="hf-o51s" class="04-regel-w 04-regel-s1">een</span>
+          <span data-hf-id="hf-0omf" class="04-regel-w 04-regel-s1" id="04-regel-nieuwe">nieuwe<svg data-hf-id="hf-uyod" id="04-regel-rule" viewBox="0 0 100 6" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path data-hf-id="hf-36gj" d="M 1 3 L 99 3" pathLength="1" /></svg></span>
+          <span data-hf-id="hf-9dwt" class="04-regel-w 04-regel-s1">array</span>
+        </span>
+        <span data-hf-id="hf-btom" class="04-regel-line">
+          <span data-hf-id="hf-h2n0" class="04-regel-w 04-regel-s2">en</span>
+          <span data-hf-id="hf-y9gc" class="04-regel-w 04-regel-s2">geef</span>
+          <span data-hf-id="hf-tarv" class="04-regel-w 04-regel-s2">die</span>
+          <span data-hf-id="hf-jqax" class="04-regel-w 04-regel-s2">aan</span>
+          <span data-hf-id="hf-u5so" class="04-regel-w 04-regel-s2">de</span>
+          <span data-hf-id="hf-4ora" class="04-regel-w 04-regel-s2">setter.</span>
+        </span>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var FRAME = "04-regel";
+        var DUR = 7.68;
+        var tl = gsap.timeline({ paused: true });
+
+        var spike = document.getElementById("04-regel-spike");
+        var head = Array.prototype.slice.call(document.getElementsByClassName("04-regel-hw"));
+        var s1 = Array.prototype.slice.call(document.getElementsByClassName("04-regel-s1"));
+        var s2 = Array.prototype.slice.call(document.getElementsByClassName("04-regel-s2"));
+        var rulePath = document.getElementById("04-regel-rule").querySelector("path");
+
+        // Per-word staggered fade/blur reveal (soft long-tail settle, no overshoot).
+        function wordIn(el, at, dur) {
+          tl.fromTo(
+            el,
+            { opacity: 0, y: 18, filter: "blur(8px)" },
+            { opacity: 1, y: 0, filter: "blur(0px)", duration: dur || 0.55, ease: "power3.out" },
+            at,
+          );
+        }
+
+        // Scene 1 (0.0–1.4s): ✱ spike fades + scales 0.92→1 on "één regel".
+        tl.fromTo(
+          spike,
+          { opacity: 0, scale: 0.92, transformOrigin: "50% 50%" },
+          { opacity: 1, scale: 1, duration: 0.7, ease: "power3.out" },
+          0.42,
+        );
+
+        // Scene 2 (1.4–3.4s): "State is readonly." word by word on the voice.
+        wordIn(head[0], 1.4, 0.6); // State
+        wordIn(head[1], 1.98, 0.5); // is
+        wordIn(head[2], 2.18, 0.7); // readonly.
+
+        // Scene 3 (3.4–5.6s): sub-line builds; coral rule draws under "nieuwe".
+        wordIn(s1[0], 3.5); // Maak  (on "Je maakt")
+        wordIn(s1[1], 4.24); // altijd
+        wordIn(s1[2], 4.48); // een
+        wordIn(s1[3], 4.86); // nieuwe
+        wordIn(s1[4], 5.2); // array
+        tl.fromTo(
+          rulePath,
+          { strokeDasharray: 1, strokeDashoffset: 1 },
+          { strokeDashoffset: 0, duration: 0.55, ease: "power2.out" },
+          4.95,
+        );
+
+        // Scene 4 (5.6–7.68s): "…en geef die aan de setter." completes on its cue, then holds.
+        wordIn(s2[0], 5.63, 0.5); // en
+        wordIn(s2[1], 6.08, 0.5); // geef
+        wordIn(s2[2], 6.27, 0.5); // die
+        wordIn(s2[3], 6.71, 0.45); // aan
+        wordIn(s2[4], 6.84, 0.45); // de
+        wordIn(s2[5], 7.06, 0.5); // setter.
+
+        // Pad to the full frame length (still hold to the end).
+        tl.to({}, { duration: DUR }, 0);
+
+        window.__timelines = window.__timelines || {};
+        // voice take: 7.68s → 8.96s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.1, 0.08], [0.48, 0.8], [0.72, 1.04], [1.4, 1.94], [1.98, 2.56], [2.18, 3.16], [3.44, 4.46], [3.84, 4.58], [4.24, 4.92], [4.48, 5.46], [4.86, 5.74], [5.2, 6.04], [5.63, 6.78], [6.08, 7.02], [6.27, 7.56], [6.53, 7.86], [6.71, 8.08], [6.84, 8.2], [7.06, 8.36], [7.68, 8.96]]);
+        window.__timelines[FRAME] = tl;
+      })();
+    </script>
+  </div>
+</template>

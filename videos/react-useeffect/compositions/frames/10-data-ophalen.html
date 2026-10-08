@@ -1,0 +1,439 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f10-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f10-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f10-kicker {
+      position: absolute;
+      left: 80px;
+      top: 78px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f10-kicker .f10-spike { color: #CC785C; margin-right: 14px; }
+
+    /* ghost (wrong) line above the panel */
+    .f10-ghost {
+      position: absolute;
+      left: 84px;
+      top: 146px;
+      height: 44px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      line-height: 44px;
+      color: rgba(20, 20, 19, 0.42);
+      white-space: pre;
+      font-variant-ligatures: none;
+    }
+    .f10-ghost-text { position: relative; display: inline-block; }
+    .f10-strike {
+      position: absolute;
+      left: -6px;
+      right: -6px;
+      top: 21px;
+      height: 3px;
+      background: #CC785C;
+      border-radius: 2px;
+      transform-origin: left center;
+    }
+    .f10-x {
+      position: absolute;
+      left: 560px;
+      top: 0;
+      width: 44px;
+      height: 44px;
+      font-family: "Inter", sans-serif;
+      font-weight: 700;
+      font-size: 40px;
+      line-height: 44px;
+      text-align: center;
+      color: #CC785C;
+    }
+
+    /* code surface */
+    .f10-panel {
+      position: absolute;
+      left: 80px;
+      top: 214px;
+      width: 1120px;
+      height: 626px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f10-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f10-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f10-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 82px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      line-height: 56px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f10-row { position: relative; height: 56px; white-space: pre; }
+    .f10-ln {
+      position: absolute;
+      left: 0;
+      width: 56px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 22px;
+    }
+    .f10-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f10-ch { display: inline; }
+    .f10-kw { color: #CC785C; }
+    .f10-fn { color: #E8A55A; }
+    .f10-str { color: #5DB8A6; }
+    .f10-dim { color: rgba(250, 249, 245, 0.6); }
+    .f10-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f10-caret {
+      position: absolute;
+      top: 11px;
+      left: 0;
+      width: 3px;
+      height: 34px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f10-tag {
+      position: absolute;
+      left: 250px;
+      top: 9px;
+      height: 38px;
+      padding: 0 14px;
+      border: 1px solid rgba(232, 165, 90, 0.7);
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      line-height: 38px;
+      color: #E8A55A;
+      letter-spacing: 0.02em;
+    }
+
+    /* right column */
+    .f10-col {
+      position: absolute;
+      left: 1270px;
+      top: 214px;
+      width: 570px;
+      height: 640px;
+    }
+    .f10-label {
+      position: absolute;
+      left: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f10-api {
+      position: absolute;
+      left: 0;
+      top: 46px;
+      width: 570px;
+      height: 168px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      z-index: 2;
+    }
+    .f10-get {
+      position: absolute;
+      left: 28px;
+      top: 30px;
+      padding: 4px 12px;
+      border: 1px solid rgba(20, 20, 19, 0.32);
+      border-radius: 6px;
+      background: #ECE3D4;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      color: #141413;
+    }
+    .f10-host {
+      position: absolute;
+      left: 118px;
+      top: 26px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 32px;
+      color: #141413;
+    }
+    .f10-path {
+      position: absolute;
+      left: 28px;
+      top: 98px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 25px;
+      color: rgba(20, 20, 19, 0.7);
+    }
+    .f10-link {
+      position: absolute;
+      left: 284px;
+      width: 1px;
+      background: rgba(20, 20, 19, 0.2);
+      transform-origin: center top;
+    }
+    .f10-json {
+      position: absolute;
+      left: 0;
+      top: 244px;
+      width: 570px;
+      padding: 18px 24px;
+      box-sizing: border-box;
+      background: #ECE3D4;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 23px;
+      line-height: 36px;
+      color: #141413;
+      white-space: pre;
+      font-variant-ligatures: none;
+      z-index: 1;
+    }
+    .f10-json .f10-jk { color: rgba(20, 20, 19, 0.6); }
+    .f10-list {
+      position: absolute;
+      left: 0;
+      top: 462px;
+      width: 570px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    .f10-thead {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      background: #EFE9DE;
+      border-bottom: 1px solid rgba(20, 20, 19, 0.12);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f10-li {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      font-family: "Inter", sans-serif;
+      font-size: 28px;
+      color: #141413;
+    }
+    .f10-li .f10-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #141413; margin-right: 18px;
+    }
+  </style>
+
+  <div data-hf-id="hf-yb17" id="root" data-composition-id="10-data-ophalen" data-width="1920" data-height="1080" data-duration="17.66">
+    <div data-hf-id="hf-z0bg" class="f10-bg clip" id="f10-bg" data-start="0" data-duration="17.66" data-track-index="0"></div>
+
+    <div data-hf-id="hf-88r5" class="f10-stage clip" id="f10-stage" data-start="0" data-duration="17.66" data-track-index="1">
+      <div data-hf-id="hf-logu" class="f10-kicker" id="f10-kicker"><span data-hf-id="hf-4nki" class="f10-spike">✱</span>In de praktijk</div>
+
+      <!-- ghost wrong line -->
+      <div data-hf-id="hf-xgko" class="f10-ghost" id="f10-ghost"><span data-hf-id="hf-qk9f" class="f10-ghost-text">useEffect(async () =&gt; { … })<span data-hf-id="hf-2p9b" class="f10-strike" id="f10-strike"></span></span><span data-hf-id="hf-y1ly" class="f10-x" id="f10-x">✕</span></div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-f6ei" class="f10-panel" id="f10-panel">
+        <div data-hf-id="hf-2353" class="f10-titlebar">App.tsx</div>
+        <div data-hf-id="hf-d7h9" class="f10-code">
+          <div data-hf-id="hf-w662" class="f10-row"><span data-hf-id="hf-pp9o" class="f10-ln">1</span><span data-hf-id="hf-ja16" class="f10-txt"><span data-hf-id="hf-b8yr" class="f10-fn">useEffect</span>(() =&gt; {</span></div>
+          <div data-hf-id="hf-qwny" class="f10-row"><span data-hf-id="hf-oicl" class="f10-ln">2</span><span data-hf-id="hf-7ki3" class="f10-txt" id="f10-l2"></span><span data-hf-id="hf-nofv" class="f10-caret" id="f10-c2"></span></div>
+          <div data-hf-id="hf-rayz" class="f10-row"><span data-hf-id="hf-ownm" class="f10-ln">3</span><span data-hf-id="hf-3me2" class="f10-txt" id="f10-l3"></span><span data-hf-id="hf-hiq2" class="f10-caret" id="f10-c3"></span></div>
+          <div data-hf-id="hf-rpa0" class="f10-row"><span data-hf-id="hf-qw6r" class="f10-ln">4</span><span data-hf-id="hf-kuod" class="f10-txt" id="f10-l4"></span><span data-hf-id="hf-0ym5" class="f10-caret" id="f10-c4"></span></div>
+          <div data-hf-id="hf-ox4t" class="f10-row"><span data-hf-id="hf-rahs" class="f10-ln">5</span><span data-hf-id="hf-k30k" class="f10-txt" id="f10-l5"></span><span data-hf-id="hf-06yc" class="f10-caret" id="f10-c5"></span></div>
+          <div data-hf-id="hf-pbfu" class="f10-row"><span data-hf-id="hf-q3kp" class="f10-ln">6</span><span data-hf-id="hf-uyi7" class="f10-txt" id="f10-l6"></span><span data-hf-id="hf-8uu7" class="f10-caret" id="f10-c6"></span></div>
+          <div data-hf-id="hf-ppqv" class="f10-row"><span data-hf-id="hf-qhvq" class="f10-ln">7</span><span data-hf-id="hf-osse" class="f10-txt" id="f10-l7"></span><span data-hf-id="hf-4wq6" class="f10-caret" id="f10-c7"></span></div>
+          <div data-hf-id="hf-q41w" class="f10-row"><span data-hf-id="hf-m4if" class="f10-ln">8</span><span data-hf-id="hf-br4s" class="f10-txt">}, <span data-hf-id="hf-xp0t" class="f10-hl" id="f10-deps">[]</span>);</span><span data-hf-id="hf-m59f" class="f10-tag" id="f10-tag">1× bij mount</span></div>
+        </div>
+        <div data-hf-id="hf-j6eh" class="f10-status">useEffect · deps []</div>
+      </div>
+
+      <!-- right column: API → JSON → rendered list -->
+      <div data-hf-id="hf-i5io" class="f10-col">
+        <div data-hf-id="hf-patv" class="f10-label" id="f10-lab-api" style="top:0">API</div>
+        <div data-hf-id="hf-2m4i" class="f10-api" id="f10-api">
+          <div data-hf-id="hf-8a8u" class="f10-get">GET</div>
+          <div data-hf-id="hf-s3gz" class="f10-host">worldtimeapi.org</div>
+          <div data-hf-id="hf-chhv" class="f10-path">/api/timezone/Europe/Brussels</div>
+        </div>
+        <div data-hf-id="hf-rwiw" class="f10-link" id="f10-link1" style="top:214px;height:30px"></div>
+        <div data-hf-id="hf-lbp8" class="f10-json" id="f10-json">{ <span data-hf-id="hf-4vaf" class="f10-jk">"timezone"</span>: "Europe/Brussels",
+  <span data-hf-id="hf-s389" class="f10-jk">"datetime"</span>: "…" }</div>
+        <div data-hf-id="hf-gkil" class="f10-link" id="f10-link2" style="top:356px;height:62px"></div>
+        <div data-hf-id="hf-ayv7" class="f10-label" id="f10-lab-scr" style="top:420px">Scherm</div>
+        <div data-hf-id="hf-fxdu" class="f10-list" id="f10-list">
+          <div data-hf-id="hf-8zhh" class="f10-thead">&lt;ul&gt;</div>
+          <div data-hf-id="hf-h76j" class="f10-li" id="f10-li"><span data-hf-id="hf-xqcg" class="f10-dot"></span>TimeZone: Europe/Brussels</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 17.66;
+      var FS = 28, CW = 0.6;
+      var root = document.querySelector('[data-composition-id="10-data-ophalen"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(lineSel, caretSel, segments, start, per) {
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "f10-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+          }
+          for (var i = 0; i < seg.t.length; i++) {
+            var s = document.createElement("span");
+            s.className = "f10-ch" + (seg.c ? " " + seg.c : "");
+            s.textContent = seg.t[i];
+            host.appendChild(s);
+            chars.push(s);
+          }
+        });
+        var x0 = 84;
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: x0 }, start - 0.08);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.06, ease: "power1.out" }, at);
+          tl.set(caret, { x: x0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.12);
+        return end;
+      }
+
+      // slow macro drift underneath
+      tl.fromTo("#f10-stage", { scale: 1 }, { scale: 1.015, duration: DUR, ease: "none", transformOrigin: "50% 42%" }, 0);
+
+      // ---- Scene 1 (0.0–4.4): kicker, code surface, API card ----
+      tl.fromTo("#f10-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f10-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.7);
+      tl.fromTo("#f10-lab-api", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 2.25);
+      tl.fromTo("#f10-api", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 2.32);
+
+      // ---- Scene 2 (4.4–7.2): [] amber wash + 1× bij mount tag ----
+      tl.to("#f10-deps", { backgroundColor: "rgba(232, 165, 90, 0.3)", duration: 0.4, ease: "power1.out" }, 4.66);
+      tl.fromTo("#f10-tag", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 5.94);
+      tl.to("#f10-deps", { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.6, ease: "power1.inOut" }, 7.2);
+
+      // ---- Scene 3 (7.2–11.3): ghost wrong line, struck through in coral ----
+      tl.fromTo("#f10-ghost", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 7.38);
+      tl.fromTo("#f10-strike", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power2.inOut" }, 9.84);
+      tl.fromTo("#f10-x", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 10.2);
+
+      // ---- Scene 4 (11.3–17.16): inner async fn types on, call, JSON → list ----
+      var per = 0.011, gap = 0.04;
+      var t = 12.5;
+      t = typeLine("#f10-l2", "#f10-c2", [
+        { t: "  " }, { t: "const", c: "f10-kw" }, { t: " " }, { t: "fetchFunction", c: "f10-fn" },
+        { t: " = " }, { t: "async", c: "f10-kw", id: "f10-async" }, { t: " () => {" }
+      ], t, per) + gap;
+      t = typeLine("#f10-l3", "#f10-c3", [
+        { t: "    " }, { t: "let", c: "f10-kw" }, { t: " result = " }, { t: "await", c: "f10-kw" }, { t: " " },
+        { t: "fetch", c: "f10-fn" }, { t: "(" }, { t: "\"https://worldtimeapi.org/…\"", c: "f10-str" }, { t: ");" }
+      ], t, per) + gap;
+      t = typeLine("#f10-l4", "#f10-c4", [
+        { t: "    " }, { t: "let", c: "f10-kw" }, { t: " json: " }, { t: "TimezoneInfo", c: "f10-dim" }, { t: " = " },
+        { t: "await", c: "f10-kw" }, { t: " result." }, { t: "json", c: "f10-fn" }, { t: "();" }
+      ], t, per) + gap;
+      t = typeLine("#f10-l5", "#f10-c5", [
+        { t: "    " }, { t: "setTimezoneInfo", c: "f10-fn" }, { t: "(json);" }
+      ], t, per) + gap;
+      typeLine("#f10-l6", "#f10-c6", [{ t: "  };" }], t, per);
+      // async amber wash
+      tl.to("#f10-async", { backgroundColor: "rgba(232, 165, 90, 0.3)", duration: 0.35, ease: "power1.out" }, 12.85);
+      tl.to("#f10-async", { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.6, ease: "power1.inOut" }, 15.0);
+
+      // line 7: the immediate call
+      typeLine("#f10-l7", "#f10-c7", [
+        { t: "  " }, { t: "fetchFunction", c: "f10-fn" }, { t: "();" }
+      ], 14.64, 0.02);
+
+      // JSON emits from the API card and slides down into the rendered list
+      tl.fromTo("#f10-link1", { scaleY: 0 }, { scaleY: 1, duration: 0.25, ease: "power2.out" }, 15.5);
+      tl.fromTo("#f10-json", { opacity: 0, y: -90 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 15.6);
+      tl.fromTo("#f10-link2", { scaleY: 0 }, { scaleY: 1, duration: 0.3, ease: "power2.out" }, 16.05);
+      tl.fromTo("#f10-lab-scr", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 16.15);
+      tl.fromTo("#f10-list", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 16.2);
+      tl.fromTo("#f10-li", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 16.45);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["10-data-ophalen"] = tl;
+    })();
+  </script>
+</template>

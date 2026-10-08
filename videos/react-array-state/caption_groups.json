@@ -1,0 +1,2449 @@
+{
+  "total_duration_s": 115.16,
+  "width": 1920,
+  "height": 1080,
+  "groups": [
+    {
+      "id": "caption-group-0",
+      "frame": 1,
+      "start": 0.14,
+      "end": 0.52,
+      "text": "Je typt",
+      "words": [
+        {
+          "id": "caption-word-0-0",
+          "text": "Je",
+          "start": 0.14,
+          "end": 0.22
+        },
+        {
+          "id": "caption-word-0-1",
+          "text": "typt",
+          "start": 0.3,
+          "end": 0.5
+        }
+      ]
+    },
+    {
+      "id": "caption-group-1",
+      "frame": 1,
+      "start": 0.52,
+      "end": 1.12,
+      "text": "een getal.",
+      "words": [
+        {
+          "id": "caption-word-1-0",
+          "text": "een",
+          "start": 0.52,
+          "end": 0.6
+        },
+        {
+          "id": "caption-word-1-1",
+          "text": "getal.",
+          "start": 0.62,
+          "end": 1
+        }
+      ]
+    },
+    {
+      "id": "caption-group-2",
+      "frame": 1,
+      "start": 1.58,
+      "end": 2,
+      "text": "Je klikt",
+      "words": [
+        {
+          "id": "caption-word-2-0",
+          "text": "Je",
+          "start": 1.58,
+          "end": 1.68
+        },
+        {
+          "id": "caption-word-2-1",
+          "text": "klikt",
+          "start": 1.7,
+          "end": 1.96
+        }
+      ]
+    },
+    {
+      "id": "caption-group-3",
+      "frame": 1,
+      "start": 2,
+      "end": 2.66,
+      "text": "op Add.",
+      "words": [
+        {
+          "id": "caption-word-3-0",
+          "text": "op",
+          "start": 2,
+          "end": 2.1
+        },
+        {
+          "id": "caption-word-3-1",
+          "text": "Add.",
+          "start": 2.28,
+          "end": 2.54
+        }
+      ]
+    },
+    {
+      "id": "caption-group-4",
+      "frame": 1,
+      "start": 2.92,
+      "end": 3.38,
+      "text": "En…",
+      "words": [
+        {
+          "id": "caption-word-4-0",
+          "text": "En…",
+          "start": 2.92,
+          "end": 3.26
+        }
+      ]
+    },
+    {
+      "id": "caption-group-5",
+      "frame": 1,
+      "start": 4.46,
+      "end": 5.24,
+      "text": "er gebeurt",
+      "words": [
+        {
+          "id": "caption-word-5-0",
+          "text": "er",
+          "start": 4.46,
+          "end": 4.54
+        },
+        {
+          "id": "caption-word-5-1",
+          "text": "gebeurt",
+          "start": 4.58,
+          "end": 5.12
+        }
+      ]
+    },
+    {
+      "id": "caption-group-6",
+      "frame": 1,
+      "start": 5.42,
+      "end": 5.9,
+      "text": "niets.",
+      "words": [
+        {
+          "id": "caption-word-6-0",
+          "text": "niets.",
+          "start": 5.42,
+          "end": 5.78
+        }
+      ]
+    },
+    {
+      "id": "caption-group-7",
+      "frame": 2,
+      "start": 7,
+      "end": 7.48,
+      "text": "De code",
+      "words": [
+        {
+          "id": "caption-word-7-0",
+          "text": "De",
+          "start": 7,
+          "end": 7.06
+        },
+        {
+          "id": "caption-word-7-1",
+          "text": "code",
+          "start": 7.14,
+          "end": 7.44
+        }
+      ]
+    },
+    {
+      "id": "caption-group-8",
+      "frame": 2,
+      "start": 7.48,
+      "end": 7.86,
+      "text": "ziet er",
+      "words": [
+        {
+          "id": "caption-word-8-0",
+          "text": "ziet",
+          "start": 7.48,
+          "end": 7.64
+        },
+        {
+          "id": "caption-word-8-1",
+          "text": "er",
+          "start": 7.66,
+          "end": 7.74
+        }
+      ]
+    },
+    {
+      "id": "caption-group-9",
+      "frame": 2,
+      "start": 7.94,
+      "end": 8.72,
+      "text": "logisch uit:",
+      "words": [
+        {
+          "id": "caption-word-9-0",
+          "text": "logisch",
+          "start": 7.94,
+          "end": 8.3
+        },
+        {
+          "id": "caption-word-9-1",
+          "text": "uit:",
+          "start": 8.38,
+          "end": 8.6
+        }
+      ]
+    },
+    {
+      "id": "caption-group-10",
+      "frame": 2,
+      "start": 9.2,
+      "end": 10.7,
+      "text": "numbers.push.",
+      "words": [
+        {
+          "id": "caption-word-10-0",
+          "text": "numbers.push.",
+          "start": 9.2,
+          "end": 10.58
+        }
+      ]
+    },
+    {
+      "id": "caption-group-11",
+      "frame": 2,
+      "start": 11.4,
+      "end": 12.5,
+      "text": "De array verandert",
+      "words": [
+        {
+          "id": "caption-word-11-0",
+          "text": "De",
+          "start": 11.4,
+          "end": 11.56
+        },
+        {
+          "id": "caption-word-11-1",
+          "text": "array",
+          "start": 11.72,
+          "end": 12.04
+        },
+        {
+          "id": "caption-word-11-2",
+          "text": "verandert",
+          "start": 12.06,
+          "end": 12.46
+        }
+      ]
+    },
+    {
+      "id": "caption-group-12",
+      "frame": 2,
+      "start": 12.5,
+      "end": 12.84,
+      "text": "wél",
+      "words": [
+        {
+          "id": "caption-word-12-0",
+          "text": "wél",
+          "start": 12.5,
+          "end": 12.72
+        }
+      ]
+    },
+    {
+      "id": "caption-group-13",
+      "frame": 2,
+      "start": 13.34,
+      "end": 13.58,
+      "text": "maar het",
+      "words": [
+        {
+          "id": "caption-word-13-0",
+          "text": "maar",
+          "start": 13.34,
+          "end": 13.44
+        },
+        {
+          "id": "caption-word-13-1",
+          "text": "het",
+          "start": 13.46,
+          "end": 13.54
+        }
+      ]
+    },
+    {
+      "id": "caption-group-14",
+      "frame": 2,
+      "start": 13.58,
+      "end": 14.22,
+      "text": "scherm niet.",
+      "words": [
+        {
+          "id": "caption-word-14-0",
+          "text": "scherm",
+          "start": 13.58,
+          "end": 13.84
+        },
+        {
+          "id": "caption-word-14-1",
+          "text": "niet.",
+          "start": 13.88,
+          "end": 14.1
+        }
+      ]
+    },
+    {
+      "id": "caption-group-15",
+      "frame": 2,
+      "start": 14.88,
+      "end": 15.18,
+      "text": "Ook",
+      "words": [
+        {
+          "id": "caption-word-15-0",
+          "text": "Ook",
+          "start": 14.88,
+          "end": 15.06
+        }
+      ]
+    },
+    {
+      "id": "caption-group-16",
+      "frame": 2,
+      "start": 15.3,
+      "end": 17,
+      "text": "setNumbers erachter roepen helpt",
+      "words": [
+        {
+          "id": "caption-word-16-0",
+          "text": "setNumbers",
+          "start": 15.3,
+          "end": 15.92
+        },
+        {
+          "id": "caption-word-16-1",
+          "text": "erachter",
+          "start": 15.96,
+          "end": 16.32
+        },
+        {
+          "id": "caption-word-16-2",
+          "text": "roepen",
+          "start": 16.48,
+          "end": 16.72
+        },
+        {
+          "id": "caption-word-16-3",
+          "text": "helpt",
+          "start": 16.76,
+          "end": 16.98
+        }
+      ]
+    },
+    {
+      "id": "caption-group-17",
+      "frame": 2,
+      "start": 17,
+      "end": 17.3,
+      "text": "niet.",
+      "words": [
+        {
+          "id": "caption-word-17-0",
+          "text": "niet.",
+          "start": 17,
+          "end": 17.18
+        }
+      ]
+    },
+    {
+      "id": "caption-group-18",
+      "frame": 3,
+      "start": 18.4,
+      "end": 19.52,
+      "text": "React kijkt niet",
+      "words": [
+        {
+          "id": "caption-word-18-0",
+          "text": "React",
+          "start": 18.4,
+          "end": 18.74
+        },
+        {
+          "id": "caption-word-18-1",
+          "text": "kijkt",
+          "start": 18.84,
+          "end": 19.16
+        },
+        {
+          "id": "caption-word-18-2",
+          "text": "niet",
+          "start": 19.22,
+          "end": 19.46
+        }
+      ]
+    },
+    {
+      "id": "caption-group-19",
+      "frame": 3,
+      "start": 19.52,
+      "end": 20.26,
+      "text": "in je array.",
+      "words": [
+        {
+          "id": "caption-word-19-0",
+          "text": "in",
+          "start": 19.52,
+          "end": 19.62
+        },
+        {
+          "id": "caption-word-19-1",
+          "text": "je",
+          "start": 19.66,
+          "end": 19.76
+        },
+        {
+          "id": "caption-word-19-2",
+          "text": "array.",
+          "start": 19.8,
+          "end": 20.14
+        }
+      ]
+    },
+    {
+      "id": "caption-group-20",
+      "frame": 3,
+      "start": 20.64,
+      "end": 21.76,
+      "text": "Het vergelijkt enkel:",
+      "words": [
+        {
+          "id": "caption-word-20-0",
+          "text": "Het",
+          "start": 20.64,
+          "end": 20.76
+        },
+        {
+          "id": "caption-word-20-1",
+          "text": "vergelijkt",
+          "start": 20.78,
+          "end": 21.32
+        },
+        {
+          "id": "caption-word-20-2",
+          "text": "enkel:",
+          "start": 21.38,
+          "end": 21.64
+        }
+      ]
+    },
+    {
+      "id": "caption-group-21",
+      "frame": 3,
+      "start": 22.18,
+      "end": 23.26,
+      "text": "is dit dezelfde",
+      "words": [
+        {
+          "id": "caption-word-21-0",
+          "text": "is",
+          "start": 22.18,
+          "end": 22.3
+        },
+        {
+          "id": "caption-word-21-1",
+          "text": "dit",
+          "start": 22.379,
+          "end": 22.58
+        },
+        {
+          "id": "caption-word-21-2",
+          "text": "dezelfde",
+          "start": 22.64,
+          "end": 23.22
+        }
+      ]
+    },
+    {
+      "id": "caption-group-22",
+      "frame": 3,
+      "start": 23.26,
+      "end": 24.38,
+      "text": "array als daarnet?",
+      "words": [
+        {
+          "id": "caption-word-22-0",
+          "text": "array",
+          "start": 23.26,
+          "end": 23.62
+        },
+        {
+          "id": "caption-word-22-1",
+          "text": "als",
+          "start": 23.68,
+          "end": 23.8
+        },
+        {
+          "id": "caption-word-22-2",
+          "text": "daarnet?",
+          "start": 23.82,
+          "end": 24.26
+        }
+      ]
+    },
+    {
+      "id": "caption-group-23",
+      "frame": 3,
+      "start": 25.16,
+      "end": 25.56,
+      "text": "Na een",
+      "words": [
+        {
+          "id": "caption-word-23-0",
+          "text": "Na",
+          "start": 25.16,
+          "end": 25.32
+        },
+        {
+          "id": "caption-word-23-1",
+          "text": "een",
+          "start": 25.36,
+          "end": 25.5
+        }
+      ]
+    },
+    {
+      "id": "caption-group-24",
+      "frame": 3,
+      "start": 25.56,
+      "end": 26.08,
+      "text": "push is",
+      "words": [
+        {
+          "id": "caption-word-24-0",
+          "text": "push",
+          "start": 25.56,
+          "end": 25.94
+        },
+        {
+          "id": "caption-word-24-1",
+          "text": "is",
+          "start": 26,
+          "end": 26.06
+        }
+      ]
+    },
+    {
+      "id": "caption-group-25",
+      "frame": 3,
+      "start": 26.08,
+      "end": 26.48,
+      "text": "het nog",
+      "words": [
+        {
+          "id": "caption-word-25-0",
+          "text": "het",
+          "start": 26.08,
+          "end": 26.16
+        },
+        {
+          "id": "caption-word-25-1",
+          "text": "nog",
+          "start": 26.2,
+          "end": 26.4
+        }
+      ]
+    },
+    {
+      "id": "caption-group-26",
+      "frame": 3,
+      "start": 26.48,
+      "end": 27.9,
+      "text": "altijd hetzelfde object.",
+      "words": [
+        {
+          "id": "caption-word-26-0",
+          "text": "altijd",
+          "start": 26.48,
+          "end": 26.8
+        },
+        {
+          "id": "caption-word-26-1",
+          "text": "hetzelfde",
+          "start": 26.82,
+          "end": 27.28
+        },
+        {
+          "id": "caption-word-26-2",
+          "text": "object.",
+          "start": 27.34,
+          "end": 27.78
+        }
+      ]
+    },
+    {
+      "id": "caption-group-27",
+      "frame": 3,
+      "start": 28.26,
+      "end": 29.28,
+      "text": "Dus denkt React:",
+      "words": [
+        {
+          "id": "caption-word-27-0",
+          "text": "Dus",
+          "start": 28.26,
+          "end": 28.46
+        },
+        {
+          "id": "caption-word-27-1",
+          "text": "denkt",
+          "start": 28.52,
+          "end": 28.72
+        },
+        {
+          "id": "caption-word-27-2",
+          "text": "React:",
+          "start": 28.78,
+          "end": 29.16
+        }
+      ]
+    },
+    {
+      "id": "caption-group-28",
+      "frame": 3,
+      "start": 29.84,
+      "end": 30.74,
+      "text": "niets veranderd.",
+      "words": [
+        {
+          "id": "caption-word-28-0",
+          "text": "niets",
+          "start": 29.84,
+          "end": 30.06
+        },
+        {
+          "id": "caption-word-28-1",
+          "text": "veranderd.",
+          "start": 30.1,
+          "end": 30.62
+        }
+      ]
+    },
+    {
+      "id": "caption-group-29",
+      "frame": 4,
+      "start": 31.84,
+      "end": 32.3,
+      "text": "Daarom",
+      "words": [
+        {
+          "id": "caption-word-29-0",
+          "text": "Daarom",
+          "start": 31.84,
+          "end": 32.18
+        }
+      ]
+    },
+    {
+      "id": "caption-group-30",
+      "frame": 4,
+      "start": 32.56,
+      "end": 33.24,
+      "text": "één regel:",
+      "words": [
+        {
+          "id": "caption-word-30-0",
+          "text": "één",
+          "start": 32.56,
+          "end": 32.72
+        },
+        {
+          "id": "caption-word-30-1",
+          "text": "regel:",
+          "start": 32.8,
+          "end": 33.12
+        }
+      ]
+    },
+    {
+      "id": "caption-group-31",
+      "frame": 4,
+      "start": 33.7,
+      "end": 34.14,
+      "text": "state",
+      "words": [
+        {
+          "id": "caption-word-31-0",
+          "text": "state",
+          "start": 33.7,
+          "end": 34.02
+        }
+      ]
+    },
+    {
+      "id": "caption-group-32",
+      "frame": 4,
+      "start": 34.32,
+      "end": 34.64,
+      "text": "is",
+      "words": [
+        {
+          "id": "caption-word-32-0",
+          "text": "is",
+          "start": 34.32,
+          "end": 34.52
+        }
+      ]
+    },
+    {
+      "id": "caption-group-33",
+      "frame": 4,
+      "start": 34.92,
+      "end": 35.66,
+      "text": "readonly.",
+      "words": [
+        {
+          "id": "caption-word-33-0",
+          "text": "readonly.",
+          "start": 34.92,
+          "end": 35.54
+        }
+      ]
+    },
+    {
+      "id": "caption-group-34",
+      "frame": 4,
+      "start": 36.22,
+      "end": 37.22,
+      "text": "Je maakt altijd",
+      "words": [
+        {
+          "id": "caption-word-34-0",
+          "text": "Je",
+          "start": 36.22,
+          "end": 36.28
+        },
+        {
+          "id": "caption-word-34-1",
+          "text": "maakt",
+          "start": 36.34,
+          "end": 36.6
+        },
+        {
+          "id": "caption-word-34-2",
+          "text": "altijd",
+          "start": 36.68,
+          "end": 37.1
+        }
+      ]
+    },
+    {
+      "id": "caption-group-35",
+      "frame": 4,
+      "start": 37.22,
+      "end": 38.24,
+      "text": "een nieuwe array,",
+      "words": [
+        {
+          "id": "caption-word-35-0",
+          "text": "een",
+          "start": 37.22,
+          "end": 37.44
+        },
+        {
+          "id": "caption-word-35-1",
+          "text": "nieuwe",
+          "start": 37.5,
+          "end": 37.72
+        },
+        {
+          "id": "caption-word-35-2",
+          "text": "array,",
+          "start": 37.8,
+          "end": 38.12
+        }
+      ]
+    },
+    {
+      "id": "caption-group-36",
+      "frame": 4,
+      "start": 38.54,
+      "end": 39.04,
+      "text": "en die",
+      "words": [
+        {
+          "id": "caption-word-36-0",
+          "text": "en",
+          "start": 38.54,
+          "end": 38.66
+        },
+        {
+          "id": "caption-word-36-1",
+          "text": "die",
+          "start": 38.78,
+          "end": 38.92
+        }
+      ]
+    },
+    {
+      "id": "caption-group-37",
+      "frame": 4,
+      "start": 39.32,
+      "end": 39.82,
+      "text": "geef je",
+      "words": [
+        {
+          "id": "caption-word-37-0",
+          "text": "geef",
+          "start": 39.32,
+          "end": 39.58
+        },
+        {
+          "id": "caption-word-37-1",
+          "text": "je",
+          "start": 39.62,
+          "end": 39.7
+        }
+      ]
+    },
+    {
+      "id": "caption-group-38",
+      "frame": 4,
+      "start": 39.84,
+      "end": 40.54,
+      "text": "aan de setter.",
+      "words": [
+        {
+          "id": "caption-word-38-0",
+          "text": "aan",
+          "start": 39.84,
+          "end": 39.92
+        },
+        {
+          "id": "caption-word-38-1",
+          "text": "de",
+          "start": 39.96,
+          "end": 40.06
+        },
+        {
+          "id": "caption-word-38-2",
+          "text": "setter.",
+          "start": 40.12,
+          "end": 40.42
+        }
+      ]
+    },
+    {
+      "id": "caption-group-39",
+      "frame": 5,
+      "start": 41.62,
+      "end": 42.22,
+      "text": "Toevoegen",
+      "words": [
+        {
+          "id": "caption-word-39-0",
+          "text": "Toevoegen",
+          "start": 41.62,
+          "end": 42.1
+        }
+      ]
+    },
+    {
+      "id": "caption-group-40",
+      "frame": 5,
+      "start": 42.3,
+      "end": 42.54,
+      "text": "doe je",
+      "words": [
+        {
+          "id": "caption-word-40-0",
+          "text": "doe",
+          "start": 42.3,
+          "end": 42.4
+        },
+        {
+          "id": "caption-word-40-1",
+          "text": "je",
+          "start": 42.42,
+          "end": 42.5
+        }
+      ]
+    },
+    {
+      "id": "caption-group-41",
+      "frame": 5,
+      "start": 42.54,
+      "end": 43.56,
+      "text": "met de spread",
+      "words": [
+        {
+          "id": "caption-word-41-0",
+          "text": "met",
+          "start": 42.54,
+          "end": 42.68
+        },
+        {
+          "id": "caption-word-41-1",
+          "text": "de",
+          "start": 42.72,
+          "end": 42.78
+        },
+        {
+          "id": "caption-word-41-2",
+          "text": "spread",
+          "start": 42.96,
+          "end": 43.44
+        }
+      ]
+    },
+    {
+      "id": "caption-group-42",
+      "frame": 5,
+      "start": 43.66,
+      "end": 44.46,
+      "text": "syntax.",
+      "words": [
+        {
+          "id": "caption-word-42-0",
+          "text": "syntax.",
+          "start": 43.66,
+          "end": 44.34
+        }
+      ]
+    },
+    {
+      "id": "caption-group-43",
+      "frame": 5,
+      "start": 44.98,
+      "end": 45.88,
+      "text": "Drie puntjes",
+      "words": [
+        {
+          "id": "caption-word-43-0",
+          "text": "Drie",
+          "start": 44.98,
+          "end": 45.12
+        },
+        {
+          "id": "caption-word-43-1",
+          "text": "puntjes",
+          "start": 45.22,
+          "end": 45.76
+        }
+      ]
+    },
+    {
+      "id": "caption-group-44",
+      "frame": 5,
+      "start": 46.34,
+      "end": 48.28,
+      "text": "kopiëren alle oude elementen",
+      "words": [
+        {
+          "id": "caption-word-44-0",
+          "text": "kopiëren",
+          "start": 46.34,
+          "end": 46.88
+        },
+        {
+          "id": "caption-word-44-1",
+          "text": "alle",
+          "start": 47.06,
+          "end": 47.3
+        },
+        {
+          "id": "caption-word-44-2",
+          "text": "oude",
+          "start": 47.38,
+          "end": 47.62
+        },
+        {
+          "id": "caption-word-44-3",
+          "text": "elementen",
+          "start": 47.66,
+          "end": 48.22
+        }
+      ]
+    },
+    {
+      "id": "caption-group-45",
+      "frame": 5,
+      "start": 48.28,
+      "end": 48.58,
+      "text": "in een",
+      "words": [
+        {
+          "id": "caption-word-45-0",
+          "text": "in",
+          "start": 48.28,
+          "end": 48.34
+        },
+        {
+          "id": "caption-word-45-1",
+          "text": "een",
+          "start": 48.38,
+          "end": 48.54
+        }
+      ]
+    },
+    {
+      "id": "caption-group-46",
+      "frame": 5,
+      "start": 48.58,
+      "end": 49.32,
+      "text": "nieuwe array",
+      "words": [
+        {
+          "id": "caption-word-46-0",
+          "text": "nieuwe",
+          "start": 48.58,
+          "end": 48.78
+        },
+        {
+          "id": "caption-word-46-1",
+          "text": "array",
+          "start": 48.88,
+          "end": 49.2
+        }
+      ]
+    },
+    {
+      "id": "caption-group-47",
+      "frame": 5,
+      "start": 49.76,
+      "end": 50.46,
+      "text": "en daarachter",
+      "words": [
+        {
+          "id": "caption-word-47-0",
+          "text": "en",
+          "start": 49.76,
+          "end": 49.82
+        },
+        {
+          "id": "caption-word-47-1",
+          "text": "daarachter",
+          "start": 49.88,
+          "end": 50.34
+        }
+      ]
+    },
+    {
+      "id": "caption-group-48",
+      "frame": 5,
+      "start": 50.58,
+      "end": 50.86,
+      "text": "zet je",
+      "words": [
+        {
+          "id": "caption-word-48-0",
+          "text": "zet",
+          "start": 50.58,
+          "end": 50.74
+        },
+        {
+          "id": "caption-word-48-1",
+          "text": "je",
+          "start": 50.78,
+          "end": 50.84
+        }
+      ]
+    },
+    {
+      "id": "caption-group-49",
+      "frame": 5,
+      "start": 50.86,
+      "end": 51.12,
+      "text": "het",
+      "words": [
+        {
+          "id": "caption-word-49-0",
+          "text": "het",
+          "start": 50.86,
+          "end": 51
+        }
+      ]
+    },
+    {
+      "id": "caption-group-50",
+      "frame": 5,
+      "start": 51.22,
+      "end": 51.94,
+      "text": "nieuwe getal.",
+      "words": [
+        {
+          "id": "caption-word-50-0",
+          "text": "nieuwe",
+          "start": 51.22,
+          "end": 51.44
+        },
+        {
+          "id": "caption-word-50-1",
+          "text": "getal.",
+          "start": 51.48,
+          "end": 51.82
+        }
+      ]
+    },
+    {
+      "id": "caption-group-51",
+      "frame": 6,
+      "start": 53.04,
+      "end": 53.66,
+      "text": "Verwijderen?",
+      "words": [
+        {
+          "id": "caption-word-51-0",
+          "text": "Verwijderen?",
+          "start": 53.04,
+          "end": 53.54
+        }
+      ]
+    },
+    {
+      "id": "caption-group-52",
+      "frame": 6,
+      "start": 54.24,
+      "end": 55.24,
+      "text": "Gebruik filter.",
+      "words": [
+        {
+          "id": "caption-word-52-0",
+          "text": "Gebruik",
+          "start": 54.24,
+          "end": 54.58
+        },
+        {
+          "id": "caption-word-52-1",
+          "text": "filter.",
+          "start": 54.7,
+          "end": 55.12
+        }
+      ]
+    },
+    {
+      "id": "caption-group-53",
+      "frame": 6,
+      "start": 55.96,
+      "end": 56.34,
+      "text": "Je houdt",
+      "words": [
+        {
+          "id": "caption-word-53-0",
+          "text": "Je",
+          "start": 55.96,
+          "end": 56.02
+        },
+        {
+          "id": "caption-word-53-1",
+          "text": "houdt",
+          "start": 56.06,
+          "end": 56.28
+        }
+      ]
+    },
+    {
+      "id": "caption-group-54",
+      "frame": 6,
+      "start": 56.34,
+      "end": 57.08,
+      "text": "elk element,",
+      "words": [
+        {
+          "id": "caption-word-54-0",
+          "text": "elk",
+          "start": 56.34,
+          "end": 56.54
+        },
+        {
+          "id": "caption-word-54-1",
+          "text": "element,",
+          "start": 56.58,
+          "end": 56.96
+        }
+      ]
+    },
+    {
+      "id": "caption-group-55",
+      "frame": 6,
+      "start": 57.08,
+      "end": 58.14,
+      "text": "behalve dat ene",
+      "words": [
+        {
+          "id": "caption-word-55-0",
+          "text": "behalve",
+          "start": 57.08,
+          "end": 57.48
+        },
+        {
+          "id": "caption-word-55-1",
+          "text": "dat",
+          "start": 57.52,
+          "end": 57.68
+        },
+        {
+          "id": "caption-word-55-2",
+          "text": "ene",
+          "start": 57.76,
+          "end": 58.02
+        }
+      ]
+    },
+    {
+      "id": "caption-group-56",
+      "frame": 6,
+      "start": 58.34,
+      "end": 58.6,
+      "text": "op",
+      "words": [
+        {
+          "id": "caption-word-56-0",
+          "text": "op",
+          "start": 58.34,
+          "end": 58.48
+        }
+      ]
+    },
+    {
+      "id": "caption-group-57",
+      "frame": 6,
+      "start": 58.7,
+      "end": 59.42,
+      "text": "index i.",
+      "words": [
+        {
+          "id": "caption-word-57-0",
+          "text": "index",
+          "start": 58.7,
+          "end": 59.06
+        },
+        {
+          "id": "caption-word-57-1",
+          "text": "i.",
+          "start": 59.2,
+          "end": 59.3
+        }
+      ]
+    },
+    {
+      "id": "caption-group-58",
+      "frame": 6,
+      "start": 59.88,
+      "end": 60.52,
+      "text": "En filter",
+      "words": [
+        {
+          "id": "caption-word-58-0",
+          "text": "En",
+          "start": 59.88,
+          "end": 59.96
+        },
+        {
+          "id": "caption-word-58-1",
+          "text": "filter",
+          "start": 60.08,
+          "end": 60.4
+        }
+      ]
+    },
+    {
+      "id": "caption-group-59",
+      "frame": 6,
+      "start": 60.64,
+      "end": 61.74,
+      "text": "geeft altijd een",
+      "words": [
+        {
+          "id": "caption-word-59-0",
+          "text": "geeft",
+          "start": 60.64,
+          "end": 60.98
+        },
+        {
+          "id": "caption-word-59-1",
+          "text": "altijd",
+          "start": 61.06,
+          "end": 61.48
+        },
+        {
+          "id": "caption-word-59-2",
+          "text": "een",
+          "start": 61.52,
+          "end": 61.68
+        }
+      ]
+    },
+    {
+      "id": "caption-group-60",
+      "frame": 6,
+      "start": 61.74,
+      "end": 62.84,
+      "text": "nieuwe array terug.",
+      "words": [
+        {
+          "id": "caption-word-60-0",
+          "text": "nieuwe",
+          "start": 61.74,
+          "end": 61.94
+        },
+        {
+          "id": "caption-word-60-1",
+          "text": "array",
+          "start": 62.06,
+          "end": 62.32
+        },
+        {
+          "id": "caption-word-60-2",
+          "text": "terug.",
+          "start": 62.4,
+          "end": 62.72
+        }
+      ]
+    },
+    {
+      "id": "caption-group-61",
+      "frame": 7,
+      "start": 63.94,
+      "end": 64.58,
+      "text": "Wijzigen",
+      "words": [
+        {
+          "id": "caption-word-61-0",
+          "text": "Wijzigen",
+          "start": 63.94,
+          "end": 64.46
+        }
+      ]
+    },
+    {
+      "id": "caption-group-62",
+      "frame": 7,
+      "start": 64.68,
+      "end": 64.96,
+      "text": "doe je",
+      "words": [
+        {
+          "id": "caption-word-62-0",
+          "text": "doe",
+          "start": 64.68,
+          "end": 64.78
+        },
+        {
+          "id": "caption-word-62-1",
+          "text": "je",
+          "start": 64.84,
+          "end": 64.92
+        }
+      ]
+    },
+    {
+      "id": "caption-group-63",
+      "frame": 7,
+      "start": 64.96,
+      "end": 65.62,
+      "text": "met map.",
+      "words": [
+        {
+          "id": "caption-word-63-0",
+          "text": "met",
+          "start": 64.96,
+          "end": 65.08
+        },
+        {
+          "id": "caption-word-63-1",
+          "text": "map.",
+          "start": 65.22,
+          "end": 65.5
+        }
+      ]
+    },
+    {
+      "id": "caption-group-64",
+      "frame": 7,
+      "start": 66.44,
+      "end": 67.58,
+      "text": "Elk element gaat",
+      "words": [
+        {
+          "id": "caption-word-64-0",
+          "text": "Elk",
+          "start": 66.44,
+          "end": 66.66
+        },
+        {
+          "id": "caption-word-64-1",
+          "text": "element",
+          "start": 66.7,
+          "end": 67.12
+        },
+        {
+          "id": "caption-word-64-2",
+          "text": "gaat",
+          "start": 67.28,
+          "end": 67.52
+        }
+      ]
+    },
+    {
+      "id": "caption-group-65",
+      "frame": 7,
+      "start": 67.58,
+      "end": 68.06,
+      "text": "mee naar",
+      "words": [
+        {
+          "id": "caption-word-65-0",
+          "text": "mee",
+          "start": 67.58,
+          "end": 67.74
+        },
+        {
+          "id": "caption-word-65-1",
+          "text": "naar",
+          "start": 67.899,
+          "end": 68.04
+        }
+      ]
+    },
+    {
+      "id": "caption-group-66",
+      "frame": 7,
+      "start": 68.06,
+      "end": 68.98,
+      "text": "een nieuwe array.",
+      "words": [
+        {
+          "id": "caption-word-66-0",
+          "text": "een",
+          "start": 68.06,
+          "end": 68.16
+        },
+        {
+          "id": "caption-word-66-1",
+          "text": "nieuwe",
+          "start": 68.2,
+          "end": 68.48
+        },
+        {
+          "id": "caption-word-66-2",
+          "text": "array.",
+          "start": 68.54,
+          "end": 68.86
+        }
+      ]
+    },
+    {
+      "id": "caption-group-67",
+      "frame": 7,
+      "start": 69.72,
+      "end": 70.86,
+      "text": "Alleen op index",
+      "words": [
+        {
+          "id": "caption-word-67-0",
+          "text": "Alleen",
+          "start": 69.72,
+          "end": 70.08
+        },
+        {
+          "id": "caption-word-67-1",
+          "text": "op",
+          "start": 70.14,
+          "end": 70.28
+        },
+        {
+          "id": "caption-word-67-2",
+          "text": "index",
+          "start": 70.34,
+          "end": 70.78
+        }
+      ]
+    },
+    {
+      "id": "caption-group-68",
+      "frame": 7,
+      "start": 70.86,
+      "end": 71.06,
+      "text": "i",
+      "words": [
+        {
+          "id": "caption-word-68-0",
+          "text": "i",
+          "start": 70.86,
+          "end": 70.94
+        }
+      ]
+    },
+    {
+      "id": "caption-group-69",
+      "frame": 7,
+      "start": 71.4,
+      "end": 71.66,
+      "text": "zet je",
+      "words": [
+        {
+          "id": "caption-word-69-0",
+          "text": "zet",
+          "start": 71.4,
+          "end": 71.54
+        },
+        {
+          "id": "caption-word-69-1",
+          "text": "je",
+          "start": 71.58,
+          "end": 71.64
+        }
+      ]
+    },
+    {
+      "id": "caption-group-70",
+      "frame": 7,
+      "start": 71.66,
+      "end": 72.56,
+      "text": "de nieuwe waarde.",
+      "words": [
+        {
+          "id": "caption-word-70-0",
+          "text": "de",
+          "start": 71.66,
+          "end": 71.76
+        },
+        {
+          "id": "caption-word-70-1",
+          "text": "nieuwe",
+          "start": 71.78,
+          "end": 72.04
+        },
+        {
+          "id": "caption-word-70-2",
+          "text": "waarde.",
+          "start": 72.08,
+          "end": 72.44
+        }
+      ]
+    },
+    {
+      "id": "caption-group-71",
+      "frame": 8,
+      "start": 73.66,
+      "end": 73.92,
+      "text": "Viel het",
+      "words": [
+        {
+          "id": "caption-word-71-0",
+          "text": "Viel",
+          "start": 73.66,
+          "end": 73.78
+        },
+        {
+          "id": "caption-word-71-1",
+          "text": "het",
+          "start": 73.8,
+          "end": 73.9
+        }
+      ]
+    },
+    {
+      "id": "caption-group-72",
+      "frame": 8,
+      "start": 73.92,
+      "end": 74.36,
+      "text": "je op?",
+      "words": [
+        {
+          "id": "caption-word-72-0",
+          "text": "je",
+          "start": 73.92,
+          "end": 74.02
+        },
+        {
+          "id": "caption-word-72-1",
+          "text": "op?",
+          "start": 74.08,
+          "end": 74.24
+        }
+      ]
+    },
+    {
+      "id": "caption-group-73",
+      "frame": 8,
+      "start": 74.96,
+      "end": 76.02,
+      "text": "In elk recept",
+      "words": [
+        {
+          "id": "caption-word-73-0",
+          "text": "In",
+          "start": 74.96,
+          "end": 75.18
+        },
+        {
+          "id": "caption-word-73-1",
+          "text": "elk",
+          "start": 75.24,
+          "end": 75.46
+        },
+        {
+          "id": "caption-word-73-2",
+          "text": "recept",
+          "start": 75.5,
+          "end": 75.9
+        }
+      ]
+    },
+    {
+      "id": "caption-group-74",
+      "frame": 8,
+      "start": 76.06,
+      "end": 76.5,
+      "text": "geven we",
+      "words": [
+        {
+          "id": "caption-word-74-0",
+          "text": "geven",
+          "start": 76.06,
+          "end": 76.34
+        },
+        {
+          "id": "caption-word-74-1",
+          "text": "we",
+          "start": 76.36,
+          "end": 76.46
+        }
+      ]
+    },
+    {
+      "id": "caption-group-75",
+      "frame": 8,
+      "start": 76.5,
+      "end": 77.06,
+      "text": "de setter",
+      "words": [
+        {
+          "id": "caption-word-75-0",
+          "text": "de",
+          "start": 76.5,
+          "end": 76.6
+        },
+        {
+          "id": "caption-word-75-1",
+          "text": "setter",
+          "start": 76.62,
+          "end": 76.94
+        }
+      ]
+    },
+    {
+      "id": "caption-group-76",
+      "frame": 8,
+      "start": 77.12,
+      "end": 77.84,
+      "text": "een functie.",
+      "words": [
+        {
+          "id": "caption-word-76-0",
+          "text": "een",
+          "start": 77.12,
+          "end": 77.26
+        },
+        {
+          "id": "caption-word-76-1",
+          "text": "functie.",
+          "start": 77.32,
+          "end": 77.72
+        }
+      ]
+    },
+    {
+      "id": "caption-group-77",
+      "frame": 8,
+      "start": 78.42,
+      "end": 79.02,
+      "text": "Met prev",
+      "words": [
+        {
+          "id": "caption-word-77-0",
+          "text": "Met",
+          "start": 78.42,
+          "end": 78.54
+        },
+        {
+          "id": "caption-word-77-1",
+          "text": "prev",
+          "start": 78.64,
+          "end": 78.9
+        }
+      ]
+    },
+    {
+      "id": "caption-group-78",
+      "frame": 8,
+      "start": 79.24,
+      "end": 79.64,
+      "text": "werk je",
+      "words": [
+        {
+          "id": "caption-word-78-0",
+          "text": "werk",
+          "start": 79.24,
+          "end": 79.4
+        },
+        {
+          "id": "caption-word-78-1",
+          "text": "je",
+          "start": 79.44,
+          "end": 79.56
+        }
+      ]
+    },
+    {
+      "id": "caption-group-79",
+      "frame": 8,
+      "start": 79.64,
+      "end": 80.2,
+      "text": "altijd op",
+      "words": [
+        {
+          "id": "caption-word-79-0",
+          "text": "altijd",
+          "start": 79.64,
+          "end": 80.04
+        },
+        {
+          "id": "caption-word-79-1",
+          "text": "op",
+          "start": 80.08,
+          "end": 80.16
+        }
+      ]
+    },
+    {
+      "id": "caption-group-80",
+      "frame": 8,
+      "start": 80.2,
+      "end": 81.2,
+      "text": "de nieuwste versie",
+      "words": [
+        {
+          "id": "caption-word-80-0",
+          "text": "de",
+          "start": 80.2,
+          "end": 80.28
+        },
+        {
+          "id": "caption-word-80-1",
+          "text": "nieuwste",
+          "start": 80.4,
+          "end": 80.84
+        },
+        {
+          "id": "caption-word-80-2",
+          "text": "versie",
+          "start": 80.88,
+          "end": 81.16
+        }
+      ]
+    },
+    {
+      "id": "caption-group-81",
+      "frame": 8,
+      "start": 81.2,
+      "end": 81.9,
+      "text": "van je state",
+      "words": [
+        {
+          "id": "caption-word-81-0",
+          "text": "van",
+          "start": 81.2,
+          "end": 81.3
+        },
+        {
+          "id": "caption-word-81-1",
+          "text": "je",
+          "start": 81.32,
+          "end": 81.42
+        },
+        {
+          "id": "caption-word-81-2",
+          "text": "state",
+          "start": 81.44,
+          "end": 81.78
+        }
+      ]
+    },
+    {
+      "id": "caption-group-82",
+      "frame": 8,
+      "start": 82.38,
+      "end": 82.76,
+      "text": "ook als",
+      "words": [
+        {
+          "id": "caption-word-82-0",
+          "text": "ook",
+          "start": 82.38,
+          "end": 82.58
+        },
+        {
+          "id": "caption-word-82-1",
+          "text": "als",
+          "start": 82.64,
+          "end": 82.74
+        }
+      ]
+    },
+    {
+      "id": "caption-group-83",
+      "frame": 8,
+      "start": 82.76,
+      "end": 83.24,
+      "text": "er snel",
+      "words": [
+        {
+          "id": "caption-word-83-0",
+          "text": "er",
+          "start": 82.76,
+          "end": 82.88
+        },
+        {
+          "id": "caption-word-83-1",
+          "text": "snel",
+          "start": 82.96,
+          "end": 83.2
+        }
+      ]
+    },
+    {
+      "id": "caption-group-84",
+      "frame": 8,
+      "start": 83.24,
+      "end": 83.86,
+      "text": "na elkaar",
+      "words": [
+        {
+          "id": "caption-word-84-0",
+          "text": "na",
+          "start": 83.24,
+          "end": 83.32
+        },
+        {
+          "id": "caption-word-84-1",
+          "text": "elkaar",
+          "start": 83.36,
+          "end": 83.74
+        }
+      ]
+    },
+    {
+      "id": "caption-group-85",
+      "frame": 8,
+      "start": 83.98,
+      "end": 85.38,
+      "text": "meerdere updates gebeuren.",
+      "words": [
+        {
+          "id": "caption-word-85-0",
+          "text": "meerdere",
+          "start": 83.98,
+          "end": 84.34
+        },
+        {
+          "id": "caption-word-85-1",
+          "text": "updates",
+          "start": 84.42,
+          "end": 84.82
+        },
+        {
+          "id": "caption-word-85-2",
+          "text": "gebeuren.",
+          "start": 84.86,
+          "end": 85.26
+        }
+      ]
+    },
+    {
+      "id": "caption-group-86",
+      "frame": 9,
+      "start": 86.48,
+      "end": 86.72,
+      "text": "In de",
+      "words": [
+        {
+          "id": "caption-word-86-0",
+          "text": "In",
+          "start": 86.48,
+          "end": 86.56
+        },
+        {
+          "id": "caption-word-86-1",
+          "text": "de",
+          "start": 86.6,
+          "end": 86.68
+        }
+      ]
+    },
+    {
+      "id": "caption-group-87",
+      "frame": 9,
+      "start": 86.72,
+      "end": 88.76,
+      "text": "eenvoudige voorbeelden gebruiken we",
+      "words": [
+        {
+          "id": "caption-word-87-0",
+          "text": "eenvoudige",
+          "start": 86.72,
+          "end": 87.26
+        },
+        {
+          "id": "caption-word-87-1",
+          "text": "voorbeelden",
+          "start": 87.34,
+          "end": 88.02
+        },
+        {
+          "id": "caption-word-87-2",
+          "text": "gebruiken",
+          "start": 88.06,
+          "end": 88.5
+        },
+        {
+          "id": "caption-word-87-3",
+          "text": "we",
+          "start": 88.52,
+          "end": 88.64
+        }
+      ]
+    },
+    {
+      "id": "caption-group-88",
+      "frame": 9,
+      "start": 89.04,
+      "end": 89.38,
+      "text": "key",
+      "words": [
+        {
+          "id": "caption-word-88-0",
+          "text": "key",
+          "start": 89.04,
+          "end": 89.26
+        }
+      ]
+    },
+    {
+      "id": "caption-group-89",
+      "frame": 9,
+      "start": 89.56,
+      "end": 90.62,
+      "text": "is index",
+      "words": [
+        {
+          "id": "caption-word-89-0",
+          "text": "is",
+          "start": 89.56,
+          "end": 89.94
+        },
+        {
+          "id": "caption-word-89-1",
+          "text": "index",
+          "start": 90,
+          "end": 90.5
+        }
+      ]
+    },
+    {
+      "id": "caption-group-90",
+      "frame": 9,
+      "start": 90.98,
+      "end": 91.72,
+      "text": "en dat werkt.",
+      "words": [
+        {
+          "id": "caption-word-90-0",
+          "text": "en",
+          "start": 90.98,
+          "end": 91.06
+        },
+        {
+          "id": "caption-word-90-1",
+          "text": "dat",
+          "start": 91.08,
+          "end": 91.22
+        },
+        {
+          "id": "caption-word-90-2",
+          "text": "werkt.",
+          "start": 91.26,
+          "end": 91.6
+        }
+      ]
+    },
+    {
+      "id": "caption-group-91",
+      "frame": 9,
+      "start": 92.24,
+      "end": 92.96,
+      "text": "Maar zodra",
+      "words": [
+        {
+          "id": "caption-word-91-0",
+          "text": "Maar",
+          "start": 92.24,
+          "end": 92.44
+        },
+        {
+          "id": "caption-word-91-1",
+          "text": "zodra",
+          "start": 92.56,
+          "end": 92.92
+        }
+      ]
+    },
+    {
+      "id": "caption-group-92",
+      "frame": 9,
+      "start": 92.96,
+      "end": 94.26,
+      "text": "je items verwijdert,",
+      "words": [
+        {
+          "id": "caption-word-92-0",
+          "text": "je",
+          "start": 92.96,
+          "end": 93.1
+        },
+        {
+          "id": "caption-word-92-1",
+          "text": "items",
+          "start": 93.2,
+          "end": 93.5
+        },
+        {
+          "id": "caption-word-92-2",
+          "text": "verwijdert,",
+          "start": 93.54,
+          "end": 94.14
+        }
+      ]
+    },
+    {
+      "id": "caption-group-93",
+      "frame": 9,
+      "start": 94.4,
+      "end": 94.88,
+      "text": "schuiven de",
+      "words": [
+        {
+          "id": "caption-word-93-0",
+          "text": "schuiven",
+          "start": 94.4,
+          "end": 94.72
+        },
+        {
+          "id": "caption-word-93-1",
+          "text": "de",
+          "start": 94.76,
+          "end": 94.84
+        }
+      ]
+    },
+    {
+      "id": "caption-group-94",
+      "frame": 9,
+      "start": 94.88,
+      "end": 95.66,
+      "text": "indexen op,",
+      "words": [
+        {
+          "id": "caption-word-94-0",
+          "text": "indexen",
+          "start": 94.88,
+          "end": 95.32
+        },
+        {
+          "id": "caption-word-94-1",
+          "text": "op,",
+          "start": 95.38,
+          "end": 95.54
+        }
+      ]
+    },
+    {
+      "id": "caption-group-95",
+      "frame": 9,
+      "start": 96.08,
+      "end": 96.46,
+      "text": "en kan",
+      "words": [
+        {
+          "id": "caption-word-95-0",
+          "text": "en",
+          "start": 96.08,
+          "end": 96.16
+        },
+        {
+          "id": "caption-word-95-1",
+          "text": "kan",
+          "start": 96.24,
+          "end": 96.38
+        }
+      ]
+    },
+    {
+      "id": "caption-group-96",
+      "frame": 9,
+      "start": 96.46,
+      "end": 96.92,
+      "text": "React",
+      "words": [
+        {
+          "id": "caption-word-96-0",
+          "text": "React",
+          "start": 96.46,
+          "end": 96.8
+        }
+      ]
+    },
+    {
+      "id": "caption-group-97",
+      "frame": 9,
+      "start": 97.02,
+      "end": 97.5,
+      "text": "rijen door",
+      "words": [
+        {
+          "id": "caption-word-97-0",
+          "text": "rijen",
+          "start": 97.02,
+          "end": 97.28
+        },
+        {
+          "id": "caption-word-97-1",
+          "text": "door",
+          "start": 97.34,
+          "end": 97.46
+        }
+      ]
+    },
+    {
+      "id": "caption-group-98",
+      "frame": 9,
+      "start": 97.5,
+      "end": 98.34,
+      "text": "elkaar halen.",
+      "words": [
+        {
+          "id": "caption-word-98-0",
+          "text": "elkaar",
+          "start": 97.5,
+          "end": 97.9
+        },
+        {
+          "id": "caption-word-98-1",
+          "text": "halen.",
+          "start": 97.96,
+          "end": 98.22
+        }
+      ]
+    },
+    {
+      "id": "caption-group-99",
+      "frame": 9,
+      "start": 98.98,
+      "end": 99.46,
+      "text": "Geef dan",
+      "words": [
+        {
+          "id": "caption-word-99-0",
+          "text": "Geef",
+          "start": 98.98,
+          "end": 99.14
+        },
+        {
+          "id": "caption-word-99-1",
+          "text": "dan",
+          "start": 99.18,
+          "end": 99.4
+        }
+      ]
+    },
+    {
+      "id": "caption-group-100",
+      "frame": 9,
+      "start": 99.46,
+      "end": 100.3,
+      "text": "elk item",
+      "words": [
+        {
+          "id": "caption-word-100-0",
+          "text": "elk",
+          "start": 99.46,
+          "end": 99.72
+        },
+        {
+          "id": "caption-word-100-1",
+          "text": "item",
+          "start": 99.82,
+          "end": 100.18
+        }
+      ]
+    },
+    {
+      "id": "caption-group-101",
+      "frame": 9,
+      "start": 100.38,
+      "end": 101.14,
+      "text": "een vaste",
+      "words": [
+        {
+          "id": "caption-word-101-0",
+          "text": "een",
+          "start": 100.38,
+          "end": 100.52
+        },
+        {
+          "id": "caption-word-101-1",
+          "text": "vaste",
+          "start": 100.62,
+          "end": 101.02
+        }
+      ]
+    },
+    {
+      "id": "caption-group-102",
+      "frame": 9,
+      "start": 101.34,
+      "end": 101.7,
+      "text": "id",
+      "words": [
+        {
+          "id": "caption-word-102-0",
+          "text": "id",
+          "start": 101.34,
+          "end": 101.58
+        }
+      ]
+    },
+    {
+      "id": "caption-group-103",
+      "frame": 9,
+      "start": 102.04,
+      "end": 102.599,
+      "text": "als key.",
+      "words": [
+        {
+          "id": "caption-word-103-0",
+          "text": "als",
+          "start": 102.04,
+          "end": 102.18
+        },
+        {
+          "id": "caption-word-103-1",
+          "text": "key.",
+          "start": 102.28,
+          "end": 102.479
+        }
+      ]
+    },
+    {
+      "id": "caption-group-104",
+      "frame": 10,
+      "start": 103.68,
+      "end": 104.64,
+      "text": "Kort samengevat:",
+      "words": [
+        {
+          "id": "caption-word-104-0",
+          "text": "Kort",
+          "start": 103.68,
+          "end": 103.88
+        },
+        {
+          "id": "caption-word-104-1",
+          "text": "samengevat:",
+          "start": 103.94,
+          "end": 104.52
+        }
+      ]
+    },
+    {
+      "id": "caption-group-105",
+      "frame": 10,
+      "start": 105.02,
+      "end": 106.3,
+      "text": "toevoegen met spread,",
+      "words": [
+        {
+          "id": "caption-word-105-0",
+          "text": "toevoegen",
+          "start": 105.02,
+          "end": 105.56
+        },
+        {
+          "id": "caption-word-105-1",
+          "text": "met",
+          "start": 105.62,
+          "end": 105.76
+        },
+        {
+          "id": "caption-word-105-2",
+          "text": "spread,",
+          "start": 105.88,
+          "end": 106.18
+        }
+      ]
+    },
+    {
+      "id": "caption-group-106",
+      "frame": 10,
+      "start": 106.64,
+      "end": 108.04,
+      "text": "verwijderen met filter,",
+      "words": [
+        {
+          "id": "caption-word-106-0",
+          "text": "verwijderen",
+          "start": 106.64,
+          "end": 107.3
+        },
+        {
+          "id": "caption-word-106-1",
+          "text": "met",
+          "start": 107.38,
+          "end": 107.52
+        },
+        {
+          "id": "caption-word-106-2",
+          "text": "filter,",
+          "start": 107.58,
+          "end": 107.92
+        }
+      ]
+    },
+    {
+      "id": "caption-group-107",
+      "frame": 10,
+      "start": 108.44,
+      "end": 109.8,
+      "text": "wijzigen met map.",
+      "words": [
+        {
+          "id": "caption-word-107-0",
+          "text": "wijzigen",
+          "start": 108.44,
+          "end": 109.14
+        },
+        {
+          "id": "caption-word-107-1",
+          "text": "met",
+          "start": 109.22,
+          "end": 109.38
+        },
+        {
+          "id": "caption-word-107-2",
+          "text": "map.",
+          "start": 109.44,
+          "end": 109.68
+        }
+      ]
+    },
+    {
+      "id": "caption-group-108",
+      "frame": 10,
+      "start": 110.78,
+      "end": 111.78,
+      "text": "Altijd een nieuwe",
+      "words": [
+        {
+          "id": "caption-word-108-0",
+          "text": "Altijd",
+          "start": 110.78,
+          "end": 111.24
+        },
+        {
+          "id": "caption-word-108-1",
+          "text": "een",
+          "start": 111.3,
+          "end": 111.42
+        },
+        {
+          "id": "caption-word-108-2",
+          "text": "nieuwe",
+          "start": 111.48,
+          "end": 111.719
+        }
+      ]
+    },
+    {
+      "id": "caption-group-109",
+      "frame": 10,
+      "start": 111.78,
+      "end": 112.22,
+      "text": "array",
+      "words": [
+        {
+          "id": "caption-word-109-0",
+          "text": "array",
+          "start": 111.78,
+          "end": 112.1
+        }
+      ]
+    },
+    {
+      "id": "caption-group-110",
+      "frame": 10,
+      "start": 112.56,
+      "end": 113.3,
+      "text": "en React",
+      "words": [
+        {
+          "id": "caption-word-110-0",
+          "text": "en",
+          "start": 112.56,
+          "end": 112.68
+        },
+        {
+          "id": "caption-word-110-1",
+          "text": "React",
+          "start": 112.76,
+          "end": 113.18
+        }
+      ]
+    },
+    {
+      "id": "caption-group-111",
+      "frame": 10,
+      "start": 113.52,
+      "end": 114.48,
+      "text": "doet de rest.",
+      "words": [
+        {
+          "id": "caption-word-111-0",
+          "text": "doet",
+          "start": 113.52,
+          "end": 113.86
+        },
+        {
+          "id": "caption-word-111-1",
+          "text": "de",
+          "start": 113.92,
+          "end": 113.98
+        },
+        {
+          "id": "caption-word-111-2",
+          "text": "rest.",
+          "start": 114.04,
+          "end": 114.36
+        }
+      ]
+    }
+  ]
+}

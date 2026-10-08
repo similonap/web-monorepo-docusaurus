@@ -1,0 +1,388 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); }
+    @font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/Inter-400.woff2") format("woff2"); }
+    @font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); }
+
+    #root[data-composition-id="10-samenvatting"] {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      color: #141413;
+      font-family: "Inter", sans-serif;
+    }
+    .\31 0-samenvatting-bg {
+      position: absolute;
+      inset: 0;
+      background: #FAF9F5;
+    }
+    .\31 0-samenvatting-stage {
+      position: absolute;
+      inset: 0;
+      container-type: size;
+    }
+    .\31 0-samenvatting-kicker {
+      position: absolute;
+      left: 80px;
+      top: 72px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.46cqw;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.55);
+    }
+    .\31 0-samenvatting-head {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 120px;
+      text-align: center;
+      font-family: "EB Garamond", Georgia, serif;
+      font-weight: 400;
+      font-size: 7.3cqw;
+      line-height: 1.02;
+      letter-spacing: -0.022em;
+      white-space: nowrap;
+    }
+    .\31 0-samenvatting-word {
+      display: inline-block;
+      margin-right: 0.22em;
+    }
+    .\31 0-samenvatting-spike {
+      display: inline-block;
+      margin-left: 0.18em;
+      color: #CC785C;
+      font-size: 0.62em;
+      vertical-align: 0.42em;
+      transform-origin: 50% 50%;
+    }
+    .\31 0-samenvatting-chips {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 340px;
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+    }
+    .\31 0-samenvatting-chip {
+      position: relative;
+      width: 540px;
+      height: 360px;
+      box-sizing: border-box;
+      padding: 34px 36px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      transform-origin: 50% 50%;
+    }
+    .\31 0-samenvatting-chip-top {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+    }
+    .\31 0-samenvatting-idx {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.06em;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .\31 0-samenvatting-title {
+      font-family: "Inter", sans-serif;
+      font-size: 2.3cqw;
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: -0.005em;
+    }
+    .\31 0-samenvatting-code {
+      margin-top: 22px;
+      height: 88px;
+      box-sizing: border-box;
+      padding: 0 26px;
+      display: flex;
+      align-items: center;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 34px;
+      color: #FAF9F5;
+      white-space: pre;
+    }
+    .\31 0-samenvatting-p { color: rgba(250, 249, 245, 0.6); }
+    .\31 0-samenvatting-m { color: #5DB8A6; }
+    .\31 0-samenvatting-caret {
+      display: inline-block;
+      width: 3px;
+      height: 38px;
+      margin-left: 2px;
+      background: #FAF9F5;
+    }
+    .\31 0-samenvatting-strip {
+      margin-top: 30px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .\31 0-samenvatting-ref {
+      position: relative;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-right: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      color: rgba(20, 20, 19, 0.7);
+    }
+    .\31 0-samenvatting-ref-tag {
+      position: relative;
+      padding: 6px 12px;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 6px;
+      color: #141413;
+    }
+    .\31 0-samenvatting-ref-ul {
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      bottom: -10px;
+      height: 1px;
+      background: #141413;
+      transform-origin: 0% 50%;
+    }
+    .\31 0-samenvatting-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .\31 0-samenvatting-box {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #141413;
+    }
+    .\31 0-samenvatting-ci {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 16px;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .\31 0-samenvatting-foot {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 748px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .\31 0-samenvatting-foot-rule {
+      width: 720px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.12);
+      transform-origin: 50% 50%;
+    }
+    .\31 0-samenvatting-foot-row {
+      margin-top: 28px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .\31 0-samenvatting-pill {
+      padding: 12px 24px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      letter-spacing: 0.02em;
+      color: #141413;
+    }
+    .\31 0-samenvatting-sep {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      color: rgba(20, 20, 19, 0.4);
+    }
+  </style>
+
+  <div data-hf-id="hf-vz2e" id="root" data-composition-id="10-samenvatting" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-h734" class="10-samenvatting-bg clip" data-start="0" data-duration="11.56" data-track-index="0"></div>
+
+    <div data-hf-id="hf-umxy" class="10-samenvatting-stage clip" data-start="0" data-duration="11.56" data-track-index="1">
+      <div data-hf-id="hf-i632" class="10-samenvatting-kicker">Samenvatting</div>
+
+      <div data-hf-id="hf-0pxw" class="10-samenvatting-head">
+        <span data-hf-id="hf-pqek" class="10-samenvatting-word">State</span><span data-hf-id="hf-lbgv" class="10-samenvatting-word">is</span><span data-hf-id="hf-gazg" class="10-samenvatting-word" style="margin-right:0">readonly.</span><span data-hf-id="hf-xdw6" class="10-samenvatting-spike">✱</span>
+      </div>
+
+      <div data-hf-id="hf-a9v7" class="10-samenvatting-chips">
+        <div data-hf-id="hf-htfk" class="10-samenvatting-chip">
+          <div data-hf-id="hf-kevm" class="10-samenvatting-chip-top"><span data-hf-id="hf-b5dz" class="10-samenvatting-idx">01</span><span data-hf-id="hf-qnf9" class="10-samenvatting-title">Toevoegen</span></div>
+          <div data-hf-id="hf-7zz8" class="10-samenvatting-code" data-code="0"></div>
+          <div data-hf-id="hf-bgvk" class="10-samenvatting-strip" data-strip="0"></div>
+        </div>
+        <div data-hf-id="hf-txyw" class="10-samenvatting-chip">
+          <div data-hf-id="hf-kfpy" class="10-samenvatting-chip-top"><span data-hf-id="hf-ar2y" class="10-samenvatting-idx">02</span><span data-hf-id="hf-smzm" class="10-samenvatting-title">Verwijderen</span></div>
+          <div data-hf-id="hf-az8t" class="10-samenvatting-code" data-code="1"></div>
+          <div data-hf-id="hf-c8jd" class="10-samenvatting-strip" data-strip="1"></div>
+        </div>
+        <div data-hf-id="hf-sr1t" class="10-samenvatting-chip">
+          <div data-hf-id="hf-ku0z" class="10-samenvatting-chip-top"><span data-hf-id="hf-acrx" class="10-samenvatting-idx">03</span><span data-hf-id="hf-wi7o" class="10-samenvatting-title">Wijzigen</span></div>
+          <div data-hf-id="hf-excu" class="10-samenvatting-code" data-code="2"></div>
+          <div data-hf-id="hf-ie96" class="10-samenvatting-strip" data-strip="2"></div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-s39a" class="10-samenvatting-foot">
+        <div data-hf-id="hf-54hd" class="10-samenvatting-foot-rule"></div>
+        <div data-hf-id="hf-krp5" class="10-samenvatting-foot-row">
+          <span data-hf-id="hf-vjte" class="10-samenvatting-pill">prev =&gt;</span>
+          <span data-hf-id="hf-wxia" class="10-samenvatting-sep">·</span>
+          <span data-hf-id="hf-r0az" class="10-samenvatting-pill">key = id</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "10-samenvatting";
+      var P = ID + "-";
+      var root = document.querySelector('[data-composition-id="' + ID + '"]');
+      function all(n, scope) { return Array.prototype.slice.call((scope || root).getElementsByClassName(P + n)); }
+      function one(n, scope) { return all(n, scope)[0]; }
+
+      // ---- build code tokens (char spans) + mini array strips ----
+      var CODE = [
+        [["[", "p"], ["...", "p"], ["arr", ""], [", ", "p"], ["x", ""], ["]", "p"]],
+        [["arr", ""], [".", "p"], ["filter", "m"], ["(", "p"], ["…", ""], [")", "p"]],
+        [["arr", ""], [".", "p"], ["map", "m"], ["(", "p"], ["…", ""], [")", "p"]]
+      ];
+      var STRIPS = [
+        { ref: "#B", vals: ["a", "b", "c", "x"] },
+        { ref: "#C", vals: ["a", "c"] },
+        { ref: "#D", vals: ["a", "b′", "c"] }
+      ];
+      var codeEls = [], caretEls = [], stripEls = [];
+      CODE.forEach(function (tokens, k) {
+        var el = root.querySelector('[data-code="' + k + '"]');
+        var chars = [];
+        tokens.forEach(function (t) {
+          for (var i = 0; i < t[0].length; i++) {
+            var s = document.createElement("span");
+            s.className = P + "ch" + (t[1] ? " " + P + t[1] : "");
+            s.textContent = t[0][i];
+            el.appendChild(s);
+            chars.push(s);
+          }
+        });
+        var caret = document.createElement("span");
+        caret.className = P + "caret";
+        el.appendChild(caret);
+        codeEls.push(chars);
+        caretEls.push(caret);
+      });
+      STRIPS.forEach(function (st, k) {
+        var el = root.querySelector('[data-strip="' + k + '"]');
+        var ref = document.createElement("div");
+        ref.className = P + "ref";
+        ref.innerHTML = '<span>→</span><span class="' + P + 'ref-tag">' + st.ref +
+          '<span class="' + P + 'ref-ul"></span></span>';
+        el.appendChild(ref);
+        var cells = [];
+        st.vals.forEach(function (v, i) {
+          var c = document.createElement("div");
+          c.className = P + "cell";
+          c.innerHTML = '<div class="' + P + 'box">' + v + '</div><div class="' + P + 'ci">' + i + "</div>";
+          el.appendChild(c);
+          cells.push(c);
+        });
+        stripEls.push({ ref: ref, cells: cells, ul: one("ref-ul", ref) });
+      });
+
+      var tl = gsap.timeline({ paused: true });
+
+      // Scene 1 (0.0–1.1): callback rule settles at the top
+      tl.fromTo(one("kicker"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      all("word").forEach(function (w, i) {
+        tl.fromTo(w, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1 + i * 0.1);
+      });
+      tl.fromTo(one("spike"), { opacity: 0, scale: 0.92 }, { opacity: 0, scale: 0.92, duration: 0.01 }, 0);
+
+      // Scenes 2–4: chips pop in on their spoken cue, code types on, then the new array strip lands
+      var CHIP_AT = [1.08, 2.94, 3.92];
+      var TYPE_DUR = [0.75, 0.55, 0.55];
+      var STRIP_AT = [2.3, 3.55, 4.85];
+      var chips = all("chip");
+      chips.forEach(function (chip, k) {
+        var at = CHIP_AT[k];
+        tl.fromTo(chip, { scale: 0, opacity: 0, y: 24 }, { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, at);
+
+        // type-on with caret (discrete, seek-safe)
+        var chars = codeEls[k];
+        var tStart = at + 0.22;
+        var step = TYPE_DUR[k] / chars.length;
+        chars.forEach(function (c, i) {
+          tl.fromTo(c, { display: "none" }, { display: "inline", duration: 0.001, immediateRender: true }, tStart + i * step);
+        });
+        tl.fromTo(caretEls[k], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, tStart);
+        tl.to(caretEls[k], { opacity: 0, duration: 0.001 }, tStart + TYPE_DUR[k] + 0.35);
+
+        // the new array strip: ref tag, then per-item stagger
+        var st = stripEls[k];
+        tl.fromTo(st.ref, { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, STRIP_AT[k]);
+        st.cells.forEach(function (c, i) {
+          tl.fromTo(c, { opacity: 0, scale: 0, y: 12 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "power3.out" }, STRIP_AT[k] + 0.08 + i * 0.06);
+        });
+        tl.fromTo(st.ul, { scaleX: 0 }, { scaleX: 0, duration: 0.001 }, 0);
+      });
+
+      // Scene 5 (5.2–7.5): footnote row fades in; "nieuwe array" underlines every new ref
+      tl.fromTo(one("foot-rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, 5.24);
+      var pills = all("pill");
+      tl.fromTo(pills[0], { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 5.4);
+      tl.fromTo(one("sep"), { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power3.out" }, 5.6);
+      tl.fromTo(pills[1], { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 5.75);
+      stripEls.forEach(function (st, k) {
+        tl.to(st.ul, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 6.26 + k * 0.1);
+      });
+
+      // Scene 6 (7.5–9.44): coral spike mark beside the rule, then hold; gentle final fade
+      tl.to(one("spike"), { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 7.72);
+      tl.fromTo(one("stage"), { opacity: 1 }, { opacity: 0, duration: 0.4, ease: "power2.inOut", immediateRender: false }, 9.04);
+
+      window.__timelines = window.__timelines || {};
+      // voice take: 9.44s → 10.8s (anchors from audio_meta.json words)
+      var __retime = function (tl, M) {
+        // Cues were authored against an earlier voice take; map each child's
+        // start and end through the old→new word-anchor table M ([oldT, newT]).
+        var m = function (t) {
+          for (var i = 1; i < M.length; i++) {
+            if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+          }
+          return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+        };
+        tl.getChildren(false, true, true).forEach(function (c) {
+          var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+          // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+          if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+          c.startTime(ns);
+        });
+      };
+      __retime(tl, [[0.0, 0.0], [0.06, 0.08], [0.28, 0.34], [1.08, 1.42], [1.93, 2.02], [2.24, 2.28], [2.94, 3.04], [3.36, 3.78], [3.5, 3.98], [3.92, 4.84], [4.56, 5.62], [4.83, 5.84], [5.24, 7.18], [5.75, 7.7], [6.26, 7.88], [6.73, 8.18], [7.52, 8.96], [7.72, 9.16], [8.13, 9.92], [8.48, 10.32], [8.65, 10.44], [9.44, 10.8]]);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

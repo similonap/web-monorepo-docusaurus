@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "preferences": {
+    "destination": {
+      "value": "website",
+      "confirmed_in": [
+        "react-array-state",
+        "react-useeffect"
+      ],
+      "updated_at": "2026-10-06T21:34:20.446Z"
+    },
+    "aspect": {
+      "value": "1920x1080",
+      "confirmed_in": [
+        "react-array-state",
+        "react-useeffect"
+      ],
+      "updated_at": "2026-10-06T21:34:20.480Z"
+    },
+    "language": {
+      "value": "nl",
+      "confirmed_in": [
+        "react-array-state",
+        "react-useeffect"
+      ],
+      "updated_at": "2026-10-06T21:34:20.514Z"
+    },
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "react-array-state",
+        "react-useeffect"
+      ],
+      "updated_at": "2026-10-06T21:34:20.545Z"
+    },
+    "storyboard": {
+      "value": "no",
+      "confirmed_in": [
+        "react-array-state",
+        "react-useeffect"
+      ],
+      "updated_at": "2026-10-06T21:34:20.576Z"
+    },
+    "style_preset.faceless-explainer": {
+      "value": "code-editorial",
+      "confirmed_in": [
+        "react-array-state",
+        "react-useeffect"
+      ],
+      "updated_at": "2026-10-06T21:39:10.533Z"
+    },
+    "voice": {
+      "value": "elevenlabs:eleven_v3:Jeroen Vlaams - Warm & Friendly (Yv0oyZ3obP9foTH7emqG, nl-BE)",
+      "confirmed_in": [
+        "react-array-state",
+        "react-useeffect"
+      ],
+      "updated_at": "2026-10-07T10:00:00.000Z"
+    }
+  },
+  "sightings": {}
+}

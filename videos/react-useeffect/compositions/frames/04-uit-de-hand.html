@@ -1,0 +1,374 @@
+<template id="04-uit-de-hand-template">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f04-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f04-stage { position: absolute; inset: 0; }
+    .f04-world { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f04-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f04-kicker .f04-spike { color: #CC785C; margin-right: 14px; }
+
+    /* loop glyph */
+    .f04-loop {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 32px;
+      color: #141413;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    .f04-tok {
+      display: inline-block;
+      padding: 6px 16px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 6px;
+    }
+    .f04-arr {
+      display: inline-block;
+      margin: 0 16px;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .f04-cyc {
+      display: inline-block;
+      margin-left: 20px;
+      font-size: 36px;
+      color: rgba(20, 20, 19, 0.55);
+    }
+
+    /* left column — number lockup */
+    .f04-label {
+      position: absolute;
+      left: 80px;
+      top: 318px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f04-chip {
+      position: absolute;
+      left: 560px;
+      top: 310px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      padding: 6px 14px;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 6px;
+      background: #EFE9DE;
+      color: #141413;
+    }
+    .f04-lockup {
+      position: absolute;
+      left: 72px;
+      top: 352px;
+      display: flex;
+      align-items: baseline;
+      white-space: nowrap;
+    }
+    .f04-num {
+      display: inline-block;
+      font-family: "EB Garamond", serif;
+      font-size: 300px;
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: -0.025em;
+      color: #141413;
+      transform-origin: 0% 85%;
+      font-variant-numeric: lining-nums;
+    }
+    .f04-unit {
+      display: inline-block;
+      margin-left: 26px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 40px;
+      color: #141413;
+    }
+    .f04-rule {
+      position: absolute;
+      left: 80px;
+      top: 676px;
+      width: 920px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.2);
+      transform-origin: left center;
+    }
+    .f04-teller {
+      position: absolute;
+      left: 80px;
+      top: 706px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 38px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f04-teller .f04-tk { color: rgba(20, 20, 19, 0.55); margin-right: 18px; }
+    .f04-tval { display: inline-block; }
+
+    /* right — dot grid */
+    .f04-gridlabel {
+      position: absolute;
+      left: 1144px;
+      top: 156px;
+      width: 672px;
+      display: flex;
+      justify-content: space-between;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.04em;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f04-card {
+      position: absolute;
+      left: 1144px;
+      top: 200px;
+      width: 672px;
+      height: 672px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f04-grid {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      width: 640px;
+      height: 640px;
+    }
+    .f04-dot {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      background: rgba(20, 20, 19, 0.15);
+    }
+
+    /* freeze veil + stamp (the one voltage) */
+    .f04-veil {
+      position: absolute;
+      inset: 0;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f04-stamp {
+      position: absolute;
+      left: 950px;
+      top: 450px;
+      width: 900px;
+      height: 180px;
+      background: #FAF9F5;
+      border-radius: 6px;
+    }
+    .f04-stamp svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    .f04-stamptxt {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 900px;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 96px;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      padding-left: 0.14em;
+      color: #CC785C;
+    }
+  </style>
+
+  <div data-hf-id="hf-tscb" id="root" data-composition-id="04-uit-de-hand" data-width="1920" data-height="1080" data-duration="19.16">
+    <div data-hf-id="hf-m38x" class="f04-bg clip" id="f04-bg" data-start="0" data-duration="19.16" data-track-index="0"></div>
+
+    <div data-hf-id="hf-vy00" class="f04-stage clip" id="f04-stage" data-start="0" data-duration="19.16" data-track-index="1">
+      <div data-hf-id="hf-9ems" class="f04-world" id="f04-world">
+        <div data-hf-id="hf-6pn0" class="f04-kicker" id="f04-kicker"><span data-hf-id="hf-jd9n" class="f04-spike">✱</span>Uit de hand</div>
+
+        <div data-hf-id="hf-l1tm" class="f04-loop" id="f04-loop">
+          <span data-hf-id="hf-dbmj" class="f04-tok" id="f04-tok1">timer</span>
+          <span data-hf-id="hf-ru4e" class="f04-arr" id="f04-arr1">→</span>
+          <span data-hf-id="hf-2pvl" class="f04-tok" id="f04-tok2">render</span>
+          <span data-hf-id="hf-62bn" class="f04-arr" id="f04-arr2">→</span>
+          <span data-hf-id="hf-8uxq" class="f04-tok" id="f04-tok3">nieuwe timer</span>
+          <span data-hf-id="hf-6quk" class="f04-cyc" id="f04-cyc">↻</span>
+        </div>
+
+        <div data-hf-id="hf-6z73" class="f04-label" id="f04-label">actieve timers</div>
+        <div data-hf-id="hf-69q7" class="f04-chip" id="f04-chip">t = 10 s</div>
+        <div data-hf-id="hf-98ru" class="f04-lockup" id="f04-lockup">
+          <span data-hf-id="hf-937p" class="f04-num" id="f04-num">2</span><span data-hf-id="hf-h7t9" class="f04-unit" id="f04-unit">timers</span>
+        </div>
+        <div data-hf-id="hf-j5de" class="f04-rule" id="f04-rule"></div>
+        <div data-hf-id="hf-kum6" class="f04-teller" id="f04-teller"><span data-hf-id="hf-1o4l" class="f04-tk">teller:</span><span data-hf-id="hf-y9ae" class="f04-tval" id="f04-tval">1</span></div>
+
+        <div data-hf-id="hf-vmug" class="f04-gridlabel" id="f04-gridlabel"><span data-hf-id="hf-yhi2">setInterval × 1024</span><span data-hf-id="hf-0772">32 × 32</span></div>
+        <div data-hf-id="hf-em2u" class="f04-card" id="f04-card">
+          <div data-hf-id="hf-fqke" class="f04-grid" id="f04-grid"></div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-o3e2" class="f04-veil" id="f04-veil"></div>
+
+      <div data-hf-id="hf-2naa" class="f04-stamp" id="f04-stamp">
+        <svg data-hf-id="hf-5yu2" width="900" height="180" viewBox="0 0 900 180">
+          <path data-hf-id="hf-0wbe" id="f04-rough1" fill="none" stroke="#CC785C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" d="M8,10 C220,5 520,12 893,7 C896,60 891,120 894,173 C600,177 300,170 6,175 C3,120 9,62 8,10 Z" />
+          <path data-hf-id="hf-9izj" id="f04-rough2" fill="none" stroke="#CC785C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" d="M20,20 C300,17 610,23 881,18 C884,70 879,112 882,162 C560,166 280,159 19,163 C16,110 22,64 20,20 Z" />
+        </svg>
+        <div data-hf-id="hf-fkte" class="f04-stamptxt">VASTGELOPEN</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 19.06;
+      var root = document.querySelector('[data-composition-id="04-uit-de-hand"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- build the 32×32 dot grid (deterministic) ----
+      // Light order k → (row, col) by de-interleaving k's bits in reverse:
+      // every doubling fills the gaps of the previous 2D lattice evenly.
+      var grid = q("#f04-grid");
+      var PITCH = 20;
+      var byOrder = new Array(1024);
+      var dots = new Array(1024);
+      for (var i = 0; i < 1024; i++) {
+        var d = document.createElement("div");
+        d.className = "f04-dot";
+        var r = Math.floor(i / 32), c = i % 32;
+        d.style.left = (c * PITCH + 3) + "px";
+        d.style.top = (r * PITCH + 3) + "px";
+        grid.appendChild(d);
+        dots[i] = d;
+      }
+      for (var k = 0; k < 1024; k++) {
+        var rr = 0, cc = 0;
+        for (var b = 0; b < 5; b++) {
+          if (k & (1 << (2 * b))) cc |= (1 << (4 - b));
+          if (k & (1 << (2 * b + 1))) rr |= (1 << (4 - b));
+        }
+        byOrder[k] = dots[rr * 32 + cc];
+      }
+      var INK = "#141413";
+      var OFF = "rgba(20, 20, 19, 0.15)";
+
+      // dots [from, to) light as one batch
+      function lightBatch(from, to, at) {
+        var els = byOrder.slice(from, to);
+        var n = els.length;
+        var amount = Math.min(0.01 * n, 0.28);
+        tl.fromTo(els,
+          { backgroundColor: OFF, scale: 1.7 },
+          { backgroundColor: INK, scale: 1, duration: 0.18, ease: "power2.out", stagger: { amount: amount }, immediateRender: false },
+          at);
+      }
+      // dots lit from t=0: 2 timers already running
+      tl.set(byOrder.slice(0, 2), { backgroundColor: INK }, 0);
+
+      var numEl = q("#f04-num");
+      var tvalEl = q("#f04-tval");
+      function step(count, teller, at, pulse) {
+        tl.set(numEl, { textContent: String(count) }, at);
+        tl.set(tvalEl, { textContent: teller }, at);
+        if (pulse) {
+          tl.fromTo(numEl, { scale: 1.08 }, { scale: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, at);
+        }
+      }
+      function nl(n) { // Dutch thousands separator
+        var s = String(n), out = "";
+        while (s.length > 3) { out = "." + s.slice(-3) + out; s = s.slice(0, -3); }
+        return s + out;
+      }
+
+      // ---- Scene 1 (0.0–5.8): kicker, lockup, grid, loop line builds ----
+      tl.fromTo("#f04-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f04-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.15);
+      tl.fromTo("#f04-lockup", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.18);
+      tl.fromTo("#f04-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, 0.3);
+      tl.fromTo("#f04-teller", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 0.45);
+      tl.fromTo("#f04-card", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.25);
+      tl.fromTo("#f04-gridlabel", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 0.5);
+
+      tl.fromTo("#f04-tok1", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 0.72);
+      tl.fromTo("#f04-arr1", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 2.44);
+      tl.fromTo("#f04-tok2", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 2.54);
+      tl.fromTo("#f04-arr2", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 4.9);
+      tl.fromTo("#f04-tok3", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 5.0);
+      tl.fromTo("#f04-cyc", { opacity: 0, rotation: -90 }, { opacity: 1, rotation: 0, duration: 0.6, ease: "power3.out" }, 5.4);
+
+      // ---- Scene 2 (5.8–10.2): twee, vier, acht, zestien ----
+      step(2, "3", 6.34, true);
+      step(4, "7", 7.22, true);   lightBatch(2, 4, 7.22);
+      step(8, "15", 8.08, true);  lightBatch(4, 8, 8.08);
+      step(16, "31", 8.96, true); lightBatch(8, 16, 8.96);
+
+      // ---- Scene 3 (10.2–13.9): na tien seconden → 1024 ----
+      tl.fromTo("#f04-chip", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 10.38);
+      var rush = [32, 64, 128, 256, 512, 1024];
+      for (var j = 0; j < rush.length; j++) {
+        var at = 10.38 + j * 0.4;
+        step(rush[j], nl(rush[j] * 2 - 1), at, true);
+        lightBatch(rush[j] / 2, rush[j], at);
+      }
+
+      // ---- Scene 4 (13.9–15.9): teller schiet weg ----
+      var spinT = 13.96, gap = 0.34, n = 12;
+      while (spinT < 15.9 && n < 64) {
+        // 2^n − 1 (exact while n ≤ 53)
+        tl.set(tvalEl, { textContent: nl(Math.pow(2, Math.min(n, 53)) - 1) }, spinT);
+        spinT += gap;
+        gap = Math.max(0.05, gap * 0.8);
+        n += 2;
+      }
+
+      // ---- Scene 5 (15.9–18.56): freeze + VASTGELOPEN ----
+      tl.to("#f04-veil", { opacity: 0.4, duration: 0.25, ease: "power2.out" }, 15.96);
+      tl.to("#f04-grid", { opacity: 0.7, duration: 0.25, ease: "power2.out" }, 15.96);
+      var r1 = q("#f04-rough1"), r2 = q("#f04-rough2");
+      var L = 2400;
+      tl.fromTo("#f04-stamp", { opacity: 0, scale: 1.25, rotation: -4 }, { opacity: 1, scale: 1, rotation: -4, duration: 0.3, ease: "power3.out" }, 16.9);
+      tl.fromTo([r1, r2], { strokeDasharray: L, strokeDashoffset: L }, { strokeDasharray: L, strokeDashoffset: 0, duration: 0.45, ease: "power1.inOut" }, 16.9);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["04-uit-de-hand"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,515 @@
+<template id="03-referentie-template">
+  <div data-hf-id="hf-e28h" id="root" data-composition-id="03-referentie" data-width="1920" data-height="1080" data-duration="14.04">
+    <style>
+      @font-face {
+        font-family: "EB Garamond";
+        src: url("assets/fonts/EBGaramond-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/Inter-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      #root[data-composition-id="03-referentie"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        container-type: size;
+        font-family: "Inter", sans-serif;
+        color: #141413;
+      }
+
+      [data-composition-id="03-referentie"] .bg {
+        position: absolute;
+        inset: 0;
+        background: #faf9f5;
+      }
+      [data-composition-id="03-referentie"] .stage {
+        position: absolute;
+        inset: 0;
+      }
+
+      /* kicker-spike */
+      [data-composition-id="03-referentie"] .kicker {
+        position: absolute;
+        left: 100px;
+        top: 84px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 28px;
+        font-weight: 400;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #141413;
+      }
+      [data-composition-id="03-referentie"] .kicker .spike {
+        color: #cc785c;
+        margin-right: 14px;
+      }
+
+      /* the array strip */
+      [data-composition-id="03-referentie"] .row {
+        position: absolute;
+        left: 100px;
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+      }
+      [data-composition-id="03-referentie"] .row-old {
+        top: 300px;
+      }
+      [data-composition-id="03-referentie"] .row-new {
+        top: 530px;
+      }
+      [data-composition-id="03-referentie"] .tag {
+        width: 220px;
+        height: 104px;
+        border: 1px solid rgba(20, 20, 19, 0.2);
+        border-radius: 8px;
+        background: #faf9f5;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-left: 22px;
+      }
+      [data-composition-id="03-referentie"] .tag-role {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        letter-spacing: 0.02em;
+        color: rgba(20, 20, 19, 0.55);
+        height: 26px;
+        line-height: 26px;
+      }
+      [data-composition-id="03-referentie"] .tag-ref {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 28px;
+        color: rgba(20, 20, 19, 0.6);
+        line-height: 56px;
+        white-space: nowrap;
+      }
+      [data-composition-id="03-referentie"] .ref-letter {
+        display: inline-block;
+        font-size: 52px;
+        color: #141413;
+        transform-origin: 50% 55%;
+        text-shadow: 0 0 0 rgba(20, 20, 19, 0);
+      }
+      [data-composition-id="03-referentie"] .cells {
+        display: flex;
+        gap: 14px;
+      }
+      [data-composition-id="03-referentie"] .cell {
+        position: relative;
+        width: 104px;
+        height: 104px;
+        background: #efe9de;
+        border: 1px solid rgba(20, 20, 19, 0.12);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      [data-composition-id="03-referentie"] .val {
+        --dof: 0px;
+        filter: blur(var(--dof));
+        will-change: filter;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 48px;
+        color: #141413;
+      }
+      [data-composition-id="03-referentie"] .row-new .val {
+        --dof: 5px;
+        opacity: 0.3;
+      }
+      [data-composition-id="03-referentie"] .idx {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 114px;
+        text-align: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 18px;
+        color: rgba(20, 20, 19, 0.45);
+      }
+
+      /* same-object bracket */
+      [data-composition-id="03-referentie"] .bracket {
+        position: absolute;
+        left: 76px;
+        top: 352px;
+        width: 18px;
+        height: 230px;
+        border: 1px solid rgba(20, 20, 19, 0.55);
+        border-right: none;
+        border-radius: 6px 0 0 6px;
+        transform-origin: 50% 0%;
+      }
+
+      /* comparison readout */
+      [data-composition-id="03-referentie"] .panel {
+        position: absolute;
+        left: 1260px;
+        top: 230px;
+        width: 580px;
+        height: 572px;
+        background: #efe9de;
+        border: 1px solid rgba(20, 20, 19, 0.12);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+        padding: 40px 44px;
+      }
+      [data-composition-id="03-referentie"] .panel-head {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        height: 44px;
+      }
+      [data-composition-id="03-referentie"] .eye {
+        width: 72px;
+        height: 44px;
+        display: block;
+        transform-origin: 50% 50%;
+      }
+      [data-composition-id="03-referentie"] .panel-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 24px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(20, 20, 19, 0.6);
+      }
+      [data-composition-id="03-referentie"] .line1 {
+        margin-top: 40px;
+        height: 76px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 60px;
+        line-height: 76px;
+        white-space: nowrap;
+        color: #141413;
+      }
+      [data-composition-id="03-referentie"] .tok {
+        display: inline-block;
+        opacity: 0;
+      }
+      [data-composition-id="03-referentie"] .tok-op {
+        margin: 0 22px;
+        color: rgba(20, 20, 19, 0.55);
+      }
+      [data-composition-id="03-referentie"] .line2 {
+        margin-top: 14px;
+        height: 60px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 40px;
+        line-height: 60px;
+        white-space: nowrap;
+        color: rgba(20, 20, 19, 0.6);
+        opacity: 0;
+      }
+      [data-composition-id="03-referentie"] .line2 .ref-letter {
+        font-size: 44px;
+      }
+      [data-composition-id="03-referentie"] .line2 .op {
+        margin: 0 18px;
+      }
+      [data-composition-id="03-referentie"] .rule {
+        margin-top: 24px;
+        height: 1px;
+        background: rgba(20, 20, 19, 0.12);
+      }
+      [data-composition-id="03-referentie"] .line3 {
+        margin-top: 22px;
+        height: 90px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 72px;
+        line-height: 90px;
+        color: #141413;
+        opacity: 0;
+      }
+      [data-composition-id="03-referentie"] .line3 .arrow {
+        font-size: 44px;
+        color: rgba(20, 20, 19, 0.5);
+        margin-right: 20px;
+        vertical-align: 10px;
+      }
+      [data-composition-id="03-referentie"] .verdict {
+        margin-top: 22px;
+        height: 92px;
+        border-radius: 8px;
+        background: #cc785c;
+        color: #faf9f5;
+        font-family: "EB Garamond", serif;
+        font-style: italic;
+        font-size: 58px;
+        letter-spacing: -0.012em;
+        line-height: 92px;
+        padding-left: 30px;
+        white-space: nowrap;
+      }
+    </style>
+
+    <div data-hf-id="hf-w91i" class="bg clip" data-start="0" data-duration="14.04" data-track-index="0"></div>
+
+    <div data-hf-id="hf-y14s" class="stage clip" data-start="0" data-duration="14.04" data-track-index="1">
+      <div data-hf-id="hf-cd6l" class="kicker" id="03-referentie-kicker"><span data-hf-id="hf-3274" class="spike">✱</span>Waarom · referentie</div>
+
+      <!-- bracket: both tags point at the same object -->
+      <div data-hf-id="hf-tghq" class="bracket" id="03-referentie-bracket"></div>
+
+      <!-- row 1: the array strip (later "oud") -->
+      <div data-hf-id="hf-o35m" class="row row-old" id="03-referentie-row-old">
+        <div data-hf-id="hf-zcna" class="tag" id="03-referentie-tag-old">
+          <div data-hf-id="hf-9cyh" class="tag-role" id="03-referentie-role-old">oud</div>
+          <div data-hf-id="hf-nkqt" class="tag-ref">ref <span data-hf-id="hf-gdcf" class="ref-letter glow-word" data-word="same">#A</span></div>
+        </div>
+        <div data-hf-id="hf-qtwv" class="cells">
+          <div data-hf-id="hf-7184" class="cell"><span data-hf-id="hf-1dk6" class="val">0</span><span data-hf-id="hf-q77x" class="idx" data-layout-allow-overflow="">0</span></div>
+          <div data-hf-id="hf-am8c" class="cell"><span data-hf-id="hf-0z95" class="val">1</span><span data-hf-id="hf-qliy" class="idx" data-layout-allow-overflow="">1</span></div>
+          <div data-hf-id="hf-9fb9" class="cell"><span data-hf-id="hf-2668" class="val">2</span><span data-hf-id="hf-qztz" class="idx" data-layout-allow-overflow="">2</span></div>
+          <div data-hf-id="hf-9tma" class="cell"><span data-hf-id="hf-1rv7" class="val">3</span><span data-hf-id="hf-re50" class="idx" data-layout-allow-overflow="">3</span></div>
+          <div data-hf-id="hf-bt5f" class="cell"><span data-hf-id="hf-zsc2" class="val">4</span><span data-hf-id="hf-rsg1" class="idx" data-layout-allow-overflow="">4</span></div>
+          <div data-hf-id="hf-c7gg" class="cell"><span data-hf-id="hf-ze11" class="val">5</span><span data-hf-id="hf-s6r2" class="idx" data-layout-allow-overflow="">5</span></div>
+        </div>
+      </div>
+
+      <!-- row 2: after push, still the same reference -->
+      <div data-hf-id="hf-g1zg" class="row row-new" id="03-referentie-row-new">
+        <div data-hf-id="hf-d0jz" class="tag" id="03-referentie-tag-new">
+          <div data-hf-id="hf-7lun" class="tag-role">nieuw</div>
+          <div data-hf-id="hf-7ok9" class="tag-ref">ref <span data-hf-id="hf-66y7" class="ref-letter glow-word" data-word="same">#A</span></div>
+        </div>
+        <div data-hf-id="hf-jx1r" class="cells">
+          <div data-hf-id="hf-rc9f" class="cell copy"><span data-hf-id="hf-5sh6" class="val">0</span><span data-hf-id="hf-vept" class="idx" data-layout-allow-overflow="">0</span></div>
+          <div data-hf-id="hf-nbjn" class="cell copy"><span data-hf-id="hf-4p59" class="val">1</span><span data-hf-id="hf-9qu6" class="idx" data-layout-allow-overflow="">1</span></div>
+          <div data-hf-id="hf-mx8m" class="cell copy"><span data-hf-id="hf-uzlk" class="val">2</span><span data-hf-id="hf-98xz" class="idx" data-layout-allow-overflow="">2</span></div>
+          <div data-hf-id="hf-mixl" class="cell copy"><span data-hf-id="hf-8tkj" class="val">3</span><span data-hf-id="hf-yxyk" class="idx" data-layout-allow-overflow="">3</span></div>
+          <div data-hf-id="hf-m4mk" class="cell copy"><span data-hf-id="hf-wjqu" class="val">4</span><span data-hf-id="hf-2i1h" class="idx" data-layout-allow-overflow="">4</span></div>
+          <div data-hf-id="hf-lqbj" class="cell copy"><span data-hf-id="hf-i7mh" class="val">5</span><span data-hf-id="hf-vpde" class="idx" data-layout-allow-overflow="">5</span></div>
+          <div data-hf-id="hf-xnw7" class="cell" id="03-referentie-push-cell"><span data-hf-id="hf-0ky4" class="val">6</span><span data-hf-id="hf-sl23" class="idx" data-layout-allow-overflow="">6</span></div>
+        </div>
+      </div>
+
+      <!-- React's comparison readout -->
+      <div data-hf-id="hf-dt7u" class="panel" id="03-referentie-panel">
+        <div data-hf-id="hf-95fx" class="panel-head">
+          <svg data-hf-id="hf-13ji" class="eye" id="03-referentie-eye" viewBox="0 0 72 44" aria-hidden="true">
+            <path data-hf-id="hf-owt7" d="M3 22 C 15 5, 57 5, 69 22 C 57 39, 15 39, 3 22 Z" fill="none" stroke="#141413" stroke-width="2.5" stroke-linejoin="round" />
+            <g data-hf-id="hf-p4jx" id="03-referentie-pupil">
+              <circle data-hf-id="hf-x4gp" cx="36" cy="22" r="10" fill="none" stroke="#141413" stroke-width="2.5" />
+              <circle data-hf-id="hf-xqjj" cx="36" cy="22" r="4.5" fill="#141413" />
+            </g>
+          </svg>
+          <span data-hf-id="hf-1nnv" class="panel-label">React</span>
+        </div>
+
+        <div data-hf-id="hf-t3lv" class="line1">
+          <span data-hf-id="hf-4l90" class="tok" id="03-referentie-tok-oud">oud</span><span data-hf-id="hf-d2pr" class="tok tok-op" id="03-referentie-tok-eq">===</span><span data-hf-id="hf-16x0" class="tok" id="03-referentie-tok-nieuw">nieuw</span>
+        </div>
+        <div data-hf-id="hf-hv4m" class="line2" id="03-referentie-line2">
+          <span data-hf-id="hf-5sn6" class="ref-letter glow-word" data-word="same">#A</span><span data-hf-id="hf-648x" class="op">===</span><span data-hf-id="hf-5ec5" class="ref-letter glow-word" data-word="same">#A</span>
+        </div>
+        <div data-hf-id="hf-a46i" class="rule"></div>
+        <div data-hf-id="hf-kyb4" class="line3" id="03-referentie-line3"><span data-hf-id="hf-v68i" class="arrow">→</span>true</div>
+        <div data-hf-id="hf-12bk" class="verdict" id="03-referentie-verdict">→ niets te doen</div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var FRAME_ID = "03-referentie";
+        var DURATION = 12;
+        var root = document.querySelector('[data-composition-id="' + FRAME_ID + '"]');
+        var byId = function (suffix) {
+          return root.querySelector('[id="' + FRAME_ID + "-" + suffix + '"]');
+        };
+
+        var tl = gsap.timeline({ paused: true });
+
+        var rowOld = byId("row-old");
+        var rowNew = byId("row-new");
+        var tagOld = byId("tag-old");
+        var tagNew = byId("tag-new");
+        var roleOld = byId("role-old");
+        var oldCells = rowOld.querySelectorAll(".cell");
+        var oldVals = rowOld.querySelectorAll(".val");
+        var copyCells = rowNew.querySelectorAll(".cell.copy");
+        var pushCell = byId("push-cell");
+        var panel = byId("panel");
+        var eye = byId("eye");
+        var pupil = byId("pupil");
+        var bracket = byId("bracket");
+        var line2 = byId("line2");
+        var line3 = byId("line3");
+        var verdict = byId("verdict");
+
+        // ── Scene 1 (0.0–2.2): strip ref #A centred; values defocus on "kijkt niet in je array" ──
+        // Strip sits centred (x offset 391 = (1920-938)/2 - 100) and in the middle band (y +120).
+        tl.fromTo(byId("kicker"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0);
+        tl.fromTo(rowOld, { x: 391, y: 120 }, { x: 391, y: 120, duration: 0.01 }, 0);
+        tl.fromTo(roleOld, { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+        tl.fromTo(tagOld, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.02);
+        tl.fromTo(
+          oldCells,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", stagger: 0.035 },
+          0.06
+        );
+        // depth-of-field-blur: focal pull — values blur + dim, the ref tag stays sharp
+        tl.to(oldVals, { "--dof": "5px", opacity: 0.3, duration: 0.75, ease: "power2.inOut" }, 0.47);
+
+        // ── Scene 2 (2.2–5.3): layout opens; React's eye on "vergelijkt"; readout per word ──
+        tl.to(rowOld, { x: 0, duration: 0.8, ease: "power3.inOut" }, 2.16);
+        tl.fromTo(panel, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 2.3);
+        tl.fromTo(eye, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" }, 2.36);
+        // the eye glances toward the strip, then back to the expression
+        tl.fromTo(pupil, { x: 0 }, { x: -6, duration: 0.5, ease: "power3.inOut" }, 2.9);
+        tl.to(pupil, { x: 0, duration: 0.5, ease: "power3.inOut" }, 3.6);
+
+        // dynamic-content-sequencing: flat, pre-computed state table cued to the VO,
+        // one linear driver, DOM written only on state transitions.
+        var tokOud = byId("tok-oud");
+        var tokEq = byId("tok-eq");
+        var tokNieuw = byId("tok-nieuw");
+        var SEQ_ITEMS = [tokOud, tokEq, tokNieuw, line2, line3];
+        var SEQ = [
+          { start: 0, shown: 0 },
+          { start: 3.66, shown: 1 }, // "dezelfde"  → oud
+          { start: 4.08, shown: 2 }, // "array"     → ===
+          { start: 4.61, shown: 3 }, // "daarnet?"  → nieuw
+          { start: 7.3, shown: 4 }, //  "hetzelfde" → #A === #A
+          { start: 8.95, shown: 5 } //  "Dus"       → true
+        ];
+        function stateAt(t) {
+          for (var i = SEQ.length - 1; i >= 0; i--) {
+            if (t >= SEQ[i].start) return SEQ[i];
+          }
+          return SEQ[0];
+        }
+        var seqDriver = { t: 0 };
+        var lastShown = -1;
+        tl.to(
+          seqDriver,
+          {
+            t: DURATION,
+            duration: DURATION,
+            ease: "none",
+            onUpdate: function () {
+              var s = stateAt(seqDriver.t);
+              if (s.shown !== lastShown) {
+                for (var i = 0; i < SEQ_ITEMS.length; i++) {
+                  SEQ_ITEMS[i].style.opacity = i < s.shown ? "1" : "0";
+                }
+                lastShown = s.shown;
+              }
+            }
+          },
+          0
+        );
+        // arrival settle on each swapped item (transform channel only; opacity owned by the driver)
+        SEQ_ITEMS.forEach(function (el, i) {
+          tl.fromTo(el, { y: 14 }, { y: 0, duration: 0.4, ease: "power3.out" }, SEQ[i + 1].start);
+        });
+
+        // ── Scene 3 (5.3–8.8): "na een push" → oud / nieuw stacked, both ref #A ──
+        tl.to(rowOld, { y: 0, duration: 0.6, ease: "power3.inOut" }, 5.3);
+        tl.fromTo(roleOld, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power3.out" }, 5.5);
+        tl.fromTo(tagNew, { opacity: 0, y: -110 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 5.45);
+        tl.fromTo(
+          copyCells,
+          { opacity: 0, y: -110 },
+          { opacity: 1, y: 0, duration: 0.55, ease: "power3.out", stagger: { each: 0.04, from: "center" } },
+          5.5
+        );
+        // "push": the new element slides onto the end of the SAME strip
+        tl.fromTo(
+          pushCell,
+          { opacity: 0, x: 70 },
+          { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" },
+          5.9
+        );
+        // "hetzelfde object": bracket draws between the two identical tags
+        tl.fromTo(bracket, { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.6, ease: "power3.out" }, 7.3);
+
+        // asr-keyword-glow: one linear driver, attack/sustain/release over the spoken window,
+        // applied to every "#A" (both tags + the readout) — ink glow, not coral.
+        var GLOW_WORDS = root.querySelectorAll(".glow-word");
+        var TIMINGS = { same: { start: 7.3, end: 8.88 } }; // "hetzelfde" … "object."
+        var ATTACK_DUR = 0.2;
+        var RELEASE = 0.45;
+        var REST_LEVEL = 0.25;
+        var MAX_BLUR = 18;
+        var MAX_SCALE_BOOST = 0.1;
+        function envelope(time, start, end) {
+          if (time < start) return 0;
+          if (time < end) return Math.min((time - start) / ATTACK_DUR, 1);
+          var releaseEnd = end + RELEASE;
+          if (time < releaseEnd) return 1 - ((time - end) / RELEASE) * (1 - REST_LEVEL);
+          return REST_LEVEL;
+        }
+        var glowDriver = { t: 0 };
+        tl.to(
+          glowDriver,
+          {
+            t: DURATION,
+            duration: DURATION,
+            ease: "none",
+            onUpdate: function () {
+              var tm = TIMINGS.same;
+              var env = envelope(glowDriver.t, tm.start, tm.end);
+              for (var i = 0; i < GLOW_WORDS.length; i++) {
+                var el = GLOW_WORDS[i];
+                el.style.textShadow = "0 0 " + (MAX_BLUR * env).toFixed(2) + "px rgba(20,20,19," + (0.35 * env).toFixed(3) + ")";
+                el.style.transform = "scale(" + (1 + MAX_SCALE_BOOST * env).toFixed(4) + ")";
+              }
+              var border = "rgba(20,20,19," + (0.2 + 0.45 * env).toFixed(3) + ")";
+              tagOld.style.borderColor = border;
+              tagNew.style.borderColor = border;
+            }
+          },
+          0
+        );
+
+        // ── Scene 4 (8.8–12.0): readout resolves to true (driver, 8.95); coral verdict on "niets" ──
+        tl.fromTo(
+          verdict,
+          { opacity: 0, x: -18 },
+          { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" },
+          10.3
+        );
+        // held read to the end — no exit
+        tl.set({}, {}, DURATION);
+
+        window.__timelines = window.__timelines || {};
+        // voice take: 12s → 12.4s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.08, 0.08], [0.47, 0.52], [0.86, 0.9], [1.2, 1.2], [1.37, 1.34], [1.54, 1.48], [2.16, 2.32], [2.32, 2.46], [2.77, 3.06], [3.14, 3.86], [3.4, 4.059], [3.66, 4.32], [4.08, 4.94], [4.4, 5.36], [4.61, 5.5], [5.32, 6.84], [5.565, 7.04], [5.81, 7.24], [6.055, 7.68], [6.3, 7.76], [6.52, 7.88], [6.82, 8.16], [7.3, 8.5], [8.38, 9.02], [8.88, 9.94], [9.54, 10.2], [9.71, 10.46], [10.3, 11.52], [12, 12.4]]);
+        window.__timelines[FRAME_ID] = tl;
+      })();
+    </script>
+  </div>
+</template>

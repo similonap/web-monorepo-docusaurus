@@ -1,0 +1,401 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f11-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f11-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f11-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f11-kicker .f11-spike { color: #CC785C; margin-right: 14px; }
+
+    /* console surface */
+    .f11-panel {
+      position: absolute;
+      left: 80px;
+      top: 190px;
+      width: 880px;
+      height: 560px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f11-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f11-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f11-logs {
+      position: absolute;
+      left: 0; right: 0;
+      top: 80px;
+    }
+    .f11-log {
+      position: relative;
+      height: 84px;
+      display: flex;
+      align-items: center;
+      padding: 0 36px 0 40px;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.08);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 38px;
+      color: #FAF9F5;
+      white-space: pre;
+      font-variant-ligatures: none;
+    }
+    .f11-log .f11-caret { color: rgba(250, 249, 245, 0.4); margin-right: 18px; }
+    .f11-log .f11-src {
+      margin-left: auto;
+      font-size: 20px;
+      color: rgba(250, 249, 245, 0.32);
+    }
+    .f11-bar {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 5px;
+      background: #CC785C;
+      transform-origin: center top;
+    }
+    .f11-badge {
+      margin-left: 24px;
+      padding: 6px 14px 4px;
+      border: 2px solid #CC785C;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 26px;
+      line-height: 1;
+      color: #CC785C;
+    }
+
+    /* right column */
+    .f11-col {
+      position: absolute;
+      left: 1040px;
+      top: 190px;
+      width: 800px;
+    }
+    .f11-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f11-snip {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 560px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .f11-snip-bar {
+      height: 44px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.55);
+    }
+    .f11-snip-code {
+      padding: 18px 28px 22px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 32px;
+      line-height: 50px;
+      color: #FAF9F5;
+      white-space: normal;
+      font-variant-ligatures: none;
+    }
+    .f11-snip-line { display: block; white-space: pre; }
+    .f11-amber { color: #E8A55A; }
+    .f11-dim { color: rgba(250, 249, 245, 0.55); }
+
+    /* sequence */
+    .f11-seq-label { position: absolute; left: 0; top: 268px; }
+    .f11-seq {
+      position: absolute;
+      left: 0;
+      top: 316px;
+      width: 800px;
+      height: 70px;
+    }
+    .f11-mount {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 66px;
+      line-height: 66px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      color: rgba(20, 20, 19, 0.55);
+    }
+    .f11-pill {
+      position: absolute;
+      top: 0;
+      height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #141413;
+    }
+    .f11-check {
+      position: absolute;
+      top: -20px;
+      right: -14px;
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      background: #141413;
+      color: #FAF9F5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 1;
+    }
+    .f11-arrows {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 800px;
+      height: 66px;
+      overflow: visible;
+    }
+    .f11-note {
+      position: absolute;
+      left: 0;
+      top: 408px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      color: rgba(20, 20, 19, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f11-rule {
+      position: absolute;
+      left: 0;
+      top: 470px;
+      width: 800px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.2);
+      transform-origin: left center;
+    }
+
+    /* toggle */
+    .f11-toggle {
+      position: absolute;
+      left: 0;
+      top: 500px;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 0 16px 0 30px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #141413;
+    }
+    .f11-on {
+      font-size: 20px;
+      letter-spacing: 0.16em;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f11-track {
+      position: relative;
+      width: 84px;
+      height: 46px;
+      border-radius: 9999px;
+      background: #141413;
+    }
+    .f11-knob {
+      position: absolute;
+      top: 5px;
+      left: 43px;
+      width: 36px;
+      height: 36px;
+      border-radius: 9999px;
+      background: #FAF9F5;
+    }
+    .f11-hint {
+      position: absolute;
+      left: 420px;
+      top: 500px;
+      height: 76px;
+      line-height: 76px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      color: rgba(20, 20, 19, 0.5);
+    }
+  </style>
+
+  <div data-hf-id="hf-b2b3" id="root" data-composition-id="11-strict-mode" data-width="1920" data-height="1080" data-duration="13.84">
+    <div data-hf-id="hf-t42m" class="f11-bg clip" id="f11-bg" data-start="0" data-duration="13.84" data-track-index="0"></div>
+
+    <div data-hf-id="hf-hact" class="f11-stage clip" id="f11-stage" data-start="0" data-duration="13.84" data-track-index="1">
+      <div data-hf-id="hf-6pti" class="f11-kicker" id="f11-kicker"><span data-hf-id="hf-2ie9" class="f11-spike">✱</span>Strict Mode</div>
+
+      <!-- console surface -->
+      <div data-hf-id="hf-teq8" class="f11-panel" id="f11-panel">
+        <div data-hf-id="hf-8inl" class="f11-titlebar">Console</div>
+        <div data-hf-id="hf-w92k" class="f11-logs">
+          <div data-hf-id="hf-y2es" class="f11-log" id="f11-log1"><span data-hf-id="hf-6qtr" class="f11-caret">▸</span>effect gestart<span data-hf-id="hf-vwim" class="f11-src">App.jsx:6</span></div>
+          <div data-hf-id="hf-d9jn" class="f11-log" id="f11-log2"><span data-hf-id="hf-1vqz" class="f11-bar" id="f11-bar"></span><span data-hf-id="hf-dqi7" class="f11-caret">▸</span>effect gestart<span data-hf-id="hf-92t2" class="f11-badge" id="f11-badge">×2</span><span data-hf-id="hf-l0le" class="f11-src">App.jsx:6</span></div>
+        </div>
+        <div data-hf-id="hf-7pyr" class="f11-status"><span data-hf-id="hf-tssu">development</span><span data-hf-id="hf-7u84" id="f11-count"></span></div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-93ph" class="f11-col">
+        <div data-hf-id="hf-ujh6" class="f11-snip" id="f11-snip">
+          <div data-hf-id="hf-g3hn" class="f11-snip-bar">main.jsx</div>
+          <div data-hf-id="hf-qkch" class="f11-snip-code">
+            <span data-hf-id="hf-sjnd" class="f11-snip-line f11-sl"><span data-hf-id="hf-1itm" class="f11-dim">&lt;</span><span data-hf-id="hf-vsnj" class="f11-amber">StrictMode</span><span data-hf-id="hf-2bfo" class="f11-dim">&gt;</span></span>
+            <span data-hf-id="hf-av6w" class="f11-snip-line f11-sl">  <span data-hf-id="hf-bb66" class="f11-dim">&lt;</span>App <span data-hf-id="hf-zw4b" class="f11-dim">/&gt;</span></span>
+            <span data-hf-id="hf-fmtp" class="f11-snip-line f11-sl"><span data-hf-id="hf-uzlr" class="f11-dim">&lt;/</span><span data-hf-id="hf-8nvz" class="f11-amber">StrictMode</span><span data-hf-id="hf-mxwc" class="f11-dim">&gt;</span></span>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-e6vr" class="f11-label f11-seq-label" id="f11-seq-label">volgorde</div>
+        <div data-hf-id="hf-ocve" class="f11-seq">
+          <div data-hf-id="hf-ihkv" class="f11-mount" id="f11-mount">mount</div>
+          <div data-hf-id="hf-xesb" class="f11-pill" id="f11-p1" style="left: 160px; width: 150px;">effect</div>
+          <div data-hf-id="hf-i496" class="f11-pill" id="f11-p2" style="left: 380px; width: 180px;">cleanup<span data-hf-id="hf-lsre" class="f11-check" id="f11-check">✓</span></div>
+          <div data-hf-id="hf-3ksl" class="f11-pill" id="f11-p3" style="left: 630px; width: 150px;">effect</div>
+          <svg data-hf-id="hf-jth6" class="f11-arrows" viewBox="0 0 800 66" width="800" height="66">
+            <path data-hf-id="hf-gj2y" id="f11-a1" d="M100 33 L148 33 M138 25 L148 33 L138 41" fill="none" stroke="#141413" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path data-hf-id="hf-0ndr" id="f11-a2" d="M320 33 L368 33 M358 25 L368 33 L358 41" fill="none" stroke="#141413" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path data-hf-id="hf-kqy9" id="f11-a3" d="M570 33 L618 33 M608 25 L618 33 L608 41" fill="none" stroke="#141413" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div data-hf-id="hf-ozw1" class="f11-note" id="f11-note">// alleen in development</div>
+        <div data-hf-id="hf-kslu" class="f11-rule" id="f11-rule"></div>
+
+        <div data-hf-id="hf-7gea" class="f11-toggle" id="f11-toggle">
+          <span data-hf-id="hf-dxxf">StrictMode</span>
+          <span data-hf-id="hf-olk9" class="f11-on">AAN</span>
+          <span data-hf-id="hf-f9r1" class="f11-track"><span data-hf-id="hf-a5ws" class="f11-knob"></span></span>
+        </div>
+        <div data-hf-id="hf-fg2h" class="f11-hint" id="f11-hint">✕ uitzetten</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 13.74;
+      var root = document.querySelector('[data-composition-id="11-strict-mode"]');
+      var q = function (s) { return root.querySelector(s); };
+      var qa = function (s) { return root.querySelectorAll(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- Scene 1 (0.0–3.8): kicker + console; two identical logs ----
+      tl.fromTo("#f11-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f11-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.15);
+      tl.fromTo("#f11-log1", { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 0.74);
+      tl.set("#f11-count", { textContent: "1 log" }, 0.74);
+      tl.fromTo("#f11-log2", { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 2.58);
+      tl.set("#f11-count", { textContent: "2 logs" }, 2.58);
+      tl.fromTo("#f11-bar", { scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: "power3.out" }, 2.7);
+      tl.fromTo("#f11-badge", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 2.85);
+
+      // ---- Scene 2 (3.8–6.4): <StrictMode> snippet ----
+      tl.fromTo("#f11-snip", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 4.48);
+      tl.fromTo(qa(".f11-sl"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out", stagger: 0.12 }, 4.62);
+
+      // ---- Scene 3 (6.4–8.9): mount → effect → cleanup → effect ----
+      tl.fromTo("#f11-seq-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 6.7);
+      tl.fromTo("#f11-mount", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, 6.8);
+      var arrows = ["#f11-a1", "#f11-a2", "#f11-a3"];
+      var pills = ["#f11-p1", "#f11-p2", "#f11-p3"];
+      arrows.forEach(function (sel, i) {
+        var p = q(sel);
+        var len = 90;
+        try { len = Math.ceil(p.getTotalLength()) || 90; } catch (e) {}
+        tl.set(p, { strokeDasharray: len, strokeDashoffset: len }, 0);
+        var at = 6.95 + i * 0.4;
+        tl.to(p, { strokeDashoffset: 0, duration: 0.3, ease: "power1.inOut" }, at);
+        tl.fromTo(pills[i], { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, at + 0.15);
+      });
+      tl.fromTo("#f11-note", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 8.3);
+
+      // ---- Scene 4 (8.9–13.24): toggle ON, dismiss "uitzetten", check cleanup ----
+      tl.fromTo("#f11-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 8.9);
+      tl.fromTo("#f11-toggle", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.0);
+      tl.fromTo("#f11-hint", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 9.5);
+      tl.to("#f11-hint", { opacity: 0, x: 10, duration: 0.4, ease: "power1.in" }, 10.4);
+      tl.to("#f11-p2", { backgroundColor: "#ECE3D4", borderColor: "rgba(20, 20, 19, 0.6)", duration: 0.4, ease: "power1.out" }, 10.94);
+      tl.fromTo("#f11-check", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power3.out" }, 10.94);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["11-strict-mode"] = tl;
+    })();
+  </script>
+</template>

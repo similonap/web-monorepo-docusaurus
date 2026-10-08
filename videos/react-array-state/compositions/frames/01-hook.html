@@ -1,0 +1,458 @@
+<template id="01-hook-template">
+  <div data-hf-id="hf-euai" id="root" data-composition-id="01-hook" data-start="0" data-duration="7.38" data-width="1920" data-height="1080">
+    <style>
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        font-family: "Inter", sans-serif;
+        color: #141413;
+      }
+      #root *,
+      #root *::before,
+      #root *::after {
+        box-sizing: border-box;
+      }
+
+      /* ---- background: cream ground + faint hairline grid ---- */
+      .hk01-ground {
+        position: absolute;
+        inset: 0;
+        background-color: #faf9f5;
+        background-image:
+          linear-gradient(rgba(20, 20, 19, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(20, 20, 19, 0.045) 1px, transparent 1px);
+        background-size: 64px 64px;
+        background-position: 32px 28px;
+      }
+
+      .hk01-stage {
+        position: absolute;
+        inset: 0;
+      }
+
+      /* ---- the mini app card (focal) ---- */
+      .hk01-card {
+        position: absolute;
+        left: 600px;
+        top: 120px;
+        width: 720px;
+        padding: 48px;
+        background: #efe9de;
+        border: 1px solid rgba(20, 20, 19, 0.12);
+        border-radius: 12px;
+        box-shadow:
+          0 1px 3px rgba(20, 20, 19, 0.08),
+          0 4px 16px rgba(20, 20, 19, 0.04);
+        transform-origin: 50% 50%;
+      }
+
+      .hk01-form {
+        display: flex;
+        gap: 24px;
+        height: 88px;
+      }
+
+      .hk01-input {
+        width: 460px;
+        height: 88px;
+        display: flex;
+        align-items: center;
+        padding: 0 28px;
+        background: #faf9f5;
+        border: 1px solid rgba(20, 20, 19, 0.2);
+        border-radius: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 40px;
+        font-weight: 400;
+        white-space: nowrap;
+        position: relative;
+      }
+      .hk01-text-wrap {
+        display: inline-flex;
+        align-items: center;
+        min-width: 40px;
+        white-space: nowrap;
+      }
+      .hk01-placeholder {
+        position: absolute;
+        left: 28px;
+        top: 0;
+        height: 88px;
+        display: flex;
+        align-items: center;
+        font-family: "Inter", sans-serif;
+        font-size: 30px;
+        color: rgba(20, 20, 19, 0.35);
+      }
+      .hk01-caret {
+        display: inline-block;
+        width: 3px;
+        height: 44px;
+        margin-left: 4px;
+        background: #141413;
+        opacity: 0;
+      }
+
+      .hk01-btn {
+        width: 140px;
+        height: 88px;
+        border-radius: 8px;
+        background: #141413;
+        color: #faf9f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Inter", sans-serif;
+        font-size: 30px;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        box-shadow:
+          0 1px 3px rgba(20, 20, 19, 0.16),
+          0 6px 16px rgba(20, 20, 19, 0.1);
+        transform-origin: 50% 50%;
+      }
+
+      .hk01-table {
+        margin-top: 40px;
+      }
+      .hk01-thead,
+      .hk01-row {
+        display: flex;
+        align-items: center;
+      }
+      .hk01-thead {
+        height: 44px;
+        border-bottom: 1px solid rgba(20, 20, 19, 0.2);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(20, 20, 19, 0.5);
+      }
+      .hk01-row {
+        height: 64px;
+        border-bottom: 1px solid rgba(20, 20, 19, 0.12);
+      }
+      .hk01-col-i {
+        width: 140px;
+        padding-left: 12px;
+      }
+      .hk01-col-v {
+        flex: 1;
+        padding-left: 12px;
+      }
+      .hk01-row .hk01-col-i {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        color: rgba(20, 20, 19, 0.45);
+      }
+      .hk01-row .hk01-col-v {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 36px;
+        color: #141413;
+      }
+
+      /* the empty slot where "5" should have landed */
+      .hk01-ghost {
+        position: relative;
+        border-bottom: none;
+      }
+      .hk01-ghost-slot {
+        position: absolute;
+        left: 140px;
+        right: 0;
+        top: 8px;
+        bottom: 8px;
+        border: 1px dashed rgba(20, 20, 19, 0.3);
+        border-radius: 6px;
+      }
+
+      /* ---- the one coral voltage ---- */
+      .hk01-q {
+        position: absolute;
+        left: 1368px;
+        top: 590px;
+        font-family: "EB Garamond", serif;
+        font-weight: 400;
+        font-size: 190px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: #cc785c;
+        transform-origin: 20% 80%;
+      }
+
+      /* ---- click ripples (live from t=0 at the button centre) ---- */
+      .hk01-ripple {
+        position: absolute;
+        left: 1153px;
+        top: 163px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 2px solid rgba(20, 20, 19, 0.35);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ---- oversized cursor actor (family arrow at 3.5x) ---- */
+      .hk01-cursor {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 224px;
+        height: 224px;
+        pointer-events: none;
+        z-index: 20;
+        filter: drop-shadow(0 8px 12px rgba(20, 20, 19, 0.22));
+      }
+      .hk01-cursor svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        fill: #faf9f5;
+        stroke: #141413;
+        stroke-width: 1.4;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+      }
+    </style>
+
+    <div data-hf-id="hf-lt0l" id="01-hook-ground" class="clip hk01-ground" data-start="0" data-duration="7.38" data-track-index="0"></div>
+
+    <div data-hf-id="hf-wwdc" id="01-hook-stage" class="clip hk01-stage" data-start="0" data-duration="7.38" data-track-index="1">
+      <div data-hf-id="hf-erxl" id="01-hook-card" class="hk01-card">
+        <div data-hf-id="hf-0hpt" class="hk01-form">
+          <div data-hf-id="hf-yb6h" id="01-hook-input" class="hk01-input">
+            <span data-hf-id="hf-hhud" id="01-hook-placeholder" class="hk01-placeholder">Getal</span>
+            <span data-hf-id="hf-li6m" class="hk01-text-wrap"><span data-hf-id="hf-lyzr" id="01-hook-text"></span><span data-hf-id="hf-uvgw" id="01-hook-caret" class="hk01-caret"></span></span>
+          </div>
+          <div data-hf-id="hf-cok0" id="01-hook-btn" class="hk01-btn">Add</div>
+        </div>
+
+        <div data-hf-id="hf-w0ax" class="hk01-table">
+          <div data-hf-id="hf-fizz" class="hk01-thead">
+            <div data-hf-id="hf-pfl3" class="hk01-col-i">index</div>
+            <div data-hf-id="hf-j53e" class="hk01-col-v">waarde</div>
+          </div>
+          <div data-hf-id="hf-3udu" class="hk01-row hk01-data"><div data-hf-id="hf-0dqr" class="hk01-col-i">0</div><div data-hf-id="hf-5jre" class="hk01-col-v">0</div></div>
+          <div data-hf-id="hf-s91y" class="hk01-row hk01-data"><div data-hf-id="hf-0s1s" class="hk01-col-i">1</div><div data-hf-id="hf-55gd" class="hk01-col-v">1</div></div>
+          <div data-hf-id="hf-sncz" class="hk01-row hk01-data"><div data-hf-id="hf-zl4p" class="hk01-col-i">2</div><div data-hf-id="hf-6cdg" class="hk01-col-v">2</div></div>
+          <div data-hf-id="hf-t1o0" class="hk01-row hk01-data"><div data-hf-id="hf-zzfq" class="hk01-col-i">3</div><div data-hf-id="hf-5y2f" class="hk01-col-v">3</div></div>
+          <div data-hf-id="hf-q9it" class="hk01-row hk01-data"><div data-hf-id="hf-ysin" class="hk01-col-i">4</div><div data-hf-id="hf-74zi" class="hk01-col-v">4</div></div>
+          <div data-hf-id="hf-8z9i" id="01-hook-ghost" class="hk01-row hk01-ghost">
+            <div data-hf-id="hf-z6to" class="hk01-col-i">5</div>
+            <div data-hf-id="hf-19qt" class="hk01-ghost-slot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-mee0" id="01-hook-q" class="hk01-q">?</div>
+
+      <div data-hf-id="hf-ucyz" id="01-hook-ripple-1" class="hk01-ripple"></div>
+      <div data-hf-id="hf-lp34" id="01-hook-ripple-2" class="hk01-ripple"></div>
+
+      <div data-hf-id="hf-1egu" id="01-hook-cursor" class="hk01-cursor" aria-hidden="true">
+        <svg data-hf-id="hf-ulu9" viewBox="0 0 24 24"><path data-hf-id="hf-fueh" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var DUR = 5.04;
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var card = $("01-hook-card");
+        var input = $("01-hook-input");
+        var placeholder = $("01-hook-placeholder");
+        var textEl = $("01-hook-text");
+        var caretEl = $("01-hook-caret");
+        var btn = $("01-hook-btn");
+        var ghost = $("01-hook-ghost");
+        var q = $("01-hook-q");
+        var r1 = $("01-hook-ripple-1");
+        var r2 = $("01-hook-ripple-2");
+        var cursor = $("01-hook-cursor");
+        var rows = Array.prototype.slice.call(card.querySelectorAll(".hk01-data"));
+
+        var tl = gsap.timeline({ paused: true });
+
+        // ---- Scene 1 (0.0–0.9): card settles in, centred; rows land as one beat ----
+        tl.fromTo(
+          card,
+          { opacity: 0, y: 36, scale: 0.97 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "power3.out" },
+          0.05,
+        );
+        rows.forEach(function (row, i) {
+          tl.fromTo(
+            row,
+            { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
+            0.25 + i * 0.06,
+          );
+        });
+        // ghost slot is not there yet
+        tl.fromTo(ghost, { opacity: 0, y: 8 }, { opacity: 0, y: 8, duration: 0.01 }, 0);
+        tl.fromTo(q, { opacity: 0, scale: 0 }, { opacity: 0, scale: 0, duration: 0.01 }, 0);
+
+        // ---- Scene 2 (0.9–1.7): on "getal" the input takes focus and types 5 ----
+        tl.fromTo(
+          input,
+          { borderColor: "rgba(20, 20, 19, 0.2)" },
+          { borderColor: "rgba(20, 20, 19, 0.55)", duration: 0.25, ease: "power2.out" },
+          0.6,
+        );
+        var SEQUENCE = [
+          { t: 0.0, text: "" },
+          { t: 1.02, text: "5" },
+        ];
+        function textAt(time) {
+          for (var i = SEQUENCE.length - 1; i >= 0; i--) {
+            if (time >= SEQUENCE[i].t) return SEQUENCE[i].text;
+          }
+          return "";
+        }
+        var driver = { t: 0 };
+        var render = function () {
+          var s = textAt(driver.t);
+          textEl.textContent = s;
+          placeholder.style.opacity = s.length ? "0" : "1";
+          // caret: off until focus (0.6s), then a deterministic 0.6s square-wave blink
+          if (driver.t < 0.6) {
+            caretEl.style.opacity = "0";
+          } else {
+            var phase = ((driver.t - 0.6) / 0.6) * Math.PI * 2;
+            caretEl.style.opacity = Math.cos(phase) > -0.2 ? "1" : "0";
+          }
+        };
+        tl.fromTo(
+          driver,
+          { t: 0 },
+          { t: DUR, duration: DUR, ease: "none", onUpdate: render, onStart: render },
+          0,
+        );
+
+        // ---- Scene 3 (1.7–2.6): on "klikt op Add" the cursor glides in and clicks ----
+        var TIP_X = 1203;
+        var TIP_Y = 213;
+        var MOVE_AT = 1.66;
+        var MOVE_DUR = 0.52;
+        var CLICK_AT = 2.28; // lands on "Add"
+        var PRESS = 0.1;
+        var TIP_ORIGIN = "20.83% 12.5%";
+
+        // cursor waits off-canvas (right) until its cue
+        tl.set(cursor, { xPercent: -20.83, yPercent: -12.5, x: 2080, y: 640, scale: 1 }, 0);
+        tl.fromTo(
+          cursor,
+          { xPercent: -20.83, yPercent: -12.5, x: 2080, y: 640, scale: 1 },
+          {
+            xPercent: -20.83,
+            yPercent: -12.5,
+            x: TIP_X,
+            y: TIP_Y,
+            duration: MOVE_DUR,
+            ease: "power3.out",
+          },
+          MOVE_AT,
+        );
+        // cursor depresses more than the target, both on the same beat
+        tl.to(
+          cursor,
+          { scale: 0.86, duration: PRESS, ease: "power2.in", transformOrigin: TIP_ORIGIN },
+          CLICK_AT,
+        );
+        tl.to(
+          cursor,
+          { scale: 1, duration: 0.22, ease: "power2.out", transformOrigin: TIP_ORIGIN },
+          CLICK_AT + PRESS,
+        );
+        // press-release-spring on the Add button: linear press, soft spring release
+        tl.to(
+          btn,
+          {
+            scale: 0.93,
+            boxShadow: "0 1px 1px rgba(20, 20, 19, 0.2), 0 1px 3px rgba(20, 20, 19, 0.08)",
+            duration: PRESS,
+            ease: "power1.in",
+          },
+          CLICK_AT,
+        );
+        tl.to(
+          btn,
+          {
+            scale: 1,
+            boxShadow: "0 1px 3px rgba(20, 20, 19, 0.16), 0 6px 16px rgba(20, 20, 19, 0.1)",
+            duration: 0.5,
+            ease: "back.out(1.3)",
+          },
+          CLICK_AT + PRESS,
+        );
+        // ripple rings from the button centre
+        tl.fromTo(
+          [r1, r2],
+          { scale: 0.4, opacity: 0.9 },
+          {
+            scale: 4,
+            opacity: 0,
+            duration: 0.7,
+            ease: "power2.out",
+            stagger: 0.09,
+            immediateRender: false,
+          },
+          CLICK_AT + 0.02,
+        );
+        // cursor eases just below/right so the button stays readable
+        tl.to(
+          cursor,
+          { x: TIP_X + 52, y: TIP_Y + 46, duration: 0.45, ease: "power2.inOut" },
+          2.7,
+        );
+
+        // ---- Scene 4 (2.6–5.04): nothing changes. The slot stays empty. Then "?" ----
+        tl.fromTo(
+          ghost,
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.55, ease: "power3.out", immediateRender: false },
+          3.22, // "gebeurt"
+        );
+        tl.fromTo(
+          q,
+          { opacity: 0, scale: 0 },
+          { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out", immediateRender: false },
+          4.3, // "niets"
+        );
+
+        // pad to full duration (held still)
+        tl.set({}, {}, DUR);
+
+        tl.seek(0);
+        window.__timelines = window.__timelines || {};
+        // voice take: 5.04s → 5.92s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.1, 0.14], [0.24, 0.3], [0.59, 0.52], [0.89, 0.62], [1.6, 1.58], [1.72, 1.7], [2.12, 2.0], [2.28, 2.28], [2.33, 2.92], [2.88, 4.46], [3.18, 4.58], [4.26, 5.42], [5.04, 5.92]]);
+        window.__timelines["01-hook"] = tl;
+      })();
+    </script>
+  </div>
+</template>

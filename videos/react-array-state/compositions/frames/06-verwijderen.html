@@ -1,0 +1,529 @@
+<template>
+  <div data-hf-id="hf-1vg1" id="root" data-composition-id="06-verwijderen" data-start="0" data-duration="11.42" data-width="1920" data-height="1080">
+    <style>
+      /* Fonts: EB Garamond / Inter / JetBrains Mono are HyperFrames bundled families
+         (resolved by the renderer's font alias map), so no external file is referenced. */
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        font-family: "Inter", sans-serif;
+        color: #141413;
+      }
+      [id="06-verwijderen-ground"] {
+        position: absolute;
+        inset: 0;
+        background: #faf9f5;
+      }
+      [id="06-verwijderen-stage"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 900px;
+      }
+
+      /* ── chrome: kicker + title ─────────────────────────────── */
+      [id="06-verwijderen-kicker"] {
+        position: absolute;
+        left: 80px;
+        top: 60px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 28px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #141413;
+        white-space: nowrap;
+      }
+      [id="06-verwijderen-kicker"] .vw06-spike {
+        color: #cc785c;
+        margin-right: 0.35em;
+      }
+      [id="06-verwijderen-title"] {
+        position: absolute;
+        left: 76px;
+        top: 114px;
+        font-family: "EB Garamond", Georgia, serif;
+        font-size: 88px; /* headline 4.6cqw */
+        font-weight: 400;
+        line-height: 1.06;
+        letter-spacing: -0.018em;
+        white-space: nowrap;
+      }
+
+      /* ── code surface (warm navy) ───────────────────────────── */
+      [id="06-verwijderen-code"] {
+        position: absolute;
+        left: 80px;
+        top: 222px;
+        width: 1760px;
+        height: 164px;
+        background: #181715;
+        border: 1px solid rgba(250, 249, 245, 0.14);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      [id="06-verwijderen-codebar"] {
+        height: 44px;
+        background: #252320;
+        border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        letter-spacing: 0.02em;
+        color: rgba(250, 249, 245, 0.55);
+      }
+      [id="06-verwijderen-gutter"] {
+        position: absolute;
+        left: 0;
+        top: 44px;
+        width: 84px;
+        height: 120px;
+        padding-right: 22px;
+        text-align: right;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 36px;
+        line-height: 120px;
+        color: rgba(250, 249, 245, 0.3);
+      }
+      [id="06-verwijderen-line"] {
+        position: absolute;
+        left: 112px;
+        top: 44px;
+        height: 120px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 36px;
+        line-height: 120px;
+        white-space: pre;
+        font-variant-ligatures: none;
+        color: #faf9f5;
+      }
+      .vw06-ch {
+        display: inline-block;
+        white-space: pre;
+      }
+      .vw06-id { color: #faf9f5; }
+      .vw06-pu { color: rgba(250, 249, 245, 0.6); }
+      .vw06-fn { color: #5db8a6; }
+      [id="06-verwijderen-caret"] {
+        position: absolute;
+        left: 0;
+        top: 40px;
+        width: 3px;
+        height: 40px;
+        background: #faf9f5;
+        border-radius: 1px;
+      }
+
+      /* ── array strips ───────────────────────────────────────── */
+      .vw06-ref {
+        position: absolute;
+        left: 340px;
+        width: 190px;
+        height: 112px;
+        line-height: 112px;
+        text-align: right;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 26px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: rgba(20, 20, 19, 0.62);
+        white-space: nowrap;
+      }
+      .vw06-ref b {
+        font-weight: 500;
+        color: #141413;
+      }
+      .vw06-tile {
+        position: absolute;
+        width: 112px;
+        height: 112px;
+        background: #efe9de;
+        border: 1px solid rgba(20, 20, 19, 0.12);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 44px;
+        font-weight: 500;
+        color: #141413;
+      }
+      .vw06-copy {
+        background: #ece3d4;
+        border-color: rgba(20, 20, 19, 0.2);
+      }
+      .vw06-reject-fill {
+        position: absolute;
+        inset: -1px;
+        border-radius: 8px;
+        background: #cc785c;
+        opacity: 0;
+      }
+      .vw06-tile .vw06-val {
+        position: relative;
+      }
+      .vw06-idx {
+        position: absolute;
+        width: 112px;
+        text-align: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        letter-spacing: 0.02em;
+        color: rgba(20, 20, 19, 0.5);
+      }
+
+      /* ── the filter gate ────────────────────────────────────── */
+      [id="06-verwijderen-gate"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 900px;
+        overflow: visible;
+      }
+      [id="06-verwijderen-gate"] path {
+        fill: none;
+        stroke: rgba(20, 20, 19, 0.45);
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      [id="06-verwijderen-gatelabel"] {
+        position: absolute;
+        left: 1404px;
+        top: 596px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 24px;
+        letter-spacing: 0.02em;
+        color: rgba(20, 20, 19, 0.55);
+        white-space: nowrap;
+      }
+
+      /* ── i = 2 pointer ──────────────────────────────────────── */
+      [id="06-verwijderen-ilabel"] {
+        position: absolute;
+        left: 836px;
+        top: 618px;
+        width: 112px;
+        text-align: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 26px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: #141413;
+        white-space: nowrap;
+      }
+      [id="06-verwijderen-ilabel"] .vw06-stem {
+        display: block;
+        width: 1px;
+        height: 22px;
+        margin: 0 auto 6px;
+        background: rgba(20, 20, 19, 0.45);
+      }
+    </style>
+
+    <!-- background: flat cream field, full duration -->
+    <div data-hf-id="hf-rab8" id="06-verwijderen-ground" class="clip" data-start="0" data-duration="11.42" data-track-index="0"></div>
+
+    <div data-hf-id="hf-33oo" id="06-verwijderen-stage" class="clip" data-start="0" data-duration="11.42" data-track-index="1">
+      <div data-hf-id="hf-we7m" id="06-verwijderen-kicker"><span data-hf-id="hf-3552" class="vw06-spike">✱</span>Recept 2/3 · Verwijderen</div>
+      <div data-hf-id="hf-r9qb" id="06-verwijderen-title">Verwijderen</div>
+
+      <!-- foreground: code surface, typed on "filter" -->
+      <div data-hf-id="hf-orb5" id="06-verwijderen-code">
+        <div data-hf-id="hf-mn1c" id="06-verwijderen-codebar">App.jsx</div>
+        <div data-hf-id="hf-gqnm" id="06-verwijderen-gutter">1</div>
+        <div data-hf-id="hf-er8c" id="06-verwijderen-line"></div>
+      </div>
+
+      <!-- supporting: old strip ref #B (stays untouched) -->
+      <div data-hf-id="hf-wprd" class="vw06-ref" id="06-verwijderen-refB" style="top: 420px">ref <b data-hf-id="hf-7mq8">#B</b></div>
+      <div data-hf-id="hf-dt3e" id="06-verwijderen-stripB"></div>
+
+      <!-- supporting: the filter gate -->
+      <svg data-hf-id="hf-1pxw" id="06-verwijderen-gate" viewBox="0 0 1920 900" xmlns="http://www.w3.org/2000/svg">
+        <path data-hf-id="hf-a4ya" id="06-verwijderen-gatepath" d="M 544 598 L 544 612 L 1376 612 L 1376 598" />
+      </svg>
+      <div data-hf-id="hf-5rqv" id="06-verwijderen-gatelabel">index !== i</div>
+
+      <!-- foreground subject: copies passing the gate → new strip ref #C -->
+      <div data-hf-id="hf-3oct" class="vw06-ref" id="06-verwijderen-refC" style="top: 650px">ref <b data-hf-id="hf-78f7">#C</b></div>
+      <div data-hf-id="hf-1vc6" id="06-verwijderen-copies" data-layout-allow-overflow=""></div>
+      <div data-hf-id="hf-v2f6" id="06-verwijderen-idxC"></div>
+
+      <div data-hf-id="hf-u6sb" id="06-verwijderen-ilabel"><span data-hf-id="hf-o9pw" class="vw06-stem"></span>i = 2</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var FRAME = "06-verwijderen";
+        var DUR = 9.2;
+        var tl = gsap.timeline({ paused: true });
+        function $(id) {
+          return document.getElementById(FRAME + "-" + id);
+        }
+
+        // ── geometry (shared recipe-stage grid) ─────────────────
+        var TILE = 112;
+        var STEP = 136; // tile + 24px gap
+        var X0 = 564; // strip centred on 1920
+        var ROW_B = 420;
+        var ROW_C = 650;
+        var GATE_Y = 612;
+        var VALUES = [0, 1, 2, 3, 4, 5];
+        var REJECT = 2;
+        function colX(k) {
+          return X0 + k * STEP;
+        }
+
+        // ── build strip #B (old array) ──────────────────────────
+        var stripB = $("stripB");
+        var idxBEls = [];
+        VALUES.forEach(function (v, k) {
+          var t = document.createElement("div");
+          t.className = "vw06-tile";
+          t.style.left = colX(k) + "px";
+          t.style.top = ROW_B + "px";
+          t.innerHTML = '<span class="vw06-val">' + v + "</span>";
+          stripB.appendChild(t);
+          var ix = document.createElement("div");
+          ix.className = "vw06-idx";
+          ix.setAttribute("data-layout-allow-overflow", "");
+          ix.style.left = colX(k) + "px";
+          ix.style.top = ROW_B + TILE + 10 + "px";
+          ix.textContent = k;
+          stripB.appendChild(ix);
+          idxBEls.push(ix);
+        });
+
+        // ── build the copies that pass through the gate ─────────
+        var copiesWrap = $("copies");
+        var copies = VALUES.map(function (v, k) {
+          var t = document.createElement("div");
+          t.className = "vw06-tile vw06-copy";
+          t.setAttribute("data-layout-allow-overflow", "");
+          t.style.left = colX(k) + "px";
+          t.style.top = ROW_B + "px";
+          t.innerHTML =
+            (k === REJECT ? '<span class="vw06-reject-fill"></span>' : "") +
+            '<span class="vw06-val">' + v + "</span>";
+          copiesWrap.appendChild(t);
+          return t;
+        });
+
+        // ── new indices for strip #C (0..4) ─────────────────────
+        var idxCWrap = $("idxC");
+        var idxCEls = [];
+        for (var n = 0; n < VALUES.length - 1; n++) {
+          var ic = document.createElement("div");
+          ic.className = "vw06-idx";
+          ic.style.left = colX(n) + "px";
+          ic.style.top = ROW_C + TILE + 10 + "px";
+          ic.textContent = n;
+          idxCWrap.appendChild(ic);
+          idxCEls.push(ic);
+        }
+
+        // ── code line, per-character (code-typing mechanics) ────
+        var CODE = [
+          ["setNumbers", "fn"],
+          ["(", "pu"],
+          ["prev", "id"],
+          [" => ", "pu"],
+          ["prev", "id"],
+          [".", "pu"],
+          ["filter", "fn"],
+          ["((", "pu"],
+          ["number", "id"],
+          [", ", "pu"],
+          ["index", "id"],
+          [") => ", "pu"],
+          ["index", "id"],
+          [" !== ", "pu"],
+          ["i", "id"],
+          [")", "pu"],
+          [");", "pu"],
+        ];
+        var lineEl = $("line");
+        var chars = [];
+        CODE.forEach(function (tok) {
+          for (var c = 0; c < tok[0].length; c++) {
+            var s = document.createElement("span");
+            s.className = "vw06-ch vw06-" + tok[1];
+            s.textContent = tok[0][c];
+            lineEl.appendChild(s);
+            chars.push({ el: s, ws: tok[0][c] === " " });
+          }
+        });
+        var caret = document.createElement("div");
+        caret.id = FRAME + "-caret";
+        lineEl.appendChild(caret);
+        var CH = 36 * 0.6; // JetBrains Mono advance = 0.6em
+
+        // ───────────────────────────────────────────────────────
+        // Scene 1 (0.0–1.5s): kicker + title on "Verwijderen"; strip #B already resting.
+        tl.fromTo(
+          $("kicker"),
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+          0.05,
+        );
+        tl.fromTo(
+          $("title"),
+          { opacity: 0, y: 22, filter: "blur(6px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.7, ease: "power3.out" },
+          0.12,
+        );
+        // empty code surface settles in under the title on "gebruik"
+        tl.fromTo(
+          $("code"),
+          { opacity: 0, y: 14 },
+          { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+          0.95,
+        );
+
+        // Scene 2 (1.5–3.0s): code types on "filter" (1.52s) — per-char reveal + gliding caret.
+        var PER = 0.02;
+        var T0 = 1.55;
+        tl.set(caret, { x: 0, opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1 }, 1.3);
+        chars.forEach(function (c, i) {
+          var at = T0 + i * PER;
+          tl.fromTo(
+            c.el,
+            { opacity: 0 },
+            { opacity: 1, duration: c.ws ? 0.01 : 0.12, ease: "power1.out", immediateRender: true },
+            at,
+          );
+          tl.to(caret, { x: (i + 1) * CH, duration: PER, ease: "none" }, at);
+        });
+        var typedEnd = T0 + chars.length * PER;
+        // caret steps off after typing (blink-free, deterministic)
+        tl.to(caret, { opacity: 0, duration: 0.2, ease: "power1.out" }, typedEnd + 0.5);
+
+        // Scene 3 (3.0–5.3s): on "elk" (3.0s) the gate draws (svg-path-draw), tiles start passing.
+        var gate = $("gatepath");
+        var len = 0;
+        try {
+          len = gate.getTotalLength();
+        } catch (e) {}
+        if (!len) len = 14 + 832 + 14;
+        len = len * 1.02;
+        tl.fromTo(
+          gate,
+          { strokeDasharray: len, strokeDashoffset: len },
+          { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" },
+          3.0,
+        );
+        tl.fromTo(
+          $("gatelabel"),
+          { opacity: 0, x: -8 },
+          { opacity: 1, x: 0, duration: 0.45, ease: "power1.out" },
+          3.55,
+        );
+
+        // copies sit hidden on top of their originals until they peel off and drop
+        copies.forEach(function (c) {
+          tl.set(c, { opacity: 0, x: 0, y: 0 }, 0);
+        });
+        var DROP = ROW_C - ROW_B; // 230
+        function pass(k, at) {
+          tl.set(copies[k], { opacity: 1 }, at);
+          tl.fromTo(
+            copies[k],
+            { y: 0 },
+            { y: DROP, duration: 0.62, ease: "power3.inOut", immediateRender: false },
+            at,
+          );
+        }
+        // index labels under strip #B step back as the copies start dropping through them
+        tl.to(idxBEls, { opacity: 0, duration: 0.3, ease: "power1.out" }, 3.3);
+        pass(0, 3.55); // "element"
+        pass(1, 4.3); // "behalve"
+
+        // Scene 4 (5.3–6.5s): tile 2 hits the gate on "index i" and is rejected.
+        var rej = copies[REJECT];
+        var HIT = GATE_Y - TILE - 6 - ROW_B; // stops just above the gate line
+        tl.set(rej, { opacity: 1 }, 4.85);
+        tl.fromTo(
+          rej,
+          { y: 0 },
+          { y: HIT, duration: 0.5, ease: "power3.out", immediateRender: false },
+          4.85,
+        );
+        tl.fromTo(
+          rej.querySelector(".vw06-reject-fill"),
+          { opacity: 0 },
+          { opacity: 1, duration: 0.25, ease: "power1.out", immediateRender: false },
+          5.34,
+        );
+        tl.to(rej, { color: "#faf9f5", duration: 0.25, ease: "power1.out" }, 5.34);
+        tl.fromTo(
+          $("ilabel"),
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" },
+          5.81,
+        );
+        // rejected: drops back and fades out (never crosses the gate)
+        tl.to(rej, { y: HIT + 8, scale: 0.88, opacity: 0, duration: 0.6, ease: "power2.in" }, 6.3);
+        tl.to($("ilabel"), { opacity: 0, duration: 0.45, ease: "power1.out" }, 6.6);
+
+        // the rest keep passing
+        pass(3, 6.2);
+        pass(4, 6.5);
+        pass(5, 6.8);
+
+        // Scene 5 (6.5–9.2s): on "nieuwe array" (7.65s) survivors close the gap → strip ref #C.
+        var SETTLE = 7.65;
+        [3, 4, 5].forEach(function (k, j) {
+          tl.to(copies[k], { x: -STEP, duration: 0.7, ease: "power3.out" }, SETTLE + j * 0.06);
+        });
+        tl.fromTo(
+          $("refC"),
+          { opacity: 0, x: -14 },
+          { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" },
+          SETTLE + 0.1,
+        );
+        idxCEls.forEach(function (el, j) {
+          tl.fromTo(
+            el,
+            { opacity: 0, y: -6 },
+            { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" },
+            SETTLE + 0.3 + j * 0.06,
+          );
+        });
+
+        // hold still to the end of the frame
+        tl.to({}, { duration: DUR }, 0);
+
+        window.__timelines = window.__timelines || {};
+        // voice take: 9.2s → 9.84s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.89, 1.32], [1.52, 1.78], [2.28, 3.04], [2.56, 3.14], [3, 3.42], [3.21, 3.66], [3.88, 4.16], [4.54, 4.6], [4.82, 4.84], [5.1, 5.42], [5.32, 5.78], [5.81, 6.28], [5.94, 6.96], [6.54, 7.16], [6.93, 8.14], [7.42, 8.6], [7.65, 8.82], [8.08, 9.14], [8.46, 9.48], [9.2, 9.84]]);
+        window.__timelines[FRAME] = tl;
+      })();
+    </script>
+  </div>
+</template>

@@ -1,0 +1,366 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f03-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f03-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f03-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f03-kicker .f03-spike { color: #CC785C; margin-right: 14px; }
+
+    /* cycle diagram */
+    .f03-arcs {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .f03-node {
+      position: absolute;
+      height: 96px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .f03-node-title {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      letter-spacing: 0.02em;
+      color: #141413;
+      line-height: 34px;
+      white-space: nowrap;
+    }
+    .f03-node-sub {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(20, 20, 19, 0.55);
+      line-height: 22px;
+      white-space: nowrap;
+    }
+    .f03-node1 { left: 275px; top: 242px; width: 230px; }
+    .f03-node2 { left: 467px; top: 557px; width: 210px; }
+    .f03-node3 { left: 83px; top: 557px; width: 250px; }
+    .f03-node3 .f03-node-title { color: #141413; }
+    .f03-rtag {
+      display: inline-block;
+      padding: 0 10px;
+      border: 1px solid rgba(20, 20, 19, 0.28);
+      border-radius: 6px;
+      background: #ECE3D4;
+      color: #141413;
+    }
+    .f03-center {
+      position: absolute;
+      left: 240px;
+      top: 470px;
+      width: 300px;
+      text-align: center;
+      font-family: "EB Garamond", serif;
+      font-style: italic;
+      font-size: 48px;
+      line-height: 56px;
+      letter-spacing: -0.012em;
+      color: #141413;
+    }
+
+    /* mini code strip */
+    .f03-panel {
+      position: absolute;
+      left: 700px;
+      top: 300px;
+      width: 520px;
+      height: 388px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f03-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 46px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f03-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 64px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      line-height: 38px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f03-scan {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 0;
+      height: 38px;
+      border-radius: 4px;
+      background: rgba(232, 165, 90, 0.2);
+      transform-origin: 50% 0%;
+    }
+    .f03-row {
+      position: relative;
+      height: 38px;
+      padding-left: 22px;
+      white-space: pre;
+    }
+    .f03-ul {
+      position: absolute;
+      left: 22px;
+      top: 33px;
+      height: 2px;
+      background: #CC785C;
+      transform-origin: left center;
+    }
+    .f03-kw { color: #CC785C; }
+    .f03-fn { color: #E8A55A; }
+    .f03-num { color: #E8A55A; }
+    .f03-dim { color: rgba(250, 249, 245, 0.6); }
+
+    /* right column — timers list */
+    .f03-col {
+      position: absolute;
+      left: 1236px;
+      top: 480px;
+      width: 604px;
+    }
+    .f03-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f03-divider {
+      position: absolute;
+      left: 0;
+      top: 48px;
+      width: 604px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.2);
+    }
+    .f03-chip {
+      position: absolute;
+      left: 0;
+      width: 604px;
+      height: 72px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding: 0 26px;
+      gap: 20px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.02em;
+      color: #141413;
+    }
+    .f03-chip1 { top: 72px; }
+    .f03-chip2 { top: 160px; border: 1px solid #CC785C; background: #FAF9F5; }
+    .f03-dotwrap { position: relative; width: 14px; height: 14px; flex: none; }
+    .f03-dot {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      background: rgba(20, 20, 19, 0.75);
+    }
+    .f03-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      border: 1px solid rgba(20, 20, 19, 0.5);
+      opacity: 0;
+    }
+    .f03-chip2 .f03-dot { background: #CC785C; }
+    .f03-chip2 .f03-ring { border-color: #CC785C; }
+    .f03-ms { color: rgba(20, 20, 19, 0.55); }
+  </style>
+
+  <div data-hf-id="hf-f03r" id="root" data-composition-id="03-render-lus" data-width="1920" data-height="1080" data-duration="14.9">
+    <div data-hf-id="hf-f03b" class="f03-bg clip" id="f03-bg" data-start="0" data-duration="14.9" data-track-index="0"></div>
+
+    <div data-hf-id="hf-f03s" class="f03-stage clip" id="f03-stage" data-start="0" data-duration="14.9" data-track-index="1">
+      <div data-hf-id="hf-f03k" class="f03-kicker" id="f03-kicker"><span data-hf-id="hf-f03p" class="f03-spike">✱</span>Wat gebeurt er?</div>
+
+      <!-- cycle arcs (svg path draw) -->
+      <svg data-hf-id="hf-f03a" class="f03-arcs" viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true">
+        <g data-hf-id="hf-f03g" fill="none" stroke="rgba(20,20,19,0.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path data-hf-id="hf-f3a1" id="f03-arc1" d="M533.4 295.2 A250 250 0 0 1 636.2 543.4" />
+          <path data-hf-id="hf-f3h1" id="f03-head1" d="M629.8 528.1 L636.2 543.4 L647.5 531.2" />
+          <path data-hf-id="hf-f3a2" id="f03-arc2" d="M495.7 726.6 A250 250 0 0 1 284.3 726.6" />
+          <path data-hf-id="hf-f3h2" id="f03-head2" d="M300.8 724.3 L284.3 726.6 L293.2 740.7" />
+          <path data-hf-id="hf-f3a3" id="f03-arc3" d="M143.8 543.4 A250 250 0 0 1 246.6 295.2" />
+          <path data-hf-id="hf-f3h3" id="f03-head3" d="M240.3 310.6 L246.6 295.2 L230.0 295.9" />
+        </g>
+      </svg>
+
+      <div data-hf-id="hf-f03n1" class="f03-node f03-node1" id="f03-node1">
+        <div data-hf-id="hf-f3n1t" class="f03-node-title">state-update</div>
+        <div data-hf-id="hf-f3n1s" class="f03-node-sub" id="f03-sub1">setNumber(…)</div>
+      </div>
+      <div data-hf-id="hf-f03n2" class="f03-node f03-node2" id="f03-node2">
+        <div data-hf-id="hf-f3n2t" class="f03-node-title">render</div>
+        <div data-hf-id="hf-f3n2s" class="f03-node-sub"><span data-hf-id="hf-f3rt" class="f03-rtag" id="f03-rtag">render #2</span></div>
+      </div>
+      <div data-hf-id="hf-f03n3" class="f03-node f03-node3" id="f03-node3">
+        <div data-hf-id="hf-f3n3t" class="f03-node-title">setInterval()</div>
+        <div data-hf-id="hf-f3n3s" class="f03-node-sub">opnieuw</div>
+      </div>
+      <div data-hf-id="hf-f03c" class="f03-center" id="f03-center">elke render</div>
+
+      <!-- mini code strip: the component body -->
+      <div data-hf-id="hf-f03cp" class="f03-panel" id="f03-panel">
+        <div data-hf-id="hf-f03tb" class="f03-titlebar">Timer.jsx</div>
+        <div data-hf-id="hf-f03cd" class="f03-code">
+          <div data-hf-id="hf-f03sc" class="f03-scan" id="f03-scan"></div>
+          <div data-hf-id="hf-f3l1" class="f03-row"><span data-hf-id="hf-f3l1a" class="f03-kw">const</span> Timer = () =&gt; {</div>
+          <div data-hf-id="hf-f3l2" class="f03-row">  <span data-hf-id="hf-f3l2a" class="f03-kw">const</span> [number, setNumber] = <span data-hf-id="hf-f3l2b" class="f03-fn">useState</span>(<span data-hf-id="hf-f3l2c" class="f03-num">0</span>);</div>
+          <div data-hf-id="hf-f3l3" class="f03-row"> </div>
+          <div data-hf-id="hf-f3l4" class="f03-row">  <span data-hf-id="hf-f3l4a" class="f03-fn">setInterval</span>(() =&gt; {<span data-hf-id="hf-f3u1" class="f03-ul f03-u" style="left:45px;width:217px"></span></div>
+          <div data-hf-id="hf-f3l5" class="f03-row">    setNumber(number =&gt; number + <span data-hf-id="hf-f3l5a" class="f03-num">1</span>);<span data-hf-id="hf-f3u2" class="f03-ul f03-u" style="left:68px;width:365px"></span></div>
+          <div data-hf-id="hf-f3l6" class="f03-row">  }, <span data-hf-id="hf-f3l6a" class="f03-num">1000</span>);<span data-hf-id="hf-f3u3" class="f03-ul f03-u" style="left:45px;width:103px"></span></div>
+          <div data-hf-id="hf-f3l7" class="f03-row">  <span data-hf-id="hf-f3l7a" class="f03-kw">return</span> <span data-hf-id="hf-f3l7b" class="f03-dim">&lt;p&gt;</span>{number}<span data-hf-id="hf-f3l7c" class="f03-dim">&lt;/p&gt;</span>;</div>
+          <div data-hf-id="hf-f3l8" class="f03-row">}</div>
+        </div>
+      </div>
+
+      <!-- right column: timers list (continuity with frame 2) -->
+      <div data-hf-id="hf-f03col" class="f03-col" id="f03-col">
+        <div data-hf-id="hf-f03lb" class="f03-label">timers</div>
+        <div data-hf-id="hf-f03dv" class="f03-divider"></div>
+        <div data-hf-id="hf-f03t1" class="f03-chip f03-chip1" id="f03-chip1">
+          <span data-hf-id="hf-f3d1w" class="f03-dotwrap"><span data-hf-id="hf-f3d1r" class="f03-ring" id="f03-ring1"></span><span data-hf-id="hf-f3d1" class="f03-dot" id="f03-dot1"></span></span>
+          <span data-hf-id="hf-f3t1l">timer #1 <span data-hf-id="hf-f3t1m" class="f03-ms">· 1000ms</span></span>
+        </div>
+        <div data-hf-id="hf-f03t2" class="f03-chip f03-chip2" id="f03-chip2">
+          <span data-hf-id="hf-f3d2w" class="f03-dotwrap"><span data-hf-id="hf-f3d2r" class="f03-ring" id="f03-ring2"></span><span data-hf-id="hf-f3d2" class="f03-dot" id="f03-dot2"></span></span>
+          <span data-hf-id="hf-f3t2l">timer #2 <span data-hf-id="hf-f3t2m" class="f03-ms">· 1000ms</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.9;
+      var LINE_H = 38;
+      var root = document.querySelector('[data-composition-id="03-render-lus"]');
+      var q = function (s) { return root.querySelector(s); };
+      var qa = function (s) { return root.querySelectorAll(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function arcLen(el, fallback) {
+        var len = fallback;
+        try { len = Math.ceil(el.getTotalLength()) || fallback; } catch (e) {}
+        return len;
+      }
+      function drawArc(arcSel, headSel, at, dur) {
+        var arc = q(arcSel);
+        var head = q(headSel);
+        var len = arcLen(arc, 300);
+        tl.fromTo(arc, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: dur, ease: "power2.inOut" }, at);
+        tl.fromTo(head, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, at + dur - 0.08);
+      }
+      function settle(sel, at) {
+        tl.fromTo(sel, { opacity: 0, y: 16, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "power3.out" }, at);
+      }
+      function pulse(ringSel, dotSel, at) {
+        tl.fromTo(ringSel, { opacity: 0.9, scale: 1 }, { opacity: 0, scale: 2.6, duration: 0.7, ease: "power2.out", immediateRender: false }, at);
+        tl.fromTo(dotSel, { scale: 1.35 }, { scale: 1, duration: 0.4, ease: "power2.out", immediateRender: false }, at);
+      }
+
+      // ---- Scene 1 (0.0–2.3): kicker; timers list already holds timer #1; node 1 on "state-update" ----
+      tl.fromTo("#f03-kicker", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo("#f03-col", { opacity: 1 }, { opacity: 1, duration: 0.01 }, 0);
+      // timer #1 ticks every 1000ms for the whole shot (unrolled, deterministic)
+      for (var k = 0; k < 15; k++) {
+        if (k + 0.3 < DUR - 0.5) pulse("#f03-ring1", "#f03-dot1", k + 0.3);
+      }
+      settle("#f03-node1", 0.46);
+
+      // ---- Scene 2 (2.3–5.2): arrow 1 → render; "render #2" tag pulses on "opnieuw" ----
+      drawArc("#f03-arc1", "#f03-head1", 2.44, 0.6);
+      settle("#f03-node2", 2.9);
+      tl.fromTo("#f03-rtag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power3.out" }, 4.18);
+      tl.fromTo("#f03-rtag", { scale: 1 }, { scale: 1.12, duration: 0.2, ease: "power2.out", immediateRender: false }, 4.55);
+      tl.to("#f03-rtag", { scale: 1, duration: 0.35, ease: "power2.inOut" }, 4.75);
+
+      // ---- Scene 3 (5.2–9.2): code strip appears; amber scan runs the body line by line ----
+      tl.fromTo("#f03-panel", { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 5.66);
+      var rows = qa(".f03-row");
+      tl.fromTo("#f03-scan", { opacity: 0, y: 0, scaleY: 1 }, { opacity: 1, duration: 0.12, ease: "power1.out" }, 6.9);
+      for (var i = 1; i < rows.length; i++) {
+        tl.set("#f03-scan", { y: i * LINE_H }, 6.9 + i * 0.22);
+      }
+      // scan rests dimly on the closing brace after the pass
+      tl.to("#f03-scan", { opacity: 0.45, duration: 0.3, ease: "power1.out" }, 6.9 + rows.length * 0.22);
+
+      // ---- Scene 4 (9.2–11.5): scan stops on setInterval; coral underline; node 3; loop closes ----
+      tl.to("#f03-scan", { y: 3 * LINE_H, scaleY: 3, opacity: 1, duration: 0.4, ease: "power3.inOut" }, 9.52);
+      tl.fromTo(qa(".f03-u"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power2.out", stagger: 0.1 }, 9.62);
+      drawArc("#f03-arc2", "#f03-head2", 9.7, 0.55);
+      settle("#f03-node3", 10.1);
+      drawArc("#f03-arc3", "#f03-head3", 10.5, 0.6);
+      tl.fromTo("#f03-center", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 11.0);
+
+      // ---- Scene 5 (11.5–14.4): coral timer #2 drops in on "tweede timer"; one dot pulse ----
+      tl.fromTo("#f03-chip2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 12.3);
+      pulse("#f03-ring2", "#f03-dot2", 13.1);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["03-render-lus"] = tl;
+    })();
+  </script>
+</template>

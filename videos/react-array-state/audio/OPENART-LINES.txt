@@ -1,0 +1,30 @@
+vo-01.mp3
+Je typt een getal. Je klikt op Add. En… er gebeurt niets.
+
+vo-02.mp3
+De code ziet er logisch uit: numbers punt push. De array verandert wél — maar het scherm niet. Ook set numbers erachter roepen helpt niet.
+
+vo-03.mp3
+React kijkt niet in je array. Het vergelijkt enkel: is dit dezelfde array als daarnet? Na een push is het nog altijd hetzelfde object. Dus denkt React: niets veranderd.
+
+vo-04.mp3
+Daarom één regel: state is readonly. Je maakt altijd een nieuwe array, en die geef je aan de setter.
+
+vo-05.mp3
+Toevoegen doe je met de spread syntax. Drie puntjes kopiëren alle oude elementen in een nieuwe array — en daarachter zet je het nieuwe getal.
+
+vo-06.mp3
+Verwijderen? Gebruik filter. Je houdt elk element, behalve dat ene op index i. En filter geeft altijd een nieuwe array terug.
+
+vo-07.mp3
+Wijzigen doe je met map. Elk element gaat mee naar een nieuwe array. Alleen op index i zet je de nieuwe waarde.
+
+vo-08.mp3
+Viel het je op? In elk recept geven we de setter een functie. Met prev werk je altijd op de nieuwste versie van je state — ook als er snel na elkaar meerdere updates gebeuren.
+
+vo-09.mp3
+In de eenvoudige voorbeelden gebruiken we key is index — en dat werkt. Maar zodra je items verwijdert, schuiven de indexen op, en kan React rijen door elkaar halen. Geef dan elk item een vaste id als key.
+
+vo-10.mp3
+Kort samengevat: toevoegen met spread, verwijderen met filter, wijzigen met map. Altijd een nieuwe array — en React doet de rest.
+

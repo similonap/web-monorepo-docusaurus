@@ -1,0 +1,575 @@
+<template>
+  <div data-hf-id="hf-yy7f" id="root" data-composition-id="07-wijzigen" data-start="0" data-duration="10.26" data-width="1920" data-height="1080">
+    <style>
+      @font-face {
+        font-family: "EB Garamond";
+        src: url("assets/fonts/EBGaramond-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/Inter-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        font-family: "Inter", sans-serif;
+        color: #141413;
+      }
+      [id="07-wijzigen-ground"] {
+        position: absolute;
+        inset: 0;
+        background: #faf9f5;
+      }
+
+      /* ---- kicker + title ---- */
+      [id="07-wijzigen-kicker"] {
+        position: absolute;
+        left: 80px;
+        top: 60px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 28px;
+        font-weight: 400;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #141413;
+        white-space: nowrap;
+      }
+      [class~="07-wijzigen-spike"] {
+        display: inline-block;
+        width: 26px;
+        height: 26px;
+        margin-right: 16px;
+        vertical-align: -3px;
+      }
+      [class~="07-wijzigen-spike"] line {
+        stroke: #cc785c;
+        stroke-width: 14;
+        stroke-linecap: round;
+      }
+      [id="07-wijzigen-title"] {
+        position: absolute;
+        left: 76px;
+        top: 114px;
+        font-family: "EB Garamond", Georgia, serif;
+        font-size: 88px; /* headline 4.6cqw */
+        line-height: 1.06;
+        letter-spacing: -0.018em;
+        font-weight: 400;
+        white-space: nowrap;
+      }
+
+      /* ---- code surface ---- */
+      [id="07-wijzigen-panel"] {
+        position: absolute;
+        left: 80px;
+        top: 236px;
+        width: 1760px;
+        height: 220px;
+        background: #181715;
+        border: 1px solid rgba(250, 249, 245, 0.14);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      [id="07-wijzigen-bar"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        height: 44px;
+        background: #252320;
+        border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        line-height: 44px;
+        padding-left: 28px;
+        color: rgba(250, 249, 245, 0.5);
+        letter-spacing: 0.02em;
+      }
+      [id="07-wijzigen-gutter"] {
+        position: absolute;
+        left: 28px;
+        top: 72px;
+        width: 40px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 40px;
+        line-height: 60px;
+        color: rgba(250, 249, 245, 0.28);
+        text-align: right;
+      }
+      [id="07-wijzigen-code"] {
+        position: absolute;
+        left: 112px;
+        top: 72px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 40px;
+        line-height: 60px;
+        font-variant-ligatures: none;
+        white-space: normal;
+        color: #faf9f5;
+      }
+      [class~="07-wijzigen-line"] {
+        display: block;
+        height: 60px;
+        white-space: pre;
+        position: relative;
+        z-index: 1;
+      }
+      [class~="07-wijzigen-ch"] {
+        display: inline-block;
+        width: 24px; /* JetBrains Mono advance = 0.6em */
+        white-space: pre;
+      }
+      [class~="07-wijzigen-p"] {
+        color: rgba(250, 249, 245, 0.55);
+      }
+      [id="07-wijzigen-caret"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 3px;
+        height: 44px;
+        margin-top: 8px;
+        background: #faf9f5;
+        z-index: 3;
+      }
+      [id="07-wijzigen-hl"] {
+        position: absolute;
+        left: 40px; /* col 2 */
+        top: 64px; /* row 2 */
+        width: 280px; /* "index === i" = 11ch + pad */
+        height: 52px;
+        background: rgba(250, 249, 245, 0.12);
+        border-radius: 6px;
+        z-index: 0;
+        transform-origin: left center;
+      }
+
+      /* ---- array strips ---- */
+      [class~="07-wijzigen-tag"] {
+        position: absolute;
+        left: 511px;
+        width: 170px;
+        height: 52px;
+        border: 1px solid rgba(20, 20, 19, 0.2);
+        border-radius: 6px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 26px;
+        line-height: 50px;
+        letter-spacing: 0.02em;
+        text-align: center;
+        color: rgba(20, 20, 19, 0.78);
+        background: #faf9f5;
+        white-space: nowrap;
+      }
+      [class~="07-wijzigen-letter"] {
+        position: relative;
+        display: inline-block;
+        width: 16px;
+        height: 50px;
+        vertical-align: top;
+      }
+      [class~="07-wijzigen-letter"] span {
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+      [class~="07-wijzigen-tile"] {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        background: #efe9de;
+        border: 1px solid rgba(20, 20, 19, 0.12);
+        border-radius: 8px;
+        box-shadow:
+          0 1px 3px rgba(20, 20, 19, 0.08),
+          0 4px 16px rgba(20, 20, 19, 0.04);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 52px;
+        line-height: 118px;
+        text-align: center;
+        color: #141413;
+      }
+      [class~="07-wijzigen-idx"] {
+        position: absolute;
+        width: 120px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        line-height: 24px;
+        text-align: center;
+        color: rgba(20, 20, 19, 0.5);
+        white-space: nowrap;
+      }
+      [id="07-wijzigen-dslot"] {
+        position: absolute;
+        left: 701px;
+        top: 688px;
+        width: 720px;
+        height: 144px;
+        border: 1px dashed rgba(20, 20, 19, 0.28);
+        border-radius: 12px;
+      }
+      [id="07-wijzigen-maplbl"] {
+        position: absolute;
+        left: 511px;
+        top: 628px;
+        width: 170px;
+        text-align: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 24px;
+        line-height: 32px;
+        color: rgba(20, 20, 19, 0.55);
+        white-space: nowrap;
+      }
+
+      /* ---- swapped tile (hacker-flip-3d) ---- */
+      [id="07-wijzigen-swap"] {
+        perspective: 500px;
+      }
+      [id="07-wijzigen-coral"] {
+        position: absolute;
+        inset: -1px;
+        border-radius: 8px;
+        background: #cc785c;
+      }
+      [id="07-wijzigen-old"] {
+        position: absolute;
+        inset: 0;
+      }
+      [id="07-wijzigen-flip"] {
+        position: absolute;
+        inset: 0;
+        color: #141413;
+      }
+      [class~="07-wijzigen-fc"] {
+        display: inline-block;
+        width: 31.2px; /* 0.6em at 52px — mono holds width while glyphs flicker */
+        transform-origin: bottom;
+        transform-style: preserve-3d;
+      }
+      [id="07-wijzigen-ilbl"] {
+        position: absolute;
+        width: 120px;
+        text-align: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        line-height: 24px;
+        color: #141413;
+        white-space: nowrap;
+      }
+    </style>
+
+    <div data-hf-id="hf-dp52" id="07-wijzigen-ground" class="clip" data-start="0" data-duration="10.26" data-track-index="0"></div>
+
+    <div data-hf-id="hf-rzru" id="07-wijzigen-kicker"><svg data-hf-id="hf-ty82" class="07-wijzigen-spike" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line data-hf-id="hf-6g1y" x1="50" y1="10" x2="50" y2="90" /><line data-hf-id="hf-nn7i" x1="15.4" y1="30" x2="84.6" y2="70" /><line data-hf-id="hf-her2" x1="15.4" y1="70" x2="84.6" y2="30" /></svg>Recept 3/3 · Wijzigen</div>
+    <div data-hf-id="hf-j7sg" id="07-wijzigen-title">Wijzigen</div>
+
+    <div data-hf-id="hf-eoiv" id="07-wijzigen-panel">
+      <div data-hf-id="hf-n9jp" id="07-wijzigen-bar">map · wijzigen.js</div>
+      <div data-hf-id="hf-p35p" id="07-wijzigen-gutter">1<br data-hf-id="hf-x5px">2</div>
+      <div data-hf-id="hf-fgr0" id="07-wijzigen-code">
+        <div data-hf-id="hf-fbnv" id="07-wijzigen-hl"></div>
+        <div data-hf-id="hf-6sps" id="07-wijzigen-caret"></div>
+      </div>
+    </div>
+
+    <!-- strip ref #C (old) -->
+    <div data-hf-id="hf-0xl8" class="07-wijzigen-tag" id="07-wijzigen-tagC" style="top: 524px">ref #C</div>
+    <div data-hf-id="hf-6k9e" id="07-wijzigen-stripC"></div>
+
+    <!-- strip ref #D (new) -->
+    <div data-hf-id="hf-18fh" id="07-wijzigen-dslot"></div>
+    <div data-hf-id="hf-yic6" id="07-wijzigen-maplbl">↓ map</div>
+    <div data-hf-id="hf-qm33" class="07-wijzigen-tag" id="07-wijzigen-tagD" style="top: 734px">
+      ref #<span data-hf-id="hf-9rof" class="07-wijzigen-letter"><span data-hf-id="hf-8nxx" id="07-wijzigen-q" style="color: rgba(20, 20, 19, 0.3)">?</span><span data-hf-id="hf-4wig" id="07-wijzigen-D">D</span></span>
+    </div>
+    <div data-hf-id="hf-nsjp" id="07-wijzigen-stripD"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var ID = "07-wijzigen";
+        var P = ID + "-";
+        var R = document.querySelector('[data-composition-id="' + ID + '"]');
+        function $(id) {
+          return R.querySelector('[id="' + P + id + '"]');
+        }
+        function el(tag, cls, text) {
+          var e = document.createElement(tag);
+          if (cls) e.className = cls;
+          if (text != null) e.textContent = text;
+          return e;
+        }
+
+        var tl = gsap.timeline({ paused: true });
+
+        // ---------------- layout constants ----------------
+        var VALUES = [0, 1, 3, 4, 5];
+        var X0 = 713; // first tile left
+        var STEP = 144; // 120 tile + 24 gap
+        var C_TOP = 490;
+        var D_TOP = 700;
+        var DROP = D_TOP - C_TOP; // 210
+        var SWAP_I = 1;
+
+        // ---------------- build strip C ----------------
+        var stripC = $("stripC");
+        var cTiles = [];
+        var cIdx = [];
+        VALUES.forEach(function (v, i) {
+          var t = el("div", P + "tile", String(v));
+          t.style.left = X0 + i * STEP + "px";
+          t.style.top = C_TOP + "px";
+          stripC.appendChild(t);
+          cTiles.push(t);
+          var ix = el("div", P + "idx", String(i));
+          ix.style.left = X0 + i * STEP + "px";
+          ix.style.top = C_TOP + 130 + "px";
+          stripC.appendChild(ix);
+          cIdx.push(ix);
+        });
+
+        // ---------------- build strip D (copies) ----------------
+        var stripD = $("stripD");
+        var dTiles = [];
+        var dIdx = [];
+        VALUES.forEach(function (v, i) {
+          var t = el("div", P + "tile", i === SWAP_I ? null : String(v));
+          t.style.left = X0 + i * STEP + "px";
+          t.style.top = D_TOP + "px";
+          if (i === SWAP_I) {
+            t.id = P + "swap";
+            var coral = el("div");
+            coral.id = P + "coral";
+            t.appendChild(coral);
+            var old = el("div", null, String(v));
+            old.id = P + "old";
+            t.appendChild(old);
+            var flip = el("div");
+            flip.id = P + "flip";
+            t.appendChild(flip);
+          }
+          stripD.appendChild(t);
+          dTiles.push(t);
+          var ix = el("div", P + "idx", String(i));
+          ix.style.left = X0 + i * STEP + "px";
+          ix.style.top = D_TOP + 130 + "px";
+          stripD.appendChild(ix);
+          dIdx.push(ix);
+        });
+        // "i = 1" label that replaces index 1 under the swapped tile
+        var ilbl = el("div", null, "i = 1");
+        ilbl.id = P + "ilbl";
+        ilbl.style.left = X0 + SWAP_I * STEP + "px";
+        ilbl.style.top = D_TOP + 130 + "px";
+        stripD.appendChild(ilbl);
+
+        // ---------------- build code (per-char, code-typing mechanics) ----------------
+        var LINES = [
+          [
+            ["setNumbers", ""],
+            ["(", "p"],
+            ["prev", ""],
+            [" => ", "p"],
+            ["prev", ""],
+            [".", "p"],
+            ["map", ""],
+            ["((", "p"],
+            ["oldNumber", ""],
+            [", ", "p"],
+            ["index", ""],
+            [") ", "p"],
+            ["=>", "p"],
+          ],
+          [
+            ["  ", ""],
+            ["index", ""],
+            [" === ", "p"],
+            ["i", ""],
+            [" ? ", "p"],
+            ["newNumber", ""],
+            [" : ", "p"],
+            ["oldNumber", ""],
+            [")", "p"],
+            [");", "p"],
+          ],
+        ];
+        var code = $("code");
+        var caret = $("caret");
+        var CW = 24; // char advance
+        var LH = 60;
+        var lineChars = [];
+        LINES.forEach(function (toks, row) {
+          var line = el("div", P + "line");
+          var chars = [];
+          toks.forEach(function (tk) {
+            for (var c = 0; c < tk[0].length; c++) {
+              var s = el("span", P + "ch" + (tk[1] ? " " + P + tk[1] : ""), tk[0][c]);
+              line.appendChild(s);
+              chars.push({ el: s, ws: tk[0][c] === " " });
+            }
+          });
+          code.insertBefore(line, caret);
+          lineChars.push(chars);
+        });
+
+        // =================== TIMELINE ===================
+
+        // ---- Scene 1 (0.0–1.4): kicker + title + strip ref #C ----
+        tl.fromTo($("kicker"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+        tl.fromTo($("title"), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.08);
+        tl.fromTo($("tagC"), { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 0.12);
+        cTiles.forEach(function (t, i) {
+          tl.fromTo(t, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.14 + i * 0.05);
+          tl.fromTo(cIdx[i], { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 0.24 + i * 0.05);
+        });
+        // empty code surface settles in, waiting for "map"
+        tl.fromTo($("panel"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.3);
+
+        // ---- Scene 2 (1.4–2.0+): code types on "map." ----
+        var PER = 0.018;
+        var lineStarts = [1.3, 2.22];
+        tl.set(caret, { x: 0, y: 0, opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1 }, 1.0);
+        tl.set(caret, { opacity: 0 }, 1.14);
+        tl.set(caret, { opacity: 1 }, 1.28);
+        lineChars.forEach(function (chars, row) {
+          chars.forEach(function (c, i) {
+            var at = lineStarts[row] + i * PER;
+            tl.fromTo(c.el, { opacity: 0 }, { opacity: 1, duration: c.ws ? 0.01 : 0.1, ease: "power1.out" }, at);
+            tl.set(caret, { x: (i + 1) * CW, y: row * LH }, at);
+          });
+          if (row === 0) tl.set(caret, { x: 0, y: LH }, lineStarts[1] - 0.02);
+        });
+        tl.set(caret, { opacity: 0 }, 3.05);
+
+        // ---- Scene 3 (2.0–5.0): every tile copies straight down into a new strip ----
+        tl.fromTo($("dslot"), { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 2.0);
+        tl.fromTo($("maplbl"), { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 2.03);
+        tl.fromTo($("tagD"), { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 2.06);
+        tl.set($("D"), { opacity: 0 }, 0);
+        dTiles.forEach(function (t, i) {
+          var at = 2.12 + i * 0.3;
+          // copy peels off the original and settles one band lower
+          tl.fromTo(t, { y: -DROP }, { y: 0, duration: 0.72, ease: "power3.out" }, at);
+          tl.fromTo(t, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "none" }, at);
+          // the source tile acknowledges the pass
+          tl.fromTo(cTiles[i], { backgroundColor: "#efe9de" }, { backgroundColor: "#ece3d4", duration: 0.2, ease: "power1.out" }, at);
+          tl.to(cTiles[i], { backgroundColor: "#efe9de", duration: 0.5, ease: "power1.out" }, at + 0.25);
+          tl.fromTo(dIdx[i], { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, at + 0.4);
+        });
+        // "nieuwe array" (4.18): the tag resolves ref #D, the dashed slot becomes a real array
+        tl.to($("q"), { opacity: 0, duration: 0.18, ease: "power1.out" }, 4.16);
+        tl.fromTo($("D"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 4.18);
+        tl.fromTo($("tagD"), { borderColor: "rgba(20,20,19,0.2)", color: "rgba(20,20,19,0.78)" }, { borderColor: "rgba(20,20,19,0.45)", color: "rgba(20,20,19,1)", duration: 0.4, ease: "power1.out" }, 4.18);
+        tl.to($("dslot"), { opacity: 0, duration: 0.5, ease: "power1.out" }, 4.24);
+
+        // ---- Scene 4 (5.0–7.68): index i → flip to the new value ----
+        var swap = $("swap");
+        // "index" (5.55): the condition lights up in the code, index 1 becomes i = 1
+        tl.fromTo($("hl"), { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.45, ease: "power3.out" }, 5.55);
+        tl.to(dIdx[SWAP_I], { opacity: 0, duration: 0.2, ease: "power1.out" }, 5.6);
+        tl.fromTo(ilbl, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 5.66);
+        // "i" (5.98): that one tile steps forward
+        tl.to(swap, { y: -10, borderColor: "rgba(20,20,19,0.45)", duration: 0.45, ease: "power3.out" }, 5.98);
+
+        // hacker-flip-3d (number-only pool): 1 → 42, settling on "nieuwe waarde" (7.1)
+        var oldEl = $("old");
+        var flipEl = $("flip");
+        var TARGET = "42";
+        var GLYPHS = "0123456789";
+        var FLIP_START = 6.62;
+        var FLIP_DURATION = 0.6;
+        var CHAR_STAGGER = 0.05;
+        var REVEAL_THRESHOLD = 0.6;
+        function pseudoGlyph(seed) {
+          var h = ((seed * 9301 + 49297) % 233280) / 233280;
+          return GLYPHS[Math.floor(h * GLYPHS.length)];
+        }
+        var fcs = [];
+        for (var k = 0; k < TARGET.length; k++) {
+          var s = el("span", P + "fc", TARGET[k]);
+          s.dataset.target = TARGET[k];
+          s.style.opacity = "0";
+          s.style.transform = "rotateX(90deg)";
+          flipEl.appendChild(s);
+          fcs.push(s);
+        }
+        // the old value flaps away as the new glyphs start to fall in
+        tl.to(oldEl, { opacity: 0, duration: 0.14, ease: "power1.in" }, FLIP_START);
+        fcs.forEach(function (fc, i) {
+          var state = { p: 0 };
+          tl.fromTo(
+            state,
+            { p: 0 },
+            {
+              p: 1,
+              duration: FLIP_DURATION,
+              ease: "power3.out",
+              onUpdate: function () {
+                if (state.p < REVEAL_THRESHOLD) {
+                  // ~3 frames per glyph swap at 30fps
+                  fc.textContent = pseudoGlyph(i * 1000 + Math.floor(state.p * 6));
+                } else {
+                  fc.textContent = fc.dataset.target;
+                }
+                fc.style.transform = "rotateX(" + (90 - state.p * 90) + "deg)";
+                fc.style.opacity = String(Math.min(1, state.p * 2));
+              },
+            },
+            FLIP_START + i * CHAR_STAGGER,
+          );
+        });
+        // the one voltage: the swapped tile turns coral as "42" clicks in
+        tl.fromTo($("coral"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 6.98);
+        tl.fromTo(flipEl, { color: "#141413" }, { color: "#faf9f5", duration: 0.3, ease: "power1.out" }, 6.98);
+        tl.to(swap, { boxShadow: "0 1px 3px rgba(20,20,19,0.08), 0 4px 16px rgba(20,20,19,0.04)", borderColor: "rgba(204,120,92,1)", duration: 0.3, ease: "power1.out" }, 6.98);
+
+        // hold to the end of the shot
+        tl.to({}, { duration: 7.68 }, 0);
+
+        window.__timelines = window.__timelines || {};
+        // voice take: 7.68s → 8.64s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.09, 0.1], [0.69, 0.84], [0.95, 1.0], [1.12, 1.12], [1.38, 1.38], [2.03, 2.6], [2.16, 2.86], [2.7, 3.44], [3.04, 3.74], [3.23, 4.059], [3.56, 4.22], [4.18, 4.36], [4.22, 4.7], [4.97, 5.88], [5.38, 6.3], [5.55, 6.5], [5.98, 7.02], [6.05, 7.56], [6.28, 7.74], [6.35, 7.82], [7.11, 7.94], [7.68, 8.64]]);
+        window.__timelines[ID] = tl;
+      })();
+    </script>
+  </div>
+</template>

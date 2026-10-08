@@ -1,0 +1,487 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f09-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f09-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f09-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f09-kicker .f09-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f09-panel {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      width: 1060px;
+      height: 654px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f09-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f09-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f09-st {
+      position: absolute;
+      left: 28px;
+      top: 0;
+      line-height: 46px;
+      white-space: nowrap;
+    }
+    .f09-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 80px;
+      height: 504px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 36px;
+      line-height: 56px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f09-wash {
+      position: absolute;
+      left: 0;
+      top: 280px;
+      width: 1060px;
+      height: 168px;
+      background: rgba(204, 120, 92, 0.16);
+      transform-origin: left center;
+    }
+    .f09-wash-edge {
+      position: absolute;
+      left: 0;
+      top: 280px;
+      width: 4px;
+      height: 168px;
+      background: #CC785C;
+      transform-origin: center top;
+    }
+    .f09-row {
+      position: absolute;
+      left: 0; right: 0;
+      height: 56px;
+      white-space: pre;
+    }
+    .f09-ln {
+      position: absolute;
+      left: 0;
+      width: 64px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 26px;
+    }
+    .f09-txt {
+      position: absolute;
+      left: 112px;
+      top: 0;
+      white-space: pre;
+    }
+    .f09-ch { display: inline; }
+    .f09-kw { color: #CC785C; }
+    .f09-fn { color: #E8A55A; }
+    .f09-dim { color: rgba(250, 249, 245, 0.6); }
+    .f09-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f09-caret {
+      position: absolute;
+      top: 10px;
+      left: 0;
+      width: 3px;
+      height: 36px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f09-link {
+      position: absolute;
+      left: 0; top: 0;
+      width: 1060px;
+      height: 654px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    /* right column */
+    .f09-col {
+      position: absolute;
+      left: 1220px;
+      top: 170px;
+      width: 620px;
+      height: 680px;
+    }
+    .f09-label {
+      position: absolute;
+      left: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+      white-space: nowrap;
+    }
+    .f09-rail {
+      position: absolute;
+      left: 14px;
+      top: 69px;
+      width: 1px;
+      height: 248px;
+      background: rgba(20, 20, 19, 0.2);
+      transform-origin: center top;
+    }
+    .f09-node {
+      position: absolute;
+      left: 10px;
+      width: 9px;
+      height: 9px;
+      border-radius: 9999px;
+      background: #141413;
+    }
+    .f09-pill {
+      position: absolute;
+      height: 50px;
+      padding: 0 22px;
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      line-height: 48px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+    .f09-eff {
+      left: 36px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      color: #141413;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f09-cln {
+      left: 76px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      color: rgba(20, 20, 19, 0.78);
+    }
+    .f09-cln .f09-x { color: rgba(20, 20, 19, 0.5); }
+    .f09-unm {
+      left: 36px;
+      background: transparent;
+      border: 1px dashed rgba(20, 20, 19, 0.3);
+      color: rgba(20, 20, 19, 0.55);
+    }
+
+    .f09-chip {
+      position: absolute;
+      left: 0;
+      width: 360px;
+      height: 48px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      line-height: 46px;
+      letter-spacing: 0.02em;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f09-chip-txt { position: absolute; left: 48px; top: 0; }
+    .f09-dot {
+      position: absolute;
+      left: 20px;
+      top: 18px;
+      width: 10px;
+      height: 10px;
+      border-radius: 9999px;
+      background: #5DB872;
+    }
+    .f09-ring {
+      position: absolute;
+      left: 15px;
+      top: 13px;
+      width: 20px;
+      height: 20px;
+      border-radius: 9999px;
+      border: 1.5px solid #5DB872;
+      box-sizing: border-box;
+      opacity: 0;
+    }
+    .f09-strike {
+      position: absolute;
+      left: 44px;
+      top: 23px;
+      width: 248px;
+      height: 1.5px;
+      background: #141413;
+      transform-origin: left center;
+    }
+    .f09-note {
+      position: absolute;
+      right: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.02em;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f09-note .f09-ok { color: #5DB872; }
+  </style>
+
+  <div data-hf-id="hf-4qyp" id="root" data-composition-id="09-cleanup-oplossing" data-width="1920" data-height="1080" data-duration="20.56">
+    <div data-hf-id="hf-uqan" class="f09-bg clip" id="f09-bg" data-start="0" data-duration="20.56" data-track-index="0"></div>
+
+    <div data-hf-id="hf-tg4s" class="f09-stage clip" id="f09-stage" data-start="0" data-duration="20.56" data-track-index="1">
+      <div data-hf-id="hf-ykaq" class="f09-kicker" id="f09-kicker"><span data-hf-id="hf-4epc" class="f09-spike">✱</span>Cleanup</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-u0te" class="f09-panel" id="f09-panel">
+        <div data-hf-id="hf-iceb" class="f09-titlebar">Timer.tsx</div>
+        <div data-hf-id="hf-vu4v" class="f09-code">
+          <div data-hf-id="hf-6q4u" class="f09-wash" id="f09-wash"></div>
+          <div data-hf-id="hf-6l24" class="f09-wash-edge" id="f09-wash-edge"></div>
+
+          <div data-hf-id="hf-f1jv" class="f09-row" style="top:0px"><span data-hf-id="hf-n202" class="f09-ln">1</span><span data-hf-id="hf-elr8" class="f09-txt"><span data-hf-id="hf-czbh" class="f09-fn">useEffect</span>(() =&gt; {</span></div>
+          <div data-hf-id="hf-pqi4" class="f09-row" style="top:56px"><span data-hf-id="hf-ngb3" class="f09-ln">2</span><span data-hf-id="hf-vrut" class="f09-txt">  <span data-hf-id="hf-h2p8" class="f09-kw">let</span> <span data-hf-id="hf-2v4z" class="f09-hl" id="f09-h2">handle</span> = <span data-hf-id="hf-rme2" class="f09-fn">setInterval</span>(() =&gt; {</span></div>
+          <div data-hf-id="hf-oop3" class="f09-row" style="top:112px"><span data-hf-id="hf-rwl8" class="f09-ln">3</span><span data-hf-id="hf-tzcb" class="f09-txt">    <span data-hf-id="hf-h10y" class="f09-fn">setNumber</span>(number =&gt; number + <span data-hf-id="hf-tajw" class="f09-fn">1</span>);</span></div>
+          <div data-hf-id="hf-td3c" class="f09-row" style="top:168px"><span data-hf-id="hf-saw9" class="f09-ln">4</span><span data-hf-id="hf-6rer" class="f09-txt">  }, interval);</span></div>
+          <div data-hf-id="hf-34gv" class="f09-row" style="top:224px"><span data-hf-id="hf-nvi6" class="f09-ln f09-newln">5</span></div>
+          <div data-hf-id="hf-j08p" class="f09-row" style="top:280px"><span data-hf-id="hf-o9t7" class="f09-ln f09-newln">6</span><span data-hf-id="hf-6ibj" class="f09-txt" id="f09-line6"></span><span data-hf-id="hf-7zyx" class="f09-caret" id="f09-caret6"></span></div>
+          <div data-hf-id="hf-a86v" class="f09-row" style="top:336px"><span data-hf-id="hf-oo48" class="f09-ln f09-newln">7</span><span data-hf-id="hf-2k7i" class="f09-txt" id="f09-line7"></span><span data-hf-id="hf-78b4" class="f09-caret" id="f09-caret7"></span></div>
+          <div data-hf-id="hf-t2o1" class="f09-row" style="top:392px"><span data-hf-id="hf-p2f9" class="f09-ln f09-newln">8</span><span data-hf-id="hf-4vap" class="f09-txt" id="f09-line8"></span><span data-hf-id="hf-upsn" class="f09-caret" id="f09-caret8"></span></div>
+          <div data-hf-id="hf-np61" class="f09-row" id="f09-close" style="top:224px"><span data-hf-id="hf-ihe1" class="f09-ln" id="f09-close-ln">5</span><span data-hf-id="hf-fyf9" class="f09-txt">}, [interval]);</span></div>
+        </div>
+
+        <!-- handle ↔ handle hairline connector in the gutter -->
+        <svg data-hf-id="hf-p94p" class="f09-link" id="f09-link" viewBox="0 0 1060 654" width="1060" height="654">
+          <path data-hf-id="hf-3fwv" id="f09-link-path" fill="none" stroke="#E8A55A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M106,164 H84 V444 H106" />
+          <circle data-hf-id="hf-w9ne" id="f09-link-a" cx="106" cy="164" r="4" fill="#E8A55A" />
+          <circle data-hf-id="hf-zdr8" id="f09-link-b" cx="106" cy="444" r="4" fill="#E8A55A" />
+        </svg>
+
+        <div data-hf-id="hf-h5jy" class="f09-status">
+          <span data-hf-id="hf-tkfx" class="f09-st" id="f09-st-a">useEffect · [interval] · geen cleanup</span>
+          <span data-hf-id="hf-ml0w" class="f09-st" id="f09-st-b">useEffect · [interval] · cleanup ✓</span>
+        </div>
+      </div>
+
+      <!-- right column: sequence + timers -->
+      <div data-hf-id="hf-ibli" class="f09-col">
+        <div data-hf-id="hf-l0zg" class="f09-label" id="f09-lab-seq" style="top:0px">volgorde</div>
+        <div data-hf-id="hf-fkyu" class="f09-rail" id="f09-rail"></div>
+        <div data-hf-id="hf-fywx" class="f09-node" id="f09-n1" style="top:65px"></div>
+        <div data-hf-id="hf-3x81" class="f09-node" id="f09-n2" style="top:189px"></div>
+        <div data-hf-id="hf-w2ab" class="f09-node" id="f09-n3" style="top:313px"></div>
+
+        <div data-hf-id="hf-vdtd" class="f09-pill f09-eff" id="f09-p1" style="top:44px">effect · 1000ms</div>
+        <div data-hf-id="hf-dagh" class="f09-pill f09-cln" id="f09-p2" style="top:106px">cleanup · clearInterval <span data-hf-id="hf-9fxa" class="f09-x">✕</span></div>
+        <div data-hf-id="hf-2pma" class="f09-pill f09-eff" id="f09-p3" style="top:168px">effect · 500ms</div>
+        <div data-hf-id="hf-ej7e" class="f09-pill f09-cln" id="f09-p4" style="top:230px">cleanup <span data-hf-id="hf-l70i" class="f09-x">✕</span></div>
+        <div data-hf-id="hf-l389" class="f09-pill f09-eff" id="f09-p5" style="top:292px">effect · 200ms</div>
+        <div data-hf-id="hf-29l9" class="f09-pill f09-unm" id="f09-p6" style="top:372px">unmount → cleanup ✕</div>
+
+        <div data-hf-id="hf-d1iy" class="f09-label" id="f09-lab-tim" style="top:458px">timers</div>
+        <div data-hf-id="hf-zzw4" class="f09-note" id="f09-note" style="top:454px"><span data-hf-id="hf-qayw" class="f09-ok">✓</span> 1 timer actief</div>
+
+        <div data-hf-id="hf-8gva" class="f09-chip" id="f09-c1" style="top:500px"><span data-hf-id="hf-cwnq" class="f09-ring" id="f09-r1"></span><span data-hf-id="hf-tbo1" class="f09-dot" id="f09-d1"></span><span data-hf-id="hf-mf96" class="f09-chip-txt" id="f09-t1">timer #1 · 1000ms</span><span data-hf-id="hf-ezld" class="f09-strike" id="f09-s1"></span></div>
+        <div data-hf-id="hf-wi9i" class="f09-chip" id="f09-c2" style="top:558px"><span data-hf-id="hf-8yjp" class="f09-ring" id="f09-r2"></span><span data-hf-id="hf-zhdu" class="f09-dot" id="f09-d2"></span><span data-hf-id="hf-8iug" class="f09-chip-txt" id="f09-t2">timer #2 · 500ms</span><span data-hf-id="hf-69jz" class="f09-strike" id="f09-s2" style="width:234px"></span></div>
+        <div data-hf-id="hf-gl4q" class="f09-chip" id="f09-c3" style="top:616px"><span data-hf-id="hf-86vw" class="f09-ring" id="f09-r3"></span><span data-hf-id="hf-3fhv" class="f09-dot" id="f09-d3"></span><span data-hf-id="hf-2o23" class="f09-chip-txt" id="f09-t3">timer #3 · 200ms</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 20.46;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var root = document.querySelector('[data-composition-id="09-cleanup-oplossing"]');
+      var q = function (s) { return root.querySelector(s); };
+      var qa = function (s) { return root.querySelectorAll(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(lineSel, caretSel, segments, start, per) {
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          for (var i = 0; i < seg.t.length; i++) {
+            var s = document.createElement("span");
+            s.className = "f09-ch" + (seg.c ? " " + seg.c : "");
+            s.textContent = seg.t[i];
+            line.appendChild(s);
+            chars.push(s);
+          }
+        });
+        var x0 = 112;
+        var chPx = 36 * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: x0 }, start - 0.12);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.08, ease: "power1.out" }, at);
+          tl.set(caret, { x: x0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.3);
+        return end;
+      }
+
+      // ---- deterministic dot pulses (fixed schedule, no repeat) ----
+      function pulses(ringSel, dotSel, from, to, period) {
+        for (var t = from; t + 0.5 <= to; t += period) {
+          tl.fromTo(ringSel, { opacity: 0.85, scale: 0.6 }, { opacity: 0, scale: 1.5, duration: 0.5, ease: "power1.out", immediateRender: false }, t);
+          tl.fromTo(dotSel, { scale: 1.35 }, { scale: 1, duration: 0.3, ease: "power1.out", immediateRender: false }, t);
+        }
+      }
+
+      // ---- Scene 1 (0.0–5.0): kicker + frame-8 effect; return () => { … }; types on ----
+      tl.fromTo("#f09-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f09-panel", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.12);
+      tl.fromTo(qa(".f09-newln"), { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.fromTo("#f09-wash", { scaleX: 0 }, { scaleX: 0, duration: 0.01 }, 0);
+      tl.fromTo("#f09-wash-edge", { scaleY: 0 }, { scaleY: 0, duration: 0.01 }, 0);
+      tl.fromTo("#f09-st-b", { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+
+      // timers carried over from frame 8: all three still running
+      tl.fromTo("#f09-lab-tim", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.4);
+      tl.fromTo(["#f09-c1", "#f09-c2", "#f09-c3"], { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", stagger: 0.1 }, 0.5);
+      tl.fromTo("#f09-note", { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.fromTo(["#f09-s1", "#f09-s2"], { scaleX: 0 }, { scaleX: 0, duration: 0.01 }, 0);
+
+      // "cleanup-functie" (2.98): closing line shifts down 4 rows, new line numbers appear
+      tl.to("#f09-close", { y: 224, duration: 0.5, ease: "power3.inOut" }, 2.98);
+      tl.set("#f09-close-ln", { textContent: "9" }, 3.2);
+      tl.fromTo(qa(".f09-newln"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out", stagger: 0.06, immediateRender: false }, 3.1);
+
+      typeLine("#f09-line6", "#f09-caret6", [
+        { t: "  " }, { t: "return", c: "f09-kw" }, { t: " () => {" }
+      ], 3.4, 0.035);
+      typeLine("#f09-line8", "#f09-caret8", [{ t: "  };" }], 4.05, 0.05);
+
+      // coral wash — the one voltage — on the new cleanup block
+      tl.fromTo("#f09-wash-edge", { scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, 4.35);
+      tl.fromTo("#f09-wash", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out", immediateRender: false }, 4.4);
+
+      // ---- Scene 2 (5.0–9.9): clearInterval(handle); + handle ↔ handle link ----
+      typeLine("#f09-line7", "#f09-caret7", [
+        { t: "    " }, { t: "clearInterval", c: "f09-fn" }, { t: "(" }, { t: "handle", c: "f09-h7" }, { t: ");" }
+      ], 6.16, 0.03);
+      tl.to("#f09-st-a", { opacity: 0, duration: 0.3, ease: "power1.out" }, 7.1);
+      tl.fromTo("#f09-st-b", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out", immediateRender: false }, 7.15);
+
+      var linkPath = q("#f09-link-path");
+      var linkLen = 330;
+      try { linkLen = Math.ceil(linkPath.getTotalLength()) || 330; } catch (e) {}
+      tl.set(linkPath, { strokeDasharray: linkLen, strokeDashoffset: linkLen }, 0);
+      tl.fromTo(["#f09-link-a", "#f09-link-b"], { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+
+      tl.to("#f09-h2", { backgroundColor: "rgba(232, 165, 90, 0.3)", duration: 0.35, ease: "power1.out" }, 8.14);
+      tl.to(qa(".f09-h7"), { backgroundColor: "rgba(232, 165, 90, 0.3)", duration: 0.35, ease: "power1.out" }, 8.24);
+      tl.fromTo("#f09-link-a", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power3.out", transformOrigin: "50% 50%", immediateRender: false }, 8.2);
+      tl.to(linkPath, { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut" }, 8.25);
+      tl.fromTo("#f09-link-b", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power3.out", transformOrigin: "50% 50%", immediateRender: false }, 8.8);
+      // settle the link back so the sequence diagram can lead
+      tl.to(["#f09-h2"], { backgroundColor: "rgba(232, 165, 90, 0.12)", duration: 0.6, ease: "power1.inOut" }, 10.6);
+      tl.to(qa(".f09-h7"), { backgroundColor: "rgba(232, 165, 90, 0.12)", duration: 0.6, ease: "power1.inOut" }, 10.6);
+      tl.to("#f09-link", { opacity: 0.45, duration: 0.6, ease: "power1.inOut" }, 10.6);
+
+      // ---- Scene 3 (9.9–16.4): sequence stack builds top-down ----
+      tl.fromTo("#f09-lab-seq", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.8);
+      tl.fromTo("#f09-rail", { scaleY: 0 }, { scaleY: 0.02, duration: 0.3, ease: "power1.out" }, 9.9);
+      function pill(sel, at) {
+        tl.fromTo(sel, { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, at);
+      }
+      tl.fromTo("#f09-n1", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 10.0);
+      pill("#f09-p1", 10.0);
+      tl.to("#f09-rail", { scaleY: 0.35, duration: 0.5, ease: "power2.inOut" }, 11.0);
+      pill("#f09-p2", 11.12);
+      tl.to("#f09-p1", { opacity: 0.45, duration: 0.4, ease: "power1.inOut" }, 11.5);
+
+      tl.to("#f09-rail", { scaleY: 0.5, duration: 0.4, ease: "power2.inOut" }, 12.0);
+      tl.fromTo("#f09-n2", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 12.12);
+      pill("#f09-p3", 12.12);
+      tl.to("#f09-rail", { scaleY: 0.75, duration: 0.4, ease: "power2.inOut" }, 12.8);
+      pill("#f09-p4", 12.9);
+      tl.to("#f09-p3", { opacity: 0.45, duration: 0.4, ease: "power1.inOut" }, 13.1);
+      tl.to("#f09-rail", { scaleY: 1, duration: 0.4, ease: "power2.inOut" }, 13.25);
+      tl.fromTo("#f09-n3", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 13.4);
+      pill("#f09-p5", 13.4);
+      tl.fromTo("#f09-p6", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 14.22);
+
+      // ---- timer dots: deterministic pulses ----
+      pulses("#f09-r1", "#f09-d1", 0.9, 17.3, 1.0);
+      pulses("#f09-r2", "#f09-d2", 1.15, 17.45, 0.8);
+      pulses("#f09-r3", "#f09-d3", 1.4, DUR, 0.6);
+
+      // ---- Scene 4 (16.4–19.96): only one timer left ----
+      tl.to("#f09-s1", { scaleX: 1, duration: 0.4, ease: "power2.inOut" }, 17.3);
+      tl.to(["#f09-t1", "#f09-s1", "#f09-d1"], { opacity: 0.35, duration: 0.4, ease: "power1.inOut" }, 17.4);
+      tl.to("#f09-d1", { backgroundColor: "rgba(20, 20, 19, 0.5)", duration: 0.3, ease: "power1.out" }, 17.4);
+      tl.to("#f09-c1", { backgroundColor: "rgba(239, 233, 222, 0.5)", duration: 0.4, ease: "power1.inOut" }, 17.4);
+
+      tl.to("#f09-s2", { scaleX: 1, duration: 0.4, ease: "power2.inOut" }, 17.5);
+      tl.to(["#f09-t2", "#f09-s2", "#f09-d2"], { opacity: 0.35, duration: 0.4, ease: "power1.inOut" }, 17.6);
+      tl.to("#f09-d2", { backgroundColor: "rgba(20, 20, 19, 0.5)", duration: 0.3, ease: "power1.out" }, 17.6);
+      tl.to("#f09-c2", { backgroundColor: "rgba(239, 233, 222, 0.5)", duration: 0.4, ease: "power1.inOut" }, 17.6);
+
+      tl.to("#f09-c3", { backgroundColor: "#ECE3D4", borderColor: "rgba(20, 20, 19, 0.32)", duration: 0.4, ease: "power1.out" }, 17.8);
+      tl.fromTo("#f09-note", { opacity: 0, x: 12 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 18.0);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["09-cleanup-oplossing"] = tl;
+    })();
+  </script>
+</template>

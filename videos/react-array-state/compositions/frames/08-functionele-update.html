@@ -1,0 +1,657 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f08fu-bg {
+      position: absolute;
+      inset: 0;
+      background: #faf9f5;
+    }
+    .f08fu-layer {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* — header — */
+    .f08fu-kicker {
+      position: absolute;
+      left: 120px;
+      top: 86px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f08fu-kicker .f08fu-spike {
+      color: #cc785c;
+      margin-right: 14px;
+    }
+    .f08fu-title {
+      position: absolute;
+      left: 120px;
+      top: 132px;
+      font-family: "EB Garamond", serif;
+      font-weight: 400;
+      font-size: 104px;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f08fu-word {
+      display: inline-block;
+      margin-right: 0.22em;
+    }
+    .f08fu-word.f08fu-it {
+      font-style: italic;
+      margin-right: 0;
+    }
+
+    /* — trigger button (cursor target) — */
+    .f08fu-btn {
+      position: absolute;
+      left: 1520px;
+      top: 128px;
+      width: 280px;
+      height: 76px;
+      border-radius: 8px;
+      background: #efe9de;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      box-shadow:
+        0 1px 3px rgba(20, 20, 19, 0.08),
+        0 4px 16px rgba(20, 20, 19, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 28px;
+      color: #141413;
+    }
+    .f08fu-btn .f08fu-btn-mono {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      font-weight: 500;
+      color: rgba(20, 20, 19, 0.55);
+    }
+    .f08fu-ripple {
+      position: absolute;
+      left: 1610px;
+      top: 116px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px solid rgba(20, 20, 19, 0.35);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* — split stage with the two code cards — */
+    .f08fu-stage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      perspective: 2200px;
+      transform-style: preserve-3d;
+    }
+    .f08fu-card {
+      position: absolute;
+      top: 300px;
+      width: 800px;
+      height: 196px;
+      border-radius: 8px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      overflow: hidden;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .f08fu-card-l {
+      left: 120px;
+      box-shadow:
+        6px 2px 4px rgba(20, 20, 19, 0.08),
+        12px 6px 18px rgba(20, 20, 19, 0.06);
+    }
+    .f08fu-card-r {
+      left: 1000px;
+      box-shadow:
+        -6px 2px 4px rgba(20, 20, 19, 0.08),
+        -12px 6px 18px rgba(20, 20, 19, 0.06);
+    }
+    .f08fu-bar {
+      height: 50px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(250, 249, 245, 0.62);
+    }
+    .f08fu-code {
+      position: relative;
+      z-index: 0;
+      height: 146px;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 34px;
+      line-height: 1.6;
+      font-variant-ligatures: none;
+      white-space: pre;
+      color: #faf9f5;
+    }
+    .f08fu-ch {
+      display: none;
+    }
+    .f08fu-t-p {
+      color: rgba(250, 249, 245, 0.55);
+    }
+    .f08fu-t-fn {
+      color: #faf9f5;
+    }
+    .f08fu-t-id {
+      color: #ece3d4;
+    }
+    .f08fu-t-prev {
+      color: #e8a55a;
+    }
+    .f08fu-hlwrap {
+      position: relative;
+    }
+    .f08fu-hl {
+      position: absolute;
+      left: -8px;
+      right: -8px;
+      top: 4px;
+      bottom: 4px;
+      border-radius: 6px;
+      background: rgba(232, 165, 90, 0.18);
+      border-bottom: 1px solid rgba(232, 165, 90, 0.7);
+      z-index: -1;
+      transform-origin: left center;
+    }
+    .f08fu-caret {
+      display: inline-block;
+      width: 3px;
+      height: 40px;
+      margin-left: 2px;
+      background: #faf9f5;
+      vertical-align: middle;
+    }
+
+    /* — array strips — */
+    .f08fu-strip {
+      position: absolute;
+      top: 640px;
+      width: 800px;
+      height: 140px;
+    }
+    .f08fu-strip-l {
+      left: 120px;
+    }
+    .f08fu-strip-r {
+      left: 1000px;
+    }
+    .f08fu-ref {
+      position: absolute;
+      left: 0;
+      top: 30px;
+      width: 116px;
+      height: 36px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f08fu-ref span {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .f08fu-slot {
+      position: absolute;
+      top: 0;
+      width: 96px;
+    }
+    .f08fu-cell {
+      width: 96px;
+      height: 96px;
+      border-radius: 8px;
+      background: #efe9de;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 38px;
+      font-weight: 500;
+      color: #141413;
+    }
+    .f08fu-idx {
+      margin-top: 8px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 18px;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .f08fu-ghost .f08fu-cell {
+      background: #faf9f5;
+      border: 1.5px dashed #cc785c;
+      color: #cc785c;
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+    }
+    .f08fu-ghost .f08fu-idx {
+      color: #cc785c;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-left: -20px;
+      margin-right: -20px;
+    }
+
+    /* — prev pointer (right side) — */
+    .f08fu-ptr {
+      position: absolute;
+      left: 1000px;
+      top: 512px;
+      width: 116px;
+      height: 120px;
+    }
+    .f08fu-ptr-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 116px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      font-weight: 500;
+      color: #141413;
+    }
+    .f08fu-ptr-line {
+      position: absolute;
+      left: 57px;
+      top: 40px;
+      width: 1px;
+      height: 70px;
+      background: #141413;
+      transform-origin: center top;
+    }
+    .f08fu-ptr-head {
+      position: absolute;
+      left: 49px;
+      top: 100px;
+      width: 18px;
+      height: 12px;
+    }
+
+    /* — result labels — */
+    .f08fu-res {
+      position: absolute;
+      top: 806px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: #141413;
+      padding-top: 14px;
+      border-top: 1px solid rgba(20, 20, 19, 0.12);
+      width: 676px;
+    }
+    .f08fu-res-l {
+      left: 120px;
+    }
+    .f08fu-res-r {
+      left: 1000px;
+    }
+    .f08fu-res .f08fu-dim {
+      color: rgba(20, 20, 19, 0.5);
+    }
+
+    /* — cursor — */
+    .f08fu-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 54px;
+      height: 72px;
+      z-index: 50;
+      pointer-events: none;
+      transform-origin: 0 0;
+    }
+  </style>
+
+  <div data-hf-id="hf-cbz1" id="root" data-composition-id="08-functionele-update" data-start="0" data-duration="12.8" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-rs0i" class="clip f08fu-bg" data-start="0" data-duration="12.8" data-track-index="0"></div>
+
+    <div data-hf-id="hf-ofcd" class="clip f08fu-layer" data-start="0" data-duration="12.8" data-track-index="1">
+      <div data-hf-id="hf-vnow" class="f08fu-kicker"><span data-hf-id="hf-3com" class="f08fu-spike">✱</span>Waarom prev?</div>
+      <div data-hf-id="hf-p7f8" class="f08fu-title">
+        <span data-hf-id="hf-t3rx" class="f08fu-word" id="f08fu-w0">Geef</span><span data-hf-id="hf-rza0" class="f08fu-word" id="f08fu-w1">de</span><span data-hf-id="hf-wbd7" class="f08fu-word" id="f08fu-w2">setter</span><span data-hf-id="hf-fjzr" class="f08fu-word" id="f08fu-w3">een</span><span data-hf-id="hf-aemf" class="f08fu-word f08fu-it" id="f08fu-w4">functie</span>
+      </div>
+
+      <div data-hf-id="hf-axxg" class="f08fu-stage">
+        <div data-hf-id="hf-mbln" class="f08fu-card f08fu-card-l">
+          <div data-hf-id="hf-n0kp" class="f08fu-bar"><span data-hf-id="hf-3ww1">Waarde</span><span data-hf-id="hf-6hil">numbers</span></div>
+          <div data-hf-id="hf-6yad" class="f08fu-code" id="f08fu-code-l"></div>
+        </div>
+        <div data-hf-id="hf-c46d" class="f08fu-card f08fu-card-r">
+          <div data-hf-id="hf-8ivx" class="f08fu-bar"><span data-hf-id="hf-668r">Functie</span><span data-hf-id="hf-cz8f">prev =&gt;</span></div>
+          <div data-hf-id="hf-l3pn" class="f08fu-code" id="f08fu-code-r"></div>
+        </div>
+      </div>
+
+      <!-- prev pointer: lives on the parent, not inside the tilted card -->
+      <div data-hf-id="hf-10gk" class="f08fu-ptr">
+        <div data-hf-id="hf-g2gk" class="f08fu-ptr-label">prev</div>
+        <div data-hf-id="hf-7mpn" class="f08fu-ptr-line"></div>
+        <svg data-hf-id="hf-9l77" class="f08fu-ptr-head" viewBox="0 0 18 12">
+          <path data-hf-id="hf-8cte" d="M1 1 L9 11 L17 1" fill="none" stroke="#141413" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <!-- left strip: direct value -->
+      <div data-hf-id="hf-wmsr" class="f08fu-strip f08fu-strip-l">
+        <div data-hf-id="hf-93o1" class="f08fu-ref">
+          <span data-hf-id="hf-dvef" class="f08fu-ref-a">ref #A</span><span data-hf-id="hf-sl19" class="f08fu-ref-b">ref #B</span><span data-hf-id="hf-1ld3" class="f08fu-ref-c">ref #C</span>
+        </div>
+        <div data-hf-id="hf-oa9z" class="f08fu-slot f08fu-s0" style="left: 140px"><div data-hf-id="hf-2iwi" class="f08fu-cell">0</div><div data-hf-id="hf-x5t9" class="f08fu-idx">0</div></div>
+        <div data-hf-id="hf-5u56" class="f08fu-slot f08fu-s1" style="left: 250px"><div data-hf-id="hf-24lh" class="f08fu-cell">1</div><div data-hf-id="hf-xk4a" class="f08fu-idx">1</div></div>
+        <div data-hf-id="hf-8zgt" class="f08fu-slot f08fu-s2" style="left: 360px"><div data-hf-id="hf-3bik" class="f08fu-cell">2</div><div data-hf-id="hf-xyfb" class="f08fu-idx">2</div></div>
+        <div data-hf-id="hf-ki68" class="f08fu-slot f08fu-s3" style="left: 470px"><div data-hf-id="hf-2x7j" class="f08fu-cell">3</div><div data-hf-id="hf-ycqc" class="f08fu-idx">3</div></div>
+        <div data-hf-id="hf-60em" class="f08fu-slot f08fu-ghost f08fu-s4" style="left: 580px"><div data-hf-id="hf-444m" class="f08fu-cell">4</div><div data-hf-id="hf-4t8m" class="f08fu-idx">verloren</div></div>
+      </div>
+
+      <!-- right strip: functional update -->
+      <div data-hf-id="hf-ihdh" class="f08fu-strip f08fu-strip-r">
+        <div data-hf-id="hf-fccl" class="f08fu-ref">
+          <span data-hf-id="hf-yofr" class="f08fu-ref-a">ref #A</span><span data-hf-id="hf-qxe9" class="f08fu-ref-b">ref #B</span><span data-hf-id="hf-41l3" class="f08fu-ref-c">ref #C</span>
+        </div>
+        <div data-hf-id="hf-wtnr" class="f08fu-slot f08fu-s0" style="left: 140px"><div data-hf-id="hf-8v7a" class="f08fu-cell">0</div><div data-hf-id="hf-9izl" class="f08fu-idx">0</div></div>
+        <div data-hf-id="hf-x0ce" class="f08fu-slot f08fu-s1" style="left: 250px"><div data-hf-id="hf-uj2x" class="f08fu-cell">1</div><div data-hf-id="hf-gapq" class="f08fu-idx">1</div></div>
+        <div data-hf-id="hf-b1s1" class="f08fu-slot f08fu-s2" style="left: 360px"><div data-hf-id="hf-49pg" class="f08fu-cell">2</div><div data-hf-id="hf-jusn" class="f08fu-idx">2</div></div>
+        <div data-hf-id="hf-8t14" class="f08fu-slot f08fu-s3" style="left: 470px"><div data-hf-id="hf-i3of" class="f08fu-cell">3</div><div data-hf-id="hf-vzf0" class="f08fu-idx">3</div></div>
+        <div data-hf-id="hf-hvk3" class="f08fu-slot f08fu-s4" style="left: 580px"><div data-hf-id="hf-i3xm" class="f08fu-cell">4</div><div data-hf-id="hf-yr1d" class="f08fu-idx">4</div></div>
+      </div>
+
+      <div data-hf-id="hf-bwhc" class="f08fu-res f08fu-res-l">2 updates <span data-hf-id="hf-p8u7" class="f08fu-dim">→</span> 1</div>
+      <div data-hf-id="hf-z0x3" class="f08fu-res f08fu-res-r">2 updates <span data-hf-id="hf-18fz" class="f08fu-dim">→</span> 2</div>
+
+      <div data-hf-id="hf-46pm" class="f08fu-btn"><span data-hf-id="hf-ol16">Voeg toe</span><span data-hf-id="hf-dp1f" class="f08fu-btn-mono">n</span></div>
+      <div data-hf-id="hf-u4pc" class="f08fu-ripple f08fu-rip1"></div>
+      <div data-hf-id="hf-2sl7" class="f08fu-ripple f08fu-rip2"></div>
+
+      <svg data-hf-id="hf-8tcm" class="f08fu-cursor" viewBox="0 0 54 72">
+        <path data-hf-id="hf-9u2i" d="M2 2 L2 58 L16 45 L26 68 L36 63 L26 41 L45 41 Z" fill="#141413" stroke="#FAF9F5" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "08-functionele-update";
+      var R = document.querySelector('[data-composition-id="' + ID + '"]');
+      function q(s) {
+        return R.querySelectorAll(s);
+      }
+      function q1(s) {
+        return R.querySelector(s);
+      }
+
+      // ---- build hand-set code lines as per-character spans (deterministic) ----
+      function buildCode(box, tokens) {
+        var el = document.createElement("div");
+        box.appendChild(el);
+        var chars = [];
+        tokens.forEach(function (tk) {
+          var host = el;
+          if (tk[1] === "hl") {
+            var wrap = document.createElement("span");
+            wrap.className = "f08fu-hlwrap f08fu-t-prev";
+            var band = document.createElement("span");
+            band.className = "f08fu-hl";
+            wrap.appendChild(band);
+            el.appendChild(wrap);
+            host = wrap;
+          }
+          for (var i = 0; i < tk[0].length; i++) {
+            var s = document.createElement("span");
+            s.className = "f08fu-ch" + (tk[1] === "hl" ? "" : " f08fu-t-" + tk[1]);
+            s.textContent = tk[0][i];
+            host.appendChild(s);
+            chars.push(s);
+          }
+        });
+        var caret = document.createElement("span");
+        caret.className = "f08fu-caret";
+        el.appendChild(caret);
+        return { chars: chars, caret: caret };
+      }
+
+      var L = buildCode(q1("#f08fu-code-l"), [
+        ["setNumbers", "fn"],
+        ["([", "p"],
+        ["...", "p"],
+        ["numbers", "id"],
+        [", ", "p"],
+        ["n", "id"],
+        ["])", "p"],
+      ]);
+      var Rt = buildCode(q1("#f08fu-code-r"), [
+        ["setNumbers", "fn"],
+        ["(", "p"],
+        ["prev =>", "hl"],
+        [" [", "p"],
+        ["...", "p"],
+        ["prev", "prev"],
+        [", ", "p"],
+        ["n", "id"],
+        ["])", "p"],
+      ]);
+
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- Scene 1 (0.0–2.3): kicker + title word-build on cue ----
+      tl.fromTo(
+        q(".f08fu-kicker"),
+        { opacity: 0, y: -14 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+        0.1,
+      );
+      var wordAt = [1.05, 1.63, 1.7, 2.08, 2.32];
+      wordAt.forEach(function (t, i) {
+        tl.fromTo(
+          q1("#f08fu-w" + i),
+          { opacity: 0, y: -26 },
+          { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
+          t,
+        );
+      });
+
+      // ---- Scene 2 (2.3–5.0): split-tilt entry on "functie" ----
+      var TILT = 10,
+        OVER = 8;
+      tl.fromTo(
+        q(".f08fu-card-l"),
+        { x: -380, rotateY: TILT + OVER, scale: 0.88, opacity: 0 },
+        { x: 0, rotateY: TILT, scale: 1, opacity: 1, duration: 0.95, ease: "power3.out" },
+        2.32,
+      );
+      tl.fromTo(
+        q(".f08fu-card-r"),
+        { x: 380, rotateY: -TILT - OVER, scale: 0.88, opacity: 0 },
+        { x: 0, rotateY: -TILT, scale: 1, opacity: 1, duration: 0.95, ease: "power3.out" },
+        2.52,
+      );
+
+      // code type-on with caret, during the entry tail
+      function typeOn(code, start, step) {
+        tl.fromTo(code.caret, { opacity: 0 }, { opacity: 1, duration: 0.01 }, start - 0.05);
+        code.chars.forEach(function (c, i) {
+          tl.set(c, { display: "inline" }, start + i * step);
+        });
+        var end = start + code.chars.length * step;
+        tl.to(code.caret, { opacity: 0, duration: 0.01 }, end + 0.25);
+        return end;
+      }
+      typeOn(L, 2.6, 0.02);
+      typeOn(Rt, 2.78, 0.019);
+
+      // on "prev" (3.42): highlight band behind `prev =>`
+      tl.fromTo(
+        q(".f08fu-hl"),
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.4, ease: "power3.out" },
+        3.42,
+      );
+
+      // ---- Scene 3 (5.0–7.9): strips arrive on "nieuwste", prev pointer on "versie" ----
+      ["l", "r"].forEach(function (side, si) {
+        var base = 4.95 + si * 0.12;
+        tl.fromTo(
+          q(".f08fu-strip-" + side + " .f08fu-ref-a"),
+          { opacity: 0, x: -12 },
+          { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" },
+          base,
+        );
+        tl.fromTo(
+          q(".f08fu-strip-" + side + " .f08fu-s0, .f08fu-strip-" + side + " .f08fu-s1, .f08fu-strip-" + side + " .f08fu-s2"),
+          { opacity: 0, y: 22 },
+          { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.07 },
+          base + 0.05,
+        );
+      });
+      tl.fromTo(q(".f08fu-ptr-label"), { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 5.68);
+      tl.fromTo(q(".f08fu-ptr-line"), { scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: "power3.out" }, 5.78);
+      tl.fromTo(q(".f08fu-ptr-head"), { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 6.05);
+
+      // ---- Scene 4 (7.9–10.8): double-click fires two updates ----
+      tl.fromTo(
+        q(".f08fu-btn"),
+        { opacity: 0, y: -12 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+        6.95,
+      );
+      // cursor move (tip lands on the button centre 1660,166)
+      tl.fromTo(
+        q(".f08fu-cursor"),
+        { x: 1860, y: 560, opacity: 0 },
+        { x: 1662, y: 160, opacity: 1, duration: 0.65, ease: "power3.out" },
+        7.15,
+      );
+      var clicks = [7.94, 8.21];
+      clicks.forEach(function (t, i) {
+        tl.to(q(".f08fu-cursor"), { scale: 0.85, duration: 0.07, ease: "power2.in" }, t);
+        tl.to(q(".f08fu-cursor"), { scale: 1, duration: 0.07, ease: "power2.out" }, t + 0.07);
+        tl.to(q(".f08fu-btn"), { scale: 0.95, duration: 0.07, ease: "power2.in" }, t);
+        tl.to(q(".f08fu-btn"), { scale: 1, duration: 0.07, ease: "power2.out" }, t + 0.07);
+        var rip = q1(".f08fu-rip" + (i + 1));
+        tl.set(rip, { opacity: 1, scale: 0 }, t + 0.02);
+        tl.to(rip, { scale: 3.2, opacity: 0, duration: 0.6, ease: "power2.out", immediateRender: false }, t + 0.02);
+      });
+      // cursor eases off the button so it stays readable
+      tl.to(q(".f08fu-cursor"), { x: 1730, y: 250, duration: 0.6, ease: "power2.inOut" }, 8.6);
+
+      function swapRef(side, from, to, t) {
+        tl.to(q(".f08fu-strip-" + side + " .f08fu-ref-" + from), { opacity: 0, duration: 0.18, ease: "power2.out" }, t);
+        tl.fromTo(
+          q(".f08fu-strip-" + side + " .f08fu-ref-" + to),
+          { opacity: 0, y: -8 },
+          { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" },
+          t + 0.05,
+        );
+      }
+      function landCell(sel, t) {
+        tl.fromTo(
+          q(sel),
+          { opacity: 0, y: -40, scale: 0.85 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.42, ease: "power3.out" },
+          t,
+        );
+      }
+      // click 1 — both sides append "3" into a new array #B
+      var c1 = clicks[0] + 0.06;
+      swapRef("l", "a", "b", c1);
+      swapRef("r", "a", "b", c1);
+      landCell(".f08fu-strip-l .f08fu-s3", c1 + 0.04);
+      landCell(".f08fu-strip-r .f08fu-s3", c1 + 0.04);
+      // click 2 — right builds on latest prev (4 lands), left rebuilds from stale numbers (4 lost)
+      var c2 = clicks[1] + 0.06;
+      swapRef("l", "b", "c", c2);
+      swapRef("r", "b", "c", c2);
+      landCell(".f08fu-strip-r .f08fu-s4", c2 + 0.04);
+      tl.fromTo(
+        q(".f08fu-strip-l .f08fu-s4"),
+        { opacity: 0, y: -40, scale: 0.85 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" },
+        c2 + 0.12,
+      );
+      // the lost update settles as a faded ghost: the stale rebuild never kept it
+      tl.fromTo(
+        q(".f08fu-strip-l .f08fu-s4 .f08fu-cell"),
+        { opacity: 1 },
+        { opacity: 0.75, duration: 0.4, ease: "power2.out" },
+        c2 + 0.7,
+      );
+
+      // on "meerdere updates": the count labels
+      tl.fromTo(
+        q(".f08fu-res-l"),
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+        9.27,
+      );
+      tl.fromTo(
+        q(".f08fu-res-r"),
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+        9.39,
+      );
+
+      // hold to the frame end
+      tl.set({}, {}, 10.8);
+
+      // voice take: 10.8s → 11.68s (anchors from audio_meta.json words)
+      var __retime = function (tl, M) {
+        // Cues were authored against an earlier voice take; map each child's
+        // start and end through the old→new word-anchor table M ([oldT, newT]).
+        var m = function (t) {
+          for (var i = 1; i < M.length; i++) {
+            if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+          }
+          return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+        };
+        tl.getChildren(false, true, true).forEach(function (c) {
+          var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+          // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+          if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+          c.startTime(ns);
+        });
+      };
+      __retime(tl, [[0.0, 0.0], [1.63, 2.9], [1.7, 3.02], [2.08, 3.52], [2.32, 3.72], [3.1, 4.82], [3.423, 5.04], [3.747, 5.64], [4.07, 5.84], [4.14, 6.04], [4.63, 6.48], [4.79, 6.6], [4.95, 6.8], [5.68, 7.28], [6.07, 7.6], [6.32, 7.72], [6.48, 7.84], [7.12, 8.78], [7.26, 9.04], [7.58, 9.16], [7.94, 9.36], [8.04, 9.64], [8.21, 9.76], [8.64, 10.38], [9.27, 10.82], [9.8, 11.26], [10.8, 11.68]]);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

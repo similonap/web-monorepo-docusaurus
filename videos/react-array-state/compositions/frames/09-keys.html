@@ -1,0 +1,285 @@
+<template id="09-keys-template">
+  <div data-hf-id="hf-ix69" id="root" data-composition-id="09-keys" data-width="1920" data-height="1080" data-start="0" data-duration="17.8">
+    <style>
+      @font-face { font-family: 'EB Garamond'; src: url('assets/fonts/EB_Garamond-400-normal.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: 'Inter'; src: url('assets/fonts/Inter-400-normal.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: 'Inter'; src: url('assets/fonts/Inter-500-normal.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: 'JetBrains Mono'; src: url('assets/fonts/JetBrains_Mono-400-normal.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: 'JetBrains Mono'; src: url('assets/fonts/JetBrains_Mono-500-normal.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: block; }
+
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Inter', sans-serif;
+        color: #141413;
+        --ink: #141413;
+        --cream: #FAF9F5;
+        --tile: #EFE9DE;
+        --tile-strong: #ECE3D4;
+        --coral: #CC785C;
+      }
+      .keys09-bg { position: absolute; inset: 0; background: #FAF9F5; }
+      .keys09-stage { position: absolute; inset: 0; container-type: size; }
+
+      .keys09-kicker {
+        position: absolute; left: 80px; top: 64px;
+        font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 28px;
+        letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink);
+      }
+      .keys09-spike { color: var(--coral); margin-right: 14px; }
+      .keys09-headline {
+        position: absolute; left: 80px; top: 112px;
+        font-family: 'EB Garamond', serif; font-weight: 400; font-size: 104px;
+        line-height: 1.02; letter-spacing: -0.022em; color: var(--ink); white-space: nowrap;
+      }
+      .keys09-word { display: inline-block; margin-right: 0.22em; }
+
+      .keys09-card {
+        position: absolute; top: 280px; height: 520px;
+        background: var(--tile);
+        border: 1px solid rgba(20, 20, 19, 0.12);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+        overflow: hidden;
+      }
+      .keys09-card-left { left: 80px; width: 1020px; }
+      .keys09-card-right { left: 1180px; width: 660px; }
+      .keys09-card-head {
+        position: absolute; left: 0; right: 0; top: 0; height: 100px;
+        border-bottom: 1px solid rgba(20, 20, 19, 0.12);
+      }
+      .keys09-head-label {
+        position: absolute; left: 40px; top: 0; line-height: 100px;
+        font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 30px; color: var(--ink);
+      }
+      .keys09-card-right .keys09-head-label { left: 28px; }
+      .keys09-check { position: absolute; right: 36px; top: 28px; width: 44px; height: 44px; }
+      .keys09-rows { position: absolute; left: 0; right: 0; top: 110px; height: 380px; }
+      .keys09-divider {
+        position: absolute; left: 28px; right: 28px; height: 1px; background: rgba(20, 20, 19, 0.12);
+      }
+      .keys09-row { position: absolute; left: 0; right: 0; height: 120px; }
+      .keys09-pill {
+        position: absolute; top: 32px; height: 56px;
+        background: var(--cream); border: 1px solid rgba(20, 20, 19, 0.2); border-radius: 6px;
+        font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 27px;
+        letter-spacing: 0.02em; color: var(--ink); overflow: hidden;
+      }
+      .keys09-pill span { position: absolute; left: 0; right: 0; top: 0; line-height: 54px; text-align: center; }
+      .keys09-name {
+        position: absolute; top: 0; line-height: 120px;
+        font-family: 'Inter', sans-serif; font-weight: 500; font-size: 44px; color: var(--ink);
+      }
+      .keys09-input {
+        position: absolute; top: 22px; height: 76px;
+        background: var(--cream); border: 1px solid rgba(20, 20, 19, 0.2); border-radius: 6px;
+      }
+      .keys09-input-text {
+        position: absolute; left: 22px; top: 0; line-height: 74px;
+        font-family: 'Inter', sans-serif; font-weight: 400; font-size: 36px; color: var(--ink); white-space: nowrap;
+      }
+      .keys09-caret {
+        display: inline-block; width: 3px; height: 40px; margin-left: 3px;
+        background: var(--ink); vertical-align: -6px;
+      }
+      .keys09-del {
+        position: absolute; width: 56px; height: 56px; top: 32px;
+        border: 1px solid rgba(20, 20, 19, 0.2); border-radius: 6px; background: var(--cream);
+        font-family: 'Inter', sans-serif; font-size: 34px; line-height: 52px; text-align: center; color: var(--ink);
+      }
+      .keys09-ring {
+        position: absolute; left: -12px; top: -12px; right: -12px; bottom: -12px;
+        border: 3px solid var(--coral); border-radius: 14px;
+      }
+
+      /* left card geometry */
+      .keys09-card-left .keys09-pill { left: 40px; width: 150px; }
+      .keys09-card-left .keys09-name { left: 224px; }
+      .keys09-card-left .keys09-input { left: 560px; width: 320px; }
+      .keys09-card-left .keys09-del { left: 924px; }
+      /* right card geometry */
+      .keys09-card-right .keys09-pill { left: 28px; width: 170px; }
+      .keys09-card-right .keys09-name { left: 222px; font-size: 40px; }
+      .keys09-card-right .keys09-input { left: 360px; width: 210px; }
+      .keys09-card-right .keys09-del { left: 586px; width: 46px; height: 46px; top: 37px; line-height: 42px; font-size: 28px; }
+    </style>
+
+    <div data-hf-id="hf-g0op" class="clip keys09-bg" data-start="0" data-duration="17.8" data-track-index="0"></div>
+
+    <div data-hf-id="hf-owuj" class="clip keys09-stage" data-start="0" data-duration="17.8" data-track-index="1">
+      <div data-hf-id="hf-7d5s" class="keys09-kicker" id="keys09-kicker"><span data-hf-id="hf-rrz8" class="keys09-spike">✱</span>Keys</div>
+      <div data-hf-id="hf-k57y" class="keys09-headline">
+        <span data-hf-id="hf-t823" class="keys09-word">Index</span><span data-hf-id="hf-easo" class="keys09-word">of</span><span data-hf-id="hf-pvf1" class="keys09-word">id?</span>
+      </div>
+
+      <!-- LEFT: key={index} -->
+      <div data-hf-id="hf-sg3i" class="keys09-card keys09-card-left" id="keys09-card-left">
+        <div data-hf-id="hf-102b" class="keys09-card-head">
+          <div data-hf-id="hf-s9ox" class="keys09-head-label" id="keys09-lhead">key={index}</div>
+          <svg data-hf-id="hf-1zso" class="keys09-check" id="keys09-lcheck" viewBox="0 0 44 44"><path data-hf-id="hf-hbvg" id="keys09-lcheck-path" d="M6 23 L18 34 L38 10" fill="none" stroke="#141413" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </div>
+        <div data-hf-id="hf-s7t5" class="keys09-rows">
+          <div data-hf-id="hf-ty4n" class="keys09-divider" style="top:120px" id="keys09-ldiv1"></div>
+          <div data-hf-id="hf-lv15" class="keys09-divider" style="top:240px" id="keys09-ldiv2"></div>
+          <!-- static input slots (DOM nodes owned by key=0/1/2) -->
+          <div data-hf-id="hf-akkx" class="keys09-row" style="top:0px">
+            <div data-hf-id="hf-sh6d" class="keys09-input" id="keys09-lin0">
+              <div data-hf-id="hf-camq" class="keys09-input-text"><span data-hf-id="hf-pkko" class="keys09-lc">v</span><span data-hf-id="hf-uqk1" class="keys09-lc">e</span><span data-hf-id="hf-nzck" class="keys09-lc">r</span><span data-hf-id="hf-nl1j" class="keys09-lc">s</span><span data-hf-id="hf-ikxp" class="keys09-lc">!</span><span data-hf-id="hf-iqa7" class="keys09-caret" id="keys09-lcaret"></span></div>
+              <div data-hf-id="hf-tnx2" class="keys09-ring" id="keys09-ring"></div>
+            </div>
+          </div>
+          <div data-hf-id="hf-ahxy" class="keys09-row" style="top:120px"><div data-hf-id="hf-rpik" class="keys09-input" id="keys09-lin1"></div></div>
+          <div data-hf-id="hf-occ7" class="keys09-row" style="top:240px"><div data-hf-id="hf-0def" class="keys09-input" id="keys09-lin2"></div></div>
+          <!-- moving items -->
+          <div data-hf-id="hf-a4km" class="keys09-row" style="top:0px" id="keys09-litem0">
+            <div data-hf-id="hf-m4d6" class="keys09-pill" id="keys09-lpill0"><span data-hf-id="hf-s86l">key=0</span></div>
+            <div data-hf-id="hf-r6y3" class="keys09-name">Appel</div>
+            <div data-hf-id="hf-cngp" class="keys09-del" id="keys09-ldel0">×</div>
+          </div>
+          <div data-hf-id="hf-hm1s" class="keys09-row" style="top:120px" id="keys09-litem1">
+            <div data-hf-id="hf-q2h7" class="keys09-pill" id="keys09-lpill1"><span data-hf-id="hf-2r0i" id="keys09-lk1a">key=1</span><span data-hf-id="hf-zxb0" id="keys09-lk1b">key=0</span></div>
+            <div data-hf-id="hf-77mv" class="keys09-name">Peer</div>
+            <div data-hf-id="hf-43xa" class="keys09-del">×</div>
+          </div>
+          <div data-hf-id="hf-bhnu" class="keys09-row" style="top:240px" id="keys09-litem2">
+            <div data-hf-id="hf-helc" class="keys09-pill" id="keys09-lpill2"><span data-hf-id="hf-xbus" id="keys09-lk2a">key=2</span><span data-hf-id="hf-pzxo" id="keys09-lk2b">key=1</span></div>
+            <div data-hf-id="hf-d78r" class="keys09-name">Kiwi</div>
+            <div data-hf-id="hf-vqo2" class="keys09-del">×</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: key={item.id} -->
+      <div data-hf-id="hf-rets" class="keys09-card keys09-card-right" id="keys09-card-right">
+        <div data-hf-id="hf-806r" class="keys09-card-head">
+          <div data-hf-id="hf-o9bx" class="keys09-head-label" id="keys09-rhead">key={item.id}</div>
+          <svg data-hf-id="hf-mxmi" class="keys09-check" id="keys09-rcheck" viewBox="0 0 44 44"><path data-hf-id="hf-uwa6" id="keys09-rcheck-path" d="M6 23 L18 34 L38 10" fill="none" stroke="#141413" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </div>
+        <div data-hf-id="hf-gz25" class="keys09-rows">
+          <div data-hf-id="hf-ki85" class="keys09-divider" style="top:120px"></div>
+          <div data-hf-id="hf-so0f" class="keys09-divider" style="top:240px" id="keys09-rdiv2"></div>
+          <div data-hf-id="hf-m6t4" class="keys09-row" style="top:0px" id="keys09-ritem0">
+            <div data-hf-id="hf-8ylk" class="keys09-pill" id="keys09-rpill0"><span data-hf-id="hf-x913">key="a7"</span></div>
+            <div data-hf-id="hf-i2ff" class="keys09-name">Appel</div>
+            <div data-hf-id="hf-op9y" class="keys09-input">
+              <div data-hf-id="hf-rb4m" class="keys09-input-text"><span data-hf-id="hf-jmqy" class="keys09-rc">v</span><span data-hf-id="hf-do5j" class="keys09-rc">e</span><span data-hf-id="hf-l7z2" class="keys09-rc">r</span><span data-hf-id="hf-kto1" class="keys09-rc">s</span><span data-hf-id="hf-ptrv" class="keys09-rc">!</span><span data-hf-id="hf-t6j9" class="keys09-caret" id="keys09-rcaret"></span></div>
+            </div>
+            <div data-hf-id="hf-3pp3" class="keys09-del" id="keys09-rdel0">×</div>
+          </div>
+          <div data-hf-id="hf-5lmu" class="keys09-row" style="top:120px" id="keys09-ritem1">
+            <div data-hf-id="hf-9q9d" class="keys09-pill" id="keys09-rpill1"><span data-hf-id="hf-reqn">key="b2"</span></div>
+            <div data-hf-id="hf-cmbr" class="keys09-name">Peer</div>
+            <div data-hf-id="hf-53dm" class="keys09-input"></div>
+            <div data-hf-id="hf-w4z3" class="keys09-del">×</div>
+          </div>
+          <div data-hf-id="hf-i09o" class="keys09-row" style="top:240px" id="keys09-ritem2">
+            <div data-hf-id="hf-dode" class="keys09-pill" id="keys09-rpill2"><span data-hf-id="hf-1p9j">key="c9"</span></div>
+            <div data-hf-id="hf-6jm3" class="keys09-name">Kiwi</div>
+            <div data-hf-id="hf-5hon" class="keys09-input"></div>
+            <div data-hf-id="hf-wja4" class="keys09-del">×</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var R = document.querySelector('[data-composition-id="09-keys"]');
+        var $ = function (id) { return R.querySelector('#' + id); };
+        var $$ = function (sel) { return R.querySelectorAll(sel); };
+        var tl = gsap.timeline({ paused: true });
+        var E = 'power3.out';
+
+        /* ---------- Scene 1 (0.0–3.8): list card enters, key=index labels, typed note ---------- */
+        tl.fromTo($('keys09-kicker'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, 0.05);
+        tl.fromTo($$('.keys09-word'), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: E, stagger: 0.12 }, 0.12);
+        tl.fromTo($('keys09-card-left'), { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.7, ease: E }, 0.1);
+
+        // rows arrive on "eenvoudige voorbeelden"
+        ['keys09-litem0', 'keys09-litem1', 'keys09-litem2'].forEach(function (id, i) {
+          tl.fromTo($(id).querySelectorAll('.keys09-name, .keys09-del'), { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, 0.45 + i * 0.2);
+          tl.fromTo($('keys09-lin' + i), { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, 0.5 + i * 0.2);
+        });
+        tl.fromTo([$('keys09-ldiv1'), $('keys09-ldiv2')], { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: 0.6, ease: E, stagger: 0.15 }, 0.6);
+
+        // "key is index" → header label + key pills
+        tl.fromTo($('keys09-lhead'), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: E }, 2.24);
+        tl.fromTo([$('keys09-lpill0'), $('keys09-lpill1'), $('keys09-lpill2')], { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.45, ease: E, stagger: 0.16 }, 2.4);
+        tl.set([$('keys09-lk1b'), $('keys09-lk2b')], { opacity: 0, y: 16 }, 0);
+
+        // typed note "vers!" in Appel's input
+        var lc = $$('.keys09-lc');
+        tl.fromTo(lc, { display: 'none' }, { display: 'inline', duration: 0, stagger: 0.1 }, 2.95);
+        tl.fromTo($('keys09-lcaret'), { opacity: 0 }, { opacity: 1, duration: 0.01 }, 2.85);
+        tl.to($('keys09-lcaret'), { opacity: 0, duration: 0.01 }, 3.75);
+
+        /* ---------- Scene 2 (3.8–5.1): "dat werkt" → ink check ---------- */
+        var lp = $('keys09-lcheck-path');
+        tl.fromTo(lp, { strokeDasharray: 52, strokeDashoffset: 52 }, { strokeDashoffset: 0, duration: 0.45, ease: 'power2.out' }, 4.2);
+
+        /* ---------- Scene 3 (5.1–7.5): delete Appel ---------- */
+        tl.fromTo($('keys09-ldel0'), { scale: 1 }, { scale: 0.84, duration: 0.12, ease: 'power2.out' }, 6.0);
+        tl.to($('keys09-ldel0'), { scale: 1, duration: 0.25, ease: E }, 6.12);
+        tl.to($('keys09-litem0'), { opacity: 0, x: -28, duration: 0.45, ease: E }, 6.25);
+
+        /* ---------- Scene 4 (7.5–11.5): indexes shift, typed text sticks to the wrong row ---------- */
+        tl.to($('keys09-lcheck'), { opacity: 0, duration: 0.3, ease: 'power2.out' }, 7.51);
+        tl.to([$('keys09-litem1'), $('keys09-litem2')], { y: -120, duration: 0.65, ease: E, stagger: 0.08 }, 7.55);
+        // key labels count down on "indexen"
+        tl.to([$('keys09-lk1a'), $('keys09-lk2a')], { opacity: 0, y: -16, duration: 0.3, ease: 'power2.out', stagger: 0.1 }, 8.6);
+        tl.to([$('keys09-lk1b'), $('keys09-lk2b')], { opacity: 1, y: 0, duration: 0.35, ease: E, stagger: 0.1 }, 8.66);
+        // the last DOM slot (key=2) is the one React removes
+        tl.to([$('keys09-lin2'), $('keys09-ldiv2')], { opacity: 0, duration: 0.4, ease: 'power2.out' }, 8.85);
+        // "door elkaar" → coral outline on the mismatched input (css-marker circle mode, rounded-rect)
+        tl.fromTo($('keys09-ring'), { scale: 0.7, rotation: 0, opacity: 0 }, { scale: 1, rotation: -1.5, opacity: 1, duration: 0.55, ease: 'power2.out' }, 10.37);
+
+        /* ---------- Scene 5 (11.5–15.28): same list with stable ids ---------- */
+        tl.fromTo($('keys09-card-right'), { opacity: 0, x: 48 }, { opacity: 1, x: 0, duration: 0.7, ease: E }, 11.54);
+        tl.fromTo($('keys09-rhead'), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: E }, 11.8);
+        ['keys09-ritem0', 'keys09-ritem1', 'keys09-ritem2'].forEach(function (id, i) {
+          tl.fromTo($(id).querySelectorAll('.keys09-name, .keys09-input, .keys09-del'), { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.45, ease: E }, 11.95 + i * 0.15);
+        });
+        var rc = $$('.keys09-rc');
+        tl.fromTo(rc, { display: 'none' }, { display: 'inline', duration: 0, stagger: 0.08 }, 12.55);
+        tl.fromTo($('keys09-rcaret'), { opacity: 0 }, { opacity: 1, duration: 0.01 }, 12.5);
+        tl.to($('keys09-rcaret'), { opacity: 0, duration: 0.01 }, 13.1);
+        // "vaste ID" → id key pills
+        tl.fromTo([$('keys09-rpill0'), $('keys09-rpill1'), $('keys09-rpill2')], { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.45, ease: E, stagger: 0.14 }, 13.37);
+        // delete Appel: the whole row (with its input) leaves
+        tl.fromTo($('keys09-rdel0'), { scale: 1 }, { scale: 0.84, duration: 0.12, ease: 'power2.out' }, 14.0);
+        tl.to($('keys09-rdel0'), { scale: 1, duration: 0.22, ease: E }, 14.12);
+        tl.to($('keys09-ritem0'), { opacity: 0, x: -28, duration: 0.38, ease: E }, 14.15);
+        tl.to([$('keys09-ritem1'), $('keys09-ritem2')], { y: -120, duration: 0.55, ease: E, stagger: 0.06 }, 14.45);
+        tl.to($('keys09-rdiv2'), { opacity: 0, duration: 0.3, ease: 'power2.out' }, 14.5);
+        var rp = $('keys09-rcheck-path');
+        tl.fromTo(rp, { strokeDasharray: 52, strokeDashoffset: 52 }, { strokeDashoffset: 0, duration: 0.45, ease: 'power2.out' }, 14.9);
+        // hold to 15.28
+        tl.set({}, {}, 15.28);
+
+        window.__timelines = window.__timelines || {};
+        // voice take: 15.28s → 16.16s (anchors from audio_meta.json words)
+        var __retime = function (tl, M) {
+          // Cues were authored against an earlier voice take; map each child's
+          // start and end through the old→new word-anchor table M ([oldT, newT]).
+          var m = function (t) {
+            for (var i = 1; i < M.length; i++) {
+              if (t <= M[i][0]) return M[i - 1][1] + (t - M[i - 1][0]) * (M[i][1] - M[i - 1][1]) / (M[i][0] - M[i - 1][0]);
+            }
+            return M[M.length - 1][1] + (t - M[M.length - 1][0]);
+          };
+          tl.getChildren(false, true, true).forEach(function (c) {
+            var s = c.startTime(), d = c.duration(), ns = m(s), ne = m(s + d);
+            // duration() (not timeScale) so no tween renders — and locks its start values — at build time
+            if (d > 0 && ne > ns && !c.getChildren) c.duration(ne - ns);
+            c.startTime(ns);
+          });
+        };
+        __retime(tl, [[0.0, 0.0], [0.07, 0.08], [0.12, 0.2], [0.24, 0.32], [0.95, 0.94], [1.63, 1.66], [2.05, 2.12], [2.24, 2.64], [2.76, 3.16], [3.07, 3.6], [3.82, 4.58], [4.185, 4.68], [4.55, 4.86], [5.13, 5.84], [5.54, 6.16], [5.95, 6.56], [6.04, 6.8], [6.45, 7.14], [7.51, 8.0], [8.1, 8.36], [8.64, 8.48], [8.83, 8.98], [9.2, 9.68], [9.23, 9.84], [9.45, 10.06], [9.78, 10.62], [10.37, 10.94], [10.49, 11.1], [10.94, 11.56], [11.54, 12.58], [11.965, 12.78], [12.39, 13.06], [12.62, 13.42], [13.06, 13.98], [13.37, 14.22], [13.95, 14.94], [14.11, 15.64], [14.43, 15.88], [15.28, 16.16]]);
+        window.__timelines['09-keys'] = tl;
+      })();
+    </script>
+  </div>
+</template>

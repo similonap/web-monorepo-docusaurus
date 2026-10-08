@@ -1,0 +1,237 @@
+<template>
+  <div data-hf-id="hf-ytb8" id="root" data-composition-id="05-side-effect" data-start="0" data-duration="16.9" data-width="1920" data-height="1080">
+    <style>
+      @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EB_Garamond-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+      #root {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        container-type: size;
+        font-family: "Inter", sans-serif;
+        color: #141413;
+      }
+      .f05-bg { position: absolute; inset: 0; background: #FAF9F5; }
+      .f05-stage { position: absolute; left: 0; top: 0; width: 1920px; height: 900px; transform-origin: 50% 40%; }
+
+      /* kicker */
+      .f05-kicker {
+        position: absolute; left: 80px; top: 72px;
+        font-family: "JetBrains Mono", monospace; font-size: 28px; font-weight: 400;
+        letter-spacing: 0.16em; text-transform: uppercase; color: #141413;
+      }
+      .f05-kicker .f05-spike { color: #CC785C; margin-right: 14px; }
+
+      /* headline */
+      .f05-head {
+        position: absolute; left: 80px; top: 120px;
+        font-family: "EB Garamond", Georgia, serif; font-size: 92px; font-weight: 400;
+        line-height: 1.06; letter-spacing: -0.018em; white-space: nowrap; color: #141413;
+      }
+      .f05-w { display: inline-block; }
+      .f05-it { font-style: italic; }
+
+      /* code surface */
+      .f05-panel {
+        position: absolute; left: 80px; top: 282px; width: 900px; height: 432px;
+        background: #181715; border: 1px solid rgba(250, 249, 245, 0.14); border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      }
+      .f05-titlebar {
+        position: absolute; left: 0; right: 0; top: 0; height: 52px;
+        background: #252320; border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+        display: flex; align-items: center; padding: 0 26px;
+        font-family: "JetBrains Mono", monospace; font-size: 21px;
+        color: rgba(250, 249, 245, 0.62); letter-spacing: 0.02em;
+      }
+      .f05-status {
+        position: absolute; left: 0; right: 0; bottom: 0; height: 44px;
+        background: #252320; border-top: 1px solid rgba(250, 249, 245, 0.14);
+        display: flex; align-items: center; padding: 0 26px;
+        font-family: "JetBrains Mono", monospace; font-size: 18px;
+        color: rgba(250, 249, 245, 0.45); letter-spacing: 0.04em;
+      }
+      .f05-code {
+        position: absolute; left: 0; right: 0; top: 80px;
+        font-family: "JetBrains Mono", monospace; font-size: 28px; line-height: 56px;
+        color: #FAF9F5; font-variant-ligatures: none;
+      }
+      .f05-row { position: relative; height: 56px; white-space: pre; }
+      .f05-ln {
+        position: absolute; left: 0; width: 56px; text-align: right;
+        color: rgba(250, 249, 245, 0.32); font-size: 22px;
+      }
+      .f05-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+      .f05-kw { color: #CC785C; }
+      .f05-str { color: #5DB8A6; }
+      .f05-dim { color: rgba(250, 249, 245, 0.6); }
+      .f05-bar {
+        position: absolute; left: 0; top: 6px; width: 5px; height: 44px;
+        background: #CC785C; border-radius: 2px; transform-origin: 50% 50%;
+      }
+      .f05-rowtint {
+        position: absolute; left: 0; right: 0; top: 0; height: 56px;
+        background: rgba(204, 120, 92, 0.12);
+      }
+
+      /* margin labels */
+      .f05-ann {
+        position: absolute; left: 1004px;
+        font-family: "JetBrains Mono", monospace; font-size: 26px; letter-spacing: 0.02em;
+        color: #141413; white-space: nowrap; line-height: 34px;
+      }
+      .f05-ann .f05-arr { color: rgba(20, 20, 19, 0.45); margin-right: 10px; }
+      .f05-ann.f05-coral { color: #CC785C; }
+      .f05-ann.f05-coral .f05-arr { color: #CC785C; }
+
+      /* right column — example chips */
+      .f05-col { position: absolute; left: 1290px; top: 282px; width: 550px; }
+      .f05-collab {
+        font-family: "JetBrains Mono", monospace; font-size: 24px;
+        letter-spacing: 0.16em; text-transform: uppercase; color: rgba(20, 20, 19, 0.62);
+      }
+      .f05-chip {
+        position: absolute; left: 0; width: 550px; height: 96px;
+        background: #EFE9DE; border: 1px solid rgba(20, 20, 19, 0.12); border-radius: 8px;
+        box-sizing: border-box; padding: 0 28px;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .f05-chip-code { font-family: "JetBrains Mono", monospace; font-size: 32px; color: #141413; }
+      .f05-chip-tag { font-family: "Inter", sans-serif; font-size: 24px; color: rgba(20, 20, 19, 0.62); }
+
+      /* render timeline band */
+      .f05-band { position: absolute; left: 80px; top: 752px; width: 1760px; height: 110px; }
+      .f05-bandlab {
+        position: absolute; left: 0; top: 0;
+        font-family: "JetBrains Mono", monospace; font-size: 22px;
+        letter-spacing: 0.16em; text-transform: uppercase; color: rgba(20, 20, 19, 0.62);
+      }
+      .f05-line {
+        position: absolute; left: 0; top: 96px; width: 1760px; height: 1px;
+        background: rgba(20, 20, 19, 0.32); transform-origin: left center;
+      }
+      .f05-tick { position: absolute; top: 90px; width: 1px; height: 13px; background: rgba(20, 20, 19, 0.45); }
+      .f05-tag {
+        position: absolute; top: 44px; height: 40px; padding: 0 14px;
+        background: #ECE3D4; border: 1px solid rgba(20, 20, 19, 0.2); border-radius: 6px;
+        box-sizing: border-box; display: flex; align-items: center;
+        font-family: "JetBrains Mono", monospace; font-size: 20px; color: #141413;
+        margin-left: -44px;
+      }
+    </style>
+
+    <div data-hf-id="hf-ath2" id="f05-bg" class="f05-bg clip" data-start="0" data-duration="16.9" data-track-index="0"></div>
+
+    <div data-hf-id="hf-9nct" id="f05-stage" class="f05-stage clip" data-start="0" data-duration="16.9" data-track-index="1">
+      <div data-hf-id="hf-pgjz" id="f05-kicker" class="f05-kicker"><span data-hf-id="hf-8nf8" class="f05-spike">✱</span>Side effects</div>
+
+      <div data-hf-id="hf-3ug2" id="f05-head" class="f05-head">
+        <span data-hf-id="hf-jqvk" class="f05-w f05-hw">setInterval</span>
+        <span data-hf-id="hf-28p7" class="f05-w f05-hw">is</span>
+        <span data-hf-id="hf-1jlx" class="f05-w f05-hw">een</span>
+        <span data-hf-id="hf-z0ix" class="f05-w f05-hw f05-it">side</span>
+        <span data-hf-id="hf-j2kb" class="f05-w f05-hw f05-it">effect.</span>
+      </div>
+
+      <!-- code surface: Greet -->
+      <div data-hf-id="hf-z4d6" id="f05-panel" class="f05-panel">
+        <div data-hf-id="hf-oy6v" class="f05-titlebar">Greet.tsx</div>
+        <div data-hf-id="hf-slm3" class="f05-code">
+          <div data-hf-id="hf-1vgo" class="f05-row"><span data-hf-id="hf-rbti" class="f05-ln">1</span><span data-hf-id="hf-srik" class="f05-txt"><span data-hf-id="hf-brbe" class="f05-kw">const</span> Greet = ({ name }: GreetProps) =&gt; {</span></div>
+          <div data-hf-id="hf-2hhc" class="f05-row"><span data-hf-id="hf-rq4j" class="f05-ln">2</span><span data-hf-id="hf-cxfs" class="f05-txt">  <span data-hf-id="hf-56mm" class="f05-kw">const</span> message = <span data-hf-id="hf-mdmy" class="f05-str">`Hello, ${name}!`</span>;</span></div>
+          <div data-hf-id="hf-1ak9" class="f05-row"><div data-hf-id="hf-63by" id="f05-tint" class="f05-rowtint"></div><div data-hf-id="hf-t7tw" id="f05-bar" class="f05-bar"></div><span data-hf-id="hf-s4fk" class="f05-ln">3</span><span data-hf-id="hf-g7no" class="f05-txt">  document.title = <span data-hf-id="hf-k0ue" class="f05-str">`Greetings to ${name}`</span>;</span></div>
+          <div data-hf-id="hf-1ova" class="f05-row"><span data-hf-id="hf-pcad" class="f05-ln">4</span><span data-hf-id="hf-gftb" class="f05-txt">  <span data-hf-id="hf-hcr1" class="f05-kw">return</span> <span data-hf-id="hf-b9ic" class="f05-dim">&lt;div&gt;</span>{message}<span data-hf-id="hf-9kuf" class="f05-dim">&lt;/div&gt;</span>;</span></div>
+          <div data-hf-id="hf-0hy7" class="f05-row"><span data-hf-id="hf-pqle" class="f05-ln">5</span><span data-hf-id="hf-i602" class="f05-txt">}</span></div>
+        </div>
+        <div data-hf-id="hf-0g9a" class="f05-status">Greet · render</div>
+      </div>
+
+      <!-- margin labels (rows: 282 + 80 + i*56, centred) -->
+      <div data-hf-id="hf-0vhi" id="f05-ann2" class="f05-ann" style="top: 429px;"><span data-hf-id="hf-v11m" class="f05-arr">←</span>output</div>
+      <div data-hf-id="hf-5k9x" id="f05-ann3" class="f05-ann f05-coral" style="top: 485px;"><span data-hf-id="hf-ouz2" class="f05-arr">←</span>side effect</div>
+      <div data-hf-id="hf-soth" id="f05-ann4" class="f05-ann" style="top: 541px;"><span data-hf-id="hf-p9a3" class="f05-arr">←</span>output</div>
+
+      <!-- right column: examples -->
+      <div data-hf-id="hf-otoi" class="f05-col">
+        <div data-hf-id="hf-olgf" id="f05-collab" class="f05-collab">bijvoorbeeld</div>
+        <div data-hf-id="hf-vwkd" id="f05-chip1" class="f05-chip" style="top: 60px;"><span data-hf-id="hf-b3pz" class="f05-chip-code">setInterval()</span><span data-hf-id="hf-5pmd" class="f05-chip-tag">timer</span></div>
+        <div data-hf-id="hf-qpky" id="f05-chip2" class="f05-chip" style="top: 176px;"><span data-hf-id="hf-rzga" class="f05-chip-code">fetch()</span><span data-hf-id="hf-ncak" class="f05-chip-tag">netwerk</span></div>
+        <div data-hf-id="hf-y810" id="f05-chip3" class="f05-chip" style="top: 292px;"><span data-hf-id="hf-m42u" class="f05-chip-code">document.title</span><span data-hf-id="hf-7y9a" class="f05-chip-tag">paginatitel</span></div>
+      </div>
+
+      <!-- render timeline -->
+      <div data-hf-id="hf-mlzd" class="f05-band">
+        <div data-hf-id="hf-ohrr" id="f05-bandlab" class="f05-bandlab">renders</div>
+        <div data-hf-id="hf-5rwi" id="f05-line" class="f05-line"></div>
+        <div data-hf-id="hf-zhor" class="f05-tick f05-k" style="left: 300px;"></div>
+        <div data-hf-id="hf-ad8z" class="f05-tick f05-k" style="left: 520px;"></div>
+        <div data-hf-id="hf-8qf8" class="f05-tick f05-k" style="left: 860px;"></div>
+        <div data-hf-id="hf-csdt" class="f05-tick f05-k" style="left: 1000px;"></div>
+        <div data-hf-id="hf-bypz" class="f05-tick f05-k" style="left: 1330px;"></div>
+        <div data-hf-id="hf-sfzw" class="f05-tick f05-k" style="left: 1560px;"></div>
+        <div data-hf-id="hf-gmmf" class="f05-tag f05-t" style="left: 300px;">render</div>
+        <div data-hf-id="hf-8am7" class="f05-tag f05-t" style="left: 520px;">render</div>
+        <div data-hf-id="hf-2lgc" class="f05-tag f05-t" style="left: 860px;">render</div>
+        <div data-hf-id="hf-vk9t" class="f05-tag f05-t" style="left: 1000px;">render</div>
+        <div data-hf-id="hf-gykj" class="f05-tag f05-t" style="left: 1330px;">render</div>
+        <div data-hf-id="hf-cuhw" class="f05-tag f05-t" style="left: 1560px;">render</div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var DUR = 16.9;
+        var tl = gsap.timeline({ paused: true });
+        var root = document.querySelector('[data-composition-id="05-side-effect"]') || document;
+        var qa = function (s) { return Array.prototype.slice.call(root.querySelectorAll(s)); };
+        var out = "power3.out";
+
+        // slow macro push underneath the whole shot
+        tl.fromTo("#f05-stage", { scale: 1 }, { scale: 1.015, duration: DUR, ease: "none" }, 0);
+
+        // ---- Scene 1 (0.0–4.2): kicker, then headline per word on 1.56 ----
+        tl.fromTo("#f05-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: out }, 0.1);
+        tl.fromTo(qa(".f05-hw"), { opacity: 0, y: 18, filter: "blur(8px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, ease: out, stagger: 0.16 }, 1.56);
+
+        // ---- Scene 2 (4.2–7.5): Greet panel, output labels, coral side-effect label ----
+        tl.fromTo("#f05-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: out }, 4.28);
+        tl.fromTo(["#f05-ann2", "#f05-ann4"], { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.5, ease: out, stagger: 0.12 }, 5.2);
+        tl.fromTo("#f05-tint", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 6.3);
+        tl.fromTo("#f05-bar", { scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: out }, 6.3);
+        tl.fromTo("#f05-ann3", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.5, ease: out }, 6.36);
+
+        // ---- Scene 3 (7.5–11.4): example chips on their words ----
+        tl.fromTo("#f05-collab", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: out }, 7.6);
+        tl.fromTo("#f05-chip1", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.55, ease: out }, 7.82);
+        tl.fromTo("#f05-chip2", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.55, ease: out }, 8.58);
+        tl.fromTo("#f05-chip3", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.55, ease: out }, 9.22);
+
+        // ---- Scene 4 (11.4–16.4): render timeline, irregular drops ----
+        tl.fromTo("#f05-bandlab", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 12.42);
+        tl.fromTo("#f05-line", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, 12.42);
+        var drops = [12.8, 13.2, 13.9, 14.1, 14.9, 15.3];
+        var tags = qa(".f05-t");
+        var ticks = qa(".f05-k");
+        drops.forEach(function (t, i) {
+          tl.fromTo(tags[i], { opacity: 0, y: -44 }, { opacity: 1, y: 0, duration: 0.4, ease: out }, t);
+          tl.fromTo(ticks[i], { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.25, ease: out }, t + 0.18);
+        });
+
+        // hold to full duration
+        tl.set({}, {}, DUR);
+        window.__timelines["05-side-effect"] = tl;
+      })();
+    </script>
+  </div>
+</template>

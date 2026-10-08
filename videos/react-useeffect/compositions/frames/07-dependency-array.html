@@ -1,0 +1,339 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); }
+    @font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/Inter-400.woff2") format("woff2"); }
+    @font-face { font-family: "Inter"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/Inter-700.woff2") format("woff2"); }
+    @font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); }
+    @font-face { font-family: "JetBrains Mono"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); }
+
+    #root[data-composition-id="07-dependency-array"] {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      color: #141413;
+      font-family: "Inter", sans-serif;
+    }
+    .f07-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f07-stage { position: absolute; inset: 0; container-type: size; }
+
+    .f07-kicker {
+      position: absolute;
+      left: 80px;
+      top: 64px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.6);
+    }
+    .f07-spike { color: #CC785C; margin-right: 14px; }
+
+    .f07-head {
+      position: absolute;
+      left: 80px;
+      top: 112px;
+      font-family: "EB Garamond", Georgia, serif;
+      font-weight: 400;
+      font-size: 5cqw;
+      line-height: 1.06;
+      letter-spacing: -0.018em;
+      white-space: nowrap;
+    }
+    .f07-word { display: inline-block; margin-right: 0.22em; }
+    .f07-sub {
+      position: absolute;
+      left: 82px;
+      top: 232px;
+      font-family: "Inter", sans-serif;
+      font-size: 2.08cqw;
+      line-height: 1.3;
+      color: rgba(20, 20, 19, 0.62);
+    }
+
+    .f07-cards {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 326px;
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+    }
+    .f07-card {
+      position: relative;
+      width: 540px;
+      height: 460px;
+      box-sizing: border-box;
+      padding: 30px 36px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      transform-origin: 50% 60%;
+    }
+    .f07-top { display: flex; align-items: baseline; gap: 16px; }
+    .f07-idx {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.06em;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .f07-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.75);
+    }
+    .f07-code {
+      margin-top: 18px;
+      height: 80px;
+      box-sizing: border-box;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 29px;
+      color: #FAF9F5;
+      white-space: pre;
+    }
+    .f07-p { color: rgba(250, 249, 245, 0.55); }
+    .f07-d { color: #5DB8A6; }
+
+    .f07-tl {
+      position: relative;
+      margin-top: 22px;
+      width: 468px;
+      height: 130px;
+    }
+    .f07-tl-name {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.4);
+    }
+    .f07-axis {
+      position: absolute;
+      left: 0;
+      width: 468px;
+      top: 70px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.2);
+      transform-origin: 0% 50%;
+    }
+    .f07-tick {
+      position: absolute;
+      top: 59px;
+      width: 2px;
+      height: 23px;
+      margin-left: -1px;
+      background: #141413;
+      transform-origin: 50% 50%;
+    }
+    .f07-tnum {
+      position: absolute;
+      top: 92px;
+      width: 40px;
+      margin-left: -20px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 17px;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .f07-cnt {
+      position: absolute;
+      top: 20px;
+      width: 40px;
+      margin-left: -20px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 26px;
+      color: #141413;
+    }
+    .f07-ghost, .f07-dot {
+      position: absolute;
+      top: 59px;
+      width: 22px;
+      height: 22px;
+      margin-left: -11px;
+      box-sizing: border-box;
+      border-radius: 9999px;
+    }
+    .f07-ghost { border: 1px dashed rgba(20, 20, 19, 0.24); }
+    .f07-dot { background: #E8A55A; transform-origin: 50% 50%; }
+
+    .f07-rule {
+      position: absolute;
+      left: 36px;
+      right: 36px;
+      bottom: 92px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.12);
+      transform-origin: 0% 50%;
+    }
+    .f07-cap {
+      position: absolute;
+      left: 36px;
+      right: 36px;
+      bottom: 34px;
+      font-family: "Inter", sans-serif;
+      font-size: 33px;
+      line-height: 1.2;
+      color: #141413;
+      white-space: nowrap;
+    }
+  </style>
+
+  <div data-hf-id="hf-6qty" id="root" data-composition-id="07-dependency-array" data-width="1920" data-height="1080" data-duration="16.78">
+    <div data-hf-id="hf-0gem" id="f07-bg" class="f07-bg clip" data-start="0" data-duration="16.78" data-track-index="0"></div>
+
+    <div data-hf-id="hf-pn0f" id="f07-stage" class="f07-stage clip" data-start="0" data-duration="16.78" data-track-index="1">
+      <div data-hf-id="hf-lgyo" class="f07-kicker"><span data-hf-id="hf-x4o2" class="f07-spike">✱</span>Tweede argument</div>
+      <div data-hf-id="hf-94fg" class="f07-head"><span data-hf-id="hf-bpw4" class="f07-word">De</span><span data-hf-id="hf-r3yq" class="f07-word">dependency</span><span data-hf-id="hf-mpq5" class="f07-word" style="margin-right:0">array</span></div>
+      <div data-hf-id="hf-qv9p" class="f07-sub">bepaalt wanneer je effect loopt</div>
+
+      <div data-hf-id="hf-4swz" class="f07-cards">
+        <div data-hf-id="hf-c82g" class="f07-card" data-card="0">
+          <div data-hf-id="hf-s90v" class="f07-top"><span data-hf-id="hf-7dff" class="f07-idx">01</span><span data-hf-id="hf-icp1" class="f07-label">geen array</span></div>
+          <div data-hf-id="hf-1ygd" class="f07-code"><span data-hf-id="hf-gnx5">useEffect</span><span data-hf-id="hf-2urj" class="f07-p">(</span><span data-hf-id="hf-okz5">fn</span><span data-hf-id="hf-392k" class="f07-p">)</span></div>
+          <div data-hf-id="hf-k9fw" class="f07-tl" data-tl="0"><div data-hf-id="hf-522n" class="f07-tl-name">renders</div><div data-hf-id="hf-58hp" class="f07-axis"></div></div>
+          <div data-hf-id="hf-okt8" class="f07-rule"></div>
+          <div data-hf-id="hf-p6os" class="f07-cap">na elke render</div>
+        </div>
+        <div data-hf-id="hf-czq9" class="f07-card" data-card="1">
+          <div data-hf-id="hf-z2rz" class="f07-top"><span data-hf-id="hf-6z4e" class="f07-idx">02</span><span data-hf-id="hf-nt5t" class="f07-label">lege array</span></div>
+          <div data-hf-id="hf-proh" class="f07-code"><span data-hf-id="hf-w4x9">useEffect</span><span data-hf-id="hf-a8n3" class="f07-p">(</span><span data-hf-id="hf-qn1h">fn</span><span data-hf-id="hf-4fzn" class="f07-p">, </span><span data-hf-id="hf-4d35" class="f07-d">[]</span><span data-hf-id="hf-weo4" class="f07-p">)</span></div>
+          <div data-hf-id="hf-n8ph" class="f07-tl" data-tl="1"><div data-hf-id="hf-mqwv" class="f07-tl-name">renders</div><div data-hf-id="hf-at75" class="f07-axis"></div></div>
+          <div data-hf-id="hf-edsk" class="f07-rule"></div>
+          <div data-hf-id="hf-2xys" class="f07-cap">1× — na de eerste render</div>
+        </div>
+        <div data-hf-id="hf-gxua" class="f07-card" data-card="2">
+          <div data-hf-id="hf-yogy" class="f07-top"><span data-hf-id="hf-6ktd" class="f07-idx">03</span><span data-hf-id="hf-ilsq" class="f07-label">[count]</span></div>
+          <div data-hf-id="hf-qylk" class="f07-code"><span data-hf-id="hf-xbuc">useEffect</span><span data-hf-id="hf-9uc2" class="f07-p">(</span><span data-hf-id="hf-rtyk">fn</span><span data-hf-id="hf-w76b" class="f07-p">, </span><span data-hf-id="hf-bm7s" class="f07-d">[count]</span><span data-hf-id="hf-v7r1" class="f07-p">)</span></div>
+          <div data-hf-id="hf-r6ti" class="f07-tl" data-tl="2"><div data-hf-id="hf-51ax" class="f07-tl-name">count</div><div data-hf-id="hf-c048" class="f07-axis"></div></div>
+          <div data-hf-id="hf-d6vh" class="f07-rule"></div>
+          <div data-hf-id="hf-nxwk" class="f07-cap">als count verandert</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "07-dependency-array";
+      var P = "f07-";
+      var root = document.querySelector('[data-composition-id="' + ID + '"]');
+      function all(n, scope) { return Array.prototype.slice.call((scope || root).getElementsByClassName(P + n)); }
+      function one(n, scope) { return all(n, scope)[0]; }
+
+      // ---- build mini render timelines (5 ticks each) ----
+      var TICK_X = [24, 120, 216, 312, 408];
+      var DOT_DX = 46;
+      var COUNTS = ["0", "0", "1", "1", "2"];
+      var RUNS = [[0, 1, 2, 3, 4], [0], [0, 2, 4]];
+      var tls = [];
+      for (var k = 0; k < 3; k++) {
+        var host = root.querySelector('[data-tl="' + k + '"]');
+        var rec = { ticks: [], nums: [], ghosts: [], dots: [], cnts: [] };
+        TICK_X.forEach(function (x, i) {
+          var g = document.createElement("div");
+          g.className = P + "ghost";
+          g.style.left = (x + DOT_DX) + "px";
+          host.appendChild(g);
+          rec.ghosts.push(g);
+
+          var t = document.createElement("div");
+          t.className = P + "tick";
+          t.style.left = x + "px";
+          host.appendChild(t);
+          rec.ticks.push(t);
+
+          var n = document.createElement("div");
+          n.className = P + "tnum";
+          n.style.left = x + "px";
+          n.textContent = "r" + (i + 1);
+          host.appendChild(n);
+          rec.nums.push(n);
+
+          if (k === 2) {
+            var c = document.createElement("div");
+            c.className = P + "cnt";
+            c.style.left = x + "px";
+            c.textContent = COUNTS[i];
+            host.appendChild(c);
+            rec.cnts.push(c);
+          }
+        });
+        RUNS[k].forEach(function (i) {
+          var d = document.createElement("div");
+          d.className = P + "dot";
+          d.style.left = (TICK_X[i] + DOT_DX) + "px";
+          host.appendChild(d);
+          rec.dots.push({ el: d, i: i });
+        });
+        tls.push(rec);
+      }
+
+      var E = "power3.out";
+      var tl = gsap.timeline({ paused: true });
+
+      // Scene 1 (0.0–5.5): kicker, headline on "dependency array", sub-line on "bepaalt…"
+      tl.fromTo(one("kicker"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.55, ease: E }, 0.08);
+      all("word").forEach(function (w, i) {
+        tl.fromTo(w, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.7, ease: E }, 1.18 + i * 0.12);
+      });
+      tl.fromTo(one("sub"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, 3.2);
+
+      // Scenes 2–4: each card lands on its cue, ticks sweep in, dots fire on the "when" cue
+      var CARD_AT = [5.6, 8.06, 11.84];
+      var DOT_AT = [6.6, 9.36, 13.34];
+      var DOT_STAGGER = [0.12, 0.12, 0.22];
+      var cards = all("card");
+      cards.forEach(function (card, k) {
+        var at = CARD_AT[k];
+        var r = tls[k];
+        tl.fromTo(card, { opacity: 0, y: 40, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.65, ease: E }, at);
+        tl.fromTo(one("axis", card), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power2.out" }, at + 0.25);
+        r.ticks.forEach(function (t, i) {
+          var tt = at + 0.32 + i * 0.08;
+          tl.fromTo(t, { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.3, ease: E }, tt);
+          tl.fromTo(r.nums[i], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: E }, tt + 0.04);
+          tl.fromTo(r.ghosts[i], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: E }, tt + 0.08);
+          if (r.cnts[i]) {
+            tl.fromTo(r.cnts[i], { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: E }, tt + 0.1);
+          }
+        });
+        tl.fromTo(one("rule", card), { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: E }, at + 0.4);
+
+        r.dots.forEach(function (d, j) {
+          var dt = DOT_AT[k] + j * DOT_STAGGER[k];
+          tl.fromTo(d.el, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, dt);
+          if (k === 2) {
+            var c = r.cnts[d.i];
+            tl.fromTo(c, { color: "#141413" }, { color: "#CC785C", duration: 0.2, ease: "power2.out", immediateRender: false }, dt - 0.04);
+            tl.fromTo(c, { scale: 1 }, { scale: 1.22, duration: 0.2, ease: "power2.out", immediateRender: false }, dt - 0.04);
+            tl.to(c, { scale: 1, duration: 0.35, ease: "power2.out" }, dt + 0.2);
+            tl.to(c, { color: "#141413", duration: 0.5, ease: "power2.inOut" }, dt + 1.1);
+          }
+        });
+        tl.fromTo(one("cap", card), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.55, ease: E }, DOT_AT[k] + 0.1);
+      });
+
+      // hold the triptych still through the tail
+      tl.set({}, {}, 16.78);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

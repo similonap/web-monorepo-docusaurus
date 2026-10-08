@@ -1,0 +1,292 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); }
+    @font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/Inter-400.woff2") format("woff2"); }
+    @font-face { font-family: "Inter"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/Inter-700.woff2") format("woff2"); }
+    @font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); }
+    @font-face { font-family: "JetBrains Mono"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); }
+
+    #root[data-composition-id="12-samenvatting"] {
+      font-variant-ligatures: none;
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      color: #141413;
+      font-family: "Inter", sans-serif;
+    }
+    .f12-bg {
+      position: absolute;
+      inset: 0;
+      background: #FAF9F5;
+    }
+    .f12-stage {
+      position: absolute;
+      inset: 0;
+      container-type: size;
+    }
+    .f12-kicker {
+      position: absolute;
+      left: 80px;
+      top: 72px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.46cqw;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.55);
+    }
+    .f12-kicker-mark {
+      margin-right: 0.5em;
+      color: rgba(20, 20, 19, 0.55);
+    }
+    .f12-head {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 132px;
+      text-align: center;
+      font-family: "EB Garamond", Georgia, serif;
+      font-weight: 400;
+      font-size: 7.3cqw;
+      line-height: 1.02;
+      letter-spacing: -0.022em;
+      white-space: nowrap;
+    }
+    .f12-word {
+      display: inline-block;
+      margin-right: 0.22em;
+    }
+    .f12-spike {
+      display: inline-block;
+      margin-left: 0.18em;
+      color: #CC785C;
+      font-size: 0.62em;
+      vertical-align: 0.42em;
+      transform-origin: 50% 50%;
+    }
+    .f12-chips {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 360px;
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+    }
+    .f12-chip {
+      position: relative;
+      width: 560px;
+      height: 360px;
+      box-sizing: border-box;
+      padding: 34px 36px;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      transform-origin: 50% 50%;
+    }
+    .f12-chip-top {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+    }
+    .f12-idx {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.06em;
+      color: rgba(20, 20, 19, 0.45);
+    }
+    .f12-title {
+      font-family: "Inter", sans-serif;
+      font-size: 2.3cqw;
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: -0.005em;
+    }
+    .f12-code {
+      margin-top: 22px;
+      height: 112px;
+      box-sizing: border-box;
+      padding: 0 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 1.45;
+      color: #FAF9F5;
+      white-space: pre;
+    }
+    .f12-line { display: block; }
+    .f12-p { color: rgba(250, 249, 245, 0.6); }
+    .f12-k { color: #E8A55A; }
+    .f12-m { color: #5DB8A6; }
+    .f12-caret {
+      display: inline-block;
+      width: 3px;
+      height: 30px;
+      margin-left: 2px;
+      vertical-align: -5px;
+      background: #FAF9F5;
+    }
+    .f12-strip {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .f12-tag {
+      padding: 10px 16px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f12-arrow {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(20, 20, 19, 0.45);
+    }
+  </style>
+
+  <div data-hf-id="hf-5s85" id="root" data-composition-id="12-samenvatting" data-width="1920" data-height="1080" data-duration="14.4">
+    <div data-hf-id="hf-25i9" id="f12-bg" class="f12-bg clip" data-start="0" data-duration="14.4" data-track-index="0"></div>
+
+    <div data-hf-id="hf-1vuc" id="f12-stage" class="f12-stage clip" data-start="0" data-duration="14.4" data-track-index="1">
+      <div data-hf-id="hf-oivk" class="f12-kicker"><span data-hf-id="hf-2mcr" class="f12-kicker-mark">✱</span>Samengevat</div>
+
+      <div data-hf-id="hf-uwwa" class="f12-head">
+        <span data-hf-id="hf-2ok3" class="f12-word">Wat</span><span data-hf-id="hf-8giw" class="f12-word">je</span><span data-hf-id="hf-twbt" class="f12-word">start,</span><span data-hf-id="hf-bz6a" class="f12-word">ruim</span><span data-hf-id="hf-5sio" class="f12-word">je</span><span data-hf-id="hf-023h" class="f12-word" style="margin-right:0">op.</span><span data-hf-id="hf-ehac" class="f12-spike">✱</span>
+      </div>
+
+      <div data-hf-id="hf-2oj9" class="f12-chips">
+        <div data-hf-id="hf-6ucy" class="f12-chip">
+          <div data-hf-id="hf-mg7k" class="f12-chip-top"><span data-hf-id="hf-ez75" class="f12-idx">01</span><span data-hf-id="hf-gsso" class="f12-title">side effects</span></div>
+          <div data-hf-id="hf-5g2i" class="f12-code" data-code="0"></div>
+          <div data-hf-id="hf-pl5q" class="f12-strip">
+            <span data-hf-id="hf-uw47" class="f12-tag">render</span><span data-hf-id="hf-shj2" class="f12-arrow">→</span><span data-hf-id="hf-g2mu" class="f12-tag">effect</span>
+          </div>
+        </div>
+        <div data-hf-id="hf-wyye" class="f12-chip">
+          <div data-hf-id="hf-i4iw" class="f12-chip-top"><span data-hf-id="hf-g648" class="f12-idx">02</span><span data-hf-id="hf-66me" class="f12-title">bepaalt wanneer</span></div>
+          <div data-hf-id="hf-9e6j" class="f12-code" data-code="1"></div>
+          <div data-hf-id="hf-bz2a" class="f12-strip">
+            <span data-hf-id="hf-cy6n" class="f12-tag">[ ]</span><span data-hf-id="hf-wazm" class="f12-arrow">→</span><span data-hf-id="hf-fkv7" class="f12-tag">1×</span>
+            <span data-hf-id="hf-ct8d" class="f12-arrow">·</span>
+            <span data-hf-id="hf-yn0e" class="f12-tag">[count]</span><span data-hf-id="hf-wpan" class="f12-arrow">→</span><span data-hf-id="hf-8mat" class="f12-tag">Δ</span>
+          </div>
+        </div>
+        <div data-hf-id="hf-xd9f" class="f12-chip">
+          <div data-hf-id="hf-gxlt" class="f12-chip-top"><span data-hf-id="hf-frt7" class="f12-idx">03</span><span data-hf-id="hf-tbm7" class="f12-title">cleanup</span></div>
+          <div data-hf-id="hf-0qao" class="f12-code" data-code="2"></div>
+          <div data-hf-id="hf-cddb" class="f12-strip">
+            <span data-hf-id="hf-9d3w" class="f12-tag">setInterval</span><span data-hf-id="hf-x3lo" class="f12-arrow">→</span><span data-hf-id="hf-cd1p" class="f12-tag">clearInterval</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "12-samenvatting";
+      var P = "f12-";
+      var root = document.querySelector('[data-composition-id="' + ID + '"]');
+      function all(n, scope) { return Array.prototype.slice.call((scope || root).getElementsByClassName(P + n)); }
+      function one(n, scope) { return all(n, scope)[0]; }
+
+      // ---- code tokens: lines of [text, class] → per-char spans (seek-safe type-on) ----
+      var CODE = [
+        [
+          [["useEffect", "m"], ["(", "p"], ["() ", "p"], ["=>", "k"], [" { ", "p"], ["…", ""], [" })", "p"]]
+        ],
+        [
+          [["[ ]", "p"], ["  ·  ", "p"], ["[", "p"], ["count", ""], ["]", "p"]]
+        ],
+        [
+          [["return", "k"], [" () ", "p"], ["=>", "k"]],
+          [["  ", ""], ["clearInterval", "m"], ["(", "p"], ["handle", ""], [")", "p"]]
+        ]
+      ];
+      var codeChars = [], carets = [];
+      CODE.forEach(function (lines, k) {
+        var el = root.querySelector('[data-code="' + k + '"]');
+        var chars = [], lastLine = null;
+        lines.forEach(function (tokens) {
+          var line = document.createElement("span");
+          line.className = P + "line";
+          el.appendChild(line);
+          lastLine = line;
+          tokens.forEach(function (t) {
+            for (var i = 0; i < t[0].length; i++) {
+              var s = document.createElement("span");
+              s.className = P + "ch" + (t[1] ? " " + P + t[1] : "");
+              s.textContent = t[0][i];
+              line.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var caret = document.createElement("span");
+        caret.className = P + "caret";
+        lastLine.appendChild(caret);
+        codeChars.push(chars);
+        carets.push(caret);
+      });
+
+      var tl = gsap.timeline({ paused: true });
+
+      // Scene 1 (0.0–1.3): kicker; headline area reserved (hidden until its cue)
+      tl.fromTo(one("kicker"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      var words = all("word");
+      words.forEach(function (w) {
+        tl.fromTo(w, { opacity: 0, y: 24 }, { opacity: 0, y: 24, duration: 0.01 }, 0);
+      });
+      tl.fromTo(one("spike"), { opacity: 0, scale: 0.92 }, { opacity: 0, scale: 0.92, duration: 0.01 }, 0);
+
+      // Scenes 2–4: chips land on their spoken cue, code types on, then the mini strip settles
+      var CHIP_AT = [1.38, 5.48, 10.76];
+      var TYPE_DUR = [0.8, 0.5, 0.45];
+      var STRIP_AT = [3.62, 6.7, 12.0];
+      var chips = all("chip");
+      chips.forEach(function (chip, k) {
+        var at = CHIP_AT[k];
+        tl.fromTo(chip, { scale: 0.9, opacity: 0, y: 24 }, { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, at);
+
+        var chars = codeChars[k];
+        var tStart = at + 0.2;
+        var step = TYPE_DUR[k] / chars.length;
+        chars.forEach(function (c, i) {
+          tl.fromTo(c, { display: "none" }, { display: "inline", duration: 0.001, immediateRender: true }, tStart + i * step);
+        });
+        tl.fromTo(carets[k], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, tStart);
+        tl.to(carets[k], { opacity: 0, duration: 0.001 }, tStart + TYPE_DUR[k] + 0.3);
+
+        var stripKids = Array.prototype.slice.call(chip.querySelector("." + P + "strip").children);
+        stripKids.forEach(function (s, i) {
+          tl.fromTo(s, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, STRIP_AT[k] + i * 0.06);
+        });
+      });
+
+      // Scene 4: headline builds per word on "wat je start, ruim je op" (9.52s)
+      words.forEach(function (w, i) {
+        tl.to(w, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 9.52 + i * 0.16);
+      });
+
+      // Scene 5 (12.7–14.4): coral spike settles beside the headline; hold; gentle final fade
+      tl.to(one("spike"), { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 12.72);
+      tl.fromTo(one("stage"), { opacity: 1 }, { opacity: 0, duration: 0.4, ease: "power2.inOut", immediateRender: false }, 14.0);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

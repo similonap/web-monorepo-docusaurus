@@ -1,0 +1,525 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f08-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f08-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f08-kicker {
+      position: absolute;
+      left: 80px;
+      top: 72px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f08-kicker .f08-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f08-panel {
+      position: absolute;
+      left: 80px;
+      top: 150px;
+      width: 1060px;
+      height: 716px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f08-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f08-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f08-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 78px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 32px;
+      line-height: 52px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f08-row { position: relative; height: 52px; white-space: pre; }
+    .f08-ln {
+      position: absolute;
+      left: 0;
+      width: 72px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 24px;
+    }
+    .f08-txt { position: absolute; left: 100px; top: 0; white-space: pre; }
+    .f08-ch { display: inline; }
+    .f08-kw { color: #CC785C; }
+    .f08-fn { color: #E8A55A; }
+    .f08-num { color: #E8A55A; }
+    .f08-dim { color: rgba(250, 249, 245, 0.6); }
+    .f08-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f08-caret {
+      position: absolute;
+      top: 9px;
+      left: 0;
+      width: 3px;
+      height: 34px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f08-effect-tag {
+      position: absolute;
+      left: 560px;
+      top: 7px;
+      height: 38px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      border: 1px solid rgba(232, 165, 90, 0.7);
+      border-radius: 6px;
+      background: #252320;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      color: #E8A55A;
+      opacity: 0;
+    }
+
+    /* right column */
+    .f08-col {
+      position: absolute;
+      left: 1220px;
+      top: 150px;
+      width: 620px;
+      height: 716px;
+    }
+
+    /* slider control card */
+    .f08-card {
+      position: absolute;
+      left: 0; top: 0;
+      width: 620px;
+      height: 206px;
+      box-sizing: border-box;
+      padding: 30px 44px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f08-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: "JetBrains Mono", monospace;
+    }
+    .f08-card-lab {
+      font-size: 24px;
+      letter-spacing: 0.04em;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f08-card-val {
+      font-size: 40px;
+      font-weight: 700;
+      color: #141413;
+    }
+    .f08-track {
+      position: absolute;
+      left: 44px;
+      top: 118px;
+      width: 530px;
+      height: 6px;
+      border-radius: 9999px;
+      background: rgba(20, 20, 19, 0.14);
+    }
+    .f08-fill {
+      position: absolute;
+      left: 0; top: 0;
+      width: 530px;
+      height: 6px;
+      border-radius: 9999px;
+      background: #141413;
+      transform-origin: left center;
+    }
+    .f08-thumb {
+      position: absolute;
+      left: 44px;
+      top: 104px;
+      width: 34px;
+      height: 34px;
+      margin-left: -17px;
+      border-radius: 50%;
+      background: #141413;
+      border: 3px solid #FAF9F5;
+      box-sizing: border-box;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.24);
+    }
+    .f08-ends {
+      position: absolute;
+      left: 44px;
+      top: 146px;
+      width: 530px;
+      display: flex;
+      justify-content: space-between;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 18px;
+      color: rgba(20, 20, 19, 0.45);
+    }
+
+    /* timers list */
+    .f08-label {
+      position: absolute;
+      left: 0;
+      top: 246px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f08-chip {
+      position: absolute;
+      left: 0;
+      width: 380px;
+      height: 62px;
+      box-sizing: border-box;
+      padding: 0 22px 0 58px;
+      display: flex;
+      align-items: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      color: #141413;
+      white-space: pre;
+    }
+    .f08-chip .f08-ms { color: rgba(20, 20, 19, 0.55); }
+    .f08-dot, .f08-ring {
+      position: absolute;
+      left: 22px;
+      top: 22px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      box-sizing: border-box;
+    }
+    .f08-dot { background: rgba(20, 20, 19, 0.7); }
+    .f08-ring { border: 2px solid rgba(20, 20, 19, 0.5); opacity: 0; }
+    #f08-chip1 { top: 290px; }
+    #f08-chip2 { top: 366px; }
+    #f08-chip3 { top: 442px; }
+
+    .f08-bracket {
+      position: absolute;
+      left: 398px;
+      top: 296px;
+      width: 14px;
+      height: 126px;
+      border: 2px solid #CC785C;
+      border-left: none;
+      border-radius: 0 6px 6px 0;
+      box-sizing: border-box;
+      transform-origin: left center;
+    }
+    .f08-note {
+      position: absolute;
+      left: 428px;
+      top: 340px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      line-height: 1.25;
+      color: #CC785C;
+      letter-spacing: 0.02em;
+    }
+
+    /* readout */
+    .f08-divider {
+      position: absolute;
+      left: 0;
+      top: 544px;
+      width: 620px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.2);
+      transform-origin: left center;
+    }
+    .f08-num-lab {
+      position: absolute;
+      left: 0;
+      top: 566px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(20, 20, 19, 0.55);
+    }
+    .f08-figure {
+      position: absolute;
+      left: 0;
+      top: 590px;
+      font-family: "EB Garamond", serif;
+      font-size: 112px;
+      line-height: 1;
+      letter-spacing: -0.025em;
+      color: #141413;
+      font-variant-numeric: tabular-nums;
+    }
+    .f08-active {
+      position: absolute;
+      right: 0;
+      top: 600px;
+      text-align: right;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 1.5;
+      color: #141413;
+    }
+    .f08-expect {
+      display: block;
+      font-size: 22px;
+      color: rgba(20, 20, 19, 0.55);
+    }
+  </style>
+
+  <div data-hf-id="hf-ehv1" id="root" data-composition-id="08-cleanup-probleem" data-width="1920" data-height="1080" data-duration="19.66">
+    <div data-hf-id="hf-vtzg" class="f08-bg clip" id="f08-bg" data-start="0" data-duration="19.66" data-track-index="0"></div>
+
+    <div data-hf-id="hf-g9v3" class="f08-stage clip" id="f08-stage" data-start="0" data-duration="19.66" data-track-index="1">
+      <div data-hf-id="hf-rgd2" class="f08-kicker" id="f08-kicker"><span data-hf-id="hf-rwzb" class="f08-spike">✱</span>Opgelet</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-vy8c" class="f08-panel" id="f08-panel">
+        <div data-hf-id="hf-bega" class="f08-titlebar">Timer.tsx</div>
+        <div data-hf-id="hf-pf5o" class="f08-code">
+          <div data-hf-id="hf-irkp" class="f08-row"><span data-hf-id="hf-qw9j" class="f08-ln">1</span><span data-hf-id="hf-uim4" class="f08-txt"><span data-hf-id="hf-btjz" class="f08-kw">const</span> <span data-hf-id="hf-cxff" class="f08-fn">Timer</span> = (<span data-hf-id="hf-6ds9" class="f08-hl" id="f08-prop">{ interval }</span>: <span data-hf-id="hf-of7d" class="f08-dim">TimerProps</span>) =&gt; {</span></div>
+          <div data-hf-id="hf-rrot" class="f08-row"><span data-hf-id="hf-qhyi" class="f08-ln">2</span><span data-hf-id="hf-adgh" class="f08-txt">  <span data-hf-id="hf-dn1b" class="f08-kw">const</span> [number, setNumber] = <span data-hf-id="hf-yz66" class="f08-fn">useState</span>(<span data-hf-id="hf-87ai" class="f08-num">0</span>);</span></div>
+          <div data-hf-id="hf-sylw" class="f08-row"><span data-hf-id="hf-q3nh" class="f08-ln">3</span></div>
+          <div data-hf-id="hf-skav" class="f08-row"><span data-hf-id="hf-svso" class="f08-ln">4</span><span data-hf-id="hf-e4ef" class="f08-txt" id="f08-l4"></span><span data-hf-id="hf-sdvn" class="f08-caret" id="f08-c4"></span><span data-hf-id="hf-036p" class="f08-effect-tag" id="f08-tag">effect ↻</span></div>
+          <div data-hf-id="hf-tr7y" class="f08-row"><span data-hf-id="hf-shhn" class="f08-ln">5</span><span data-hf-id="hf-7yom" class="f08-txt" id="f08-l5"></span><span data-hf-id="hf-ofrm" class="f08-caret" id="f08-c5"></span></div>
+          <div data-hf-id="hf-tcwx" class="f08-row"><span data-hf-id="hf-s36m" class="f08-ln">6</span><span data-hf-id="hf-40kl" class="f08-txt" id="f08-l6"></span><span data-hf-id="hf-khnl" class="f08-caret" id="f08-c6"></span></div>
+          <div data-hf-id="hf-uju0" class="f08-row"><span data-hf-id="hf-rovl" class="f08-ln">7</span><span data-hf-id="hf-38ws" class="f08-txt" id="f08-l7"></span><span data-hf-id="hf-jpzs" class="f08-caret" id="f08-c7"></span></div>
+          <div data-hf-id="hf-u5iz" class="f08-row"><span data-hf-id="hf-uh0s" class="f08-ln">8</span><span data-hf-id="hf-1hzt" class="f08-txt">  }, <span data-hf-id="hf-p9ye" class="f08-hl" id="f08-deps">[interval]</span>);</span></div>
+          <div data-hf-id="hf-vcg2" class="f08-row"><span data-hf-id="hf-u2pr" class="f08-ln">9</span></div>
+          <div data-hf-id="hf-uy51" class="f08-row"><span data-hf-id="hf-q8it" class="f08-ln">10</span><span data-hf-id="hf-r1vm" class="f08-txt">  <span data-hf-id="hf-f3vm" class="f08-kw">return</span> <span data-hf-id="hf-134q" class="f08-dim">&lt;p&gt;</span>{number}<span data-hf-id="hf-uyuz" class="f08-dim">&lt;/p&gt;</span>;</span></div>
+          <div data-hf-id="hf-vlk7" class="f08-row"><span data-hf-id="hf-qmtu" class="f08-ln">11</span><span data-hf-id="hf-zl2t" class="f08-txt">}</span></div>
+        </div>
+        <div data-hf-id="hf-unxz" class="f08-status">useEffect · deps [interval] · geen cleanup</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-pi4b" class="f08-col">
+        <div data-hf-id="hf-gtn2" class="f08-card" id="f08-card">
+          <div data-hf-id="hf-zowz" class="f08-card-top">
+            <span data-hf-id="hf-0gvz" class="f08-card-lab">interval</span>
+            <span data-hf-id="hf-zdx5" class="f08-card-val" id="f08-val">1000ms</span>
+          </div>
+          <div data-hf-id="hf-dn70" class="f08-track"><div data-hf-id="hf-9m4m" class="f08-fill" id="f08-fill"></div></div>
+          <div data-hf-id="hf-41wg" class="f08-thumb" id="f08-thumb"></div>
+          <div data-hf-id="hf-ppwp" class="f08-ends"><span data-hf-id="hf-8zld">200</span><span data-hf-id="hf-sjq8">1000</span></div>
+        </div>
+
+        <div data-hf-id="hf-swju" class="f08-label" id="f08-label">timers</div>
+
+        <div data-hf-id="hf-3tqx" class="f08-chip" id="f08-chip1"><span data-hf-id="hf-yvqs" class="f08-ring" id="f08-ring1"></span><span data-hf-id="hf-6qmw" class="f08-dot" id="f08-dot1"></span>timer #1 · <span data-hf-id="hf-c5hz" class="f08-ms">1000ms</span></div>
+        <div data-hf-id="hf-ty1n" class="f08-chip" id="f08-chip2"><span data-hf-id="hf-7jmn" class="f08-ring" id="f08-ring2"></span><span data-hf-id="hf-feir" class="f08-dot" id="f08-dot2"></span>timer #2 · <span data-hf-id="hf-5hlh" class="f08-ms">500ms</span></div>
+        <div data-hf-id="hf-rmkh" class="f08-chip" id="f08-chip3"><span data-hf-id="hf-3lim" class="f08-ring" id="f08-ring3"></span><span data-hf-id="hf-bgeq" class="f08-dot" id="f08-dot3"></span>timer #3 · <span data-hf-id="hf-nmo0" class="f08-ms">200ms</span></div>
+
+        <div data-hf-id="hf-rybg" class="f08-bracket" id="f08-bracket"></div>
+        <div data-hf-id="hf-ekbp" class="f08-note" id="f08-note">nooit<br data-hf-id="hf-x5px">gestopt</div>
+
+        <div data-hf-id="hf-0gde" class="f08-divider" id="f08-divider"></div>
+        <div data-hf-id="hf-zp91" class="f08-num-lab" id="f08-num-lab">number</div>
+        <div data-hf-id="hf-3tou" class="f08-figure" id="f08-figure">0</div>
+        <div data-hf-id="hf-7psa" class="f08-active" id="f08-active"><span data-hf-id="hf-u70k" id="f08-active-n">1 timer actief</span><span data-hf-id="hf-vawu" class="f08-expect" id="f08-expect">verwacht: 1</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 19.66;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 32;
+      var root = document.querySelector('[data-composition-id="08-cleanup-probleem"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(lineSel, caretSel, segments, start, per) {
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          for (var i = 0; i < seg.t.length; i++) {
+            var s = document.createElement("span");
+            s.className = "f08-ch" + (seg.c ? " " + seg.c : "");
+            s.textContent = seg.t[i];
+            line.appendChild(s);
+            chars.push(s);
+          }
+        });
+        var x0 = 100;
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: x0 }, start - 0.08);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.06, ease: "power1.out" }, at);
+          tl.set(caret, { x: x0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.12);
+        return end;
+      }
+
+      function wash(sel, on, off) {
+        tl.to(sel, { backgroundColor: "rgba(232, 165, 90, 0.28)", duration: 0.35, ease: "power1.out" }, on);
+        tl.to(sel, { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.5, ease: "power1.inOut" }, off);
+      }
+
+      // ---- Scene 1 (0.0–5.3): kicker + code; lines 4–7 type on; prop wash; slider card ----
+      tl.fromTo("#f08-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f08-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.15);
+
+      var per = 0.022;
+      var t = typeLine("#f08-l4", "#f08-c4", [
+        { t: "  " }, { t: "useEffect", c: "f08-fn" }, { t: "(() => {" }
+      ], 1.5, per);
+      t = typeLine("#f08-l5", "#f08-c5", [
+        { t: "    " }, { t: "let", c: "f08-kw" }, { t: " handle = " }, { t: "setInterval", c: "f08-fn" }, { t: "(() => {" }
+      ], t + 0.1, per);
+      t = typeLine("#f08-l6", "#f08-c6", [
+        { t: "      " }, { t: "setNumber", c: "f08-fn" }, { t: "(number => number + " }, { t: "1", c: "f08-num" }, { t: ");" }
+      ], t + 0.1, per);
+      typeLine("#f08-l7", "#f08-c7", [
+        { t: "    }, interval);" }
+      ], t + 0.1, per);
+
+      wash("#f08-prop", 2.02, 3.6);
+
+      // slider: 200..1000ms mapped onto a 530px track
+      var TRACK = 530;
+      var pos = function (v) { return (v - 200) / 800 * TRACK; };
+      tl.fromTo("#f08-card", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 4.02);
+      tl.set("#f08-thumb", { x: pos(1000) }, 0);
+      tl.set("#f08-fill", { scaleX: 1 }, 0);
+
+      // ---- Scene 2 (5.3–8.6): deps wash; timers label + chip #1 ----
+      wash("#f08-deps", 5.88, 7.6);
+      tl.fromTo("#f08-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 6.8);
+      tl.fromTo("#f08-chip1", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 7.0);
+      tl.fromTo("#f08-divider", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, 7.15);
+      tl.fromTo(["#f08-num-lab", "#f08-figure"], { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.08 }, 7.25);
+      tl.fromTo("#f08-active", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 7.4);
+
+      // ---- Scene 3 (8.6–13.9): slider moves → effect re-runs → new timers ----
+      var valEl = q("#f08-val");
+      function glide(from, to, at, dur) {
+        var o = { v: from };
+        tl.fromTo(o, { v: from }, {
+          v: to, duration: dur, ease: "power2.inOut", immediateRender: false,
+          onUpdate: function () { valEl.textContent = Math.round(o.v / 10) * 10 + "ms"; }
+        }, at);
+        tl.fromTo("#f08-thumb", { x: pos(from) }, { x: pos(to), duration: dur, ease: "power2.inOut", immediateRender: false }, at);
+        tl.fromTo("#f08-fill", { scaleX: pos(from) / TRACK }, { scaleX: Math.max(pos(to) / TRACK, 0.001), duration: dur, ease: "power2.inOut", immediateRender: false }, at);
+        tl.set(valEl, { textContent: to + "ms" }, at + dur);
+      }
+      glide(1000, 500, 9.5, 0.7);
+      glide(500, 200, 13.2, 0.38);
+
+      function flashTag(at) {
+        tl.fromTo("#f08-tag", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out", immediateRender: false }, at);
+        tl.to("#f08-tag", { opacity: 0.35, duration: 0.5, ease: "power1.inOut" }, at + 1.4);
+      }
+      tl.set("#f08-tag", { opacity: 0 }, 0);
+      flashTag(10.34);
+      flashTag(13.3);
+
+      tl.fromTo("#f08-chip2", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 12.62);
+      tl.fromTo("#f08-chip3", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 13.6);
+      tl.set("#f08-active-n", { textContent: "2 timers actief" }, 12.62);
+      tl.set("#f08-active-n", { textContent: "3 timers actief" }, 13.6);
+
+      // ---- deterministic ticks: each timer fires at fixed times from when it appears ----
+      var timers = [
+        { n: 1, start: 7.0, period: 1.0 },
+        { n: 2, start: 12.62, period: 0.5 },
+        { n: 3, start: 13.6, period: 0.2 }
+      ];
+      var events = [];
+      timers.forEach(function (tm) {
+        var pulse = Math.min(0.4, tm.period * 0.9);
+        for (var k = 1; ; k++) {
+          var at = Math.round((tm.start + k * tm.period) * 1000) / 1000;
+          if (at > DUR - 0.05) break;
+          events.push(at);
+          tl.fromTo("#f08-dot" + tm.n, { scale: 1.7 }, { scale: 1, duration: pulse, ease: "power2.out", immediateRender: false }, at);
+          tl.fromTo("#f08-ring" + tm.n, { scale: 1, opacity: 0.8 }, { scale: 2.6, opacity: 0, duration: pulse, ease: "power1.out", immediateRender: false }, at);
+        }
+      });
+      // the shared counter: every tick of every timer bumps `number`
+      events.sort(function (a, b) { return a - b; });
+      var figEl = q("#f08-figure");
+      events.forEach(function (at, i) {
+        tl.set(figEl, { textContent: String(i + 1) }, at);
+      });
+
+      // ---- Scene 4 (13.9–19.16): old timers go coral, never stopped, keep ticking ----
+      tl.to(["#f08-chip1", "#f08-chip2"], { borderColor: "rgba(204, 120, 92, 1)", duration: 0.4, ease: "power1.out", stagger: 0.1 }, 14.22);
+      tl.to(["#f08-dot1", "#f08-dot2"], { backgroundColor: "#CC785C", duration: 0.3, ease: "power1.out", stagger: 0.1 }, 14.22);
+      tl.to(["#f08-ring1", "#f08-ring2"], { borderColor: "rgba(204, 120, 92, 0.8)", duration: 0.3, ease: "power1.out" }, 14.22);
+      tl.fromTo("#f08-bracket", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: "power3.out" }, 15.6);
+      tl.fromTo("#f08-note", { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 15.7);
+      tl.fromTo("#f08-active", { scale: 1 }, { scale: 1.08, duration: 0.25, ease: "power2.out", immediateRender: false, transformOrigin: "100% 50%" }, 16.9);
+      tl.to("#f08-active", { scale: 1, duration: 0.4, ease: "power2.inOut" }, 17.15);
+      tl.fromTo("#f08-expect", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 17.1);
+
+      tl.set({}, {}, DUR);
+      window.__timelines["08-cleanup-probleem"] = tl;
+    })();
+  </script>
+</template>
