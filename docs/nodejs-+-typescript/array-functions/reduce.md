@@ -31,7 +31,7 @@ for (let curr of numbers) {
     acc = acc + curr;
 }
 
-let sum: number = curr;
+let sum: number = acc;
 ```
 
 Je ziet hier dat de accumulator eerst op een `initialValue` van 0 wordt gezet. Vervolgens wordt voor elk element van de array een berekening uitgevoerd `(acc + curr)` en wordt de uitkomst toegewezen als de nieuwe waarde van de accumulator. Dit herhaalt zich tot er geen elementen meer in de array over zijn.
@@ -52,7 +52,7 @@ const letters: string[] = ['a', 'b', 'a', 'c', 'b', 'a', 'd', 'c', 'b', 'd'];
 let acc: Record<string, number> = {};
 
 for (let curr of letters) {
-    acc = (acc[curr] ?? 0) + 1
+    acc[curr] = (acc[curr] ?? 0) + 1
 }
 
 let freq: Record<string, number> = acc;

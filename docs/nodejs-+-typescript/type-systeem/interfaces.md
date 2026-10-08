@@ -261,18 +261,6 @@ Dan kan je dit bestand inlezen aan de hand van het `import` statement:
 import data from "./users.json"  with { type: "json" };
 ```
 
-Je moet hier wel op letten dat je in je `tsconfig.json` bestand de volgende optie hebt aangezet:
-
-```json
-{
-  "compilerOptions": {
-    ...
-    "resolveJsonModule": true
-    ...
-  }
-}
-```
-
 Je moet dan nog wel de inhoud van `usersJson` in een variabele of constante steken:
 
 ```typescript
