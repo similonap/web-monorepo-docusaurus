@@ -3,6 +3,7 @@ sidebar_position: 6
 ---
 
 import GoodsSearch from '@site/src/components/Course/GoodsSearch';
+import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # State
 
@@ -264,6 +265,8 @@ De uitwerking van dit voorbeeld kan je vinden op [Voorbeelden](./voorbeelden.md#
 :::
 
 ## Array als state
+
+<YouTubeVideo src="https://www.youtube.com/watch?v=0-Gfmo2V5rA" title="Array als state" />
 
 Een array als state definieren gebeurd op identiek dezelfde manier als een state met andere data types:
 

@@ -11,7 +11,8 @@
     "clear": "node scripts/course.cjs clear",
     "typecheck": "node scripts/course.cjs typecheck",
     "test": "node --test scripts/tests/*.test.cjs",
-    "test:exercises": "node scripts/test-exercises.cjs"
+    "test:exercises": "node scripts/test-exercises.cjs",
+    "videos": "node scripts/render-videos.cjs"
   },
   "dependencies": {
     "@docusaurus/core": "3.9.2",

@@ -28,3 +28,7 @@ yarn-error.log*
 /.course/
 /.course-tmp-*/
 /build_output.log
+
+# Gerenderde video's (staan op YouTube; broncode in videos/ blijft versiebeheerd)
+/static/videos/
+/videos/*/renders/
