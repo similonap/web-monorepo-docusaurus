@@ -1,0 +1,312 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EB_Garamond-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f07p-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f07p-stage { position: absolute; inset: 0; }
+
+    .f07p-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f07p-kicker .f07p-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f07p-panel {
+      position: absolute;
+      left: 80px;
+      top: 180px;
+      width: 1060px;
+      height: 600px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f07p-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f07p-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f07p-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 96px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      line-height: 44px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f07p-row { position: relative; height: 44px; white-space: pre; }
+    .f07p-ln {
+      position: absolute;
+      left: 0;
+      width: 60px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 22px;
+    }
+    .f07p-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f07p-kw { color: #CC785C; }
+    .f07p-fn { color: #E8A55A; }
+    .f07p-str { color: #5DB8A6; }
+    .f07p-dim { color: rgba(250, 249, 245, 0.6); }
+    .f07p-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f07p-coral { border-radius: 4px; background: rgba(204, 120, 92, 0); }
+    .f07p-ch { display: none; }
+    .f07p-caret {
+      position: absolute;
+      top: 7px;
+      left: 0;
+      width: 3px;
+      height: 30px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+
+    /* right column */
+    .f07p-hero {
+      position: absolute;
+      left: 1256px;
+      top: 168px;
+      font-family: "EB Garamond", serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 156px;
+      line-height: 1.05;
+      letter-spacing: -0.012em;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f07p-cmp-label {
+      position: absolute;
+      left: 1236px;
+      top: 458px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f07p-card {
+      position: absolute;
+      left: 1236px;
+      top: 510px;
+      width: 604px;
+      height: 250px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    .f07p-crow {
+      position: absolute;
+      left: 32px;
+      right: 28px;
+      height: 92px;
+      display: flex;
+      align-items: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      color: #141413;
+      white-space: pre;
+      font-variant-ligatures: none;
+    }
+    .f07p-crow-1 { top: 22px; }
+    .f07p-crow-2 { top: 134px; }
+    .f07p-divider {
+      position: absolute;
+      left: 32px;
+      right: 32px;
+      top: 124px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.12);
+    }
+    .f07p-tag { display: inline-block; width: 7ch; color: rgba(20, 20, 19, 0.62); }
+    .f07p-attr { border-radius: 4px; background: rgba(232, 165, 90, 0); padding: 0 2px; margin: 0 -2px; }
+    .f07p-cdim { color: rgba(20, 20, 19, 0.62); }
+    .f07p-src { margin-left: auto; font-family: "Inter", sans-serif; font-size: 26px; color: rgba(20, 20, 19, 0.55); }
+  </style>
+
+  <div data-hf-id="hf-qdr2" id="root" data-composition-id="07-props" data-width="1920" data-height="1080" data-duration="11.76">
+    <div data-hf-id="hf-a7c1" class="f07p-bg clip" id="f07p-bg" data-start="0" data-duration="11.76" data-track-index="0"></div>
+
+    <div data-hf-id="hf-e05e" class="f07p-stage clip" id="f07p-stage" data-start="0" data-duration="11.76" data-track-index="1">
+      <div data-hf-id="hf-3v6i" class="f07p-kicker" id="f07p-kicker"><span data-hf-id="hf-nks6" class="f07p-spike">✱</span>Props</div>
+
+      <div data-hf-id="hf-cwte" class="f07p-panel" id="f07p-panel">
+        <div data-hf-id="hf-tobd" class="f07p-titlebar">App.tsx</div>
+        <div data-hf-id="hf-zskj" class="f07p-code">
+          <div data-hf-id="hf-fjf4" class="f07p-row"><span data-hf-id="hf-xqq8" class="f07p-ln">1</span><span data-hf-id="hf-qsg4" class="f07p-txt"><span data-hf-id="hf-p6ig" class="f07p-kw">const</span> <span data-hf-id="hf-212u" class="f07p-fn">App</span> = () <span data-hf-id="hf-a19y" class="f07p-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-q8rs" class="f07p-row"><span data-hf-id="hf-wjt5" class="f07p-ln">2</span><span data-hf-id="hf-mhbv" class="f07p-txt">  <span data-hf-id="hf-dbz7" class="f07p-kw">return</span> (</span></div>
+          <div data-hf-id="hf-p1up" class="f07p-row"><span data-hf-id="hf-wy46" class="f07p-ln">3</span><span data-hf-id="hf-7j4h" class="f07p-txt">    <span data-hf-id="hf-xzst" class="f07p-dim">&lt;&gt;</span></span></div>
+          <div data-hf-id="hf-pg5q" class="f07p-row"><span data-hf-id="hf-vr73" class="f07p-ln">4</span><span data-hf-id="hf-obnp" class="f07p-txt">      <span data-hf-id="hf-oxap" class="f07p-dim">&lt;</span><span data-hf-id="hf-m4e8" class="f07p-hl f07p-fn" id="f07p-badge1">Badge</span><span data-hf-id="hf-efh7" id="f07p-ins1"></span><span data-hf-id="hf-8742" class="f07p-dim"> /&gt;</span></span><span data-hf-id="hf-p5hp" class="f07p-caret" id="f07p-caret4"></span></div>
+          <div data-hf-id="hf-o98n" class="f07p-row"><span data-hf-id="hf-w5i4" class="f07p-ln">5</span><span data-hf-id="hf-piks" class="f07p-txt">      <span data-hf-id="hf-49ol" class="f07p-dim">&lt;</span><span data-hf-id="hf-aa1h" class="f07p-hl f07p-fn" id="f07p-badge2">Badge</span><span data-hf-id="hf-5rlc" id="f07p-ins2"></span><span data-hf-id="hf-iusm" class="f07p-dim"> /&gt;</span></span><span data-hf-id="hf-odtw" class="f07p-caret" id="f07p-caret5"></span></div>
+          <div data-hf-id="hf-onjo" class="f07p-row"><span data-hf-id="hf-uyl1" class="f07p-ln">6</span><span data-hf-id="hf-p49r" class="f07p-txt">    <span data-hf-id="hf-a4ks" class="f07p-dim">&lt;/&gt;</span></span></div>
+          <div data-hf-id="hf-ngml" class="f07p-row"><span data-hf-id="hf-vcw2" class="f07p-ln">7</span><span data-hf-id="hf-a8vd" class="f07p-txt">  );</span></div>
+          <div data-hf-id="hf-nuxm" class="f07p-row"><span data-hf-id="hf-u5yz" class="f07p-ln">8</span><span data-hf-id="hf-27pg" class="f07p-txt">}</span></div>
+        </div>
+        <div data-hf-id="hf-c403" class="f07p-status">App · component</div>
+      </div>
+
+      <div data-hf-id="hf-6pm8" class="f07p-hero" id="f07p-hero">props</div>
+
+      <div data-hf-id="hf-ho9y" class="f07p-cmp-label" id="f07p-cmp-label">zoals html</div>
+      <div data-hf-id="hf-3p0a" class="f07p-card" id="f07p-card">
+        <div data-hf-id="hf-fw7t" class="f07p-crow f07p-crow-1" id="f07p-crow1"><span data-hf-id="hf-ou9u" class="f07p-tag">&lt;img</span><span data-hf-id="hf-1muk" class="f07p-attr" id="f07p-attr1">src</span>=<span data-hf-id="hf-i0z3">"logo.png"</span><span data-hf-id="hf-w3h5" class="f07p-cdim"> /&gt;</span><span data-hf-id="hf-08xm" class="f07p-src">HTML</span></div>
+        <div data-hf-id="hf-d0b6" class="f07p-divider" id="f07p-divider"></div>
+        <div data-hf-id="hf-nqix" class="f07p-crow f07p-crow-2" id="f07p-crow2"><span data-hf-id="hf-xhre" class="f07p-tag">&lt;Badge</span><span data-hf-id="hf-y2kt" class="f07p-attr" id="f07p-attr2">label</span>=<span data-hf-id="hf-dvuf">"Nieuw"</span><span data-hf-id="hf-k0vh" class="f07p-cdim"> /&gt;</span><span data-hf-id="hf-gye2" class="f07p-src">React</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 11.76;
+      var CW = 0.6;
+      var FS = 28;
+      var X0 = 84;
+      var root = document.querySelector('[data-composition-id="07-props"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      var AMBER = "rgba(232, 165, 90, 0.24)";
+      var AMBER0 = "rgba(232, 165, 90, 0)";
+
+      // insert-type helper: characters are display:none until typed, so the
+      // trailing " />" is pushed right as the attribute grows.
+      function typeInsert(hostSel, caretSel, prefixLen, segments, start, per) {
+        var host = q(hostSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var target = host;
+          if (seg.wrap) {
+            target = document.createElement("span");
+            target.className = seg.wrap;
+            target.id = seg.id;
+            host.appendChild(target);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "f07p-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              target.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(caret, { opacity: 1, x: X0 + prefixLen * chPx }, start - 0.08);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.set(el, { display: "inline" }, at);
+          tl.set(caret, { x: X0 + (prefixLen + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.04);
+        return end;
+      }
+
+      // ---- Scene 1 (0.0-3.0) ----
+      tl.fromTo("#f07p-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      // "Badge" (0.72): code surface with two bare <Badge /> usages
+      tl.fromTo("#f07p-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.66);
+      // "hergebruiken" (1.76): amber wash on both Badge names
+      tl.to(["#f07p-badge1", "#f07p-badge2"], { backgroundColor: AMBER, duration: 0.35, ease: "power1.out" }, 1.76);
+
+      // ---- Scene 2 (3.0-6.1) ----
+      // "oplossing" (4.0): washes clear
+      tl.to(["#f07p-badge1", "#f07p-badge2"], { backgroundColor: AMBER0, duration: 0.5, ease: "power1.inOut" }, 4.0);
+      // "props." (5.36): hero word lands
+      tl.fromTo("#f07p-hero", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 5.36);
+
+      // ---- Scene 3 (6.1-8.5) ----
+      var per = 0.021;
+      // "geeft" (6.28): label="Nieuw" into line 4
+      typeInsert("#f07p-ins1", "#f07p-caret4", 12, [
+        { t: " " },
+        { t: "label" },
+        { t: "=" },
+        { t: "\"Nieuw\"", c: "f07p-str" }
+      ], 6.28, per);
+      // "label" (6.64): label="Uitverkocht" into line 5
+      typeInsert("#f07p-ins2", "#f07p-caret5", 12, [
+        { t: " " },
+        { wrap: "f07p-coral", id: "f07p-coral-uit", parts: [
+          { t: "label" },
+          { t: "=" },
+          { t: "\"Uitverkocht\"", c: "f07p-str" }
+        ] }
+      ], 6.64, per);
+      // "component" (7.84): coral wash on label="Uitverkocht"
+      tl.to("#f07p-coral-uit", { backgroundColor: "rgba(204, 120, 92, 0.3)", duration: 0.4, ease: "power1.out" }, 7.84);
+
+      // ---- Scene 4 (8.5-11.26) ----
+      // "attribuut" (9.2): comparison card with <img src="logo.png" />
+      tl.fromTo("#f07p-cmp-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.2);
+      tl.fromTo("#f07p-card", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 9.2);
+      tl.fromTo("#f07p-crow1", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.3);
+      // "HTML" (9.84): second line lands, src + label washed and aligned
+      tl.fromTo("#f07p-divider", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 9.84);
+      tl.fromTo("#f07p-crow2", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.84);
+      tl.to(["#f07p-attr1", "#f07p-attr2"], { backgroundColor: "rgba(232, 165, 90, 0.34)", duration: 0.4, ease: "power1.out" }, 10.2);
+
+      // hold
+      tl.set({}, {}, DUR);
+      window.__timelines["07-props"] = tl;
+    })();
+  </script>
+</template>

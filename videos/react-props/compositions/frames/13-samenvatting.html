@@ -1,0 +1,177 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); }
+    @font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/Inter-400.woff2") format("woff2"); }
+    @font-face { font-family: "Inter"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/Inter-700.woff2") format("woff2"); }
+    @font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); }
+
+    #root[data-composition-id="13-samenvatting"] {
+      font-variant-ligatures: none;
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      color: #141413;
+      font-family: "Inter", sans-serif;
+    }
+    .f13s-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f13s-stage { position: absolute; inset: 0; container-type: size; }
+    .f13s-kicker {
+      position: absolute; left: 80px; top: 72px;
+      font-family: "JetBrains Mono", monospace; font-size: 1.46cqw;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.55);
+    }
+    .f13s-kicker-mark { margin-right: 0.5em; color: rgba(20, 20, 19, 0.55); }
+    .f13s-head {
+      position: absolute; left: 160px; top: 118px;
+      font-family: "EB Garamond", Georgia, serif; font-weight: 400;
+      font-size: 6.2cqw; line-height: 1.02; letter-spacing: -0.022em;
+      white-space: nowrap;
+    }
+    .f13s-word { display: inline-block; margin-right: 0.22em; }
+    .f13s-list { position: absolute; left: 160px; top: 270px; width: 1600px; }
+    .f13s-row { position: relative; height: 130px; display: flex; align-items: center; }
+    .f13s-rule {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+      background: rgba(20, 20, 19, 0.12); transform-origin: 0 50%;
+    }
+    .f13s-rule-top { top: 0; bottom: auto; }
+    .f13s-slot {
+      width: 48px; flex: 0 0 48px;
+      font-family: "JetBrains Mono", monospace; font-size: 30px;
+      color: rgba(20, 20, 19, 0.22);
+    }
+    .f13s-idx {
+      width: 84px; flex: 0 0 84px;
+      font-family: "JetBrains Mono", monospace; font-size: 28px;
+      letter-spacing: 0.06em; color: rgba(20, 20, 19, 0.5);
+    }
+    .f13s-text {
+      flex: 1 1 auto;
+      font-family: "Inter", sans-serif; font-size: 2.08cqw;
+      line-height: 1.3; letter-spacing: -0.005em; white-space: nowrap;
+    }
+    .f13s-part { display: inline-block; white-space: pre; }
+    .f13s-em { font-weight: 700; }
+    .f13s-chip {
+      flex: 0 0 auto; padding: 14px 24px;
+      background: #EFE9DE; border: 1px solid rgba(20, 20, 19, 0.12); border-radius: 8px;
+      font-family: "JetBrains Mono", monospace; font-size: 30px; line-height: 1;
+      color: #141413; white-space: pre;
+    }
+    .f13s-spike {
+      position: absolute; left: 160px; top: 270px; width: 48px; height: 130px;
+      display: flex; align-items: center;
+      font-family: "JetBrains Mono", monospace; font-size: 30px; color: #CC785C;
+    }
+  </style>
+
+  <div data-hf-id="hf-6con" id="root" data-composition-id="13-samenvatting" data-width="1920" data-height="1080" data-duration="16.38">
+    <div data-hf-id="hf-ppow" id="f13s-bg" class="f13s-bg clip" data-start="0" data-duration="16.38" data-track-index="0"></div>
+
+    <div data-hf-id="hf-xh3x" id="f13s-stage" class="f13s-stage clip" data-start="0" data-duration="16.38" data-track-index="1">
+      <div data-hf-id="hf-gzsi" class="f13s-kicker"><span data-hf-id="hf-ugcr" class="f13s-kicker-mark">✱</span>Samenvatting</div>
+
+      <div data-hf-id="hf-gl00" class="f13s-head"><span data-hf-id="hf-w0mx" class="f13s-word">Kort</span><span data-hf-id="hf-avut" class="f13s-word" style="margin-right:0">samengevat</span></div>
+
+      <div data-hf-id="hf-qhmu" class="f13s-list">
+        <div data-hf-id="hf-ljcm" class="f13s-row">
+          <div data-hf-id="hf-udne" class="f13s-rule f13s-rule-top"></div>
+          <span data-hf-id="hf-hir0" class="f13s-slot">✱</span>
+          <span data-hf-id="hf-lp75" class="f13s-idx">01</span>
+          <span data-hf-id="hf-rn5w" class="f13s-text"><span data-hf-id="hf-m40g" class="f13s-part" data-at="1.44">herhaal je code? </span><span data-hf-id="hf-wemc" class="f13s-part" data-at="2.72">maak er een <span data-hf-id="hf-bcf6" class="f13s-em">component</span> van</span></span>
+          <span data-hf-id="hf-v9j3" class="f13s-chip" data-at="3.48">&lt;Badge /&gt;</span>
+          <div data-hf-id="hf-5iug" class="f13s-rule"></div>
+        </div>
+        <div data-hf-id="hf-d8yi" class="f13s-row">
+          <span data-hf-id="hf-fmpw" class="f13s-slot">✱</span>
+          <span data-hf-id="hf-mw48" class="f13s-idx">02</span>
+          <span data-hf-id="hf-mloc" class="f13s-text"><span data-hf-id="hf-a74f" class="f13s-part" data-at="4.92"><span data-hf-id="hf-qf2z" class="f13s-em">props</span> geven data door </span><span data-hf-id="hf-hybe" class="f13s-part" data-at="7.16">aan een component</span></span>
+          <span data-hf-id="hf-v4en" class="f13s-chip" data-at="5.76">label="Nieuw"</span>
+          <div data-hf-id="hf-4g4g" class="f13s-rule"></div>
+        </div>
+        <div data-hf-id="hf-dn9j" class="f13s-row">
+          <span data-hf-id="hf-efst" class="f13s-slot">✱</span>
+          <span data-hf-id="hf-mht7" class="f13s-idx">03</span>
+          <span data-hf-id="hf-ler9" class="f13s-text"><span data-hf-id="hf-p5bq" class="f13s-part" data-at="9.24">een <span data-hf-id="hf-fmbz" class="f13s-em">eigen type</span> </span><span data-hf-id="hf-lagg" class="f13s-part" data-at="10.0">beperkt wat mag</span></span>
+          <span data-hf-id="hf-59fh" class="f13s-chip" data-at="9.6">'red' | 'green' | 'blue'</span>
+          <div data-hf-id="hf-397d" class="f13s-rule"></div>
+        </div>
+        <div data-hf-id="hf-e1kk" class="f13s-row">
+          <span data-hf-id="hf-eu3u" class="f13s-slot">✱</span>
+          <span data-hf-id="hf-kia2" class="f13s-idx">04</span>
+          <span data-hf-id="hf-lt2a" class="f13s-text"><span data-hf-id="hf-7slz" class="f13s-part" data-at="12.16">een <span data-hf-id="hf-ss0t" class="f13s-em">standaardwaarde</span>: </span><span data-hf-id="hf-3839" class="f13s-part" data-at="13.04">de prop mag wegblijven</span></span>
+          <span data-hf-id="hf-2hwt" class="f13s-chip" data-at="12.5">color = 'green'</span>
+          <div data-hf-id="hf-3nie" class="f13s-rule"></div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-c9qb" class="f13s-spike">✱</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "13-samenvatting";
+      var P = "f13s-";
+      var DUR = 16.38;
+      var root = document.querySelector('[data-composition-id="' + ID + '"]');
+      function all(n, scope) { return Array.prototype.slice.call((scope || root).getElementsByClassName(P + n)); }
+      function one(n, scope) { return all(n, scope)[0]; }
+
+      // row landing cues (word timings from audio/vo-13.words.json)
+      var ROW_AT = [1.44, 4.6, 9.24, 12.16];
+      var ROW_H = 130;
+      var DIM = 0.38;
+
+      var tl = gsap.timeline({ paused: true });
+
+      // Scene 1: kicker + headline settle
+      tl.fromTo(one("kicker"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.0);
+      all("word").forEach(function (w, i) {
+        tl.fromTo(w, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.2 + i * 0.12);
+      });
+
+      var rows = all("row");
+      rows.forEach(function (row, k) {
+        var at = ROW_AT[k];
+        all("rule", row).forEach(function (r) {
+          tl.fromTo(r, { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: "power3.out" }, at - 0.1);
+        });
+        tl.fromTo(one("slot", row), { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power3.out" }, at);
+        tl.fromTo(one("idx", row), { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, at);
+        all("part", row).forEach(function (p) {
+          var t = parseFloat(p.getAttribute("data-at"));
+          tl.fromTo(p, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.7, ease: "power3.out" }, t);
+        });
+        var chip = one("chip", row);
+        tl.fromTo(chip, { opacity: 0, x: 18, scale: 0.96 }, { opacity: 1, x: 0, scale: 1, duration: 0.6, ease: "power3.out" }, parseFloat(chip.getAttribute("data-at")));
+
+        // previous row steps back when this one lands
+        if (k > 0) {
+          var prev = rows[k - 1];
+          tl.to([one("idx", prev), one("text", prev), one("chip", prev)], { opacity: DIM, duration: 0.5, ease: "power2.out" }, at);
+        }
+      });
+
+      // coral spike: lands on row 01, then moves row to row (one coral at a time)
+      var spike = one("spike");
+      tl.fromTo(spike, { opacity: 0, y: 0, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" }, ROW_AT[0]);
+      for (var k = 1; k < ROW_AT.length; k++) {
+        tl.to(spike, { y: k * ROW_H, duration: 0.6, ease: "power3.inOut" }, ROW_AT[k] - 0.05);
+      }
+
+      // Scene 4 close: all rows settle back to full ink at 14.2s; coral stays on 04; hold
+      rows.slice(0, 3).forEach(function (row) {
+        tl.to([one("idx", row), one("text", row), one("chip", row)], { opacity: 1, duration: 0.6, ease: "power2.out" }, 14.2);
+      });
+      tl.set({}, {}, DUR);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

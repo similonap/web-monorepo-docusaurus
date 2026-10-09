@@ -1,0 +1,460 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f10tc-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f10tc-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f10tc-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f10tc-kicker .f10tc-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f10tc-panel {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      width: 1060px;
+      height: 700px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f10tc-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f10tc-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f10tc-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 80px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 38px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f10tc-row { position: relative; height: 38px; white-space: pre; }
+    .f10tc-ln {
+      position: absolute;
+      left: 0;
+      width: 60px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 22px;
+    }
+    .f10tc-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f10tc-ch { display: inline; }
+    .f10tc-kw { color: #CC785C; }
+    .f10tc-fn { color: #E8A55A; }
+    .f10tc-str { color: #5DB8A6; }
+    .f10tc-dim { color: rgba(250, 249, 245, 0.6); }
+    .f10tc-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f10tc-caret {
+      position: absolute;
+      top: 6px;
+      left: 0;
+      width: 3px;
+      height: 26px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+
+    /* right column */
+    .f10tc-col {
+      position: absolute;
+      left: 1236px;
+      top: 180px;
+      width: 604px;
+      height: 700px;
+    }
+    .f10tc-chips {
+      position: absolute;
+      left: 0;
+      top: 52px;
+      width: 604px;
+      display: flex;
+      gap: 22px;
+    }
+    .f10tc-chip {
+      flex: 1 1 0;
+      height: 64px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #141413;
+      letter-spacing: 0.02em;
+    }
+    .f10tc-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      flex: none;
+    }
+    .f10tc-bracket {
+      position: absolute;
+      left: 0;
+      top: 128px;
+      width: 604px;
+      height: 30px;
+      overflow: visible;
+    }
+
+    /* mini App.tsx panel */
+    .f10tc-mini {
+      position: absolute;
+      left: 0;
+      top: 230px;
+      width: 604px;
+      height: 232px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f10tc-mini-bar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 44px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f10tc-mini-code {
+      position: absolute;
+      left: 28px;
+      top: 62px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 38px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f10tc-mini-row { height: 38px; white-space: pre; }
+    .f10tc-squiggle {
+      position: absolute;
+      left: 152.8px;
+      top: 168px;
+      width: 125px;
+      height: 12px;
+      overflow: visible;
+    }
+
+    /* error tooltip */
+    .f10tc-tip {
+      position: absolute;
+      left: 0;
+      top: 486px;
+      width: 604px;
+      box-sizing: border-box;
+      padding: 18px 22px 18px 22px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      line-height: 34px;
+      color: #141413;
+    }
+    .f10tc-tip-notch {
+      position: absolute;
+      left: 196px;
+      top: -9px;
+      width: 16px;
+      height: 16px;
+      background: #EFE9DE;
+      border-left: 1px solid rgba(20, 20, 19, 0.2);
+      border-top: 1px solid rgba(20, 20, 19, 0.2);
+      transform: rotate(45deg);
+    }
+    .f10tc-x {
+      flex: none;
+      width: 30px;
+      height: 30px;
+      margin-top: 2px;
+      border: 1.5px solid #141413;
+      border-radius: 50%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 1;
+      color: #141413;
+    }
+    .f10tc-tip-txt { white-space: pre; }
+  </style>
+
+  <div data-hf-id="hf-le0e" id="root" data-composition-id="10-type-color" data-width="1920" data-height="1080" data-duration="14.24">
+    <div data-hf-id="hf-lel9" class="f10tc-bg clip" id="f10tc-bg" data-start="0" data-duration="14.24" data-track-index="0"></div>
+
+    <div data-hf-id="hf-sed8" class="f10tc-stage clip" id="f10tc-stage" data-start="0" data-duration="14.24" data-track-index="1">
+      <div data-hf-id="hf-kxv6" class="f10tc-kicker" id="f10tc-kicker"><span data-hf-id="hf-fstb" class="f10tc-spike">✱</span>Een eigen type</div>
+
+      <!-- code surface: Badge.tsx -->
+      <div data-hf-id="hf-pz7o" class="f10tc-panel" id="f10tc-panel">
+        <div data-hf-id="hf-ztzs" class="f10tc-titlebar">Badge.tsx</div>
+        <div data-hf-id="hf-70n8" class="f10tc-code">
+          <div data-hf-id="hf-kw6p" class="f10tc-row"><span data-hf-id="hf-nv67" class="f10tc-ln">1</span><span data-hf-id="hf-8oa6" class="f10tc-txt" id="f10tc-line1"></span><span data-hf-id="hf-6pnc" class="f10tc-caret" id="f10tc-caret1"></span></div>
+          <div data-hf-id="hf-ixnp" class="f10tc-row"><span data-hf-id="hf-ngv6" class="f10tc-ln">2</span></div>
+          <div data-hf-id="hf-k4ks" class="f10tc-row"><span data-hf-id="hf-n2k5" class="f10tc-ln">3</span><span data-hf-id="hf-s2i3" class="f10tc-txt"><span data-hf-id="hf-8qzr" class="f10tc-kw">interface</span> <span data-hf-id="hf-vrph" class="f10tc-fn">BadgeProps</span> {</span></div>
+          <div data-hf-id="hf-jq9r" class="f10tc-row"><span data-hf-id="hf-pupc" class="f10tc-ln">4</span><span data-hf-id="hf-ntqz" class="f10tc-txt">  label: <span data-hf-id="hf-3oqt" class="f10tc-dim">string</span>;</span></div>
+          <div data-hf-id="hf-kx6u" class="f10tc-row"><span data-hf-id="hf-pgeb" class="f10tc-ln">5</span><span data-hf-id="hf-b84s" class="f10tc-txt" id="f10tc-line5">  color: <span data-hf-id="hf-u41s" id="f10tc-old"><span data-hf-id="hf-dhg1" class="f10tc-ch f10tc-dim">s</span><span data-hf-id="hf-d350" class="f10tc-ch f10tc-dim">t</span><span data-hf-id="hf-dvr2" class="f10tc-ch f10tc-dim">r</span><span data-hf-id="hf-b3lv" class="f10tc-ch f10tc-dim">i</span><span data-hf-id="hf-942q" class="f10tc-ch f10tc-dim">n</span><span data-hf-id="hf-5jbh" class="f10tc-ch f10tc-dim">g</span></span><span data-hf-id="hf-i4k5" id="f10tc-new"><span data-hf-id="hf-ueqp" class="f10tc-ch f10tc-dim">C</span><span data-hf-id="hf-8prp" class="f10tc-ch f10tc-dim">o</span><span data-hf-id="hf-9wos" class="f10tc-ch f10tc-dim">l</span><span data-hf-id="hf-tdih" class="f10tc-ch f10tc-dim">o</span><span data-hf-id="hf-0teq" class="f10tc-ch f10tc-dim">r</span></span>;</span><span data-hf-id="hf-rw1o" class="f10tc-caret" id="f10tc-caret5"></span></div>
+          <div data-hf-id="hf-kivt" class="f10tc-row"><span data-hf-id="hf-p23a" class="f10tc-ln">6</span><span data-hf-id="hf-ponx" class="f10tc-txt">}</span></div>
+          <div data-hf-id="hf-lpsw" class="f10tc-row"><span data-hf-id="hf-ons9" class="f10tc-ln">7</span></div>
+          <div data-hf-id="hf-lbhv" class="f10tc-row"><span data-hf-id="hf-l310" class="f10tc-ln">8</span><span data-hf-id="hf-bppi" class="f10tc-txt"><span data-hf-id="hf-vs07" class="f10tc-kw">const</span> <span data-hf-id="hf-sqjt" class="f10tc-fn">Badge</span> = ({ label, color }: <span data-hf-id="hf-xcnt" class="f10tc-fn">BadgeProps</span>) <span data-hf-id="hf-6hfz" class="f10tc-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-g5ii" class="f10tc-row"><span data-hf-id="hf-kopz" class="f10tc-ln">9</span><span data-hf-id="hf-vvou" class="f10tc-txt">  <span data-hf-id="hf-ruh6" class="f10tc-kw">return</span> (</span></div>
+          <div data-hf-id="hf-fr7h" class="f10tc-row"><span data-hf-id="hf-biy5" class="f10tc-ln">10</span><span data-hf-id="hf-ft8g" class="f10tc-txt">    <span data-hf-id="hf-nour" class="f10tc-dim">&lt;div</span> style={{ color: <span data-hf-id="hf-5gra" class="f10tc-str">'white'</span>, background: color }}<span data-hf-id="hf-7qby" class="f10tc-dim">&gt;</span></span></div>
+          <div data-hf-id="hf-lkcv" class="f10tc-row"><span data-hf-id="hf-bx96" class="f10tc-ln">11</span><span data-hf-id="hf-89ei" class="f10tc-txt">      {label}</span></div>
+          <div data-hf-id="hf-lynw" class="f10tc-row"><span data-hf-id="hf-cbk7" class="f10tc-ln">12</span><span data-hf-id="hf-29de" class="f10tc-txt">    <span data-hf-id="hf-kmrm" class="f10tc-dim">&lt;/div&gt;</span></span></div>
+          <div data-hf-id="hf-krqt" class="f10tc-row"><span data-hf-id="hf-cpv8" class="f10tc-ln">13</span><span data-hf-id="hf-6e1a" class="f10tc-txt">  );</span></div>
+          <div data-hf-id="hf-l61u" class="f10tc-row"><span data-hf-id="hf-d469" class="f10tc-ln">14</span><span data-hf-id="hf-yjw1" class="f10tc-txt">}</span></div>
+        </div>
+        <div data-hf-id="hf-3wky" class="f10tc-status">Badge · component</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-yimb" class="f10tc-col">
+        <div data-hf-id="hf-46uc" class="f10tc-chips">
+          <div data-hf-id="hf-c6yl" class="f10tc-chip" id="f10tc-chip-red"><span data-hf-id="hf-5wqt" class="f10tc-dot" style="background:#B04A3C"></span>'red'</div>
+          <div data-hf-id="hf-ra99" class="f10tc-chip" id="f10tc-chip-green"><span data-hf-id="hf-qn8r" class="f10tc-dot" style="background:#3F7D4E"></span>'green'</div>
+          <div data-hf-id="hf-pmkh" class="f10tc-chip" id="f10tc-chip-blue"><span data-hf-id="hf-eeys" class="f10tc-dot" style="background:#3B5F8F"></span>'blue'</div>
+        </div>
+        <svg data-hf-id="hf-wscs" class="f10tc-bracket" viewBox="0 0 604 30" width="604" height="30">
+          <path data-hf-id="hf-lwba" id="f10tc-brk" fill="none" stroke="rgba(20,20,19,0.45)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M2,2 L2,14 L602,14 L602,2" />
+        </svg>
+
+        <!-- mini App.tsx -->
+        <div data-hf-id="hf-ct96" class="f10tc-mini" id="f10tc-mini">
+          <div data-hf-id="hf-v3c4" class="f10tc-mini-bar">App.tsx</div>
+          <div data-hf-id="hf-y79g" class="f10tc-mini-code">
+            <div data-hf-id="hf-38kx" class="f10tc-mini-row"><span data-hf-id="hf-8iy0" class="f10tc-dim">&lt;</span><span data-hf-id="hf-90m5" class="f10tc-fn">Badge</span></div>
+            <div data-hf-id="hf-ddm4" class="f10tc-mini-row">  label=<span data-hf-id="hf-236o" class="f10tc-str">"Promo"</span></div>
+            <div data-hf-id="hf-co5n" class="f10tc-mini-row">  color=<span data-hf-id="hf-gm0i" class="f10tc-str">"banaan"</span></div>
+            <div data-hf-id="hf-d0dh" class="f10tc-mini-row"><span data-hf-id="hf-w6e5" class="f10tc-dim">/&gt;</span></div>
+          </div>
+          <svg data-hf-id="hf-d60f" class="f10tc-squiggle" viewBox="0 0 125 12" width="125" height="12">
+            <path data-hf-id="hf-208d" id="f10tc-sq" fill="none" stroke="#CC785C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="" />
+          </svg>
+        </div>
+
+        <!-- error tooltip -->
+        <div data-hf-id="hf-e54q" class="f10tc-tip" id="f10tc-tip">
+          <div data-hf-id="hf-xc5v" class="f10tc-tip-notch"></div>
+          <div data-hf-id="hf-xda0" class="f10tc-x">✕</div>
+          <div data-hf-id="hf-ftx2" class="f10tc-tip-txt">Type '"banaan"' is not assignable
+to type 'Color'.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.24;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 84;
+      var chPx = FS * CW;
+      var root = document.querySelector('[data-composition-id="10-type-color"]');
+      var q = function (s) { return root.querySelector(s); };
+      var qa = function (s) { return Array.prototype.slice.call(root.querySelectorAll(s)); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(lineSel, caretSel, segments, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "f10tc-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c, id: seg.pid }]).forEach(function (p) {
+            var pHost = host;
+            if (p.id) {
+              pHost = document.createElement("span");
+              pHost.id = p.id;
+              host.appendChild(pHost);
+            }
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "f10tc-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              pHost.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return end;
+      }
+
+      // ---- Scene 1 (0.0–4.5): kicker; chips on "red" / "green" / "blue"; bracket on "dat is het" ----
+      tl.fromTo("#f10tc-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f10tc-panel", { opacity: 0.9 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 0);
+
+      [["#f10tc-chip-red", 0.96], ["#f10tc-chip-green", 1.72], ["#f10tc-chip-blue", 2.16]].forEach(function (c) {
+        tl.fromTo(c[0], { opacity: 0, y: 10, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, c[1]);
+      });
+
+      var brk = q("#f10tc-brk");
+      var brkLen = brk.getTotalLength();
+      tl.set(brk, { strokeDasharray: brkLen, strokeDashoffset: brkLen }, 0);
+      tl.to(brk, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 3.56);
+
+      // ---- Scene 2 (4.5–9.3): line 1 types on ("eigen type"), wash; string -> Color ("Color"); strings pulse ("drie waarden") ----
+      var per = 0.021;
+      typeLine("#f10tc-line1", "#f10tc-caret1", [
+        { id: "f10tc-hl-type", parts: [
+          { t: "type", c: "f10tc-kw" },
+          { t: " " },
+          { t: "Color", c: "f10tc-fn" },
+          { t: " = " },
+          { t: "'red'", c: "f10tc-str", id: "f10tc-s-red" },
+          { t: " | " },
+          { t: "'green'", c: "f10tc-str", id: "f10tc-s-green" },
+          { t: " | " },
+          { t: "'blue'", c: "f10tc-str", id: "f10tc-s-blue" },
+          { t: ";" }
+        ] }
+      ], 5.2, per);
+      tl.to("#f10tc-hl-type", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.35, ease: "power1.out" }, 6.08);
+
+      // retype line 5: delete "string" back to front, then type "Color"
+      var oldCh = qa("#f10tc-old .f10tc-ch");
+      var newCh = qa("#f10tc-new .f10tc-ch");
+      var caret5 = q("#f10tc-caret5");
+      var col0 = X0 + 9 * chPx; // after "  color: "
+      tl.set(newCh, { display: "none" }, 0);
+      var t5 = 6.64;
+      var dPer = 0.035;
+      tl.set(caret5, { opacity: 1, x: col0 + 6 * chPx }, t5 - 0.1);
+      for (var i = oldCh.length - 1, k = 0; i >= 0; i--, k++) {
+        tl.set(oldCh[i], { display: "none" }, t5 + k * dPer);
+        tl.set(caret5, { x: col0 + i * chPx }, t5 + k * dPer);
+      }
+      var t5b = t5 + oldCh.length * dPer + 0.06;
+      newCh.forEach(function (el, j) {
+        tl.set(el, { display: "inline" }, t5b + j * dPer);
+        tl.set(caret5, { x: col0 + (j + 1) * chPx }, t5b + j * dPer);
+      });
+      tl.set(caret5, { opacity: 0 }, t5b + newCh.length * dPer + 0.1);
+
+      // "drie waarden": the three strings pulse amber, one after another
+      ["#f10tc-s-red", "#f10tc-s-green", "#f10tc-s-blue"].forEach(function (sel, j) {
+        var at = 8.28 + j * 0.12;
+        var chs = qa(sel + " .f10tc-ch");
+        tl.to(chs, { color: "#E8A55A", duration: 0.2, ease: "power1.out" }, at);
+        tl.to(chs, { color: "#5DB8A6", duration: 0.5, ease: "power1.inOut" }, at + 0.45);
+      });
+
+      // ---- Scene 3 (9.3–13.74): mini App.tsx; squiggle on "TypeScript"; tooltip on "fout" ----
+      tl.fromTo("#f10tc-mini", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 9.36);
+
+      // squiggle path (deterministic zigzag wave under "banaan")
+      var sq = q("#f10tc-sq");
+      var d = "M1,6";
+      for (var x = 1, up = true; x < 123; x += 6, up = !up) {
+        d += " Q" + (x + 3) + "," + (up ? 0 : 12) + " " + (x + 6) + ",6";
+      }
+      sq.setAttribute("d", d);
+      var sqLen = sq.getTotalLength();
+      tl.set(sq, { strokeDasharray: sqLen, strokeDashoffset: sqLen }, 0);
+      tl.to(sq, { strokeDashoffset: 0, duration: 0.4, ease: "power1.inOut" }, 11.4);
+
+      tl.fromTo("#f10tc-tip", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 12.56);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["10-type-color"] = tl;
+    })();
+  </script>
+</template>

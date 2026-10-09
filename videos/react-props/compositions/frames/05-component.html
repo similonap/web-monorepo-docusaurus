@@ -1,0 +1,410 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f05c-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f05c-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f05c-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f05c-kicker .f05c-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface (Badge.tsx) */
+    .f05c-panel {
+      position: absolute;
+      left: 80px;
+      top: 180px;
+      width: 1060px;
+      height: 500px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f05c-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f05c-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f05c-wash {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 174px;   /* code top 86 + 2 rows * 44 */
+      height: 132px; /* rows 3-5 */
+      background: rgba(232, 165, 90, 0.24);
+      opacity: 0;
+    }
+    .f05c-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 86px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      line-height: 44px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f05c-row { position: relative; height: 44px; white-space: pre; }
+    .f05c-ln {
+      position: absolute;
+      left: 0;
+      width: 52px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 22px;
+    }
+    .f05c-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .f05c-ch { display: inline; }
+    .f05c-kw { color: #CC785C; }
+    .f05c-fn { color: #E8A55A; }
+    .f05c-str { color: #5DB8A6; }
+    .f05c-dim { color: rgba(250, 249, 245, 0.6); }
+    .f05c-hl { border-radius: 4px; background: rgba(204, 120, 92, 0); }
+    .f05c-caret {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      width: 3px;
+      height: 30px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+
+    /* 1x tag, hangs just right of the code panel on line 3 */
+    .f05c-tag {
+      position: absolute;
+      left: 1156px;
+      top: 359px;
+      height: 46px;
+      padding: 0 14px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      color: #141413;
+      letter-spacing: 0.02em;
+    }
+
+    /* right column */
+    .f05c-label {
+      position: absolute;
+      left: 1236px;
+      top: 180px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f05c-note {
+      position: absolute;
+      right: 80px;
+      top: 182px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.02em;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f05c-card {
+      position: absolute;
+      left: 1236px;
+      top: 232px;
+      width: 604px;
+      height: 308px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f05c-strip {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      height: 58px;
+      background: #3F7D4E;
+      color: #FFFFFF;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 30px;
+      line-height: 58px;
+      padding-left: 10px;
+    }
+    .f05c-ring {
+      position: absolute;
+      inset: -4px;
+      border: 3px solid #E8A55A;
+      opacity: 0;
+    }
+
+    /* mini App.tsx panel */
+    .f05c-mini {
+      position: absolute;
+      left: 1236px;
+      top: 580px;
+      width: 604px;
+      height: 270px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f05c-mbar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 44px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f05c-mcode {
+      position: absolute;
+      left: 0; right: 0;
+      top: 60px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 38px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f05c-mrow { position: relative; height: 38px; white-space: pre; }
+    .f05c-mtxt { position: absolute; left: 28px; top: 0; white-space: pre; }
+    .f05c-mcaret {
+      position: absolute;
+      top: 6px;
+      left: 0;
+      width: 3px;
+      height: 27px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+  </style>
+
+  <div data-hf-id="hf-uc3j" id="root" data-composition-id="05-component" data-width="1920" data-height="1080" data-duration="10.4">
+    <div data-hf-id="hf-cylf" class="f05c-bg clip" id="f05c-bg" data-start="0" data-duration="10.4" data-track-index="0"></div>
+
+    <div data-hf-id="hf-rhyc" class="f05c-stage clip" id="f05c-stage" data-start="0" data-duration="10.4" data-track-index="1">
+      <div data-hf-id="hf-jphh" class="f05c-kicker" id="f05c-kicker"><span data-hf-id="hf-t7xt" class="f05c-spike">✱</span>Een component</div>
+
+      <!-- Badge.tsx -->
+      <div data-hf-id="hf-oeey" class="f05c-panel" id="f05c-panel">
+        <div data-hf-id="hf-cp9g" class="f05c-titlebar">Badge.tsx</div>
+        <div data-hf-id="hf-yq0q" class="f05c-wash" id="f05c-wash"></div>
+        <div data-hf-id="hf-8r4o" class="f05c-code">
+          <div data-hf-id="hf-mgqt" class="f05c-row"><span data-hf-id="hf-ad61" class="f05c-ln">1</span><span data-hf-id="hf-7o5k" class="f05c-txt" id="f05c-l1"></span><span data-hf-id="hf-ug4a" class="f05c-caret" id="f05c-c1"></span></div>
+          <div data-hf-id="hf-ul5l" class="f05c-row"><span data-hf-id="hf-bk34" class="f05c-ln">2</span><span data-hf-id="hf-gc1f" class="f05c-txt" id="f05c-l2"></span><span data-hf-id="hf-qi09" class="f05c-caret" id="f05c-c2"></span></div>
+          <div data-hf-id="hf-vs2o" class="f05c-row"><span data-hf-id="hf-b5s3" class="f05c-ln">3</span><span data-hf-id="hf-cdxe" class="f05c-txt" id="f05c-l3"></span><span data-hf-id="hf-pqcg" class="f05c-caret" id="f05c-c3"></span></div>
+          <div data-hf-id="hf-vdrn" class="f05c-row"><span data-hf-id="hf-968y" class="f05c-ln">4</span><span data-hf-id="hf-tm7p" class="f05c-txt" id="f05c-l4"></span><span data-hf-id="hf-ls8f" class="f05c-caret" id="f05c-c4"></span></div>
+          <div data-hf-id="hf-te8i" class="f05c-row"><span data-hf-id="hf-8rxx" class="f05c-ln">5</span><span data-hf-id="hf-sujw" class="f05c-txt" id="f05c-l5"></span><span data-hf-id="hf-fmim" class="f05c-caret" id="f05c-c5"></span></div>
+          <div data-hf-id="hf-szxh" class="f05c-row"><span data-hf-id="hf-9yv0" class="f05c-ln">6</span><span data-hf-id="hf-3q1j" class="f05c-txt" id="f05c-l6"></span><span data-hf-id="hf-boel" class="f05c-caret" id="f05c-c6"></span></div>
+          <div data-hf-id="hf-u6uk" class="f05c-row"><span data-hf-id="hf-9kjz" class="f05c-ln">7</span><span data-hf-id="hf-xkbq" class="f05c-txt" id="f05c-l7"></span><span data-hf-id="hf-awqs" class="f05c-caret" id="f05c-c7"></span></div>
+        </div>
+        <div data-hf-id="hf-5ckm" class="f05c-status">Badge · component</div>
+      </div>
+      <div data-hf-id="hf-d8xy" class="f05c-tag" id="f05c-tag">1×</div>
+
+      <!-- scherm -->
+      <div data-hf-id="hf-j99i" class="f05c-label" id="f05c-label">scherm</div>
+      <div data-hf-id="hf-c6nt" class="f05c-note" id="f05c-note">zelfde resultaat</div>
+      <div data-hf-id="hf-norg" class="f05c-card" id="f05c-card">
+        <div data-hf-id="hf-du86" class="f05c-strip" id="f05c-s1" style="top: 53px;">Nieuw<div data-hf-id="hf-pzrl" class="f05c-ring" id="f05c-r1"></div></div>
+        <div data-hf-id="hf-bf7r" class="f05c-strip" id="f05c-s2" style="top: 125px;">Nieuw<div data-hf-id="hf-w5he" class="f05c-ring" id="f05c-r2"></div></div>
+        <div data-hf-id="hf-rtrv" class="f05c-strip" id="f05c-s3" style="top: 197px;">Nieuw<div data-hf-id="hf-03lf" class="f05c-ring" id="f05c-r3"></div></div>
+      </div>
+
+      <!-- mini App.tsx -->
+      <div data-hf-id="hf-vuoy" class="f05c-mini" id="f05c-mini">
+        <div data-hf-id="hf-re5z" class="f05c-mbar">App.tsx</div>
+        <div data-hf-id="hf-54k3" class="f05c-mcode">
+          <div data-hf-id="hf-1i0l" class="f05c-mrow" id="f05c-mr1"><span data-hf-id="hf-ym0q" class="f05c-mtxt" id="f05c-m1"></span><span data-hf-id="hf-wyqk" class="f05c-mcaret" id="f05c-mc1"></span></div>
+          <div data-hf-id="hf-5g4m" class="f05c-mrow" id="f05c-mr2"><span data-hf-id="hf-unwp" class="f05c-mtxt" id="f05c-m2"></span><span data-hf-id="hf-7u87" class="f05c-mcaret" id="f05c-mc2"></span></div>
+          <div data-hf-id="hf-9e8n" class="f05c-mrow" id="f05c-mr3"><span data-hf-id="hf-ron4" class="f05c-mtxt" id="f05c-m3"></span><span data-hf-id="hf-1oie" class="f05c-mcaret" id="f05c-mc3"></span></div>
+          <div data-hf-id="hf-dcco" class="f05c-mrow" id="f05c-mr4"><span data-hf-id="hf-nqj3" class="f05c-mtxt" id="f05c-m4"></span><span data-hf-id="hf-ck01" class="f05c-mcaret" id="f05c-mc4"></span></div>
+          <div data-hf-id="hf-e40h" class="f05c-mrow" id="f05c-mr5"><span data-hf-id="hf-jsf2" class="f05c-mtxt" id="f05c-m5"></span><span data-hf-id="hf-bsc8" class="f05c-mcaret" id="f05c-mc5"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 10.4;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var root = document.querySelector('[data-composition-id="05-component"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(lineSel, caretSel, segments, start, per, fs, x0, lead) {
+        if (lead === undefined) lead = 0.06;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "f05c-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "f05c-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = fs * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: x0 }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.04, ease: "power1.out" }, at);
+          tl.set(caret, { x: x0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return end;
+      }
+
+      // ---- Scene 1 (0.0-3.0): kicker + scherm (continuity), code on "component" ----
+      tl.fromTo("#f05c-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      tl.fromTo(["#f05c-label", "#f05c-card"], { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power1.out" }, 0);
+
+      // "component" (1.32) → Badge.tsx panel
+      tl.fromTo("#f05c-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 1.32);
+
+      var per = 0.018, FS = 28, X0 = 76, gap = 0.04;
+      var e = typeLine("#f05c-l1", "#f05c-c1", [
+        { t: "const", c: "f05c-kw" },
+        { t: " " },
+        { id: "f05c-hl-badge", parts: [{ t: "Badge", c: "f05c-fn" }] },
+        { t: " = () " },
+        { t: "=>", c: "f05c-kw" },
+        { t: " {" }
+      ], 1.5, per, FS, X0);
+      e = typeLine("#f05c-l2", "#f05c-c2", [
+        { t: "  " }, { t: "return", c: "f05c-kw" }, { t: " (" }
+      ], e + gap, per, FS, X0, 0.02);
+      e = typeLine("#f05c-l3", "#f05c-c3", [
+        { t: "    " },
+        { t: "<div", c: "f05c-dim" },
+        { t: " style={{ color: " },
+        { t: "'white'", c: "f05c-str" },
+        { t: ", background: " },
+        { t: "'green'", c: "f05c-str" },
+        { t: " }}" },
+        { t: ">", c: "f05c-dim" }
+      ], e + gap, per, FS, X0, 0.02);
+      e = typeLine("#f05c-l4", "#f05c-c4", [{ t: "      Nieuw" }], e + gap, per, FS, X0, 0.02);
+      e = typeLine("#f05c-l5", "#f05c-c5", [{ t: "    " }, { t: "</div>", c: "f05c-dim" }], e + gap, per, FS, X0, 0.02);
+      e = typeLine("#f05c-l6", "#f05c-c6", [{ t: "  );" }], e + gap, per, FS, X0, 0.02);
+      typeLine("#f05c-l7", "#f05c-c7", [{ t: "}" }], e + gap, per, FS, X0, 0.02);
+
+      // "Badge" (2.24) → coral wash on the component name (the fix, the one voltage)
+      tl.to("#f05c-hl-badge", { backgroundColor: "rgba(204, 120, 92, 0.34)", duration: 0.35, ease: "power1.out" }, 2.24);
+
+      // ---- Scene 2 (3.0-5.2): "één plek" → amber wash on lines 3-5 + 1x tag ----
+      tl.fromTo("#f05c-wash", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, 4.28);
+      tl.fromTo("#f05c-tag", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 4.48);
+
+      // ---- Scene 3 (5.2-9.9): mini App.tsx panel, three <Badge /> lines ----
+      tl.fromTo("#f05c-mini", { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 5.2);
+      var MFS = 26, MX0 = 28, mper = 0.02;
+      typeLine("#f05c-m1", "#f05c-mc1", [{ t: "<>", c: "f05c-dim" }], 5.5, mper, MFS, MX0, 0.02);
+      typeLine("#f05c-m5", "#f05c-mc5", [{ t: "</>", c: "f05c-dim" }], 5.6, mper, MFS, MX0, 0.02);
+
+      var badgeStarts = [6.52, 6.74, 6.96];
+      badgeStarts.forEach(function (t0, i) {
+        var n = i + 2;
+        typeLine("#f05c-m" + n, "#f05c-mc" + n, [
+          { t: "  " },
+          { t: "<", c: "f05c-dim" },
+          { t: "Badge", c: "f05c-fn" },
+          { t: " />", c: "f05c-dim" }
+        ], t0, mper, MFS, MX0, 0.02);
+        tl.fromTo("#f05c-mr" + n, { scale: 0.96, transformOrigin: "0% 50%" }, { scale: 1, duration: 0.3, ease: "power3.out" }, t0);
+      });
+
+      // "scherm blijft hetzelfde" (8.0 / 8.56) → strips pulse once with amber ring, note appears
+      [1, 2, 3].forEach(function (n, i) {
+        var t0 = 8.0 + i * 0.1;
+        tl.fromTo("#f05c-r" + n, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, t0);
+        tl.to("#f05c-r" + n, { opacity: 0, duration: 0.6, ease: "power2.inOut" }, t0 + 0.4);
+      });
+      tl.fromTo("#f05c-note", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 8.56);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["05-component"] = tl;
+    })();
+  </script>
+</template>

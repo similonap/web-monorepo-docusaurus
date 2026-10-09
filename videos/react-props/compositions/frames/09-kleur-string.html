@@ -1,0 +1,494 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f09k-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f09k-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f09k-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f09k-kicker .f09k-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f09k-panel {
+      position: absolute;
+      left: 80px;
+      top: 180px;
+      width: 1060px;
+      height: 660px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f09k-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f09k-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f09k-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 80px;
+      height: 528px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      line-height: 44px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f09k-gut {
+      position: absolute;
+      left: 0;
+      width: 60px;
+      height: 44px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 22px;
+    }
+    .f09k-row { position: absolute; left: 0; right: 0; height: 44px; white-space: pre; }
+    .f09k-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f09k-kw { color: #CC785C; }
+    .f09k-fn { color: #E8A55A; }
+    .f09k-str { color: #5DB8A6; }
+    .f09k-dim { color: rgba(250, 249, 245, 0.6); }
+    .f09k-hl { border-radius: 4px; background-color: rgba(232, 165, 90, 0); }
+    .f09k-caret {
+      position: absolute;
+      top: 7px;
+      left: 0;
+      width: 3px;
+      height: 30px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+
+    /* right column */
+    .f09k-col {
+      position: absolute;
+      left: 1236px;
+      top: 180px;
+      width: 604px;
+      height: 700px;
+    }
+    .f09k-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f09k-card {
+      position: absolute;
+      left: 0;
+      top: 52px;
+      width: 604px;
+      height: 308px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    .f09k-strip {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      height: 58px;
+      box-sizing: border-box;
+      padding-left: 10px;
+      display: flex;
+      align-items: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 30px;
+      color: #FFFFFF;
+    }
+    .f09k-strip-green { top: 28px; background: #3F7D4E; }
+    .f09k-strip-none { top: 100px; background: transparent; }
+    .f09k-ring {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      top: 22px;
+      height: 70px;
+      box-sizing: border-box;
+      border: 3px solid #E8A55A;
+      opacity: 0;
+    }
+    .f09k-note {
+      position: absolute;
+      right: 40px;
+      top: 100px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.6);
+      white-space: nowrap;
+    }
+
+    /* mini App.tsx panel */
+    .f09k-mini {
+      position: absolute;
+      left: 0;
+      top: 400px;
+      width: 604px;
+      height: 156px;
+      box-sizing: border-box;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f09k-mbar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 44px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f09k-mcode {
+      position: absolute;
+      left: 0; right: 0;
+      top: 60px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      line-height: 38px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f09k-mrow { position: absolute; left: 0; right: 0; height: 38px; white-space: pre; }
+    .f09k-mtxt { position: absolute; left: 24px; top: 0; white-space: pre; }
+    .f09k-mcaret {
+      position: absolute;
+      top: 5px;
+      left: 0;
+      width: 3px;
+      height: 28px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f09k-bad { border-radius: 3px; background-color: rgba(204, 120, 92, 0); }
+    .f09k-uline {
+      position: absolute;
+      top: 35px;
+      height: 3px;
+      background: #CC785C;
+      transform-origin: left center;
+    }
+  </style>
+
+  <div data-hf-id="hf-0tyr" id="root" data-composition-id="09-kleur-string" data-width="1920" data-height="1080" data-duration="14.42">
+    <div data-hf-id="hf-prfz" class="f09k-bg clip" id="f09k-bg" data-start="0" data-duration="14.42" data-track-index="0"></div>
+
+    <div data-hf-id="hf-ex8i" class="f09k-stage clip" id="f09k-stage" data-start="0" data-duration="14.42" data-track-index="1">
+      <div data-hf-id="hf-4a1n" class="f09k-kicker" id="f09k-kicker"><span data-hf-id="hf-vlfx" class="f09k-spike">✱</span>Een kleur</div>
+
+      <!-- code surface: Badge.tsx -->
+      <div data-hf-id="hf-dhcq" class="f09k-panel" id="f09k-panel">
+        <div data-hf-id="hf-3t34" class="f09k-titlebar">Badge.tsx</div>
+        <div data-hf-id="hf-ft96" class="f09k-code" id="f09k-code"></div>
+        <div data-hf-id="hf-x5nu" class="f09k-status">Badge · component</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-n6tn" class="f09k-col">
+        <div data-hf-id="hf-6q1f" class="f09k-label">scherm</div>
+        <div data-hf-id="hf-q4a4" class="f09k-card" id="f09k-card">
+          <div data-hf-id="hf-pp67" class="f09k-strip f09k-strip-green" id="f09k-s1">Nieuw</div>
+          <div data-hf-id="hf-f2n4" class="f09k-ring" id="f09k-ring"></div>
+          <div data-hf-id="hf-veu8" class="f09k-strip f09k-strip-none" id="f09k-s2">Promo</div>
+          <div data-hf-id="hf-yx4h" class="f09k-note" id="f09k-note">geen geldige kleur</div>
+        </div>
+
+        <div data-hf-id="hf-0cwq" class="f09k-mini" id="f09k-mini">
+          <div data-hf-id="hf-u5r7" class="f09k-mbar">App.tsx</div>
+          <div data-hf-id="hf-rnrb" class="f09k-mcode">
+            <div data-hf-id="hf-hpxk" class="f09k-mrow" style="top: 0px;"><span data-hf-id="hf-57dg" class="f09k-mtxt"><span data-hf-id="hf-71s6" class="f09k-dim">&lt;</span><span data-hf-id="hf-zatf" class="f09k-fn">Badge</span> label=<span data-hf-id="hf-mk8f" class="f09k-str">"Nieuw"</span> color=<span data-hf-id="hf-qipi" class="f09k-str">"green"</span> <span data-hf-id="hf-rtk7" class="f09k-dim">/&gt;</span></span></div>
+            <div data-hf-id="hf-zah5" class="f09k-mrow" style="top: 38px;"><span data-hf-id="hf-17yp" class="f09k-mtxt" id="f09k-m2"></span><span data-hf-id="hf-3o7l" class="f09k-mcaret" id="f09k-mcaret"></span><span data-hf-id="hf-7kar" class="f09k-uline" id="f09k-uline"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.32;
+      var CW = 0.6;          // JetBrains Mono advance (em)
+      var CH = 28 * CW;      // code char width
+      var MCH = 24 * CW;     // mini panel char width
+      var X0 = 84;
+      var MX0 = 24;
+      var LH = 44;
+      var root = document.querySelector('[data-composition-id="09-kleur-string"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---------- build the code surface ----------
+      var code = q("#f09k-code");
+      // gutter: 12 fixed numbers; #12 appears when a line is inserted
+      var gut12 = null;
+      for (var g = 1; g <= 12; g++) {
+        var gn = document.createElement("div");
+        gn.className = "f09k-gut";
+        gn.style.top = ((g - 1) * LH) + "px";
+        gn.textContent = String(g);
+        code.appendChild(gn);
+        if (g === 12) gut12 = gn;
+      }
+
+      // segments: { t, c } static text, or { id, hl } empty host span to fill later
+      function makeRow(top, segs) {
+        var row = document.createElement("div");
+        row.className = "f09k-row";
+        row.style.top = top + "px";
+        var txt = document.createElement("span");
+        txt.className = "f09k-txt";
+        var hosts = {};
+        segs.forEach(function (s) {
+          var el = document.createElement("span");
+          if (s.c) el.className = s.c;
+          if (s.t) el.textContent = s.t;
+          if (s.id) { el.id = s.id; hosts[s.id] = el; }
+          txt.appendChild(el);
+        });
+        row.appendChild(txt);
+        var caret = document.createElement("span");
+        caret.className = "f09k-caret";
+        row.appendChild(caret);
+        code.appendChild(row);
+        return { row: row, caret: caret, hosts: hosts };
+      }
+
+      // original rows (index = original line number - 1)
+      var r1 = makeRow(0 * LH, [{ t: "interface", c: "f09k-kw" }, { t: " " }, { t: "BadgeProps", c: "f09k-fn" }, { t: " {" }]);
+      var r2 = makeRow(1 * LH, [{ t: "  label: " }, { t: "string", c: "f09k-dim" }, { t: ";" }]);
+      var rNew = makeRow(2 * LH, [{ id: "f09k-l3", c: "f09k-hl" }]);
+      var shifted = [];
+      shifted.push(makeRow(2 * LH, [{ t: "}" }]).row);
+      shifted.push(makeRow(3 * LH, []).row);
+      var r6 = makeRow(4 * LH, [
+        { t: "const", c: "f09k-kw" }, { t: " " }, { t: "Badge", c: "f09k-fn" },
+        { id: "f09k-l6", c: "f09k-hl", t: "" }
+      ]);
+      shifted.push(r6.row);
+      shifted.push(makeRow(5 * LH, [{ t: "  " }, { t: "return", c: "f09k-kw" }, { t: " (" }]).row);
+      var r8 = makeRow(6 * LH, [
+        { t: "    " }, { t: "<div", c: "f09k-dim" }, { t: " style={{ color: " },
+        { t: "'white'", c: "f09k-str" }, { t: ", background: " },
+        { id: "f09k-l8", c: "f09k-hl" },
+        { t: " }}" }, { t: ">", c: "f09k-dim" }
+      ]);
+      shifted.push(r8.row);
+      shifted.push(makeRow(7 * LH, [{ t: "      {label}" }]).row);
+      shifted.push(makeRow(8 * LH, [{ t: "    " }, { t: "</div>", c: "f09k-dim" }]).row);
+      shifted.push(makeRow(9 * LH, [{ t: "  );" }]).row);
+      shifted.push(makeRow(10 * LH, [{ t: "}" }]).row);
+
+      // line 6 detail: " = ({ label" [", color"] " }: BadgeProps) => {"
+      var l6 = r6.hosts["f09k-l6"];
+      l6.className = "";
+      var l6hl = document.createElement("span");
+      l6hl.className = "f09k-hl";
+      l6hl.id = "f09k-hl6";
+      l6.appendChild(document.createTextNode(" = ("));
+      l6.appendChild(l6hl);
+      l6hl.appendChild(document.createTextNode("{ label"));
+      var l6ins = document.createElement("span");
+      l6hl.appendChild(l6ins);
+      l6hl.appendChild(document.createTextNode(" }"));
+      var tail6 = [{ t: ": " }, { t: "BadgeProps", c: "f09k-fn" }, { t: ") " }, { t: "=>", c: "f09k-kw" }, { t: " {" }];
+      tail6.forEach(function (s) {
+        var el = document.createElement("span");
+        if (s.c) el.className = s.c;
+        el.textContent = s.t;
+        l6.appendChild(el);
+      });
+
+      // char helpers: chars hidden via display:none so inserted text pushes the rest of the line
+      function addChars(host, text, cls) {
+        var out = [];
+        for (var i = 0; i < text.length; i++) {
+          var s = document.createElement("span");
+          if (cls) s.className = cls;
+          s.textContent = text[i];
+          s.style.display = "none";
+          host.appendChild(s);
+          out.push(s);
+        }
+        return out;
+      }
+      function typeChars(chars, caret, x0, chPx, offset, start, per) {
+        tl.set(caret, { opacity: 1, x: x0 + offset * chPx }, start - 0.08);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.set(el, { display: "inline" }, at);
+          tl.set(caret, { x: x0 + (offset + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.1);
+        return end;
+      }
+
+      // ---------- Scene 1 (0.0–2.7): carry-over state, kicker, amber ring on "andere kleur" ----------
+      tl.fromTo("#f09k-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f09k-ring", { opacity: 0, scale: 1.03 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" }, 1.68);
+      tl.to("#f09k-ring", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 4.2);
+
+      // initial hidden states
+      gut12.style.opacity = "0";
+      tl.set("#f09k-s2", { opacity: 0 }, 0);
+      tl.set("#f09k-note", { opacity: 0 }, 0);
+      tl.set("#f09k-mini", { opacity: 0 }, 0);
+
+      // ---------- Scene 2 (2.7–6.3): new line 3 opens and types "  color" ----------
+      tl.fromTo(shifted, { y: 0 }, { y: LH, duration: 0.55, ease: "power3.out" }, 4.32);
+      tl.fromTo(gut12, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power3.out" }, 4.32);
+      var l3 = q("#f09k-l3");
+      var c3a = addChars(l3, "  color");
+      typeChars(c3a, rNew.caret, X0, CH, 0, 4.66, 0.045);
+
+      // "color." (5.52): { label } -> { label, color } on line 6
+      var c6 = addChars(l6ins, ", color");
+      var off6 = "const Badge = ({ label".length;
+      typeChars(c6, r6.caret, X0, CH, off6, 5.52, 0.035);
+      tl.to("#f09k-hl6", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.3, ease: "power1.out" }, 5.52);
+
+      // line 8: 'green' backspaced, then color typed
+      var l8 = q("#f09k-l8");
+      var green = [];
+      "'green'".split("").forEach(function (ch) {
+        var s = document.createElement("span");
+        s.className = "f09k-str";
+        s.textContent = ch;
+        l8.appendChild(s);
+        green.push(s);
+      });
+      var c8 = addChars(l8, "color");
+      var off8 = "    <div style={{ color: 'white', background: ".length;
+      var t8 = 5.86;
+      tl.set(r8.caret, { opacity: 1, x: X0 + (off8 + green.length) * CH }, t8 - 0.08);
+      for (var b = green.length - 1, k = 0; b >= 0; b--, k++) {
+        tl.set(green[b], { display: "none" }, t8 + k * 0.03);
+        tl.set(r8.caret, { x: X0 + (off8 + b) * CH }, t8 + k * 0.03);
+      }
+      var t8b = t8 + green.length * 0.03 + 0.06;
+      typeChars(c8, r8.caret, X0, CH, off8, t8b, 0.04);
+      tl.to(l8, { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.3, ease: "power1.out" }, t8b);
+
+      tl.to(["#f09k-hl6", l8], { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.45, ease: "power1.inOut" }, 6.75);
+
+      // ---------- Scene 3 (6.3–8.3): ": string;" after color on line 3 ----------
+      var c3b = [];
+      [{ t: ": " }, { t: "string", c: "f09k-dim" }, { t: ";" }].forEach(function (s) {
+        c3b = c3b.concat(addChars(l3, s.t, s.c));
+      });
+      typeChars(c3b, rNew.caret, X0, CH, 7, 6.96, 0.045);
+      tl.to(l3, { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.3, ease: "power1.out" }, 6.96);
+      tl.to(l3, { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.5, ease: "power1.inOut" }, 9.3);
+
+      // ---------- Scene 4 (8.3–13.82): mini App.tsx, "banaan" ----------
+      tl.fromTo("#f09k-mini", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 9.52);
+
+      var m2 = q("#f09k-m2");
+      var mChars = [];
+      mChars = mChars.concat(addChars(m2, "<", "f09k-dim"));
+      mChars = mChars.concat(addChars(m2, "Badge", "f09k-fn"));
+      mChars = mChars.concat(addChars(m2, " label="));
+      mChars = mChars.concat(addChars(m2, "\"Promo\"", "f09k-str"));
+      mChars = mChars.concat(addChars(m2, " color="));
+      var bad = document.createElement("span");
+      bad.className = "f09k-bad";
+      bad.id = "f09k-bad";
+      m2.appendChild(bad);
+      mChars = mChars.concat(addChars(bad, "\"banaan\"", "f09k-str"));
+      mChars = mChars.concat(addChars(m2, " "));
+      mChars = mChars.concat(addChars(m2, "/>", "f09k-dim"));
+      typeChars(mChars, q("#f09k-mcaret"), MX0, MCH, 0, 11.12, 0.0135);
+
+      // coral voltage on "banaan" (11.68)
+      var badOff = "<Badge label=\"Promo\" color=".length;
+      var ul = q("#f09k-uline");
+      ul.style.left = (MX0 + badOff * MCH) + "px";
+      ul.style.width = (8 * MCH) + "px";
+      tl.to("#f09k-bad", { backgroundColor: "rgba(204, 120, 92, 0.28)", duration: 0.35, ease: "power1.out" }, 11.68);
+      tl.fromTo(ul, { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 11.7);
+
+      // second strip: Promo with no background
+      tl.fromTo("#f09k-s2", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 11.68);
+      tl.fromTo("#f09k-note", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 12.56);
+
+      // hold
+      tl.set({}, {}, DUR);
+      window.__timelines["09-kleur-string"] = tl;
+    })();
+  </script>
+</template>

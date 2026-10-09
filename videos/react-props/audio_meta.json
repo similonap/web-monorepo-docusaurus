@@ -1,0 +1,2783 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/01.wav",
+      "duration_s": 8.78,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Drie",
+          "start": 0.0,
+          "end": 0.24
+        },
+        {
+          "id": "w1",
+          "text": "badges,",
+          "start": 0.32,
+          "end": 1.2
+        },
+        {
+          "id": "w2",
+          "text": "elk",
+          "start": 1.32,
+          "end": 1.52
+        },
+        {
+          "id": "w3",
+          "text": "met",
+          "start": 1.6,
+          "end": 1.68
+        },
+        {
+          "id": "w4",
+          "text": "een",
+          "start": 1.76,
+          "end": 1.84
+        },
+        {
+          "id": "w5",
+          "text": "eigen",
+          "start": 1.88,
+          "end": 2.16
+        },
+        {
+          "id": "w6",
+          "text": "label",
+          "start": 2.36,
+          "end": 2.56
+        },
+        {
+          "id": "w7",
+          "text": "en",
+          "start": 2.64,
+          "end": 2.72
+        },
+        {
+          "id": "w8",
+          "text": "een",
+          "start": 2.8,
+          "end": 2.88
+        },
+        {
+          "id": "w9",
+          "text": "eigen",
+          "start": 2.92,
+          "end": 3.2
+        },
+        {
+          "id": "w10",
+          "text": "kleur.",
+          "start": 3.28,
+          "end": 3.84
+        },
+        {
+          "id": "w11",
+          "text": "Toch",
+          "start": 4.08,
+          "end": 4.24
+        },
+        {
+          "id": "w12",
+          "text": "schrijf",
+          "start": 4.32,
+          "end": 4.56
+        },
+        {
+          "id": "w13",
+          "text": "je",
+          "start": 4.6,
+          "end": 4.64
+        },
+        {
+          "id": "w14",
+          "text": "de",
+          "start": 4.72,
+          "end": 4.8
+        },
+        {
+          "id": "w15",
+          "text": "code",
+          "start": 4.96,
+          "end": 5.12
+        },
+        {
+          "id": "w16",
+          "text": "maar",
+          "start": 5.16,
+          "end": 5.36
+        },
+        {
+          "id": "w17",
+          "text": "één",
+          "start": 5.44,
+          "end": 5.6
+        },
+        {
+          "id": "w18",
+          "text": "keer.",
+          "start": 5.68,
+          "end": 6.24
+        },
+        {
+          "id": "w19",
+          "text": "Hoe?",
+          "start": 6.48,
+          "end": 6.8
+        },
+        {
+          "id": "w20",
+          "text": "Met",
+          "start": 7.2,
+          "end": 7.36
+        },
+        {
+          "id": "w21",
+          "text": "props.",
+          "start": 7.44,
+          "end": 8.16
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/02.wav",
+      "duration_s": 11.1,
+      "words": [
+        {
+          "id": "w0",
+          "text": "We",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "beginnen",
+          "start": 0.28,
+          "end": 0.56
+        },
+        {
+          "id": "w2",
+          "text": "met",
+          "start": 0.64,
+          "end": 0.72
+        },
+        {
+          "id": "w3",
+          "text": "een",
+          "start": 0.8,
+          "end": 0.96
+        },
+        {
+          "id": "w4",
+          "text": "eenvoudige",
+          "start": 1.04,
+          "end": 1.52
+        },
+        {
+          "id": "w5",
+          "text": "badge.",
+          "start": 1.6,
+          "end": 2.2
+        },
+        {
+          "id": "w6",
+          "text": "Gewoon",
+          "start": 2.4,
+          "end": 2.8
+        },
+        {
+          "id": "w7",
+          "text": "een",
+          "start": 2.88,
+          "end": 2.96
+        },
+        {
+          "id": "w8",
+          "text": "div,",
+          "start": 3.12,
+          "end": 3.52
+        },
+        {
+          "id": "w9",
+          "text": "met",
+          "start": 3.6,
+          "end": 3.68
+        },
+        {
+          "id": "w10",
+          "text": "een",
+          "start": 3.76,
+          "end": 3.84
+        },
+        {
+          "id": "w11",
+          "text": "tekstkleur,",
+          "start": 3.92,
+          "end": 4.64
+        },
+        {
+          "id": "w12",
+          "text": "een",
+          "start": 4.72,
+          "end": 4.8
+        },
+        {
+          "id": "w13",
+          "text": "achtergrondkleur",
+          "start": 4.88,
+          "end": 5.68
+        },
+        {
+          "id": "w14",
+          "text": "en",
+          "start": 5.92,
+          "end": 6.0
+        },
+        {
+          "id": "w15",
+          "text": "een",
+          "start": 6.08,
+          "end": 6.16
+        },
+        {
+          "id": "w16",
+          "text": "label:",
+          "start": 6.36,
+          "end": 6.88
+        },
+        {
+          "id": "w17",
+          "text": "nieuw.",
+          "start": 6.96,
+          "end": 7.52
+        },
+        {
+          "id": "w18",
+          "text": "Die",
+          "start": 7.76,
+          "end": 7.92
+        },
+        {
+          "id": "w19",
+          "text": "zetten",
+          "start": 8.0,
+          "end": 8.16
+        },
+        {
+          "id": "w20",
+          "text": "we",
+          "start": 8.24,
+          "end": 8.32
+        },
+        {
+          "id": "w21",
+          "text": "rechtstreeks",
+          "start": 8.44,
+          "end": 8.96
+        },
+        {
+          "id": "w22",
+          "text": "in",
+          "start": 9.0,
+          "end": 9.04
+        },
+        {
+          "id": "w23",
+          "text": "onze",
+          "start": 9.12,
+          "end": 9.28
+        },
+        {
+          "id": "w24",
+          "text": "App-component.",
+          "start": 9.36,
+          "end": 10.4
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/03.wav",
+      "duration_s": 9.18,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Nu",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "wil",
+          "start": 0.24,
+          "end": 0.32
+        },
+        {
+          "id": "w2",
+          "text": "je",
+          "start": 0.36,
+          "end": 0.4
+        },
+        {
+          "id": "w3",
+          "text": "diezelfde",
+          "start": 0.48,
+          "end": 0.96
+        },
+        {
+          "id": "w4",
+          "text": "badge",
+          "start": 1.04,
+          "end": 1.36
+        },
+        {
+          "id": "w5",
+          "text": "ook",
+          "start": 1.48,
+          "end": 1.6
+        },
+        {
+          "id": "w6",
+          "text": "ergens",
+          "start": 1.68,
+          "end": 1.92
+        },
+        {
+          "id": "w7",
+          "text": "anders",
+          "start": 2.0,
+          "end": 2.32
+        },
+        {
+          "id": "w8",
+          "text": "tonen.",
+          "start": 2.44,
+          "end": 2.88
+        },
+        {
+          "id": "w9",
+          "text": "En",
+          "start": 3.04,
+          "end": 3.28
+        },
+        {
+          "id": "w10",
+          "text": "nog",
+          "start": 3.36,
+          "end": 3.52
+        },
+        {
+          "id": "w11",
+          "text": "ergens",
+          "start": 3.6,
+          "end": 3.92
+        },
+        {
+          "id": "w12",
+          "text": "anders.",
+          "start": 4.12,
+          "end": 4.4
+        },
+        {
+          "id": "w13",
+          "text": "Dus",
+          "start": 4.8,
+          "end": 4.96
+        },
+        {
+          "id": "w14",
+          "text": "je",
+          "start": 5.0,
+          "end": 5.04
+        },
+        {
+          "id": "w15",
+          "text": "kopieert",
+          "start": 5.16,
+          "end": 5.52
+        },
+        {
+          "id": "w16",
+          "text": "de",
+          "start": 5.6,
+          "end": 5.68
+        },
+        {
+          "id": "w17",
+          "text": "div,",
+          "start": 5.84,
+          "end": 6.08
+        },
+        {
+          "id": "w18",
+          "text": "en",
+          "start": 6.24,
+          "end": 6.32
+        },
+        {
+          "id": "w19",
+          "text": "plakt",
+          "start": 6.4,
+          "end": 6.64
+        },
+        {
+          "id": "w20",
+          "text": "hem",
+          "start": 6.68,
+          "end": 6.72
+        },
+        {
+          "id": "w21",
+          "text": "erbij.",
+          "start": 6.84,
+          "end": 7.36
+        },
+        {
+          "id": "w22",
+          "text": "En",
+          "start": 7.6,
+          "end": 7.68
+        },
+        {
+          "id": "w23",
+          "text": "nog",
+          "start": 7.76,
+          "end": 7.92
+        },
+        {
+          "id": "w24",
+          "text": "eens.",
+          "start": 7.96,
+          "end": 8.56
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/04.wav",
+      "duration_s": 9.98,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Maar",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "nu",
+          "start": 0.24,
+          "end": 0.32
+        },
+        {
+          "id": "w2",
+          "text": "herhaal",
+          "start": 0.44,
+          "end": 0.8
+        },
+        {
+          "id": "w3",
+          "text": "je",
+          "start": 0.84,
+          "end": 0.88
+        },
+        {
+          "id": "w4",
+          "text": "jezelf.",
+          "start": 0.96,
+          "end": 1.72
+        },
+        {
+          "id": "w5",
+          "text": "Wil",
+          "start": 1.92,
+          "end": 2.08
+        },
+        {
+          "id": "w6",
+          "text": "je",
+          "start": 2.12,
+          "end": 2.16
+        },
+        {
+          "id": "w7",
+          "text": "de",
+          "start": 2.24,
+          "end": 2.32
+        },
+        {
+          "id": "w8",
+          "text": "kleur",
+          "start": 2.4,
+          "end": 2.64
+        },
+        {
+          "id": "w9",
+          "text": "aanpassen,",
+          "start": 2.76,
+          "end": 3.36
+        },
+        {
+          "id": "w10",
+          "text": "dan",
+          "start": 3.44,
+          "end": 3.52
+        },
+        {
+          "id": "w11",
+          "text": "moet",
+          "start": 3.56,
+          "end": 3.68
+        },
+        {
+          "id": "w12",
+          "text": "je",
+          "start": 3.72,
+          "end": 3.76
+        },
+        {
+          "id": "w13",
+          "text": "dat",
+          "start": 3.84,
+          "end": 3.92
+        },
+        {
+          "id": "w14",
+          "text": "op",
+          "start": 4.04,
+          "end": 4.16
+        },
+        {
+          "id": "w15",
+          "text": "drie",
+          "start": 4.2,
+          "end": 4.4
+        },
+        {
+          "id": "w16",
+          "text": "plaatsen",
+          "start": 4.48,
+          "end": 4.88
+        },
+        {
+          "id": "w17",
+          "text": "doen.",
+          "start": 4.92,
+          "end": 5.32
+        },
+        {
+          "id": "w18",
+          "text": "Daarmee",
+          "start": 5.52,
+          "end": 5.92
+        },
+        {
+          "id": "w19",
+          "text": "overtreed",
+          "start": 5.96,
+          "end": 6.4
+        },
+        {
+          "id": "w20",
+          "text": "je",
+          "start": 6.44,
+          "end": 6.48
+        },
+        {
+          "id": "w21",
+          "text": "het",
+          "start": 6.56,
+          "end": 6.64
+        },
+        {
+          "id": "w22",
+          "text": "DRY-principe:",
+          "start": 6.72,
+          "end": 7.92
+        },
+        {
+          "id": "w23",
+          "text": "Don't",
+          "start": 8.0,
+          "end": 8.16
+        },
+        {
+          "id": "w24",
+          "text": "Repeat",
+          "start": 8.24,
+          "end": 8.56
+        },
+        {
+          "id": "w25",
+          "text": "Yourself.",
+          "start": 8.64,
+          "end": 9.36
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "path": "assets/voice/05.wav",
+      "duration_s": 9.9,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Dus",
+          "start": 0.0,
+          "end": 0.32
+        },
+        {
+          "id": "w1",
+          "text": "maken",
+          "start": 0.48,
+          "end": 0.72
+        },
+        {
+          "id": "w2",
+          "text": "we",
+          "start": 0.76,
+          "end": 0.8
+        },
+        {
+          "id": "w3",
+          "text": "er",
+          "start": 0.84,
+          "end": 0.88
+        },
+        {
+          "id": "w4",
+          "text": "een",
+          "start": 0.96,
+          "end": 1.04
+        },
+        {
+          "id": "w5",
+          "text": "component",
+          "start": 1.32,
+          "end": 1.6
+        },
+        {
+          "id": "w6",
+          "text": "van:",
+          "start": 1.72,
+          "end": 2.16
+        },
+        {
+          "id": "w7",
+          "text": "Badge.",
+          "start": 2.24,
+          "end": 2.72
+        },
+        {
+          "id": "w8",
+          "text": "De",
+          "start": 3.12,
+          "end": 3.2
+        },
+        {
+          "id": "w9",
+          "text": "div",
+          "start": 3.28,
+          "end": 3.6
+        },
+        {
+          "id": "w10",
+          "text": "staat",
+          "start": 3.68,
+          "end": 3.84
+        },
+        {
+          "id": "w11",
+          "text": "nu",
+          "start": 3.92,
+          "end": 4.0
+        },
+        {
+          "id": "w12",
+          "text": "op",
+          "start": 4.12,
+          "end": 4.24
+        },
+        {
+          "id": "w13",
+          "text": "één",
+          "start": 4.28,
+          "end": 4.4
+        },
+        {
+          "id": "w14",
+          "text": "plek.",
+          "start": 4.48,
+          "end": 5.0
+        },
+        {
+          "id": "w15",
+          "text": "In",
+          "start": 5.2,
+          "end": 5.36
+        },
+        {
+          "id": "w16",
+          "text": "App",
+          "start": 5.48,
+          "end": 5.6
+        },
+        {
+          "id": "w17",
+          "text": "gebruik",
+          "start": 5.68,
+          "end": 6.0
+        },
+        {
+          "id": "w18",
+          "text": "je",
+          "start": 6.04,
+          "end": 6.08
+        },
+        {
+          "id": "w19",
+          "text": "gewoon",
+          "start": 6.16,
+          "end": 6.48
+        },
+        {
+          "id": "w20",
+          "text": "drie",
+          "start": 6.52,
+          "end": 6.64
+        },
+        {
+          "id": "w21",
+          "text": "keer",
+          "start": 6.72,
+          "end": 6.88
+        },
+        {
+          "id": "w22",
+          "text": "Badge,",
+          "start": 6.96,
+          "end": 7.52
+        },
+        {
+          "id": "w23",
+          "text": "en",
+          "start": 7.64,
+          "end": 7.76
+        },
+        {
+          "id": "w24",
+          "text": "je",
+          "start": 7.84,
+          "end": 7.92
+        },
+        {
+          "id": "w25",
+          "text": "scherm",
+          "start": 8.0,
+          "end": 8.24
+        },
+        {
+          "id": "w26",
+          "text": "blijft",
+          "start": 8.293,
+          "end": 8.48
+        },
+        {
+          "id": "w27",
+          "text": "hetzelfde.",
+          "start": 8.56,
+          "end": 9.28
+        }
+      ]
+    },
+    {
+      "frame": 6,
+      "path": "assets/voice/06.wav",
+      "duration_s": 13.34,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Klaar?",
+          "start": 0.0,
+          "end": 0.68
+        },
+        {
+          "id": "w1",
+          "text": "Nee.",
+          "start": 0.96,
+          "end": 1.64
+        },
+        {
+          "id": "w2",
+          "text": "Nu",
+          "start": 1.92,
+          "end": 2.0
+        },
+        {
+          "id": "w3",
+          "text": "komt",
+          "start": 2.08,
+          "end": 2.24
+        },
+        {
+          "id": "w4",
+          "text": "de",
+          "start": 2.28,
+          "end": 2.32
+        },
+        {
+          "id": "w5",
+          "text": "vraag",
+          "start": 2.4,
+          "end": 2.72
+        },
+        {
+          "id": "w6",
+          "text": "om",
+          "start": 2.8,
+          "end": 2.88
+        },
+        {
+          "id": "w7",
+          "text": "dezelfde",
+          "start": 3.0,
+          "end": 3.36
+        },
+        {
+          "id": "w8",
+          "text": "badge",
+          "start": 3.44,
+          "end": 3.68
+        },
+        {
+          "id": "w9",
+          "text": "te",
+          "start": 3.76,
+          "end": 3.84
+        },
+        {
+          "id": "w10",
+          "text": "tonen,",
+          "start": 3.96,
+          "end": 4.32
+        },
+        {
+          "id": "w11",
+          "text": "maar",
+          "start": 4.4,
+          "end": 4.64
+        },
+        {
+          "id": "w12",
+          "text": "met",
+          "start": 4.72,
+          "end": 4.8
+        },
+        {
+          "id": "w13",
+          "text": "een",
+          "start": 4.88,
+          "end": 4.96
+        },
+        {
+          "id": "w14",
+          "text": "ander",
+          "start": 5.04,
+          "end": 5.28
+        },
+        {
+          "id": "w15",
+          "text": "label:",
+          "start": 5.36,
+          "end": 6.08
+        },
+        {
+          "id": "w16",
+          "text": "uitverkocht.",
+          "start": 6.2,
+          "end": 7.04
+        },
+        {
+          "id": "w17",
+          "text": "Maak",
+          "start": 7.28,
+          "end": 7.44
+        },
+        {
+          "id": "w18",
+          "text": "je",
+          "start": 7.52,
+          "end": 7.56
+        },
+        {
+          "id": "w19",
+          "text": "dan",
+          "start": 7.6,
+          "end": 7.68
+        },
+        {
+          "id": "w20",
+          "text": "een",
+          "start": 7.76,
+          "end": 7.84
+        },
+        {
+          "id": "w21",
+          "text": "nieuwe",
+          "start": 7.92,
+          "end": 8.08
+        },
+        {
+          "id": "w22",
+          "text": "component?",
+          "start": 8.16,
+          "end": 8.96
+        },
+        {
+          "id": "w23",
+          "text": "Liever",
+          "start": 9.2,
+          "end": 9.52
+        },
+        {
+          "id": "w24",
+          "text": "niet.",
+          "start": 9.6,
+          "end": 10.08
+        },
+        {
+          "id": "w25",
+          "text": "Dan",
+          "start": 10.24,
+          "end": 10.32
+        },
+        {
+          "id": "w26",
+          "text": "kopieer",
+          "start": 10.4,
+          "end": 10.8
+        },
+        {
+          "id": "w27",
+          "text": "je",
+          "start": 10.84,
+          "end": 10.88
+        },
+        {
+          "id": "w28",
+          "text": "opnieuw",
+          "start": 11.0,
+          "end": 11.44
+        },
+        {
+          "id": "w29",
+          "text": "bijna",
+          "start": 11.56,
+          "end": 11.92
+        },
+        {
+          "id": "w30",
+          "text": "alles.",
+          "start": 12.16,
+          "end": 12.72
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "path": "assets/voice/07.wav",
+      "duration_s": 11.26,
+      "words": [
+        {
+          "id": "w0",
+          "text": "We",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "willen",
+          "start": 0.24,
+          "end": 0.4
+        },
+        {
+          "id": "w2",
+          "text": "de",
+          "start": 0.48,
+          "end": 0.56
+        },
+        {
+          "id": "w3",
+          "text": "Badge",
+          "start": 0.72,
+          "end": 0.88
+        },
+        {
+          "id": "w4",
+          "text": "die",
+          "start": 0.92,
+          "end": 0.96
+        },
+        {
+          "id": "w5",
+          "text": "we",
+          "start": 1.04,
+          "end": 1.12
+        },
+        {
+          "id": "w6",
+          "text": "al",
+          "start": 1.2,
+          "end": 1.28
+        },
+        {
+          "id": "w7",
+          "text": "hebben",
+          "start": 1.36,
+          "end": 1.6
+        },
+        {
+          "id": "w8",
+          "text": "hergebruiken.",
+          "start": 1.76,
+          "end": 2.8
+        },
+        {
+          "id": "w9",
+          "text": "React",
+          "start": 3.04,
+          "end": 3.44
+        },
+        {
+          "id": "w10",
+          "text": "heeft",
+          "start": 3.48,
+          "end": 3.6
+        },
+        {
+          "id": "w11",
+          "text": "daar",
+          "start": 3.68,
+          "end": 3.76
+        },
+        {
+          "id": "w12",
+          "text": "een",
+          "start": 3.84,
+          "end": 3.92
+        },
+        {
+          "id": "w13",
+          "text": "oplossing",
+          "start": 4.0,
+          "end": 4.4
+        },
+        {
+          "id": "w14",
+          "text": "voor:",
+          "start": 4.48,
+          "end": 5.12
+        },
+        {
+          "id": "w15",
+          "text": "props.",
+          "start": 5.36,
+          "end": 5.88
+        },
+        {
+          "id": "w16",
+          "text": "Je",
+          "start": 6.16,
+          "end": 6.24
+        },
+        {
+          "id": "w17",
+          "text": "geeft",
+          "start": 6.28,
+          "end": 6.48
+        },
+        {
+          "id": "w18",
+          "text": "het",
+          "start": 6.52,
+          "end": 6.56
+        },
+        {
+          "id": "w19",
+          "text": "label",
+          "start": 6.64,
+          "end": 6.96
+        },
+        {
+          "id": "w20",
+          "text": "door",
+          "start": 7.12,
+          "end": 7.28
+        },
+        {
+          "id": "w21",
+          "text": "aan",
+          "start": 7.32,
+          "end": 7.36
+        },
+        {
+          "id": "w22",
+          "text": "de",
+          "start": 7.44,
+          "end": 7.52
+        },
+        {
+          "id": "w23",
+          "text": "component,",
+          "start": 7.84,
+          "end": 8.4
+        },
+        {
+          "id": "w24",
+          "text": "net",
+          "start": 8.52,
+          "end": 8.64
+        },
+        {
+          "id": "w25",
+          "text": "zoals",
+          "start": 8.72,
+          "end": 8.88
+        },
+        {
+          "id": "w26",
+          "text": "een",
+          "start": 8.96,
+          "end": 9.04
+        },
+        {
+          "id": "w27",
+          "text": "attribuut",
+          "start": 9.2,
+          "end": 9.6
+        },
+        {
+          "id": "w28",
+          "text": "in",
+          "start": 9.68,
+          "end": 9.76
+        },
+        {
+          "id": "w29",
+          "text": "HTML.",
+          "start": 9.84,
+          "end": 10.64
+        }
+      ]
+    },
+    {
+      "frame": 8,
+      "path": "assets/voice/08.wav",
+      "duration_s": 13.66,
+      "words": [
+        {
+          "id": "w0",
+          "text": "In",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "Badge",
+          "start": 0.24,
+          "end": 0.64
+        },
+        {
+          "id": "w2",
+          "text": "beschrijf",
+          "start": 0.72,
+          "end": 1.12
+        },
+        {
+          "id": "w3",
+          "text": "je",
+          "start": 1.2,
+          "end": 1.24
+        },
+        {
+          "id": "w4",
+          "text": "met",
+          "start": 1.28,
+          "end": 1.36
+        },
+        {
+          "id": "w5",
+          "text": "een",
+          "start": 1.44,
+          "end": 1.52
+        },
+        {
+          "id": "w6",
+          "text": "interface",
+          "start": 1.6,
+          "end": 2.16
+        },
+        {
+          "id": "w7",
+          "text": "welke",
+          "start": 2.32,
+          "end": 2.64
+        },
+        {
+          "id": "w8",
+          "text": "props",
+          "start": 2.72,
+          "end": 3.04
+        },
+        {
+          "id": "w9",
+          "text": "je",
+          "start": 3.08,
+          "end": 3.12
+        },
+        {
+          "id": "w10",
+          "text": "verwacht:",
+          "start": 3.2,
+          "end": 4.0
+        },
+        {
+          "id": "w11",
+          "text": "label,",
+          "start": 4.16,
+          "end": 4.8
+        },
+        {
+          "id": "w12",
+          "text": "van",
+          "start": 4.88,
+          "end": 4.96
+        },
+        {
+          "id": "w13",
+          "text": "het",
+          "start": 5.0,
+          "end": 5.04
+        },
+        {
+          "id": "w14",
+          "text": "type",
+          "start": 5.2,
+          "end": 5.36
+        },
+        {
+          "id": "w15",
+          "text": "string.",
+          "start": 5.44,
+          "end": 6.04
+        },
+        {
+          "id": "w16",
+          "text": "Je",
+          "start": 6.24,
+          "end": 6.32
+        },
+        {
+          "id": "w17",
+          "text": "haalt",
+          "start": 6.4,
+          "end": 6.64
+        },
+        {
+          "id": "w18",
+          "text": "label",
+          "start": 6.72,
+          "end": 7.12
+        },
+        {
+          "id": "w19",
+          "text": "uit",
+          "start": 7.2,
+          "end": 7.28
+        },
+        {
+          "id": "w20",
+          "text": "de",
+          "start": 7.36,
+          "end": 7.44
+        },
+        {
+          "id": "w21",
+          "text": "props,",
+          "start": 7.64,
+          "end": 8.0
+        },
+        {
+          "id": "w22",
+          "text": "en",
+          "start": 8.04,
+          "end": 8.08
+        },
+        {
+          "id": "w23",
+          "text": "zet",
+          "start": 8.16,
+          "end": 8.32
+        },
+        {
+          "id": "w24",
+          "text": "het",
+          "start": 8.36,
+          "end": 8.4
+        },
+        {
+          "id": "w25",
+          "text": "tussen",
+          "start": 8.44,
+          "end": 8.64
+        },
+        {
+          "id": "w26",
+          "text": "accolades",
+          "start": 8.72,
+          "end": 9.36
+        },
+        {
+          "id": "w27",
+          "text": "in",
+          "start": 9.44,
+          "end": 9.52
+        },
+        {
+          "id": "w28",
+          "text": "de",
+          "start": 9.56,
+          "end": 9.6
+        },
+        {
+          "id": "w29",
+          "text": "div.",
+          "start": 9.68,
+          "end": 10.28
+        },
+        {
+          "id": "w30",
+          "text": "Nu",
+          "start": 10.56,
+          "end": 10.72
+        },
+        {
+          "id": "w31",
+          "text": "werkt",
+          "start": 10.8,
+          "end": 11.04
+        },
+        {
+          "id": "w32",
+          "text": "Badge",
+          "start": 11.24,
+          "end": 11.44
+        },
+        {
+          "id": "w33",
+          "text": "met",
+          "start": 11.6,
+          "end": 11.76
+        },
+        {
+          "id": "w34",
+          "text": "eender",
+          "start": 11.8,
+          "end": 12.08
+        },
+        {
+          "id": "w35",
+          "text": "welk",
+          "start": 12.16,
+          "end": 12.4
+        },
+        {
+          "id": "w36",
+          "text": "label.",
+          "start": 12.6,
+          "end": 12.96
+        }
+      ]
+    },
+    {
+      "frame": 9,
+      "path": "assets/voice/09.wav",
+      "duration_s": 13.82,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Volgende",
+          "start": 0.0,
+          "end": 0.4
+        },
+        {
+          "id": "w1",
+          "text": "vraag:",
+          "start": 0.48,
+          "end": 0.88
+        },
+        {
+          "id": "w2",
+          "text": "ook",
+          "start": 1.28,
+          "end": 1.44
+        },
+        {
+          "id": "w3",
+          "text": "een",
+          "start": 1.52,
+          "end": 1.6
+        },
+        {
+          "id": "w4",
+          "text": "andere",
+          "start": 1.68,
+          "end": 1.84
+        },
+        {
+          "id": "w5",
+          "text": "kleur.",
+          "start": 1.92,
+          "end": 2.32
+        },
+        {
+          "id": "w6",
+          "text": "Eenvoudig,",
+          "start": 2.72,
+          "end": 3.6
+        },
+        {
+          "id": "w7",
+          "text": "we",
+          "start": 3.68,
+          "end": 3.76
+        },
+        {
+          "id": "w8",
+          "text": "voegen",
+          "start": 3.84,
+          "end": 4.08
+        },
+        {
+          "id": "w9",
+          "text": "een",
+          "start": 4.16,
+          "end": 4.24
+        },
+        {
+          "id": "w10",
+          "text": "tweede",
+          "start": 4.32,
+          "end": 4.56
+        },
+        {
+          "id": "w11",
+          "text": "prop",
+          "start": 4.64,
+          "end": 4.88
+        },
+        {
+          "id": "w12",
+          "text": "toe:",
+          "start": 4.92,
+          "end": 5.44
+        },
+        {
+          "id": "w13",
+          "text": "color.",
+          "start": 5.52,
+          "end": 6.16
+        },
+        {
+          "id": "w14",
+          "text": "Je",
+          "start": 6.4,
+          "end": 6.48
+        },
+        {
+          "id": "w15",
+          "text": "zou",
+          "start": 6.52,
+          "end": 6.64
+        },
+        {
+          "id": "w16",
+          "text": "er",
+          "start": 6.68,
+          "end": 6.72
+        },
+        {
+          "id": "w17",
+          "text": "een",
+          "start": 6.8,
+          "end": 6.88
+        },
+        {
+          "id": "w18",
+          "text": "string",
+          "start": 6.96,
+          "end": 7.28
+        },
+        {
+          "id": "w19",
+          "text": "van",
+          "start": 7.36,
+          "end": 7.44
+        },
+        {
+          "id": "w20",
+          "text": "kunnen",
+          "start": 7.52,
+          "end": 7.68
+        },
+        {
+          "id": "w21",
+          "text": "maken.",
+          "start": 7.76,
+          "end": 8.24
+        },
+        {
+          "id": "w22",
+          "text": "Maar",
+          "start": 8.4,
+          "end": 8.64
+        },
+        {
+          "id": "w23",
+          "text": "een",
+          "start": 8.72,
+          "end": 8.8
+        },
+        {
+          "id": "w24",
+          "text": "string",
+          "start": 8.88,
+          "end": 9.2
+        },
+        {
+          "id": "w25",
+          "text": "is",
+          "start": 9.28,
+          "end": 9.44
+        },
+        {
+          "id": "w26",
+          "text": "te",
+          "start": 9.52,
+          "end": 9.68
+        },
+        {
+          "id": "w27",
+          "text": "open:",
+          "start": 9.76,
+          "end": 10.48
+        },
+        {
+          "id": "w28",
+          "text": "niets",
+          "start": 10.52,
+          "end": 10.72
+        },
+        {
+          "id": "w29",
+          "text": "houdt",
+          "start": 10.773,
+          "end": 10.933
+        },
+        {
+          "id": "w30",
+          "text": "je",
+          "start": 10.987,
+          "end": 11.04
+        },
+        {
+          "id": "w31",
+          "text": "tegen",
+          "start": 11.12,
+          "end": 11.36
+        },
+        {
+          "id": "w32",
+          "text": "om",
+          "start": 11.44,
+          "end": 11.6
+        },
+        {
+          "id": "w33",
+          "text": "banaan",
+          "start": 11.68,
+          "end": 12.16
+        },
+        {
+          "id": "w34",
+          "text": "door",
+          "start": 12.28,
+          "end": 12.4
+        },
+        {
+          "id": "w35",
+          "text": "te",
+          "start": 12.44,
+          "end": 12.48
+        },
+        {
+          "id": "w36",
+          "text": "geven.",
+          "start": 12.56,
+          "end": 13.2
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "path": "assets/voice/10.wav",
+      "duration_s": 13.74,
+      "words": [
+        {
+          "id": "w0",
+          "text": "We",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "willen",
+          "start": 0.24,
+          "end": 0.4
+        },
+        {
+          "id": "w2",
+          "text": "enkel",
+          "start": 0.48,
+          "end": 0.8
+        },
+        {
+          "id": "w3",
+          "text": "red,",
+          "start": 0.96,
+          "end": 1.52
+        },
+        {
+          "id": "w4",
+          "text": "green",
+          "start": 1.72,
+          "end": 1.92
+        },
+        {
+          "id": "w5",
+          "text": "en",
+          "start": 2.0,
+          "end": 2.08
+        },
+        {
+          "id": "w6",
+          "text": "blue",
+          "start": 2.16,
+          "end": 2.4
+        },
+        {
+          "id": "w7",
+          "text": "toestaan,",
+          "start": 2.48,
+          "end": 3.2
+        },
+        {
+          "id": "w8",
+          "text": "en",
+          "start": 3.32,
+          "end": 3.44
+        },
+        {
+          "id": "w9",
+          "text": "dat",
+          "start": 3.56,
+          "end": 3.68
+        },
+        {
+          "id": "w10",
+          "text": "is",
+          "start": 3.76,
+          "end": 3.84
+        },
+        {
+          "id": "w11",
+          "text": "het.",
+          "start": 3.96,
+          "end": 4.32
+        },
+        {
+          "id": "w12",
+          "text": "Daarom",
+          "start": 4.56,
+          "end": 4.96
+        },
+        {
+          "id": "w13",
+          "text": "maken",
+          "start": 5.04,
+          "end": 5.28
+        },
+        {
+          "id": "w14",
+          "text": "we",
+          "start": 5.32,
+          "end": 5.36
+        },
+        {
+          "id": "w15",
+          "text": "een",
+          "start": 5.48,
+          "end": 5.6
+        },
+        {
+          "id": "w16",
+          "text": "eigen",
+          "start": 5.64,
+          "end": 5.92
+        },
+        {
+          "id": "w17",
+          "text": "type:",
+          "start": 6.08,
+          "end": 6.44
+        },
+        {
+          "id": "w18",
+          "text": "Color,",
+          "start": 6.64,
+          "end": 7.2
+        },
+        {
+          "id": "w19",
+          "text": "met",
+          "start": 7.28,
+          "end": 7.36
+        },
+        {
+          "id": "w20",
+          "text": "precies",
+          "start": 7.52,
+          "end": 7.92
+        },
+        {
+          "id": "w21",
+          "text": "die",
+          "start": 8.08,
+          "end": 8.24
+        },
+        {
+          "id": "w22",
+          "text": "drie",
+          "start": 8.28,
+          "end": 8.48
+        },
+        {
+          "id": "w23",
+          "text": "waarden.",
+          "start": 8.56,
+          "end": 8.96
+        },
+        {
+          "id": "w24",
+          "text": "Geef",
+          "start": 9.36,
+          "end": 9.52
+        },
+        {
+          "id": "w25",
+          "text": "je",
+          "start": 9.56,
+          "end": 9.6
+        },
+        {
+          "id": "w26",
+          "text": "nu",
+          "start": 9.68,
+          "end": 9.76
+        },
+        {
+          "id": "w27",
+          "text": "iets",
+          "start": 9.88,
+          "end": 10.0
+        },
+        {
+          "id": "w28",
+          "text": "anders",
+          "start": 10.16,
+          "end": 10.32
+        },
+        {
+          "id": "w29",
+          "text": "door,",
+          "start": 10.48,
+          "end": 10.88
+        },
+        {
+          "id": "w30",
+          "text": "dan",
+          "start": 10.96,
+          "end": 11.04
+        },
+        {
+          "id": "w31",
+          "text": "geeft",
+          "start": 11.08,
+          "end": 11.28
+        },
+        {
+          "id": "w32",
+          "text": "TypeScript",
+          "start": 11.4,
+          "end": 11.84
+        },
+        {
+          "id": "w33",
+          "text": "meteen",
+          "start": 12.0,
+          "end": 12.32
+        },
+        {
+          "id": "w34",
+          "text": "een",
+          "start": 12.4,
+          "end": 12.48
+        },
+        {
+          "id": "w35",
+          "text": "fout.",
+          "start": 12.56,
+          "end": 13.12
+        }
+      ]
+    },
+    {
+      "frame": 11,
+      "path": "assets/voice/11.wav",
+      "duration_s": 8.7,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Nu",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "kan",
+          "start": 0.24,
+          "end": 0.32
+        },
+        {
+          "id": "w2",
+          "text": "je",
+          "start": 0.36,
+          "end": 0.4
+        },
+        {
+          "id": "w3",
+          "text": "met",
+          "start": 0.52,
+          "end": 0.64
+        },
+        {
+          "id": "w4",
+          "text": "één",
+          "start": 0.72,
+          "end": 0.88
+        },
+        {
+          "id": "w5",
+          "text": "Badge-component",
+          "start": 0.96,
+          "end": 1.84
+        },
+        {
+          "id": "w6",
+          "text": "allerlei",
+          "start": 1.92,
+          "end": 2.32
+        },
+        {
+          "id": "w7",
+          "text": "badges",
+          "start": 2.4,
+          "end": 2.8
+        },
+        {
+          "id": "w8",
+          "text": "maken:",
+          "start": 2.84,
+          "end": 3.52
+        },
+        {
+          "id": "w9",
+          "text": "nieuw",
+          "start": 3.6,
+          "end": 3.84
+        },
+        {
+          "id": "w10",
+          "text": "in",
+          "start": 3.92,
+          "end": 3.96
+        },
+        {
+          "id": "w11",
+          "text": "het",
+          "start": 4.0,
+          "end": 4.08
+        },
+        {
+          "id": "w12",
+          "text": "groen,",
+          "start": 4.16,
+          "end": 4.88
+        },
+        {
+          "id": "w13",
+          "text": "uitverkocht",
+          "start": 4.96,
+          "end": 5.52
+        },
+        {
+          "id": "w14",
+          "text": "in",
+          "start": 5.56,
+          "end": 5.6
+        },
+        {
+          "id": "w15",
+          "text": "het",
+          "start": 5.68,
+          "end": 5.76
+        },
+        {
+          "id": "w16",
+          "text": "rood,",
+          "start": 5.84,
+          "end": 6.32
+        },
+        {
+          "id": "w17",
+          "text": "en",
+          "start": 6.4,
+          "end": 6.48
+        },
+        {
+          "id": "w18",
+          "text": "promo",
+          "start": 6.72,
+          "end": 7.2
+        },
+        {
+          "id": "w19",
+          "text": "in",
+          "start": 7.28,
+          "end": 7.36
+        },
+        {
+          "id": "w20",
+          "text": "het",
+          "start": 7.4,
+          "end": 7.44
+        },
+        {
+          "id": "w21",
+          "text": "blauw.",
+          "start": 7.52,
+          "end": 8.08
+        }
+      ]
+    },
+    {
+      "frame": 12,
+      "path": "assets/voice/12.wav",
+      "duration_s": 13.98,
+      "words": [
+        {
+          "id": "w0",
+          "text": "En",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "als",
+          "start": 0.32,
+          "end": 0.48
+        },
+        {
+          "id": "w2",
+          "text": "je",
+          "start": 0.56,
+          "end": 0.64
+        },
+        {
+          "id": "w3",
+          "text": "helemaal",
+          "start": 0.68,
+          "end": 1.12
+        },
+        {
+          "id": "w4",
+          "text": "geen",
+          "start": 1.16,
+          "end": 1.36
+        },
+        {
+          "id": "w5",
+          "text": "kleur",
+          "start": 1.4,
+          "end": 1.6
+        },
+        {
+          "id": "w6",
+          "text": "opgeeft?",
+          "start": 1.68,
+          "end": 2.4
+        },
+        {
+          "id": "w7",
+          "text": "Dan",
+          "start": 2.64,
+          "end": 2.72
+        },
+        {
+          "id": "w8",
+          "text": "wil",
+          "start": 2.8,
+          "end": 2.88
+        },
+        {
+          "id": "w9",
+          "text": "je",
+          "start": 2.96,
+          "end": 3.04
+        },
+        {
+          "id": "w10",
+          "text": "dat",
+          "start": 3.12,
+          "end": 3.2
+        },
+        {
+          "id": "w11",
+          "text": "de",
+          "start": 3.24,
+          "end": 3.28
+        },
+        {
+          "id": "w12",
+          "text": "badge",
+          "start": 3.36,
+          "end": 3.6
+        },
+        {
+          "id": "w13",
+          "text": "gewoon",
+          "start": 3.68,
+          "end": 4.0
+        },
+        {
+          "id": "w14",
+          "text": "groen",
+          "start": 4.08,
+          "end": 4.4
+        },
+        {
+          "id": "w15",
+          "text": "is.",
+          "start": 4.56,
+          "end": 4.92
+        },
+        {
+          "id": "w16",
+          "text": "Maak",
+          "start": 5.12,
+          "end": 5.36
+        },
+        {
+          "id": "w17",
+          "text": "color",
+          "start": 5.44,
+          "end": 5.76
+        },
+        {
+          "id": "w18",
+          "text": "optioneel",
+          "start": 5.92,
+          "end": 6.48
+        },
+        {
+          "id": "w19",
+          "text": "met",
+          "start": 6.56,
+          "end": 6.64
+        },
+        {
+          "id": "w20",
+          "text": "een",
+          "start": 6.72,
+          "end": 6.8
+        },
+        {
+          "id": "w21",
+          "text": "vraagteken,",
+          "start": 6.853,
+          "end": 7.76
+        },
+        {
+          "id": "w22",
+          "text": "en",
+          "start": 7.88,
+          "end": 8.0
+        },
+        {
+          "id": "w23",
+          "text": "geef",
+          "start": 8.08,
+          "end": 8.24
+        },
+        {
+          "id": "w24",
+          "text": "een",
+          "start": 8.32,
+          "end": 8.4
+        },
+        {
+          "id": "w25",
+          "text": "standaardwaarde",
+          "start": 8.56,
+          "end": 9.2
+        },
+        {
+          "id": "w26",
+          "text": "mee:",
+          "start": 9.28,
+          "end": 9.76
+        },
+        {
+          "id": "w27",
+          "text": "green.",
+          "start": 9.84,
+          "end": 10.44
+        },
+        {
+          "id": "w28",
+          "text": "Laat",
+          "start": 10.64,
+          "end": 10.8
+        },
+        {
+          "id": "w29",
+          "text": "je",
+          "start": 10.88,
+          "end": 10.96
+        },
+        {
+          "id": "w30",
+          "text": "color",
+          "start": 11.12,
+          "end": 11.28
+        },
+        {
+          "id": "w31",
+          "text": "weg,",
+          "start": 11.44,
+          "end": 11.92
+        },
+        {
+          "id": "w32",
+          "text": "dan",
+          "start": 12.0,
+          "end": 12.08
+        },
+        {
+          "id": "w33",
+          "text": "wordt",
+          "start": 12.16,
+          "end": 12.28
+        },
+        {
+          "id": "w34",
+          "text": "je",
+          "start": 12.32,
+          "end": 12.4
+        },
+        {
+          "id": "w35",
+          "text": "badge",
+          "start": 12.56,
+          "end": 12.72
+        },
+        {
+          "id": "w36",
+          "text": "groen.",
+          "start": 12.8,
+          "end": 13.36
+        }
+      ]
+    },
+    {
+      "frame": 13,
+      "path": "assets/voice/13.wav",
+      "duration_s": 15.88,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Kort",
+          "start": 0.0,
+          "end": 0.24
+        },
+        {
+          "id": "w1",
+          "text": "samengevat:",
+          "start": 0.32,
+          "end": 1.04
+        },
+        {
+          "id": "w2",
+          "text": "herhaal",
+          "start": 1.44,
+          "end": 1.84
+        },
+        {
+          "id": "w3",
+          "text": "je",
+          "start": 1.92,
+          "end": 2.0
+        },
+        {
+          "id": "w4",
+          "text": "code,",
+          "start": 2.08,
+          "end": 2.64
+        },
+        {
+          "id": "w5",
+          "text": "maak",
+          "start": 2.72,
+          "end": 2.96
+        },
+        {
+          "id": "w6",
+          "text": "er",
+          "start": 3.0,
+          "end": 3.04
+        },
+        {
+          "id": "w7",
+          "text": "een",
+          "start": 3.12,
+          "end": 3.2
+        },
+        {
+          "id": "w8",
+          "text": "component",
+          "start": 3.48,
+          "end": 3.76
+        },
+        {
+          "id": "w9",
+          "text": "van.",
+          "start": 3.84,
+          "end": 4.48
+        },
+        {
+          "id": "w10",
+          "text": "Met",
+          "start": 4.6,
+          "end": 4.72
+        },
+        {
+          "id": "w11",
+          "text": "props",
+          "start": 4.92,
+          "end": 5.12
+        },
+        {
+          "id": "w12",
+          "text": "geef",
+          "start": 5.2,
+          "end": 5.36
+        },
+        {
+          "id": "w13",
+          "text": "je",
+          "start": 5.44,
+          "end": 5.6
+        },
+        {
+          "id": "w14",
+          "text": "data",
+          "start": 5.76,
+          "end": 5.92
+        },
+        {
+          "id": "w15",
+          "text": "door,",
+          "start": 6.0,
+          "end": 6.4
+        },
+        {
+          "id": "w16",
+          "text": "zodat",
+          "start": 6.453,
+          "end": 6.64
+        },
+        {
+          "id": "w17",
+          "text": "je",
+          "start": 6.68,
+          "end": 6.72
+        },
+        {
+          "id": "w18",
+          "text": "die",
+          "start": 6.8,
+          "end": 6.88
+        },
+        {
+          "id": "w19",
+          "text": "component",
+          "start": 7.16,
+          "end": 7.44
+        },
+        {
+          "id": "w20",
+          "text": "kan",
+          "start": 7.56,
+          "end": 7.68
+        },
+        {
+          "id": "w21",
+          "text": "hergebruiken.",
+          "start": 7.8,
+          "end": 8.8
+        },
+        {
+          "id": "w22",
+          "text": "Met",
+          "start": 8.88,
+          "end": 8.96
+        },
+        {
+          "id": "w23",
+          "text": "een",
+          "start": 9.04,
+          "end": 9.2
+        },
+        {
+          "id": "w24",
+          "text": "eigen",
+          "start": 9.24,
+          "end": 9.52
+        },
+        {
+          "id": "w25",
+          "text": "type",
+          "start": 9.6,
+          "end": 9.84
+        },
+        {
+          "id": "w26",
+          "text": "beperk",
+          "start": 10.0,
+          "end": 10.4
+        },
+        {
+          "id": "w27",
+          "text": "je",
+          "start": 10.44,
+          "end": 10.48
+        },
+        {
+          "id": "w28",
+          "text": "wat",
+          "start": 10.56,
+          "end": 10.72
+        },
+        {
+          "id": "w29",
+          "text": "mag,",
+          "start": 10.8,
+          "end": 11.36
+        },
+        {
+          "id": "w30",
+          "text": "en",
+          "start": 11.48,
+          "end": 11.6
+        },
+        {
+          "id": "w31",
+          "text": "met",
+          "start": 11.76,
+          "end": 11.84
+        },
+        {
+          "id": "w32",
+          "text": "een",
+          "start": 11.92,
+          "end": 12.0
+        },
+        {
+          "id": "w33",
+          "text": "standaardwaarde",
+          "start": 12.16,
+          "end": 12.96
+        },
+        {
+          "id": "w34",
+          "text": "mag",
+          "start": 13.04,
+          "end": 13.12
+        },
+        {
+          "id": "w35",
+          "text": "een",
+          "start": 13.2,
+          "end": 13.28
+        },
+        {
+          "id": "w36",
+          "text": "prop",
+          "start": 13.44,
+          "end": 13.6
+        },
+        {
+          "id": "w37",
+          "text": "wegblijven.",
+          "start": 13.68,
+          "end": 14.56
+        }
+      ]
+    }
+  ],
+  "sfx": [
+    {
+      "frame": 1,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 1.32,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 1,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 7.44,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 2.4,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 6.96,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/click-soft.mp3",
+      "offset_s": 5.16,
+      "duration_s": 0.37,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 6.4,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 7.6,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 4.2,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 6.72,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 0.5,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 5.48,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 6.2,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 7.9,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 9.6,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 5.36,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 6.28,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 8,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 1.6,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 8,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 6.4,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 8,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 10.56,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 8,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 11.8,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 9,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 3.84,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 9,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 11.12,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 9,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 11.68,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 10,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 0.96,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 10,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 1.72,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 10,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 2.16,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 10,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 5.04,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 10,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 12.56,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 3.6,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 4.96,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 6.72,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 7.52,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 0.68,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/key-press.mp3",
+      "offset_s": 6.853,
+      "duration_s": 0.4,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 8.56,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 12.8,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 1.44,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 4.6,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 8.88,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 11.48,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    }
+  ]
+}

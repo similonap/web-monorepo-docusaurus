@@ -1,0 +1,298 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f12s-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f12s-stage { position: absolute; inset: 0; }
+
+    .f12s-kicker {
+      position: absolute; left: 80px; top: 92px;
+      font-family: "JetBrains Mono", monospace; font-size: 28px; font-weight: 400;
+      letter-spacing: 0.16em; text-transform: uppercase; color: #141413;
+    }
+    .f12s-kicker .f12s-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f12s-panel {
+      position: absolute; left: 80px; top: 170px; width: 1060px; height: 700px;
+      background: #181715; border: 1px solid rgba(250, 249, 245, 0.14); border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f12s-titlebar {
+      position: absolute; left: 0; right: 0; top: 0; height: 56px;
+      background: #252320; border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: "JetBrains Mono", monospace; font-size: 22px;
+      color: rgba(250, 249, 245, 0.62); letter-spacing: 0.02em;
+    }
+    .f12s-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 46px;
+      background: #252320; border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: "JetBrains Mono", monospace; font-size: 19px;
+      color: rgba(250, 249, 245, 0.45); letter-spacing: 0.04em;
+    }
+    .f12s-code {
+      position: absolute; left: 0; right: 0; top: 80px;
+      font-family: "JetBrains Mono", monospace; font-size: 26px; line-height: 38px;
+      color: #FAF9F5; font-variant-ligatures: none;
+    }
+    .f12s-row { position: relative; height: 38px; white-space: pre; }
+    .f12s-ln {
+      position: absolute; left: 0; width: 60px; text-align: right;
+      color: rgba(250, 249, 245, 0.32); font-size: 22px;
+    }
+    .f12s-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f12s-kw { color: #CC785C; }
+    .f12s-fn { color: #E8A55A; }
+    .f12s-str { color: #5DB8A6; }
+    .f12s-dim { color: rgba(250, 249, 245, 0.6); }
+    .f12s-hl { border-radius: 4px; background-color: rgba(232, 165, 90, 0); }
+    .f12s-caret {
+      position: absolute; top: 5px; left: 0; width: 3px; height: 28px;
+      background: #FAF9F5; opacity: 0;
+    }
+    .f12s-opt {
+      position: absolute; right: 28px; top: 4px; height: 30px;
+      padding: 0 12px; box-sizing: border-box;
+      display: flex; align-items: center;
+      border: 1px solid rgba(232, 165, 90, 0.55); border-radius: 6px;
+      font-family: "JetBrains Mono", monospace; font-size: 20px; line-height: 1;
+      color: #E8A55A; letter-spacing: 0.04em;
+    }
+
+    /* right column */
+    .f12s-label {
+      position: absolute; left: 1236px; top: 180px;
+      font-family: "JetBrains Mono", monospace; font-size: 26px; font-weight: 400;
+      letter-spacing: 0.16em; text-transform: uppercase; color: rgba(20, 20, 19, 0.62);
+    }
+    .f12s-card {
+      position: absolute; left: 1236px; top: 232px; width: 604px; height: 208px;
+      background: #EFE9DE; border: 1px solid rgba(20, 20, 19, 0.12); border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      box-sizing: border-box;
+    }
+    .f12s-strip {
+      position: absolute; left: 28px; right: 28px; top: 40px; height: 58px;
+      background-color: rgba(63, 125, 78, 0);
+      display: flex; align-items: center; padding-left: 10px;
+      font-family: "Inter", sans-serif; font-weight: 500; font-size: 30px; color: #FFFFFF;
+    }
+    .f12s-wish {
+      position: absolute; left: 16px; right: 16px; top: 28px; height: 82px;
+      border: 3px dashed #3F7D4E; border-radius: 6px; box-sizing: border-box;
+    }
+    .f12s-note {
+      position: absolute; left: 28px; top: 134px; width: 540px; height: 40px;
+      overflow: hidden;
+      font-family: "JetBrains Mono", monospace; font-size: 24px; line-height: 40px;
+      color: rgba(20, 20, 19, 0.6); letter-spacing: 0.02em; white-space: nowrap;
+    }
+    .f12s-note span { position: absolute; left: 0; top: 0; }
+    .f12s-note .f12s-note-new { color: #141413; }
+
+    .f12s-mini {
+      position: absolute; left: 1236px; top: 488px; width: 604px; height: 132px;
+      background: #181715; border: 1px solid rgba(250, 249, 245, 0.14); border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f12s-mini-bar {
+      position: absolute; left: 0; right: 0; top: 0; height: 44px;
+      background: #252320; border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: "JetBrains Mono", monospace; font-size: 20px;
+      color: rgba(250, 249, 245, 0.62); letter-spacing: 0.02em;
+    }
+    .f12s-mini-code {
+      position: absolute; left: 28px; top: 66px;
+      font-family: "JetBrains Mono", monospace; font-size: 26px; line-height: 38px;
+      color: #FAF9F5; white-space: pre; font-variant-ligatures: none;
+    }
+  </style>
+
+  <div data-hf-id="hf-azdr" id="root" data-composition-id="12-standaardwaarde" data-width="1920" data-height="1080" data-duration="14.58">
+    <div data-hf-id="hf-84zc" class="f12s-bg clip" id="f12s-bg" data-start="0" data-duration="14.58" data-track-index="0"></div>
+
+    <div data-hf-id="hf-ng0b" class="f12s-stage clip" id="f12s-stage" data-start="0" data-duration="14.58" data-track-index="1">
+      <div data-hf-id="hf-8xp6" class="f12s-kicker" id="f12s-kicker"><span data-hf-id="hf-986p" class="f12s-spike">✱</span>Standaardwaarde</div>
+
+      <!-- code surface: Badge.tsx -->
+      <div data-hf-id="hf-ktp6" class="f12s-panel" id="f12s-panel">
+        <div data-hf-id="hf-09b8" class="f12s-titlebar">Badge.tsx</div>
+        <div data-hf-id="hf-dh8u" class="f12s-code" id="f12s-code"></div>
+        <div data-hf-id="hf-r5t2" class="f12s-status">Badge · component</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-a3u5" class="f12s-label" id="f12s-lab">scherm</div>
+      <div data-hf-id="hf-h8c0" class="f12s-card" id="f12s-card">
+        <div data-hf-id="hf-zm76" class="f12s-wish" id="f12s-wish"></div>
+        <div data-hf-id="hf-o89a" class="f12s-strip" id="f12s-strip">Nieuw</div>
+        <div data-hf-id="hf-vz7g" class="f12s-note" id="f12s-note">
+          <span data-hf-id="hf-zs3u" class="f12s-note-old" id="f12s-note-old">color: undefined</span>
+          <span data-hf-id="hf-5nut" class="f12s-note-new" id="f12s-note-new">color: 'green'</span>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-snr6" class="f12s-mini" id="f12s-mini">
+        <div data-hf-id="hf-onw0" class="f12s-mini-bar">App.tsx</div>
+        <div data-hf-id="hf-wf1k" class="f12s-mini-code"><span data-hf-id="hf-dgta" class="f12s-hl" id="f12s-hl-use"><span data-hf-id="hf-dkt6" class="f12s-dim">&lt;</span><span data-hf-id="hf-9n5b" class="f12s-fn">Badge</span> label=<span data-hf-id="hf-n5cz" class="f12s-str">"Nieuw"</span> <span data-hf-id="hf-qhmz" class="f12s-dim">/&gt;</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.48;
+      var CH = 26 * 0.6; // JetBrains Mono advance in px
+      var X0 = 84;
+      var root = document.querySelector('[data-composition-id="12-standaardwaarde"]');
+      var q = function (s) { return root.querySelector(s); };
+      var code = q("#f12s-code");
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- build the Badge.tsx lines (frame 10 state; insertions hidden) ----
+      // part: { t, c, id, ins }  ins = inserted later (each char hidden until typed)
+      var inserted = {}; // key -> array of char spans
+      var rows = {};
+      var lines = [
+        [{ t: "type", c: "f12s-kw" }, { t: " " }, { t: "Color", c: "f12s-fn" }, { t: " = " }, { t: "'red'", c: "f12s-str" }, { t: " | " }, { t: "'green'", c: "f12s-str" }, { t: " | " }, { t: "'blue'", c: "f12s-str" }, { t: ";" }],
+        [],
+        [{ t: "interface", c: "f12s-kw" }, { t: " " }, { t: "BadgeProps", c: "f12s-fn" }, { t: " {" }],
+        [{ t: "  label: " }, { t: "string", c: "f12s-dim" }, { t: ";" }],
+        [{ t: "  " }, { id: "f12s-hl-opt", parts: [{ t: "color" }, { t: "?", ins: "q" }] }, { t: ": " }, { t: "Color", c: "f12s-dim" }, { t: ";" }],
+        [{ t: "}" }],
+        [],
+        [{ t: "const", c: "f12s-kw" }, { t: " " }, { t: "Badge", c: "f12s-fn" }, { t: " = ({ label, color" }, { id: "f12s-hl-def", parts: [{ t: " = ", ins: "d" }, { t: "'green'", c: "f12s-str", ins: "d" }] }, { t: " }: " }, { t: "BadgeProps", c: "f12s-dim" }, { t: ") " }, { t: "=>", c: "f12s-kw" }, { t: " {" }],
+        [{ t: "  " }, { t: "return", c: "f12s-kw" }, { t: " (" }],
+        [{ t: "    " }, { t: "<div", c: "f12s-dim" }, { t: " style={{ color: " }, { t: "'white'", c: "f12s-str" }, { t: ", background: color }}" }, { t: ">", c: "f12s-dim" }],
+        [{ t: "      {label}" }],
+        [{ t: "    " }, { t: "</div>", c: "f12s-dim" }],
+        [{ t: "  );" }],
+        [{ t: "}" }]
+      ];
+
+      function addText(host, p) {
+        if (!p.ins) {
+          var s = document.createElement("span");
+          if (p.c) s.className = p.c;
+          s.textContent = p.t;
+          host.appendChild(s);
+          return;
+        }
+        inserted[p.ins] = inserted[p.ins] || [];
+        for (var i = 0; i < p.t.length; i++) {
+          var ch = document.createElement("span");
+          if (p.c) ch.className = p.c;
+          ch.textContent = p.t[i];
+          host.appendChild(ch);
+          inserted[p.ins].push(ch);
+        }
+      }
+
+      lines.forEach(function (segs, idx) {
+        var n = idx + 1;
+        var row = document.createElement("div");
+        row.className = "f12s-row";
+        var ln = document.createElement("span");
+        ln.className = "f12s-ln";
+        ln.textContent = String(n);
+        row.appendChild(ln);
+        var txt = document.createElement("span");
+        txt.className = "f12s-txt";
+        segs.forEach(function (seg) {
+          if (seg.id) {
+            var h = document.createElement("span");
+            h.className = "f12s-hl";
+            h.id = seg.id;
+            txt.appendChild(h);
+            seg.parts.forEach(function (p) { addText(h, p); });
+          } else {
+            addText(txt, seg);
+          }
+        });
+        row.appendChild(txt);
+        var caret = document.createElement("span");
+        caret.className = "f12s-caret";
+        row.appendChild(caret);
+        code.appendChild(row);
+        rows[n] = { row: row, caret: caret };
+      });
+
+      // "optioneel" tag at the right edge of line 5
+      var tag = document.createElement("span");
+      tag.className = "f12s-opt";
+      tag.id = "f12s-opt";
+      tag.textContent = "optioneel";
+      rows[5].row.appendChild(tag);
+
+      // insertion type-on: chars collapse (display none) until typed, caret steps
+      function typeInsert(key, lineNo, col, start, per) {
+        var chars = inserted[key];
+        var caret = rows[lineNo].caret;
+        tl.set(chars, { display: "none" }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * CH }, start - 0.12);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.set(el, { display: "inline" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * CH }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.25);
+        return end;
+      }
+
+      // ---- Scene 1 (0.0–2.6): kicker; on "geen kleur opgeeft" mini panel + scherm ----
+      tl.fromTo("#f12s-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f12s-mini", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 1.16);
+      tl.fromTo("#f12s-lab", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 1.68);
+      tl.fromTo("#f12s-card", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 1.68);
+      tl.fromTo("#f12s-strip", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 1.85);
+      tl.fromTo("#f12s-note-old", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 2.0);
+      tl.set("#f12s-note-new", { opacity: 0, y: 40 }, 0);
+
+      // ---- Scene 2 (2.6–5.1): "gewoon groen" -> dashed green wish outline ----
+      tl.fromTo("#f12s-wish", { opacity: 0, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" }, 4.08);
+
+      // ---- Scene 3 (5.1–7.8): "color optioneel" -> amber wash, "vraagteken" -> ? ----
+      tl.to("#f12s-hl-opt", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.35, ease: "power1.out" }, 5.44);
+      typeInsert("q", 5, 7, 6.853, 0.05);
+      tl.fromTo("#f12s-opt", { opacity: 0, x: 10 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 6.95);
+      tl.to("#f12s-hl-opt", { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.5, ease: "power1.inOut" }, 8.3);
+
+      // ---- Scene 4 (7.8–10.6): "standaardwaarde" -> " = 'green'" types in, coral wash on "green." ----
+      typeInsert("d", 8, 29, 8.56, 0.045);
+      tl.to("#f12s-hl-def", { backgroundColor: "rgba(204, 120, 92, 0.30)", duration: 0.4, ease: "power1.out" }, 9.84);
+
+      // ---- Scene 5 (10.6–13.98): "Laat je color weg" -> wash on usage; "groen" -> strip fills ----
+      tl.to("#f12s-hl-use", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.35, ease: "power1.out" }, 10.64);
+      tl.to("#f12s-strip", { backgroundColor: "rgba(63, 125, 78, 1)", duration: 0.4, ease: "power1.out" }, 12.8);
+      tl.to("#f12s-wish", { opacity: 0, duration: 0.4, ease: "power1.inOut" }, 12.8);
+      tl.to("#f12s-note-old", { opacity: 0, y: -40, duration: 0.25, ease: "power2.in" }, 12.8);
+      tl.to("#f12s-note-new", { opacity: 1, y: 0, duration: 0.25, ease: "power3.out" }, 12.85);
+
+      // hold still to the end
+      tl.set({}, {}, DUR);
+      window.__timelines["12-standaardwaarde"] = tl;
+    })();
+  </script>
+</template>

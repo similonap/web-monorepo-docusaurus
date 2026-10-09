@@ -1,0 +1,283 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f04d-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f04d-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f04d-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f04d-kicker .f04d-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface (same geometry as frame 3) */
+    .f04d-codewrap {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      width: 1140px;
+      height: 720px;
+    }
+    .f04d-panel {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1060px;
+      height: 720px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f04d-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f04d-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f04d-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 80px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 38px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f04d-row { position: relative; height: 38px; white-space: pre; }
+    .f04d-ln {
+      position: absolute;
+      left: 0;
+      width: 52px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 22px;
+    }
+    .f04d-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .f04d-kw { color: #CC785C; }
+    .f04d-fn { color: #E8A55A; }
+    .f04d-str { color: #5DB8A6; }
+    .f04d-dim { color: rgba(250, 249, 245, 0.6); }
+    .f04d-tok { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+
+    /* block washes behind lines 4-6, 7-9, 10-12 */
+    .f04d-blockwash {
+      position: absolute;
+      left: 64px;
+      width: 960px;
+      height: 108px;
+      border-radius: 6px;
+      background: rgba(232, 165, 90, 0.12);
+      opacity: 0;
+    }
+
+    /* counters beside lines 4, 7, 10 (outside the panel, right edge) */
+    .f04d-count {
+      position: absolute;
+      left: 1080px;
+      width: 46px;
+      height: 34px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: #141413;
+    }
+
+    /* right column: tag + statement */
+    .f04d-col {
+      position: absolute;
+      left: 1236px;
+      top: 0;
+      width: 604px;
+      height: 900px;
+    }
+    .f04d-tag {
+      position: absolute;
+      left: 0;
+      top: 222px;
+      height: 46px;
+      padding: 0 18px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.16em;
+      color: #141413;
+    }
+    .f04d-stmt {
+      position: absolute;
+      left: 0;
+      top: 300px;
+      font-family: "EB Garamond", serif;
+      font-weight: 400;
+      font-size: 104px;
+      line-height: 108px;
+      letter-spacing: -0.015em;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f04d-word { display: block; height: 108px; }
+    .f04d-cap { position: relative; display: inline-block; }
+    .f04d-ul {
+      position: absolute;
+      left: -2px;
+      right: -2px;
+      bottom: 6px;
+      height: 12px;
+      overflow: visible;
+    }
+  </style>
+
+  <div data-hf-id="hf-pqe4" id="root" data-composition-id="04-dry" data-width="1920" data-height="1080" data-duration="10.48">
+    <div data-hf-id="hf-a18h" class="f04d-bg clip" id="f04d-bg" data-start="0" data-duration="10.48" data-track-index="0"></div>
+
+    <div data-hf-id="hf-67ds" class="f04d-stage clip" id="f04d-stage" data-start="0" data-duration="10.48" data-track-index="1">
+      <div data-hf-id="hf-vrem" class="f04d-kicker" id="f04d-kicker"><span data-hf-id="hf-08ed" class="f04d-spike">✱</span>Herhaling</div>
+
+      <!-- code surface + counters (dims together) -->
+      <div data-hf-id="hf-jiz2" class="f04d-codewrap" id="f04d-codewrap">
+        <div data-hf-id="hf-fppi" class="f04d-panel" id="f04d-panel">
+          <div data-hf-id="hf-tgg4" class="f04d-titlebar">App.tsx</div>
+          <div data-hf-id="hf-30zs" class="f04d-code">
+            <div data-hf-id="hf-9l15" class="f04d-blockwash" id="f04d-bw1" style="top: 117px;"></div>
+            <div data-hf-id="hf-uqqz" class="f04d-blockwash" id="f04d-bw2" style="top: 231px;"></div>
+            <div data-hf-id="hf-09vq" class="f04d-blockwash" id="f04d-bw3" style="top: 345px;"></div>
+
+            <div data-hf-id="hf-bwgl" class="f04d-row"><span data-hf-id="hf-ocql" class="f04d-ln">1</span><span data-hf-id="hf-qrxj" class="f04d-txt"><span data-hf-id="hf-3mop" class="f04d-kw">const</span> <span data-hf-id="hf-9zez" class="f04d-fn">App</span> = () <span data-hf-id="hf-8f4p" class="f04d-kw">=&gt;</span> {</span></div>
+            <div data-hf-id="hf-hgzt" class="f04d-row"><span data-hf-id="hf-tlms" class="f04d-ln">2</span><span data-hf-id="hf-pub8" class="f04d-txt">  <span data-hf-id="hf-n264" class="f04d-kw">return</span> (</span></div>
+            <div data-hf-id="hf-inww" class="f04d-row"><span data-hf-id="hf-t7br" class="f04d-ln">3</span><span data-hf-id="hf-gul0" class="f04d-txt">    <span data-hf-id="hf-0z2o" class="f04d-dim">&lt;&gt;</span></span></div>
+            <div data-hf-id="hf-i9lv" class="f04d-row"><span data-hf-id="hf-ue8u" class="f04d-ln">4</span><span data-hf-id="hf-dmj1" class="f04d-txt">      <span data-hf-id="hf-fwt5" class="f04d-dim">&lt;div</span> style={{ color: <span data-hf-id="hf-f6e0" class="f04d-str">'white'</span>, background: <span data-hf-id="hf-f2s0" class="f04d-tok f04d-str" id="f04d-g1">'green'</span> }}<span data-hf-id="hf-xtyg" class="f04d-dim">&gt;</span></span></div>
+            <div data-hf-id="hf-ga2q" class="f04d-row"><span data-hf-id="hf-tzxt" class="f04d-ln">5</span><span data-hf-id="hf-lq5k" class="f04d-txt">        Nieuw</span></div>
+            <div data-hf-id="hf-fvrp" class="f04d-row"><span data-hf-id="hf-v6uw" class="f04d-ln">6</span><span data-hf-id="hf-be98" class="f04d-txt">      <span data-hf-id="hf-jp2g" class="f04d-dim">&lt;/div&gt;</span></span></div>
+            <div data-hf-id="hf-h2os" class="f04d-row"><span data-hf-id="hf-usjv" class="f04d-ln">7</span><span data-hf-id="hf-njwh" class="f04d-txt">      <span data-hf-id="hf-o4vh" class="f04d-dim">&lt;div</span> style={{ color: <span data-hf-id="hf-irg0" class="f04d-str">'white'</span>, background: <span data-hf-id="hf-2tw9" class="f04d-tok f04d-str" id="f04d-g2">'green'</span> }}<span data-hf-id="hf-ctls" class="f04d-dim">&gt;</span></span></div>
+            <div data-hf-id="hf-godr" class="f04d-row"><span data-hf-id="hf-vzgy" class="f04d-ln">8</span><span data-hf-id="hf-cckg" class="f04d-txt">        Nieuw</span></div>
+            <div data-hf-id="hf-eoum" class="f04d-row"><span data-hf-id="hf-vl5x" class="f04d-ln">9</span><span data-hf-id="hf-a7c5" class="f04d-txt">      <span data-hf-id="hf-0o80" class="f04d-dim">&lt;/div&gt;</span></span></div>
+            <div data-hf-id="hf-eajl" class="f04d-row"><span data-hf-id="hf-mv5j" class="f04d-ln">10</span><span data-hf-id="hf-oqtk" class="f04d-txt">      <span data-hf-id="hf-pbsk" class="f04d-dim">&lt;div</span> style={{ color: <span data-hf-id="hf-hkix" class="f04d-str">'white'</span>, background: <span data-hf-id="hf-l5iu" class="f04d-tok f04d-str" id="f04d-g3">'green'</span> }}<span data-hf-id="hf-bmop" class="f04d-dim">&gt;</span></span></div>
+            <div data-hf-id="hf-j4vv" class="f04d-row"><span data-hf-id="hf-n9gk" class="f04d-ln">11</span><span data-hf-id="hf-b5nd" class="f04d-txt">        Nieuw</span></div>
+            <div data-hf-id="hf-jj6w" class="f04d-row"><span data-hf-id="hf-m2jh" class="f04d-ln">12</span><span data-hf-id="hf-aln6" class="f04d-txt">      <span data-hf-id="hf-zhax" class="f04d-dim">&lt;/div&gt;</span></span></div>
+            <div data-hf-id="hf-ic9t" class="f04d-row"><span data-hf-id="hf-mgui" class="f04d-ln">13</span><span data-hf-id="hf-gn5f" class="f04d-txt">    <span data-hf-id="hf-tqrb" class="f04d-dim">&lt;/&gt;</span></span></div>
+            <div data-hf-id="hf-iqku" class="f04d-row"><span data-hf-id="hf-ogdn" class="f04d-ln">14</span><span data-hf-id="hf-sjsk" class="f04d-txt">  );</span></div>
+            <div data-hf-id="hf-hjnr" class="f04d-row"><span data-hf-id="hf-ouoo" class="f04d-ln">15</span><span data-hf-id="hf-qvpn" class="f04d-txt">}</span></div>
+          </div>
+          <div data-hf-id="hf-eujm" class="f04d-status">App · component</div>
+        </div>
+
+        <!-- counters: row centre = 80 + (n-1)*38 + 19, chip 34 tall -->
+        <div data-hf-id="hf-9ib3" class="f04d-count" id="f04d-c1" style="top: 216px;">1</div>
+        <div data-hf-id="hf-puka" class="f04d-count" id="f04d-c2" style="top: 330px;">2</div>
+        <div data-hf-id="hf-zzi0" class="f04d-count" id="f04d-c3" style="top: 444px;">3</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-truv" class="f04d-col">
+        <div data-hf-id="hf-klon" class="f04d-tag" id="f04d-tag">DRY</div>
+        <div data-hf-id="hf-sgat" class="f04d-stmt">
+          <span data-hf-id="hf-a67z" class="f04d-word" id="f04d-w1"><span data-hf-id="hf-fasg" class="f04d-cap">D<svg data-hf-id="hf-yt2a" class="f04d-ul" viewBox="0 0 100 12" preserveAspectRatio="none"><path data-hf-id="hf-q6d7" class="f04d-ulp" d="M3,7 C30,5 62,8 97,5" fill="none" stroke="#CC785C" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" /></svg></span>on't</span>
+          <span data-hf-id="hf-7hl7" class="f04d-word" id="f04d-w2"><span data-hf-id="hf-6k1u" class="f04d-cap">R<svg data-hf-id="hf-abnq" class="f04d-ul" viewBox="0 0 100 12" preserveAspectRatio="none"><path data-hf-id="hf-wvcu" class="f04d-ulp" d="M3,6 C34,8 66,5 97,7" fill="none" stroke="#CC785C" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" /></svg></span>epeat</span>
+          <span data-hf-id="hf-217d" class="f04d-word" id="f04d-w3"><span data-hf-id="hf-3rwn" class="f04d-cap">Y<svg data-hf-id="hf-apyr" class="f04d-ul" viewBox="0 0 100 12" preserveAspectRatio="none"><path data-hf-id="hf-vycw" class="f04d-ulp" d="M3,7 C28,5 64,7 97,6" fill="none" stroke="#CC785C" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" /></svg></span>ourself.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 10.48;
+      var root = document.querySelector('[data-composition-id="04-dry"]');
+      var q = function (s) { return root.querySelector(s); };
+      var qa = function (s) { return root.querySelectorAll(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      var WASH = "rgba(232, 165, 90, 0.24)";
+      var NOWASH = "rgba(232, 165, 90, 0)";
+
+      // ---- Scene 1 (0.0-1.9): kicker; code already on screen; "herhaal" (0.44) -> block washes ----
+      tl.fromTo(q("#f04d-kicker"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo([q("#f04d-bw1"), q("#f04d-bw2"), q("#f04d-bw3")], { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out", stagger: 0.15 }, 0.44);
+
+      // ---- Scene 2 (1.9-5.5): "kleur" (2.4) -> washes narrow to the 'green' tokens ----
+      tl.to([q("#f04d-bw1"), q("#f04d-bw2"), q("#f04d-bw3")], { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 2.4);
+      tl.fromTo([q("#f04d-g1"), q("#f04d-g2"), q("#f04d-g3")], { backgroundColor: NOWASH }, { backgroundColor: WASH, duration: 0.4, ease: "power1.out", stagger: 0.08 }, 2.5);
+
+      // "drie plaatsen" (4.2) -> counters 1, 2, 3
+      tl.fromTo([q("#f04d-c1"), q("#f04d-c2"), q("#f04d-c3")], { opacity: 0, scale: 0.9, x: -8 }, { opacity: 1, scale: 1, x: 0, duration: 0.4, ease: "power3.out", stagger: 0.12 }, 4.2);
+
+      // ---- Scene 3 (5.5-9.98): "overtreed" (5.96) -> code dims ----
+      tl.to(q("#f04d-codewrap"), { opacity: 0.45, duration: 0.6, ease: "power2.inOut" }, 5.96);
+
+      // "DRY-principe" (6.72) -> tag
+      tl.fromTo(q("#f04d-tag"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 6.72);
+
+      // "Don't" (8.0), "Repeat" (8.24), "Yourself." (8.64) -> statement word by word
+      tl.fromTo(q("#f04d-w1"), { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 8.0);
+      tl.fromTo(q("#f04d-w2"), { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 8.24);
+      tl.fromTo(q("#f04d-w3"), { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 8.64);
+
+      // 8.9 -> coral underline under D, R, Y (one stroke group)
+      tl.fromTo(qa(".f04d-ulp"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.4, ease: "power2.out", stagger: 0.06 }, 8.9);
+
+      // hold still
+      tl.set({}, {}, DUR);
+      window.__timelines["04-dry"] = tl;
+    })();
+  </script>
+</template>

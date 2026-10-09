@@ -1,0 +1,409 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f06al-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f06al-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f06al-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f06al-kicker .f06al-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f06al-panel {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      width: 1060px;
+      height: 720px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f06al-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 52px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f06al-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 44px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f06al-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 80px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 38px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f06al-row { position: relative; height: 38px; white-space: pre; }
+    .f06al-ln {
+      position: absolute;
+      left: 0;
+      width: 60px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 22px;
+    }
+    .f06al-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f06al-wash {
+      position: absolute;
+      left: 76px;
+      top: 2px;
+      height: 34px;
+      border-radius: 4px;
+      background: rgba(232, 165, 90, 0.24);
+      opacity: 0;
+    }
+    .f06al-ch { display: inline; }
+    .f06al-kw { color: #CC785C; }
+    .f06al-fn { color: #E8A55A; }
+    .f06al-str { color: #5DB8A6; }
+    .f06al-dim { color: rgba(250, 249, 245, 0.6); }
+    .f06al-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f06al-caret {
+      position: absolute;
+      top: 4px;
+      left: 0;
+      width: 3px;
+      height: 30px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f06al-mark {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1060px;
+      height: 720px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    /* right column */
+    .f06al-chip {
+      position: absolute;
+      left: 1236px;
+      top: 80px;
+      height: 52px;
+      padding: 0 22px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      color: #141413;
+      letter-spacing: 0.02em;
+    }
+    .f06al-chipstrike {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      top: 25px;
+      height: 2px;
+      background: #141413;
+      transform-origin: 0 50%;
+    }
+    .f06al-col {
+      position: absolute;
+      left: 1236px;
+      top: 180px;
+      width: 604px;
+      height: 680px;
+    }
+    .f06al-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f06al-card {
+      position: absolute;
+      left: 0;
+      top: 52px;
+      width: 604px;
+      height: 308px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    .f06al-strip {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      height: 58px;
+      box-sizing: border-box;
+      padding-left: 10px;
+      display: flex;
+      align-items: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 30px;
+      line-height: 1;
+    }
+    .f06al-green { top: 28px; background: #3F7D4E; color: #FFFFFF; }
+    .f06al-dash {
+      top: 100px;
+      border: 2px dashed rgba(20, 20, 19, 0.4);
+      color: rgba(20, 20, 19, 0.4);
+      padding-left: 8px;
+    }
+    .f06al-note {
+      position: absolute;
+      left: 4px;
+      top: 404px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #141413;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    .f06al-note-sw {
+      display: inline-block;
+      width: 30px;
+      height: 22px;
+      margin-right: 16px;
+      border-radius: 4px;
+      background: rgba(232, 165, 90, 0.45);
+    }
+  </style>
+
+  <div data-hf-id="hf-00b1" id="root" data-composition-id="06-ander-label" data-width="1920" data-height="1080" data-duration="13.84">
+    <div data-hf-id="hf-ns84" class="f06al-bg clip" id="f06al-bg" data-start="0" data-duration="13.84" data-track-index="0"></div>
+
+    <div data-hf-id="hf-rij5" class="f06al-stage clip" id="f06al-stage" data-start="0" data-duration="13.84" data-track-index="1">
+      <div data-hf-id="hf-h3za" class="f06al-kicker" id="f06al-kicker"><span data-hf-id="hf-dna0" class="f06al-spike">✱</span>Nieuwe vraag</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-26gy" class="f06al-panel" id="f06al-panel">
+        <div data-hf-id="hf-jeht" class="f06al-titlebar">Badge.tsx</div>
+        <div data-hf-id="hf-lvnj" class="f06al-code">
+          <div data-hf-id="hf-wfl8" class="f06al-row"><span data-hf-id="hf-asd6" class="f06al-ln">1</span><span data-hf-id="hf-i60y" class="f06al-txt"><span data-hf-id="hf-nela" class="f06al-kw">const</span> <span data-hf-id="hf-vs9c" class="f06al-fn">Badge</span> = () <span data-hf-id="hf-wbto" class="f06al-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-iemc" class="f06al-row"><span data-hf-id="hf-b6o7" class="f06al-ln">2</span><span data-hf-id="hf-e991" class="f06al-wash" id="f06al-w2" style="width:172px"></span><span data-hf-id="hf-3xv9" class="f06al-txt">  <span data-hf-id="hf-d1xt" class="f06al-kw">return</span> (</span></div>
+          <div data-hf-id="hf-h7p9" class="f06al-row"><span data-hf-id="hf-bkz8" class="f06al-ln">3</span><span data-hf-id="hf-yq6t" class="f06al-wash" id="f06al-w3" style="width:906px"></span><span data-hf-id="hf-b9bs" class="f06al-txt">    <span data-hf-id="hf-6foe" class="f06al-dim">&lt;div</span> style={{ color: <span data-hf-id="hf-gui5" class="f06al-str">'white'</span>, background: <span data-hf-id="hf-21eb" class="f06al-str">'green'</span> }}<span data-hf-id="hf-x0nl" class="f06al-dim">&gt;</span></span></div>
+          <div data-hf-id="hf-hm0a" class="f06al-row"><span data-hf-id="hf-bza9" class="f06al-ln">4</span><span data-hf-id="hf-ijox" class="f06al-txt">      Nieuw</span></div>
+          <div data-hf-id="hf-jljf" class="f06al-row"><span data-hf-id="hf-cdla" class="f06al-ln">5</span><span data-hf-id="hf-bv4y" class="f06al-wash" id="f06al-w5" style="width:172px"></span><span data-hf-id="hf-aw5b" class="f06al-txt">    <span data-hf-id="hf-q8qr" class="f06al-dim">&lt;/div&gt;</span></span></div>
+          <div data-hf-id="hf-jzug" class="f06al-row"><span data-hf-id="hf-crwb" class="f06al-ln">6</span><span data-hf-id="hf-3m6k" class="f06al-wash" id="f06al-w6" style="width:78px"></span><span data-hf-id="hf-8xcr" class="f06al-txt">  );</span></div>
+          <div data-hf-id="hf-isxd" class="f06al-row"><span data-hf-id="hf-d67c" class="f06al-ln">7</span><span data-hf-id="hf-vp65" class="f06al-wash" id="f06al-w7" style="width:32px"></span><span data-hf-id="hf-mup2" class="f06al-txt">}</span></div>
+          <div data-hf-id="hf-j78e" class="f06al-row"><span data-hf-id="hf-dkid" class="f06al-ln">8</span></div>
+          <div data-hf-id="hf-l6rj" class="f06al-row"><span data-hf-id="hf-dyte" class="f06al-ln">9</span><span data-hf-id="hf-dewj" class="f06al-txt f06al-blk" id="f06al-line9"></span><span data-hf-id="hf-qm0e" class="f06al-caret" id="f06al-caret9"></span></div>
+          <div data-hf-id="hf-ll2k" class="f06al-row"><span data-hf-id="hf-ee5a" class="f06al-ln">10</span><span data-hf-id="hf-fh42" class="f06al-wash" id="f06al-w10" style="width:172px"></span><span data-hf-id="hf-qp9l" class="f06al-txt f06al-blk" id="f06al-line10"></span><span data-hf-id="hf-2pz6" class="f06al-caret" id="f06al-caret10"></span></div>
+          <div data-hf-id="hf-am3g" class="f06al-row"><span data-hf-id="hf-dzu9" class="f06al-ln">11</span><span data-hf-id="hf-nooe" class="f06al-wash" id="f06al-w11" style="width:906px"></span><span data-hf-id="hf-pxls" class="f06al-txt f06al-blk" id="f06al-line11"></span><span data-hf-id="hf-6o37" class="f06al-caret" id="f06al-caret11"></span></div>
+          <div data-hf-id="hf-65tb" class="f06al-row"><span data-hf-id="hf-f6rc" class="f06al-ln">12</span><span data-hf-id="hf-0t3f" class="f06al-txt f06al-blk" id="f06al-line12"></span><span data-hf-id="hf-y07c" class="f06al-caret" id="f06al-caret12"></span></div>
+          <div data-hf-id="hf-5ria" class="f06al-row"><span data-hf-id="hf-esgb" class="f06al-ln">13</span><span data-hf-id="hf-sytl" class="f06al-wash" id="f06al-w13" style="width:172px"></span><span data-hf-id="hf-wuze" class="f06al-txt f06al-blk" id="f06al-line13"></span><span data-hf-id="hf-yrv5" class="f06al-caret" id="f06al-caret13"></span></div>
+          <div data-hf-id="hf-5d79" class="f06al-row"><span data-hf-id="hf-csx6" class="f06al-ln">14</span><span data-hf-id="hf-ozd9" class="f06al-wash" id="f06al-w14" style="width:78px"></span><span data-hf-id="hf-e39p" class="f06al-txt f06al-blk" id="f06al-line14"></span><span data-hf-id="hf-nwdi" class="f06al-caret" id="f06al-caret14"></span></div>
+          <div data-hf-id="hf-c7bk" class="f06al-row"><span data-hf-id="hf-cem5" class="f06al-ln">15</span><span data-hf-id="hf-7amg" class="f06al-wash" id="f06al-w15" style="width:32px"></span><span data-hf-id="hf-dblw" class="f06al-txt f06al-blk" id="f06al-line15"></span><span data-hf-id="hf-u23b" class="f06al-caret" id="f06al-caret15"></span></div>
+        </div>
+        <div data-hf-id="hf-x30n" class="f06al-status">Badge · component</div>
+
+        <!-- coral rough box + strike around lines 9-15 (rows y 384..650) -->
+        <svg data-hf-id="hf-haha" class="f06al-mark" viewBox="0 0 1060 720" width="1060" height="720">
+          <path data-hf-id="hf-frzz" id="f06al-box" fill="none" stroke="#CC785C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M74,378 C320,372 660,375 1012,380 C1018,470 1017,568 1011,660 C680,666 330,664 70,659 C66,566 67,470 72,377 C160,373 250,374 330,376" />
+          <path data-hf-id="hf-lg43" id="f06al-strike" fill="none" stroke="#CC785C" stroke-width="4" stroke-linecap="round" d="M98,642 C350,560 660,470 984,396" />
+        </svg>
+      </div>
+
+      <!-- chip "klaar?" at the top of the right column -->
+      <div data-hf-id="hf-za2o" class="f06al-chip" id="f06al-chip">klaar?<span data-hf-id="hf-ucsn" class="f06al-chipstrike" id="f06al-chipstrike"></span></div>
+
+      <!-- right column: scherm -->
+      <div data-hf-id="hf-rpfq" class="f06al-col">
+        <div data-hf-id="hf-n7a2" class="f06al-label" id="f06al-lab-scr">scherm</div>
+        <div data-hf-id="hf-z39e" class="f06al-card" id="f06al-card">
+          <div data-hf-id="hf-bird" class="f06al-strip f06al-green">Nieuw</div>
+          <div data-hf-id="hf-7u2g" class="f06al-strip f06al-dash" id="f06al-dash"><span data-hf-id="hf-ghgv" id="f06al-dashlab">Uitverkocht</span></div>
+        </div>
+        <div data-hf-id="hf-jboi" class="f06al-note" id="f06al-note"><span data-hf-id="hf-f07c" class="f06al-note-sw"></span>bijna alles is hetzelfde</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 13.84;
+      var CW = 0.6;
+      var FS = 26;
+      var X0 = 84;
+      var root = document.querySelector('[data-composition-id="06-ander-label"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(lineSel, caretSel, segments, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "f06al-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "f06al-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.04, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return end;
+      }
+
+      // ---- Scene 1 (0.0-1.9): kicker, Badge on screen, "Klaar?" chip, "Nee." strike ----
+      tl.fromTo("#f06al-kicker", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      tl.fromTo("#f06al-chip", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.05);
+      tl.fromTo("#f06al-chipstrike", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power2.out" }, 0.96);
+      tl.to("#f06al-chip", { opacity: 0.35, duration: 0.35, ease: "power2.out" }, 1.1);
+
+      // ---- Scene 2 (1.9-7.2): "vraag" chip leaves; "ander label" dashed strip; "uitverkocht" label ----
+      tl.to("#f06al-chip", { opacity: 0, y: -8, duration: 0.4, ease: "power2.inOut" }, 2.4);
+      tl.fromTo("#f06al-dash", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 5.04);
+      tl.fromTo("#f06al-dashlab", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out" }, 6.2);
+
+      // ---- Scene 3 (7.2-9.2): "nieuwe component?" the near-copy types on fast ----
+      var per = 0.009;
+      var gap = 0.03;
+      var e = typeLine("#f06al-line9", "#f06al-caret9", [
+        { t: "const", c: "f06al-kw" },
+        { t: " " },
+        { t: "UitverkochtBadge", c: "f06al-fn" },
+        { t: " = () " },
+        { t: "=>", c: "f06al-kw" },
+        { t: " {" }
+      ], 7.92, per);
+      e = typeLine("#f06al-line10", "#f06al-caret10", [
+        { t: "  " },
+        { t: "return", c: "f06al-kw" },
+        { t: " (" }
+      ], e + gap, per, 0.02);
+      e = typeLine("#f06al-line11", "#f06al-caret11", [
+        { t: "    " },
+        { t: "<div", c: "f06al-dim" },
+        { t: " style={{ color: " },
+        { t: "'white'", c: "f06al-str" },
+        { t: ", background: " },
+        { t: "'green'", c: "f06al-str" },
+        { t: " }}" },
+        { t: ">", c: "f06al-dim" }
+      ], e + gap, per, 0.02);
+      var s12 = e + gap;
+      e = typeLine("#f06al-line12", "#f06al-caret12", [
+        { t: "      " },
+        { id: "f06al-hl12", parts: [{ t: "Uitverkocht" }] }
+      ], s12, per, 0.02);
+      tl.to("#f06al-hl12", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.3, ease: "power1.out" }, s12 + 0.05);
+      e = typeLine("#f06al-line13", "#f06al-caret13", [
+        { t: "    " },
+        { t: "</div>", c: "f06al-dim" }
+      ], e + gap, per, 0.02);
+      e = typeLine("#f06al-line14", "#f06al-caret14", [
+        { t: "  );" }
+      ], e + gap, per, 0.02);
+      typeLine("#f06al-line15", "#f06al-caret15", [
+        { t: "}" }
+      ], e + gap, per, 0.02);
+
+      // ---- Scene 4 (9.2-13.34): "Liever niet." coral rough box + strike, block dims ----
+      var box = q("#f06al-box");
+      var blen = 2400;
+      try { blen = Math.ceil(box.getTotalLength()) || 2400; } catch (err) {}
+      tl.set(box, { strokeDasharray: blen, strokeDashoffset: blen }, 0);
+      tl.to(box, { strokeDashoffset: 0, duration: 0.5, ease: "power1.inOut" }, 9.3);
+
+      var strike = q("#f06al-strike");
+      var slen = 1000;
+      try { slen = Math.ceil(strike.getTotalLength()) || 1000; } catch (err) {}
+      tl.set(strike, { strokeDasharray: slen, strokeDashoffset: slen }, 0);
+      tl.to(strike, { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" }, 9.6);
+
+      tl.to(root.querySelectorAll(".f06al-blk"), { opacity: 0.5, duration: 0.5, ease: "power2.out" }, 9.6);
+
+      // "kopieer je opnieuw bijna alles": identical lines washed, copy then original
+      tl.to(["#f06al-w10", "#f06al-w11", "#f06al-w13", "#f06al-w14", "#f06al-w15"], { opacity: 0.7, duration: 0.45, ease: "power2.out", stagger: 0.06 }, 10.4);
+      tl.to(["#f06al-w2", "#f06al-w3", "#f06al-w5", "#f06al-w6", "#f06al-w7"], { opacity: 0.7, duration: 0.45, ease: "power2.out", stagger: 0.06 }, 10.8);
+
+      tl.fromTo("#f06al-note", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 11.56);
+
+      // hold still to the end
+      tl.set({}, {}, DUR);
+      window.__timelines["06-ander-label"] = tl;
+    })();
+  </script>
+</template>
