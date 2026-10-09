@@ -1,0 +1,368 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 11 positions / frame-only primitives ---- */
+    /* code wall blocks (light code surfaces; texture, not meant to be read) */
+    .f11u-panel { top: 200px; width: 640px; height: 600px; }
+    #f11u-panelA { left: 140px; transform-origin: 0% 50%; }
+    #f11u-panelB { left: 860px; }
+    .f11u-bborder { position: absolute; inset: 0; border: 2px solid var(--ts-error); border-radius: 12px; box-sizing: border-box; pointer-events: none; z-index: 3; }
+    .f11u-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 24px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-mono); font-size: 13px; color: var(--ts-muted); letter-spacing: 0.04em;
+    }
+    .f11u-code {
+      position: absolute; left: 0; right: 0; top: 48px; bottom: 24px; overflow: hidden;
+      font-family: var(--ts-mono); font-size: 14px; line-height: 17px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .f11u-row { position: relative; height: 17px; white-space: pre; }
+    .f11u-ln { position: absolute; left: 0; top: 0; width: 34px; text-align: right; color: var(--ts-code-ln); font-size: 12px; }
+    .f11u-txt { position: absolute; left: 50px; top: 0; white-space: pre; }
+
+    /* washes inside block B */
+    .f11u-sweep { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: rgba(148, 163, 184, 0.10); transform-origin: 50% 0%; }
+    .f11u-lw { position: absolute; left: 44px; right: 8px; height: 17px; background: var(--ts-wash); border-radius: 3px; transform-origin: 0% 50%; }
+
+    /* chips on block B's right edge */
+    .f11u-chip { left: 1540px; transform-origin: 0% 50%; }
+    .f11u-ptr { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .f11u-ptr path { fill: none; stroke: var(--ts-muted); stroke-width: 2; }
+    .f11u-ptr rect { fill: var(--ts-muted); }
+    .f11u-bgroup { position: absolute; inset: 0; }
+
+    /* hero: Inter 700 ink with a blue bar under it */
+    #f11u-herowrap { position: absolute; left: 700px; top: 400px; }
+    #f11u-hero { position: relative; display: block; font-size: 160px; }
+    #f11u-herobar { left: 4px; right: 0; top: 176px; }
+  </style>
+
+  <div data-hf-id="hf-rhxh" id="root" data-composition-id="11-users" data-width="1920" data-height="1080" data-duration="11.38">
+    <div data-hf-id="hf-b7g3" class="ts-bg clip" id="f11u-bg" data-start="0" data-duration="11.38" data-track-index="0"></div>
+
+    <div data-hf-id="hf-u2qk" class="ts-stage clip" id="f11u-stage" data-start="0" data-duration="11.38" data-track-index="1">
+      <div data-hf-id="hf-danr" class="ts-kicker" id="f11u-kicker"><div data-hf-id="hf-11kb" class="ts-kicker-bar" id="f11u-kbar"></div><span data-hf-id="hf-11kx" class="ts-kicker-text" id="f11u-ktext">Ook users</span></div>
+
+      <!-- block A: posts -->
+      <div data-hf-id="hf-5117" class="ts-code-surface f11u-panel" id="f11u-panelA">
+        <div data-hf-id="hf-1l3l" class="ts-mini-title">App.tsx · posts</div>
+        <div data-hf-id="hf-ogld" class="f11u-code">
+            <div data-hf-id="hf-8djy" class="f11u-row"><span data-hf-id="hf-pqb6" class="f11u-ln">1</span><span data-hf-id="hf-4wqi" class="f11u-txt"><span data-hf-id="hf-cq92" class="ts-kw">const</span> url = <span data-hf-id="hf-0u7g" class="ts-str">"https://jsonplaceholder.typicode.com/posts"</span>;</span></div>
+            <div data-hf-id="hf-jrsy" class="f11u-row"><span data-hf-id="hf-q4m7" class="f11u-ln">2</span><span data-hf-id="hf-93t3" class="f11u-txt"></span></div>
+            <div data-hf-id="hf-k63z" class="f11u-row"><span data-hf-id="hf-qix8" class="f11u-ln">3</span><span data-hf-id="hf-05yy" class="f11u-txt"><span data-hf-id="hf-my5m" class="ts-kw">const</span> <span data-hf-id="hf-19po" class="ts-fn">App</span> = () <span data-hf-id="hf-nut0" class="ts-kw">=&gt;</span> {</span></div>
+            <div data-hf-id="hf-kkf0" class="f11u-row"><span data-hf-id="hf-qx89" class="f11u-ln">4</span><span data-hf-id="hf-q6j7" class="f11u-txt">  <span data-hf-id="hf-ncgn" class="ts-kw">const</span> [posts, <span data-hf-id="hf-5n42" class="ts-fn">setPosts</span>] = <span data-hf-id="hf-38jt" class="ts-fn">useState</span>&lt;<span data-hf-id="hf-hnxb" class="ts-type">Post</span>[]&gt;([]);</span></div>
+            <div data-hf-id="hf-kyq1" class="f11u-row"><span data-hf-id="hf-rbja" class="f11u-ln">5</span><span data-hf-id="hf-10bh" class="f11u-txt">  <span data-hf-id="hf-nqro" class="ts-kw">const</span> [loading, <span data-hf-id="hf-6a0l" class="ts-fn">setLoading</span>] = <span data-hf-id="hf-woot" class="ts-fn">useState</span>&lt;<span data-hf-id="hf-nplj" class="ts-type">boolean</span>&gt;(false);</span></div>
+            <div data-hf-id="hf-ld12" class="f11u-row"><span data-hf-id="hf-rpub" class="f11u-ln">6</span><span data-hf-id="hf-8twg" class="f11u-txt">  <span data-hf-id="hf-o52p" class="ts-kw">const</span> [error, <span data-hf-id="hf-rip7" class="ts-fn">setError</span>] = <span data-hf-id="hf-xvlw" class="ts-fn">useState</span>&lt;<span data-hf-id="hf-hdx5" class="ts-type">Error</span> | <span data-hf-id="hf-izjw" class="ts-type">null</span>&gt;(<span data-hf-id="hf-jw8k" class="ts-type">null</span>);</span></div>
+            <div data-hf-id="hf-lrc3" class="f11u-row"><span data-hf-id="hf-s45c" class="f11u-ln">7</span><span data-hf-id="hf-027m" class="f11u-txt">  <span data-hf-id="hf-ojdq" class="ts-kw">const</span> [trigger, <span data-hf-id="hf-hs6l" class="ts-fn">setTrigger</span>] = <span data-hf-id="hf-xhav" class="ts-fn">useState</span>&lt;<span data-hf-id="hf-5eq0" class="ts-type">number</span>&gt;(<span data-hf-id="hf-sq33" class="ts-fn">0</span>);</span></div>
+            <div data-hf-id="hf-m5n4" class="f11u-row"><span data-hf-id="hf-m5jx" class="f11u-ln">8</span><span data-hf-id="hf-30yv" class="f11u-txt"></span></div>
+            <div data-hf-id="hf-g71p" class="f11u-row"><span data-hf-id="hf-mjuy" class="f11u-ln">9</span><span data-hf-id="hf-e1p7" class="f11u-txt">  <span data-hf-id="hf-69r1" class="ts-fn">useEffect</span>(() <span data-hf-id="hf-1tcc" class="ts-kw">=&gt;</span> {</span></div>
+            <div data-hf-id="hf-glcq" class="f11u-row"><span data-hf-id="hf-30fa" class="f11u-ln">10</span><span data-hf-id="hf-0j59" class="f11u-txt">    <span data-hf-id="hf-f8v0" class="ts-kw">let</span> cancelled: <span data-hf-id="hf-9hef" class="ts-type">boolean</span> = false;</span></div>
+            <div data-hf-id="hf-91di" class="f11u-row"><span data-hf-id="hf-2m49" class="f11u-ln">11</span><span data-hf-id="hf-nx9i" class="f11u-txt">    <span data-hf-id="hf-oxor" class="ts-kw">const</span> <span data-hf-id="hf-9wnf" class="ts-fn">fetchData</span> = <span data-hf-id="hf-s6kd" class="ts-kw">async</span> () <span data-hf-id="hf-0mf9" class="ts-kw">=&gt;</span> {</span></div>
+            <div data-hf-id="hf-8n2h" class="f11u-row"><span data-hf-id="hf-3t1c" class="f11u-ln">12</span><span data-hf-id="hf-gsl0" class="f11u-txt">      <span data-hf-id="hf-juho" class="ts-kw">try</span> {</span></div>
+            <div data-hf-id="hf-9tzk" class="f11u-row"><span data-hf-id="hf-3eqb" class="f11u-ln">13</span><span data-hf-id="hf-nf8l" class="f11u-txt">        <span data-hf-id="hf-wtpl" class="ts-fn">setLoading</span>(true);</span></div>
+            <div data-hf-id="hf-9foj" class="f11u-row"><span data-hf-id="hf-1f76" class="f11u-ln">14</span><span data-hf-id="hf-wi3q" class="f11u-txt">        <span data-hf-id="hf-pbzs" class="ts-kw">const</span> response = <span data-hf-id="hf-g3qr" class="ts-kw">await</span> <span data-hf-id="hf-svyb" class="ts-fn">fetch</span>(url);</span></div>
+            <div data-hf-id="hf-7g5e" class="f11u-row"><span data-hf-id="hf-10w5" class="f11u-ln">15</span><span data-hf-id="hf-13ep" class="f11u-txt">        <span data-hf-id="hf-nijk" class="ts-kw">if</span> (!response.ok) {</span></div>
+            <div data-hf-id="hf-71ud" class="f11u-row"><span data-hf-id="hf-27t8" class="f11u-ln">16</span><span data-hf-id="hf-nm6d" class="f11u-txt">          <span data-hf-id="hf-09ql" class="ts-kw">throw</span> <span data-hf-id="hf-442j" class="ts-kw">new</span> <span data-hf-id="hf-wk25" class="ts-type">Error</span>(<span data-hf-id="hf-0n73" class="ts-str">"Something went wrong fetching data"</span>);</span></div>
+            <div data-hf-id="hf-88rg" class="f11u-row"><span data-hf-id="hf-1ti7" class="f11u-ln">17</span><span data-hf-id="hf-hl72" class="f11u-txt">        }</span></div>
+            <div data-hf-id="hf-7ugf" class="f11u-row"><span data-hf-id="hf-ztz2" class="f11u-ln">18</span><span data-hf-id="hf-amvq" class="f11u-txt">        <span data-hf-id="hf-pqat" class="ts-kw">const</span> result: <span data-hf-id="hf-33rz" class="ts-type">Post</span>[] = <span data-hf-id="hf-qwcz" class="ts-kw">await</span> response.<span data-hf-id="hf-gxb7" class="ts-fn">json</span>();</span></div>
+            <div data-hf-id="hf-5uxa" class="f11u-row"><span data-hf-id="hf-zfo1" class="f11u-ln">19</span><span data-hf-id="hf-zs8q" class="f11u-txt">        <span data-hf-id="hf-mxzs" class="ts-kw">if</span> (cancelled) <span data-hf-id="hf-ujo9" class="ts-kw">return</span>;</span></div>
+            <div data-hf-id="hf-5gm9" class="f11u-row"><span data-hf-id="hf-piyl" class="f11u-ln">20</span><span data-hf-id="hf-hcvg" class="f11u-txt">        <span data-hf-id="hf-x6li" class="ts-fn">setPosts</span>(result);</span></div>
+            <div data-hf-id="hf-eh3h" class="f11u-row"><span data-hf-id="hf-px9m" class="f11u-ln">21</span><span data-hf-id="hf-5x91" class="f11u-txt">      } <span data-hf-id="hf-8kra" class="ts-kw">catch</span> (err) {</span></div>
+            <div data-hf-id="hf-evei" class="f11u-row"><span data-hf-id="hf-qbkn" class="f11u-ln">22</span><span data-hf-id="hf-jzzo" class="f11u-txt">        <span data-hf-id="hf-d2kr" class="ts-fn">setError</span>(err <span data-hf-id="hf-w6tz" class="ts-kw">as</span> <span data-hf-id="hf-xqz8" class="ts-type">Error</span>);</span></div>
+            <div data-hf-id="hf-f9pj" class="f11u-row"><span data-hf-id="hf-qpvo" class="f11u-ln">23</span><span data-hf-id="hf-s57j" class="f11u-txt">      } <span data-hf-id="hf-comy" class="ts-kw">finally</span> {</span></div>
+            <div data-hf-id="hf-fo0k" class="f11u-row"><span data-hf-id="hf-r46p" class="f11u-ln">24</span><span data-hf-id="hf-ol28" class="f11u-txt">        <span data-hf-id="hf-y0mo" class="ts-fn">setLoading</span>(false);</span></div>
+            <div data-hf-id="hf-g2bl" class="f11u-row"><span data-hf-id="hf-rihq" class="f11u-ln">25</span><span data-hf-id="hf-ew0i" class="f11u-txt">      }</span></div>
+            <div data-hf-id="hf-ggmm" class="f11u-row"><span data-hf-id="hf-rwsr" class="f11u-ln">26</span><span data-hf-id="hf-fabj" class="f11u-txt">    }</span></div>
+            <div data-hf-id="hf-guxn" class="f11u-row"><span data-hf-id="hf-sb3s" class="f11u-ln">27</span><span data-hf-id="hf-49qx" class="f11u-txt">    <span data-hf-id="hf-cgkr" class="ts-fn">fetchData</span>();</span></div>
+            <div data-hf-id="hf-h98o" class="f11u-row"><span data-hf-id="hf-spet" class="f11u-ln">28</span><span data-hf-id="hf-0ag5" class="f11u-txt">    <span data-hf-id="hf-k4x9" class="ts-kw">return</span> () <span data-hf-id="hf-10qa" class="ts-kw">=&gt;</span> {</span></div>
+            <div data-hf-id="hf-hnjp" class="f11u-row"><span data-hf-id="hf-t3pu" class="f11u-ln">29</span><span data-hf-id="hf-m434" class="f11u-txt">      cancelled = true;</span></div>
+            <div data-hf-id="hf-i1uq" class="f11u-row"><span data-hf-id="hf-oras" class="f11u-ln">30</span><span data-hf-id="hf-fomk" class="f11u-txt">    }</span></div>
+            <div data-hf-id="hf-dpfo" class="f11u-row"><span data-hf-id="hf-oczr" class="f11u-ln">31</span><span data-hf-id="hf-s18o" class="f11u-txt">  }, [trigger]);</span></div>
+        </div>
+        <div data-hf-id="hf-uu5l" class="f11u-status">App · posts</div>
+      </div>
+
+      <!-- block B: users + chips + pointers (move as one group) -->
+      <div data-hf-id="hf-wh9o" class="f11u-bgroup" id="f11u-bgroup">
+        <div data-hf-id="hf-u5jk" class="ts-code-surface f11u-panel" id="f11u-panelB">
+          <div data-hf-id="hf-11bb" class="f11u-bborder" id="f11u-bborder"></div>
+          <div data-hf-id="hf-plgu" class="ts-mini-title">App.tsx · users</div>
+          <div data-hf-id="hf-qwb9" class="f11u-code">
+            <div data-hf-id="hf-1uj6" class="f11u-sweep" id="f11u-sweep"></div>
+            <div data-hf-id="hf-eb8f" class="f11u-lw" id="f11u-lw5" style="top:68px;"></div>
+            <div data-hf-id="hf-pef5" class="f11u-lw" id="f11u-lw6" style="top:85px;"></div>
+            <div data-hf-id="hf-6e16" class="f11u-lw" id="f11u-lw7" style="top:102px;"></div>
+            <div data-hf-id="hf-eys4" class="f11u-lw" id="f11u-lw10" style="top:153px;"></div>
+            <div data-hf-id="hf-db4n" class="f11u-row"><span data-hf-id="hf-lgza" class="f11u-ln">1</span><span data-hf-id="hf-djku" class="f11u-txt"><span data-hf-id="hf-q4lu" class="ts-kw">const</span> url = <span data-hf-id="hf-pwyl" class="ts-str">"https://jsonplaceholder.typicode.com/users"</span>;</span></div>
+            <div data-hf-id="hf-cwtm" class="f11u-row"><span data-hf-id="hf-qnhb" class="f11u-ln">2</span><span data-hf-id="hf-2mnu" class="f11u-txt"></span></div>
+            <div data-hf-id="hf-ciil" class="f11u-row"><span data-hf-id="hf-gvhg" class="f11u-ln">3</span><span data-hf-id="hf-1ty6" class="f11u-txt"><span data-hf-id="hf-2pwu" class="ts-kw">const</span> <span data-hf-id="hf-fe2s" class="ts-fn">App</span> = () <span data-hf-id="hf-309f" class="ts-kw">=&gt;</span> {</span></div>
+            <div data-hf-id="hf-fans" class="f11u-row"><span data-hf-id="hf-tmdp" class="f11u-ln">4</span><span data-hf-id="hf-taqq" class="f11u-txt">  <span data-hf-id="hf-2blt" class="ts-kw">const</span> [users, <span data-hf-id="hf-j37t" class="ts-fn">setUsers</span>] = <span data-hf-id="hf-yo7y" class="ts-fn">useState</span>&lt;<span data-hf-id="hf-dhei" class="ts-type">User</span>[]&gt;([]);</span></div>
+            <div data-hf-id="hf-ewcr" class="f11u-row"><span data-hf-id="hf-uppm" class="f11u-ln">5</span><span data-hf-id="hf-c835" class="f11u-txt">  <span data-hf-id="hf-3iiw" class="ts-kw">const</span> [loading, <span data-hf-id="hf-xmbn" class="ts-fn">setLoading</span>] = <span data-hf-id="hf-y9wx" class="ts-fn">useState</span>&lt;<span data-hf-id="hf-933e" class="ts-type">boolean</span>&gt;(false);</span></div>
+            <div data-hf-id="hf-ei1q" class="f11u-row"><span data-hf-id="hf-xqsz" class="f11u-ln">6</span><span data-hf-id="hf-421k" class="f11u-txt">  <span data-hf-id="hf-347v" class="ts-kw">const</span> [error, <span data-hf-id="hf-co9q" class="ts-fn">setError</span>] = <span data-hf-id="hf-zgu0" class="ts-fn">useState</span>&lt;<span data-hf-id="hf-xco7" class="ts-type">Error</span> | <span data-hf-id="hf-ipbh" class="ts-type">null</span>&gt;(<span data-hf-id="hf-j3mi" class="ts-type">null</span>);</span></div>
+            <div data-hf-id="hf-e3qp" class="f11u-row"><span data-hf-id="hf-jwu0" class="f11u-ln">7</span><span data-hf-id="hf-0rg6" class="f11u-txt">  <span data-hf-id="hf-14oq" class="ts-kw">const</span> [trigger, <span data-hf-id="hf-5fa9" class="ts-fn">setTrigger</span>] = <span data-hf-id="hf-z2iz" class="ts-fn">useState</span>&lt;<span data-hf-id="hf-wjsw" class="ts-type">number</span>&gt;(<span data-hf-id="hf-nokv" class="ts-fn">0</span>);</span></div>
+            <div data-hf-id="hf-gvvw" class="f11u-row"><span data-hf-id="hf-e301" class="f11u-ln">8</span><span data-hf-id="hf-28ct" class="f11u-txt"></span></div>
+            <div data-hf-id="hf-ghkv" class="f11u-row"><span data-hf-id="hf-f6by" class="f11u-ln">9</span><span data-hf-id="hf-knrv" class="f11u-txt">  <span data-hf-id="hf-qjn5" class="ts-fn">useEffect</span>(() <span data-hf-id="hf-3ekg" class="ts-kw">=&gt;</span> {</span></div>
+            <div data-hf-id="hf-cxrv" class="f11u-row"><span data-hf-id="hf-p7je" class="f11u-ln">10</span><span data-hf-id="hf-jijl" class="f11u-txt">    <span data-hf-id="hf-t21g" class="ts-kw">let</span> cancelled: <span data-hf-id="hf-8osd" class="ts-type">boolean</span> = false;</span></div>
+            <div data-hf-id="hf-dc2w" class="f11u-row"><span data-hf-id="hf-o47h" class="f11u-ln">11</span><span data-hf-id="hf-nwdm" class="f11u-txt">    <span data-hf-id="hf-0qdp" class="ts-kw">const</span> <span data-hf-id="hf-c29q" class="ts-fn">fetchData</span> = <span data-hf-id="hf-hykx" class="ts-kw">async</span> () <span data-hf-id="hf-27nd" class="ts-kw">=&gt;</span> {</span></div>
+            <div data-hf-id="hf-c55t" class="f11u-row"><span data-hf-id="hf-igmw" class="f11u-ln">12</span><span data-hf-id="hf-nhe4" class="f11u-txt">      <span data-hf-id="hf-dz4k" class="ts-kw">try</span> {</span></div>
+            <div data-hf-id="hf-cjgu" class="f11u-row"><span data-hf-id="hf-s8mr" class="f11u-ln">13</span><span data-hf-id="hf-npkp" class="f11u-txt">        <span data-hf-id="hf-vmsi" class="ts-fn">setLoading</span>(true);</span></div>
+            <div data-hf-id="hf-bcjr" class="f11u-row"><span data-hf-id="hf-fyt2" class="f11u-ln">14</span><span data-hf-id="hf-px62" class="f11u-txt">        <span data-hf-id="hf-1xas" class="ts-kw">const</span> response = <span data-hf-id="hf-qi1y" class="ts-kw">await</span> <span data-hf-id="hf-hzr7" class="ts-fn">fetch</span>(url);</span></div>
+            <div data-hf-id="hf-bqus" class="f11u-row"><span data-hf-id="hf-1mop" class="f11u-ln">15</span><span data-hf-id="hf-9h1x" class="f11u-txt">        <span data-hf-id="hf-lr2p" class="ts-kw">if</span> (!response.ok) {</span></div>
+            <div data-hf-id="hf-ajxp" class="f11u-row"><span data-hf-id="hf-bdb8" class="f11u-ln">16</span><span data-hf-id="hf-5go0" class="f11u-txt">          <span data-hf-id="hf-cfb5" class="ts-kw">throw</span> <span data-hf-id="hf-gwkb" class="ts-kw">new</span> <span data-hf-id="hf-yjla" class="ts-type">Error</span>(<span data-hf-id="hf-24jz" class="ts-str">"Something went wrong fetching data"</span>);</span></div>
+            <div data-hf-id="hf-ay8q" class="f11u-row"><span data-hf-id="hf-l5b3" class="f11u-ln">17</span><span data-hf-id="hf-g2xl" class="f11u-txt">        }</span></div>
+            <div data-hf-id="hf-g483" class="f11u-row"><span data-hf-id="hf-8vhe" class="f11u-ln">18</span><span data-hf-id="hf-1gze" class="f11u-txt">        <span data-hf-id="hf-1izr" class="ts-kw">const</span> result: <span data-hf-id="hf-u0zi" class="ts-type">User</span>[] = <span data-hf-id="hf-q3qx" class="ts-kw">await</span> response.<span data-hf-id="hf-bxk3" class="ts-fn">json</span>();</span></div>
+            <div data-hf-id="hf-gij4" class="f11u-row"><span data-hf-id="hf-ujd1" class="f11u-ln">19</span><span data-hf-id="hf-n5ni" class="f11u-txt">        <span data-hf-id="hf-m5dq" class="ts-kw">if</span> (cancelled) <span data-hf-id="hf-lbuc" class="ts-kw">return</span>;</span></div>
+            <div data-hf-id="hf-r1bm" class="f11u-row"><span data-hf-id="hf-jxap" class="f11u-ln">20</span><span data-hf-id="hf-na4k" class="f11u-txt">        <span data-hf-id="hf-venx" class="ts-fn">setUsers</span>(result);</span></div>
+            <div data-hf-id="hf-qn0l" class="f11u-row"><span data-hf-id="hf-l0mm" class="f11u-ln">21</span><span data-hf-id="hf-z4cp" class="f11u-txt">      } <span data-hf-id="hf-pnne" class="ts-kw">catch</span> (err) {</span></div>
+            <div data-hf-id="hf-rtxo" class="f11u-row"><span data-hf-id="hf-bbx3" class="f11u-ln">22</span><span data-hf-id="hf-lvd8" class="f11u-txt">        <span data-hf-id="hf-c9yp" class="ts-fn">setError</span>(err <span data-hf-id="hf-wuxj" class="ts-kw">as</span> <span data-hf-id="hf-y5a9" class="ts-type">Error</span>);</span></div>
+            <div data-hf-id="hf-rfmn" class="f11u-row"><span data-hf-id="hf-e9q4" class="f11u-ln">23</span><span data-hf-id="hf-snvj" class="f11u-txt">      } <span data-hf-id="hf-mn32" class="ts-kw">finally</span> {</span></div>
+            <div data-hf-id="hf-smjq" class="f11u-row"><span data-hf-id="hf-myn9" class="f11u-ln">24</span><span data-hf-id="hf-ydug" class="f11u-txt">        <span data-hf-id="hf-v8hh" class="ts-fn">setLoading</span>(false);</span></div>
+            <div data-hf-id="hf-s88p" class="f11u-row"><span data-hf-id="hf-ev5u" class="f11u-ln">25</span><span data-hf-id="hf-gh8m" class="f11u-txt">      }</span></div>
+            <div data-hf-id="hf-tf5s" class="f11u-row"><span data-hf-id="hf-xagb" class="f11u-ln">26</span><span data-hf-id="hf-gvjn" class="f11u-txt">    }</span></div>
+            <div data-hf-id="hf-t0ur" class="f11u-row"><span data-hf-id="hf-ujv4" class="f11u-ln">27</span><span data-hf-id="hf-52cz" class="f11u-txt">    <span data-hf-id="hf-bnyp" class="ts-fn">fetchData</span>();</span></div>
+            <div data-hf-id="hf-nuve" class="f11u-row"><span data-hf-id="hf-cz5l" class="f11u-ln">28</span><span data-hf-id="hf-6nnd" class="f11u-txt">    <span data-hf-id="hf-kxjb" class="ts-kw">return</span> () <span data-hf-id="hf-2lye" class="ts-kw">=&gt;</span> {</span></div>
+            <div data-hf-id="hf-ngkd" class="f11u-row"><span data-hf-id="hf-4vo6" class="f11u-ln">29</span><span data-hf-id="hf-o0zs" class="f11u-txt">      cancelled = true;</span></div>
+            <div data-hf-id="hf-q9nt" class="f11u-row"><span data-hf-id="hf-uy4s" class="f11u-ln">30</span><span data-hf-id="hf-h9uo" class="f11u-txt">    }</span></div>
+            <div data-hf-id="hf-qnyu" class="f11u-row"><span data-hf-id="hf-itif" class="f11u-ln">31</span><span data-hf-id="hf-gvcw" class="f11u-txt">  }, [trigger]);</span></div>
+          </div>
+          <div data-hf-id="hf-ol92" class="f11u-status">App · users</div>
+        </div>
+
+        <svg data-hf-id="hf-hn1g" class="f11u-ptr" viewBox="0 0 1920 1080" aria-hidden="true">
+          <path data-hf-id="hf-ifn8" id="f11u-p1" d="M1540 326 L1516 326 L1486 325" />
+          <path data-hf-id="hf-5k7w" id="f11u-p2" d="M1540 406 L1516 406 L1486 342" />
+          <path data-hf-id="hf-2db3" id="f11u-p3" d="M1540 486 L1516 486 L1486 410" />
+          <path data-hf-id="hf-atvu" id="f11u-p4" d="M1540 566 L1516 566 L1486 359" />
+          <rect data-hf-id="hf-m0b6" id="f11u-d1" x="1482" y="321" width="8" height="8" />
+          <rect data-hf-id="hf-ni3q" id="f11u-d2" x="1482" y="338" width="8" height="8" />
+          <rect data-hf-id="hf-pm91" id="f11u-d3" x="1482" y="406" width="8" height="8" />
+          <rect data-hf-id="hf-c3o0" id="f11u-d4" x="1482" y="355" width="8" height="8" />
+        </svg>
+
+        <div data-hf-id="hf-h2z9" class="ts-chip f11u-chip" id="f11u-c1" style="top:300px;">loading</div>
+        <div data-hf-id="hf-3g6k" class="ts-chip f11u-chip" id="f11u-c2" style="top:380px;">error</div>
+        <div data-hf-id="hf-oznx" class="ts-chip f11u-chip" id="f11u-c3" style="top:460px;">cancelled</div>
+        <div data-hf-id="hf-4knq" class="ts-chip f11u-chip" id="f11u-c4" style="top:540px;">trigger</div>
+      </div>
+
+      <div data-hf-id="hf-11hw" id="f11u-herowrap"><span data-hf-id="hf-d7gl" class="ts-hero" id="f11u-hero">custom hooks</span><div data-hf-id="hf-11hb" class="ts-hero-bar" id="f11u-herobar"></div></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 11.38;
+      var root = document.querySelector('[data-composition-id="11-users"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // pointer path lengths (deterministic, measured from geometry)
+      var paths = ["#f11u-p1", "#f11u-p2", "#f11u-p3", "#f11u-p4"].map(q);
+      var lens = paths.map(function (p) { return p.getTotalLength ? p.getTotalLength() : 140; });
+
+      // ---- initial states ----
+      tl.set(q("#f11u-sweep"), { scaleY: 0 }, 0);
+      tl.set(["#f11u-lw5", "#f11u-lw6", "#f11u-lw7", "#f11u-lw10"].map(q), { scaleX: 0 }, 0);
+      paths.forEach(function (p, i) { tl.set(p, { strokeDasharray: lens[i], strokeDashoffset: lens[i] }, 0); });
+      tl.set(["#f11u-d1", "#f11u-d2", "#f11u-d3", "#f11u-d4"].map(q), { opacity: 0 }, 0);
+
+      // ---- Scene 1 (0.0-4.0): block A settled; kicker; block B slides in on "users" ----
+      tl.fromTo("#f11u-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f11u-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+
+
+      tl.fromTo("#f11u-bgroup", { x: 200, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 0.8);
+      // "alles opnieuw schrijven?" faint slate wash sweeps down block B
+      tl.to("#f11u-sweep", { scaleY: 1, duration: 0.6, ease: "power2.inOut" }, 2.76);
+
+      // ---- Scene 2 (4.0-7.2): chips pop on each named word ----
+      function chip(t, c, lw, p, d) {
+        tl.to(lw, { scaleX: 1, duration: 0.3, ease: "power3.out" }, t);
+        tl.fromTo(c, { opacity: 0, x: 12 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, t);
+        tl.to(p, { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" }, t + 0.08);
+        tl.to(d, { opacity: 1, duration: 0.15, ease: "power1.out" }, t + 0.36);
+      }
+      chip(4.24, "#f11u-c1", "#f11u-lw5", "#f11u-p1", "#f11u-d1");
+      chip(5.04, "#f11u-c2", "#f11u-lw6", "#f11u-p2", "#f11u-d2");
+      chip(5.92, "#f11u-c3", "#f11u-lw10", "#f11u-p3", "#f11u-d3");
+      chip(6.6, "#f11u-c4", "#f11u-lw7", "#f11u-p4", "#f11u-d4");
+
+      // ---- Scene 3 (7.2-end): "Uiteraard niet." copy (and its error border) leaves, A recedes (opacity), hero lands ----
+      tl.to("#f11u-bgroup", { x: 200, opacity: 0, duration: 0.5, ease: "power2.inOut" }, 7.28);
+      tl.to("#f11u-panelA", { scale: 0.7, x: -60, opacity: 0.4, duration: 0.6, ease: "power3.out" }, 7.28);
+      // "custom hooks" (9.2 / 9.6): hero settles, blue bar wipes in from the left
+      tl.fromTo("#f11u-hero", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.2);
+      tl.fromTo("#f11u-herobar", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 9.6);
+
+      tl.set({}, {}, DUR);
+      window.__timelines["11-users"] = tl;
+    })();
+  </script>
+</template>

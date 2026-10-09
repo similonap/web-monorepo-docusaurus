@@ -1,0 +1,390 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 12 positions / frame-specific primitives ---- */
+    #f12uf-panel { left: 80px; top: 170px; width: 1060px; height: 720px; }
+    #f12uf-panel .ts-code-status { height: 34px; }
+    /* 18 lines: keep the original 24px / 35px line metrics */
+    #f12uf-code { top: 56px; font-size: 24px; line-height: 35px; }
+    #f12uf-code .ts-row { height: 35px; }
+    .f12uf-tcaret { display: inline-block; width: 2px; height: 22px; margin-left: 2px; background: var(--ts-ink); vertical-align: middle; opacity: 0; }
+    #f12uf-caret { top: 5px; height: 25px; }
+    .f12uf-gen { background: var(--ts-wash-clear); border-radius: 4px; }
+    #f12uf-tmark { left: 419px; top: 246px; width: 48px; height: 33px; opacity: 0; }
+    .f12uf-gap { display: inline-block; width: 0; height: 35px; overflow: hidden; vertical-align: top; white-space: pre; }
+    #f12uf-tag { left: 720px; top: 489px; }
+    .f12uf-cval { color: var(--ts-ink-soft); font-weight: 400; }
+    #f12uf-bv { left: 1236px; top: 276px; }
+    #f12uf-chip-t { left: 1300px; top: 260px; }
+    #f12uf-ret { left: 1236px; top: 338px; }
+    #f12uf-stage .ts-chip { font-variant-ligatures: none; }
+  </style>
+
+  <div data-hf-id="hf-itzi" id="root" data-composition-id="12-usefetch" data-width="1920" data-height="1080" data-duration="20.42">
+    <div data-hf-id="hf-wz5y" class="ts-bg clip" id="f12uf-bg" data-start="0" data-duration="20.42" data-track-index="0"></div>
+
+    <div data-hf-id="hf-e0m5" class="ts-stage clip" id="f12uf-stage" data-start="0" data-duration="20.42" data-track-index="1">
+      <div data-hf-id="hf-ahx0" class="ts-kicker" id="f12uf-kicker"><div data-hf-id="hf-kb12" class="ts-kicker-bar" id="f12uf-kbar"></div><span data-hf-id="hf-kx12" class="ts-kicker-text" id="f12uf-ktext">Custom hook</span></div>
+
+      <!-- code surface: useFetch.ts -->
+      <div data-hf-id="hf-pm9o" class="ts-code-surface" id="f12uf-panel">
+        <div data-hf-id="hf-knni" class="ts-code-title"><span data-hf-id="hf-lk08" id="f12uf-fname"></span><span data-hf-id="hf-65k3" class="f12uf-tcaret" id="f12uf-tcaret"></span></div>
+        <div data-hf-id="hf-gh0y" class="ts-code" id="f12uf-code">
+          <div data-hf-id="hf-jonp" class="ts-row"><span data-hf-id="hf-kxlv" class="ts-ln">1</span><span data-hf-id="hf-fc7t" class="ts-txt f12uf-if"><span data-hf-id="hf-q4wr" class="ts-kw">interface</span> <span data-hf-id="hf-ugtz" class="ts-fn">FetchState</span><span data-hf-id="hf-2p9e" class="ts-punct">&lt;</span><span data-hf-id="hf-2p9f" class="ts-type">T</span><span data-hf-id="hf-2p9g" class="ts-punct">&gt;</span> {</span></div>
+          <div data-hf-id="hf-5w3t" class="ts-row"><span data-hf-id="hf-kjau" class="ts-ln">2</span><span data-hf-id="hf-c2sv" class="ts-txt f12uf-if">  loading: <span data-hf-id="hf-ddyc" class="ts-type">boolean</span>;</span></div>
+          <div data-hf-id="hf-730w" class="ts-row"><span data-hf-id="hf-k4zt" class="ts-ln">3</span><span data-hf-id="hf-fpxf" class="ts-txt f12uf-if">  data: <span data-hf-id="hf-1nr1" class="ts-type">T | null</span>;</span></div>
+          <div data-hf-id="hf-6opv" class="ts-row"><span data-hf-id="hf-jqos" class="ts-ln">4</span><span data-hf-id="hf-l6fh" class="ts-txt f12uf-if">  error: <span data-hf-id="hf-fybr" class="ts-type">Error | null</span>;</span></div>
+          <div data-hf-id="hf-4p6q" class="ts-row"><span data-hf-id="hf-jcdr" class="ts-ln">5</span><span data-hf-id="hf-wqci" class="ts-txt f12uf-if">  refetch: <span data-hf-id="hf-lusk" class="ts-type">() =&gt; void</span>;</span></div>
+          <div data-hf-id="hf-4avp" class="ts-row"><span data-hf-id="hf-iy2q" class="ts-ln">6</span><span data-hf-id="hf-ejlr" class="ts-txt f12uf-if">}</span></div>
+          <div data-hf-id="hf-5hss" class="ts-row"><span data-hf-id="hf-ijrp" class="ts-ln">7</span></div>
+          <div data-hf-id="hf-53hr" class="ts-row"><span data-hf-id="hf-i5go" class="ts-ln">8</span><span data-hf-id="hf-11ba" class="ts-txt"><span data-hf-id="hf-562i" id="f12uf-l8a"></span><span data-hf-id="hf-qov7" id="f12uf-l8t" class="f12uf-gen"></span><span data-hf-id="hf-17yh" id="f12uf-l8b"></span><span data-hf-id="hf-4dod" class="f12uf-gap" id="f12uf-gap">: <span data-hf-id="hf-6n5j" class="ts-fn">FetchState</span><span data-hf-id="hf-cs3q" class="ts-punct">&lt;</span><span data-hf-id="hf-cs3r" class="ts-type">T</span><span data-hf-id="hf-cs3s" class="ts-punct">&gt;</span></span><span data-hf-id="hf-y8ow" id="f12uf-l8c"></span></span></div>
+          <div data-hf-id="hf-33ym" class="ts-row"><span data-hf-id="hf-hr5n" class="ts-ln">9</span><span data-hf-id="hf-v7se" class="ts-txt f12uf-mv">  <span data-hf-id="hf-ay5n" class="ts-kw">const</span> [error, <span data-hf-id="hf-15ww" class="ts-fn">setError</span>] = <span data-hf-id="hf-xn2y" class="ts-fn">useState</span><span data-hf-id="hf-ve2v" class="ts-type">&lt;Error | null&gt;</span>(null);</span></div>
+          <div data-hf-id="hf-2pnl" class="ts-row"><span data-hf-id="hf-da09" class="ts-ln">10</span><span data-hf-id="hf-q7ya" class="ts-txt f12uf-mv">  <span data-hf-id="hf-63pn" class="ts-kw">const</span> [<span data-hf-id="hf-1cr6" class="ts-hl f12uf-hl10">data</span>, <span data-hf-id="hf-byvx" class="ts-fn ts-hl f12uf-hl10">setData</span>] = <span data-hf-id="hf-983i" class="ts-fn">useState</span><span data-hf-id="hf-57xt" class="ts-type">&lt;<span data-hf-id="hf-xt2a" class="ts-hl f12uf-hl10">T</span> | null&gt;</span>(null);</span></div>
+          <div data-hf-id="hf-q0or" class="ts-row"><span data-hf-id="hf-doba" class="ts-ln">11</span><span data-hf-id="hf-3i6k" class="ts-txt f12uf-mv">  <span data-hf-id="hf-5pem" class="ts-kw">const</span> [loading, <span data-hf-id="hf-4mju" class="ts-fn">setLoading</span>] = <span data-hf-id="hf-9mej" class="ts-fn">useState</span><span data-hf-id="hf-v1jm" class="ts-type">&lt;boolean&gt;</span>(<span data-hf-id="hf-v1jn" class="ts-fn">false</span>);</span></div>
+          <div data-hf-id="hf-qezs" class="ts-row"><span data-hf-id="hf-e2mb" class="ts-ln">12</span><span data-hf-id="hf-bm5p" class="ts-txt f12uf-mv">  <span data-hf-id="hf-5b3l" class="ts-kw">const</span> [trigger, <span data-hf-id="hf-t6by" class="ts-fn">setTrigger</span>] = <span data-hf-id="hf-a0pk" class="ts-fn">useState</span><span data-hf-id="hf-6h4p" class="ts-type">&lt;number&gt;</span>(<span data-hf-id="hf-3dt2" class="ts-fn">0</span>);</span></div>
+          <div data-hf-id="hf-p82p" class="ts-row"><span data-hf-id="hf-egxc" class="ts-ln">13</span><span data-hf-id="hf-qq34" class="ts-txt f12uf-mv">  <span data-hf-id="hf-4wsk" class="ts-kw">const</span> refetch = () <span data-hf-id="hf-4wsl" class="ts-kw">=&gt;</span> <span data-hf-id="hf-bd5e" class="ts-fn">setTrigger</span>(trigger <span data-hf-id="hf-4wsm" class="ts-kw">=&gt;</span> trigger + <span data-hf-id="hf-2zi1" class="ts-fn">1</span>);</span></div>
+          <div data-hf-id="hf-pmdq" class="ts-row"><span data-hf-id="hf-bos5" class="ts-ln">14</span></div>
+          <div data-hf-id="hf-ofgn" class="ts-row"><span data-hf-id="hf-c336" class="ts-ln">15</span><span data-hf-id="hf-4pad" class="ts-txt f12uf-mv">  <span data-hf-id="hf-2b74" class="ts-fn">useEffect</span>(() <span data-hf-id="hf-2b75" class="ts-kw">=&gt;</span> { <span data-hf-id="hf-w848" class="ts-fold">⋯</span> }, [trigger, url]);</span></div>
+          <div data-hf-id="hf-otro" class="ts-row"><span data-hf-id="hf-che7" class="ts-ln">16</span></div>
+          <div data-hf-id="hf-nmul" class="ts-row"><span data-hf-id="hf-cvp8" class="ts-ln">17</span><span data-hf-id="hf-ege1" class="ts-txt" id="f12uf-l17"></span></div>
+          <div data-hf-id="hf-o15m" class="ts-row"><span data-hf-id="hf-a3k1" class="ts-ln">18</span><span data-hf-id="hf-x83q" class="ts-txt" id="f12uf-l18"></span></div>
+          <span data-hf-id="hf-ikf7" class="ts-caret" id="f12uf-caret"></span>
+          <div data-hf-id="hf-tm12" class="ts-mark" id="f12uf-tmark"></div>
+          <div data-hf-id="hf-x04s" class="ts-tag" id="f12uf-tag">uit App.tsx</div>
+        </div>
+        <div data-hf-id="hf-317v" class="ts-code-status">useFetch · custom hook</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-eixj" class="ts-label" id="f12uf-bv">bv.</div>
+      <div data-hf-id="hf-12ab" class="ts-chip" id="f12uf-chip-t">T = <span data-hf-id="hf-v2sb" class="f12uf-cval">Post[]</span></div>
+
+      <div data-hf-id="hf-s4pt" class="ts-label" id="f12uf-ret">Return</div>
+      <div data-hf-id="hf-ud12" class="ts-chip ts-chip--new" id="f12uf-r-data" style="left: 1236px; top: 380px;">data: <span data-hf-id="hf-v3d8" class="f12uf-cval">T | null</span></div>
+      <div data-hf-id="hf-78hf" class="ts-chip ts-chip--new" id="f12uf-r-loading" style="left: 1236px; top: 460px;">loading: <span data-hf-id="hf-nzin" class="f12uf-cval">boolean</span></div>
+      <div data-hf-id="hf-k6fy" class="ts-chip ts-chip--new" id="f12uf-r-error" style="left: 1236px; top: 540px;">error: <span data-hf-id="hf-4pze" class="f12uf-cval">Error | null</span></div>
+      <div data-hf-id="hf-7yst" class="ts-chip ts-chip--new" id="f12uf-r-refetch" style="left: 1236px; top: 620px;">refetch: <span data-hf-id="hf-uqap" class="f12uf-cval">() =&gt; void</span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 20.42;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 24;
+      var LH = 35;
+      var X0 = 76;
+      var chPx = FS * CW;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="12-usefetch"]');
+      var q = function (s) { return root.querySelector(s); };
+      var qa = function (s) { return Array.prototype.slice.call(root.querySelectorAll(s)); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var caret = q("#f12uf-caret");
+
+      // ---- type-on helper: chars inserted (display) one by one, caret steps per char ----
+      function typeOn(hostSel, line, segments, start, per, col0, lead) {
+        if (lead === undefined) lead = 0.1;
+        var host0 = q(hostSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = host0;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            host0.appendChild(host);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var y = (line - 1) * LH;
+        tl.set(chars, { display: "none" }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col0 * chPx, y: y }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.set(el, { display: "inline" }, at);
+          tl.set(caret, { x: X0 + (col0 + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.12);
+        return end;
+      }
+
+      function pop(sel, at) {
+        tl.fromTo(sel, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, at);
+      }
+
+      // initial hidden states (seek-safe: set at 0)
+      gsap.set(qa(".f12uf-if"), { opacity: 0 });
+      gsap.set(qa(".f12uf-mv"), { opacity: 0 });
+      gsap.set(["#f12uf-tag", "#f12uf-bv", "#f12uf-chip-t", "#f12uf-ret",
+              "#f12uf-r-data", "#f12uf-r-loading", "#f12uf-r-error", "#f12uf-r-refetch"], { opacity: 0 });
+      gsap.set("#f12uf-gap", { width: 0 });
+
+      // ---- Scene 1 (0.0-3.6): kicker; empty surface on "nieuw bestand"; file name on "use fetch punt ts" ----
+      tl.fromTo("#f12uf-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f12uf-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+
+
+      tl.fromTo("#f12uf-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.68);
+
+      // title bar types "useFetch.ts"
+      (function () {
+        var host = q("#f12uf-fname");
+        var name = "useFetch.ts";
+        var chars = [];
+        for (var i = 0; i < name.length; i++) {
+          var s = document.createElement("span");
+          s.textContent = name[i];
+          host.appendChild(s);
+          chars.push(s);
+        }
+        tl.set(chars, { display: "none" }, 0);
+        tl.set("#f12uf-tcaret", { opacity: 1 }, 1.66);
+        chars.forEach(function (el, i) { tl.set(el, { display: "inline" }, 1.76 + i * 0.07); });
+        tl.set("#f12uf-tcaret", { opacity: 0 }, 1.76 + name.length * 0.07 + 0.25);
+      })();
+
+      // ---- Scene 2 (3.6-11.3): signature, "url", generic <T> (TS blue), braces, chip T = Post[] ----
+      var per = 0.03;
+      typeOn("#f12uf-l8a", 8, [
+        { t: "export", c: "ts-kw" }, { t: " " },
+        { t: "function", c: "ts-kw" }, { t: " " },
+        { t: "useFetch", c: "ts-fn" }
+      ], 4.0, per, 0);
+
+      typeOn("#f12uf-l8b", 8, [
+        { t: "(url: " }, { t: "string", c: "ts-type" }, { t: ")" }
+      ], 5.76, per, 24);
+
+      // "generiek" -> insert <T> right after useFetch; text after it shifts right; the frame's one blue key moment
+      typeOn("#f12uf-l8t", 8, [{ t: "<T>" }], 6.88, 0.07, 24);
+      tl.to("#f12uf-l8t", { backgroundColor: "rgba(49, 120, 198, 0.16)", duration: 0.35, ease: "power1.out" }, 7.0);
+      tl.fromTo("#f12uf-tmark", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 7.0);
+
+      // "T." -> " {" closes line 8, line 18 "}"
+      var e8 = typeOn("#f12uf-l8c", 8, [{ t: " {" }], 7.84, 0.05, 40, 0.06);
+      typeOn("#f12uf-l18", 18, [{ t: "}" }], e8 + 0.15, 0.05, 0, 0.06);
+
+      // "welk type data" -> bv. + chip T = Post[]
+      tl.fromTo("#f12uf-bv", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 9.44);
+      pop("#f12uf-chip-t", 10.0);
+
+      // ---- Scene 3 (11.3-15.0): state + effect move in from App ----
+      tl.fromTo(qa(".f12uf-mv"), { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out", stagger: 0.06 }, 11.84);
+      tl.to(qa(".f12uf-hl10"), { backgroundColor: WASH, duration: 0.3, ease: "power1.out" }, 12.52);
+      tl.to(qa(".f12uf-hl10"), { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, 13.32);
+
+      tl.fromTo("#f12uf-tag", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 13.76);
+      tl.to("#f12uf-tag", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 14.9);
+
+      // ---- Scene 4 (15.0-19.92): return line, interface, ": FetchState<T>" opens, four return values ----
+      typeOn("#f12uf-l17", 17, [
+        { t: "  " },
+        { t: "return", c: "ts-kw" },
+        { t: " { " },
+        { id: "f12uf-w-data", parts: [{ t: "data" }] },
+        { t: ", " },
+        { id: "f12uf-w-loading", parts: [{ t: "loading" }] },
+        { t: ", " },
+        { id: "f12uf-w-error", parts: [{ t: "error" }] },
+        { t: ", " },
+        { id: "f12uf-w-refetch", parts: [{ t: "refetch" }] },
+        { t: " };" }
+      ], 15.2, 0.024, 0);
+
+      tl.fromTo(qa(".f12uf-if"), { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.05 }, 15.92);
+      tl.fromTo("#f12uf-gap", { width: 0 }, { width: 15 * chPx, duration: 0.6, ease: "power3.out" }, 15.92);
+      tl.fromTo("#f12uf-ret", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 15.92);
+
+      var beats = [
+        ["data", 16.84], ["loading", 17.44], ["error", 18.36], ["refetch", 19.12]
+      ];
+      beats.forEach(function (b, i) {
+        tl.to("#f12uf-w-" + b[0], { backgroundColor: WASH, duration: 0.3, ease: "power1.out" }, b[1]);
+        if (i > 0) {
+          tl.to("#f12uf-w-" + beats[i - 1][0], { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, b[1]);
+        }
+        pop("#f12uf-r-" + b[0], b[1]);
+      });
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["12-usefetch"] = tl;
+    })();
+  </script>
+</template>

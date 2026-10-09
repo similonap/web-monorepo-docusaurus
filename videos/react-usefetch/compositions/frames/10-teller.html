@@ -1,0 +1,417 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 10 positions ---- */
+    #f10t-panelA { left: 80px; top: 190px; width: 1060px; height: 240px; }
+    #f10t-panelB { left: 80px; top: 480px; width: 1060px; height: 276px; }
+    .f10t-code {
+      position: absolute; left: 0; right: 0; top: 68px;
+      font-family: var(--ts-mono); font-size: 24px; line-height: 36px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .f10t-row { position: relative; height: 36px; white-space: pre; }
+    .f10t-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .f10t-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .f10t-hl { background-color: rgba(49, 120, 198, 0); border-radius: 4px; }
+    .f10t-caret {
+      display: inline-block; width: 2px; height: 26px; margin-left: -1px; margin-right: -1px;
+      background: var(--ts-blue); vertical-align: middle; opacity: 0;
+    }
+
+    .f10t-rowA { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; }
+    #f10t-chipA { left: 1236px; top: 284px; }
+    #f10t-chipB { left: 1236px; top: 592px; }
+    .f10t-vbox { position: relative; display: inline-block; height: 50px; overflow: hidden; }
+    .f10t-vboxA { width: 76px; }
+    .f10t-vboxB { width: 16px; }
+    .f10t-vbox span { position: absolute; left: 0; top: 0; line-height: 50px; white-space: nowrap; }
+    .f10t-btn { position: absolute; left: 1600px; }
+    #f10t-btnA { top: 282px; }
+    #f10t-btnB { top: 590px; }
+    .f10t-tag {
+      position: absolute; left: 1236px; top: 360px; height: 42px; padding: 0 14px;
+      display: flex; align-items: center; box-sizing: border-box; border-radius: 8px;
+      border: 1px solid var(--ts-hairline); background: var(--ts-ground);
+      font-family: var(--ts-sans); font-weight: 500; font-size: 22px; color: var(--ts-muted);
+    }
+    .f10t-note {
+      position: absolute; left: 1236px; top: 668px;
+      font-family: var(--ts-sans); font-weight: 600; font-size: 48px; line-height: 1;
+      letter-spacing: -0.015em; color: var(--ts-ink); white-space: pre;
+    }
+    #f10t-bar { left: 0; right: 0; bottom: -18px; }
+
+    .f10t-ripple {
+      position: absolute; width: 90px; height: 90px; border-radius: 50%;
+      border: 2px solid rgba(49, 120, 198, 0.2); opacity: 0; pointer-events: none;
+    }
+    .f10t-rA { left: 1655px; top: 265px; }
+    .f10t-rB { left: 1655px; top: 573px; }
+    .f10t-cursor { position: absolute; left: 0; top: 0; width: 54px; height: 72px; z-index: 50; pointer-events: none; transform-origin: 0 0; }
+  </style>
+
+  <div data-hf-id="hf-f10r" id="root" data-composition-id="10-teller" data-width="1920" data-height="1080" data-duration="11.88">
+    <div data-hf-id="hf-f10b" class="ts-bg clip" id="f10t-bg" data-start="0" data-duration="11.88" data-track-index="0"></div>
+
+    <div data-hf-id="hf-f10s" class="ts-stage clip" id="f10t-stage" data-start="0" data-duration="11.88" data-track-index="1">
+      <div data-hf-id="hf-f10k" class="ts-kicker" id="f10t-kicker"><div data-hf-id="hf-f10kb" class="ts-kicker-bar" id="f10t-kbar"></div><span data-hf-id="hf-f10kx" class="ts-kicker-text" id="f10t-ktext">Boolean of teller</span></div>
+
+      <!-- panel A: boolean -->
+      <div data-hf-id="hf-f10pa" class="ts-code-surface" id="f10t-panelA">
+        <div data-hf-id="hf-f10ta" class="ts-code-title">boolean</div>
+        <div data-hf-id="hf-f10ca" class="f10t-code">
+          <div data-hf-id="hf-f10a1" class="f10t-row"><span data-hf-id="hf-f10an1" class="f10t-ln">1</span><span data-hf-id="hf-f10ax1" class="f10t-txt" id="f10t-a1"></span></div>
+          <div data-hf-id="hf-f10a2" class="f10t-row"><span data-hf-id="hf-f10an2" class="f10t-ln">2</span><span data-hf-id="hf-f10ax2" class="f10t-txt"></span></div>
+          <div data-hf-id="hf-f10a3" class="f10t-row"><span data-hf-id="hf-f10an3" class="f10t-ln">3</span><span data-hf-id="hf-f10ax3" class="f10t-txt" id="f10t-a3"></span></div>
+        </div>
+        <div data-hf-id="hf-f10sa" class="ts-code-status">true · false · true · …</div>
+      </div>
+
+      <!-- panel B: teller -->
+      <div data-hf-id="hf-f10pb" class="ts-code-surface" id="f10t-panelB">
+        <div data-hf-id="hf-f10tb" class="ts-code-title">teller</div>
+        <div data-hf-id="hf-f10cb" class="f10t-code">
+          <div data-hf-id="hf-f10b1" class="f10t-row"><span data-hf-id="hf-f10bn1" class="f10t-ln">1</span><span data-hf-id="hf-f10bx1" class="f10t-txt" id="f10t-b1"></span></div>
+          <div data-hf-id="hf-f10b2" class="f10t-row"><span data-hf-id="hf-f10bn2" class="f10t-ln">2</span><span data-hf-id="hf-f10bx2" class="f10t-txt" id="f10t-b2"></span></div>
+          <div data-hf-id="hf-f10b3" class="f10t-row"><span data-hf-id="hf-f10bn3" class="f10t-ln">3</span><span data-hf-id="hf-f10bx3" class="f10t-txt"></span></div>
+          <div data-hf-id="hf-f10b4" class="f10t-row"><span data-hf-id="hf-f10bn4" class="f10t-ln">4</span><span data-hf-id="hf-f10bx4" class="f10t-txt" id="f10t-b4"></span></div>
+        </div>
+        <div data-hf-id="hf-f10sb" class="ts-code-status">0 · 1 · 2 · 3 · …</div>
+      </div>
+
+      <!-- right column, row A -->
+      <div data-hf-id="hf-f10ra" class="f10t-rowA" id="f10t-rowA">
+        <div data-hf-id="hf-f10cha" class="ts-chip" id="f10t-chipA"><span data-hf-id="hf-f10cha1" class="ts-chip-key">trigger</span><span data-hf-id="hf-f10vba" class="f10t-vbox f10t-vboxA"><span data-hf-id="hf-f10va0" id="f10t-va0">false</span><span data-hf-id="hf-f10va1" id="f10t-va1">true</span><span data-hf-id="hf-f10va2" id="f10t-va2">false</span></span></div>
+        <div data-hf-id="hf-f10bta" class="ts-btn f10t-btn" id="f10t-btnA">Vernieuwen</div>
+        <div data-hf-id="hf-f10tg" class="f10t-tag" id="f10t-tag">✓ genoeg</div>
+      </div>
+
+      <!-- right column, row B -->
+      <div data-hf-id="hf-f10chb" class="ts-chip" id="f10t-chipB"><span data-hf-id="hf-f10chb1" class="ts-chip-key">trigger</span><span data-hf-id="hf-f10vbb" class="f10t-vbox f10t-vboxB"><span data-hf-id="hf-f10vb0" id="f10t-vb0">0</span><span data-hf-id="hf-f10vb1" id="f10t-vb1">1</span><span data-hf-id="hf-f10vb2" id="f10t-vb2">2</span><span data-hf-id="hf-f10vb3" id="f10t-vb3">3</span></span></div>
+      <div data-hf-id="hf-f10btb" class="ts-btn f10t-btn" id="f10t-btnB">Vernieuwen</div>
+      <div data-hf-id="hf-f10nt" class="f10t-note" id="f10t-note">3× vernieuwd<span data-hf-id="hf-f10ul" class="ts-underline" id="f10t-bar"></span></div>
+
+      <div data-hf-id="hf-f10rp1" class="f10t-ripple f10t-rA" id="f10t-rp1"></div>
+      <div data-hf-id="hf-f10rp2" class="f10t-ripple f10t-rA" id="f10t-rp2"></div>
+      <div data-hf-id="hf-f10rp3" class="f10t-ripple f10t-rB" id="f10t-rp3"></div>
+      <div data-hf-id="hf-f10rp4" class="f10t-ripple f10t-rB" id="f10t-rp4"></div>
+      <div data-hf-id="hf-f10rp5" class="f10t-ripple f10t-rB" id="f10t-rp5"></div>
+
+      <svg data-hf-id="hf-f10cu" class="f10t-cursor" id="f10t-cursor" viewBox="0 0 54 72">
+        <path data-hf-id="hf-f10cup" d="M2 2 L2 58 L16 45 L26 68 L36 63 L26 41 L45 41 Z" fill="#1E293B" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "10-teller";
+      var DUR = 11.78;
+      var R = document.querySelector('[data-composition-id="' + ID + '"]');
+      var q1 = function (s) { return R.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: segments [{t, c, hl}] → per-char spans + stepping caret ----
+      function buildLine(sel, segs) {
+        var line = q1(sel);
+        var chars = [];
+        var hls = [];
+        segs.forEach(function (seg) {
+          var host = line;
+          if (seg.hl) {
+            host = document.createElement("span");
+            host.className = "f10t-hl";
+            line.appendChild(host);
+            hls.push(host);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              if (p.c) s.className = p.c;
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var caret = document.createElement("span");
+        caret.className = "f10t-caret";
+        line.appendChild(caret);
+        gsap.set(chars, { display: "none" });
+        return { chars: chars, caret: caret, hls: hls };
+      }
+      function typeOn(L, start, per) {
+        tl.set(L.caret, { opacity: 1 }, start - 0.1);
+        L.chars.forEach(function (c, i) {
+          tl.set(c, { display: "inline" }, start + i * per);
+        });
+        var end = start + L.chars.length * per;
+        tl.set(L.caret, { opacity: 0 }, end + 0.2);
+        return end;
+      }
+
+      var A1 = buildLine("#f10t-a1", [
+        { t: "const", c: "ts-kw" }, { t: " [trigger, " }, { t: "setTrigger", c: "ts-fn" }, { t: "] = " },
+        { t: "useState", c: "ts-fn" }, { t: "<", c: "ts-punct" }, { hl: true, parts: [{ t: "boolean", c: "ts-type" }] },
+        { t: ">", c: "ts-punct" }, { t: "(" }, { t: "false", c: "ts-fn" }, { t: ");" }
+      ]);
+      var A3 = buildLine("#f10t-a3", [
+        { t: "<", c: "ts-punct" }, { t: "button onClick={() => " }, { t: "setTrigger", c: "ts-fn" },
+        { t: "(!trigger)}" }, { t: ">", c: "ts-punct" }, { t: "Vernieuwen" }, { t: "</", c: "ts-punct" }, { t: "button" }, { t: ">", c: "ts-punct" }
+      ]);
+      var B1 = buildLine("#f10t-b1", [
+        { t: "const", c: "ts-kw" }, { t: " [trigger, " }, { t: "setTrigger", c: "ts-fn" }, { t: "] = " },
+        { t: "useState", c: "ts-fn" }, { t: "<", c: "ts-punct" }, { hl: true, parts: [{ t: "number", c: "ts-type" }] },
+        { t: ">", c: "ts-punct" }, { t: "(" }, { t: "0", c: "ts-fn" }, { t: ");" }
+      ]);
+      var B2 = buildLine("#f10t-b2", [
+        { t: "const", c: "ts-kw" }, { t: " " }, { t: "refetch", c: "ts-fn" }, { t: " = () => " },
+        { t: "setTrigger", c: "ts-fn" }, { t: "(trigger => " },
+        { hl: true, parts: [{ t: "trigger + " }, { t: "1", c: "ts-fn" }] }, { t: ");" }
+      ]);
+      var B4 = buildLine("#f10t-b4", [
+        { t: "<", c: "ts-punct" }, { t: "button onClick={" }, { t: "refetch", c: "ts-fn" }, { t: "}" },
+        { t: ">", c: "ts-punct" }, { t: "Vernieuwen" }, { t: "</", c: "ts-punct" }, { t: "button" }, { t: ">", c: "ts-punct" }
+      ]);
+
+      var AMB = "rgba(49, 120, 198, 0.12)";
+      var SETTLE = { duration: 0.6, ease: "power3.out" };
+
+      // value swap: old slides up and out, new slides in (0.25s)
+      function swap(fromSel, toSel, t) {
+        tl.to(fromSel, { y: -50, opacity: 0, duration: 0.2, ease: "power2.in" }, t);
+        tl.fromTo(toSel, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power3.out", immediateRender: false }, t + 0.05);
+      }
+      // click: cursor dip + button dip + ink ripple
+      var cur = q1("#f10t-cursor");
+      function click(btnSel, rippleSel, t) {
+        tl.to(cur, { scale: 0.88, duration: 0.07, ease: "power2.in" }, t);
+        tl.to(cur, { scale: 1, duration: 0.08, ease: "power2.out" }, t + 0.07);
+        tl.to(btnSel, { scale: 0.96, duration: 0.07, ease: "power2.in" }, t);
+        tl.to(btnSel, { scale: 1, duration: 0.08, ease: "power2.out" }, t + 0.07);
+        tl.fromTo(rippleSel, { opacity: 1, scale: 0 }, { scale: 2.6, opacity: 0, duration: 0.55, ease: "power2.out", immediateRender: false }, t + 0.02);
+      }
+
+      // initial hidden states
+      gsap.set(["#f10t-va1", "#f10t-va2", "#f10t-vb1", "#f10t-vb2", "#f10t-vb3"], { opacity: 0 });
+      gsap.set(["#f10t-chipA", "#f10t-btnA", "#f10t-tag", "#f10t-panelB", "#f10t-chipB", "#f10t-btnB", "#f10t-note", cur], { opacity: 0 });
+      gsap.set("#f10t-bar", { scaleX: 0 });
+
+      // ---- Scene 1 (0.0–5.0): boolean panel, two clicks flip the chip ----
+      tl.fromTo("#f10t-panelA", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      // kicker: bar grows from 0 width, text fades/slides 8px
+      tl.fromTo("#f10t-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f10t-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      typeOn(A1, 0.8, 0.018);
+      tl.to(A1.hls, { backgroundColor: AMB, duration: 0.35, ease: "power2.out" }, 1.25);
+      // chip A + button arrive on "zijn"
+      tl.fromTo("#f10t-chipA", { opacity: 0, y: 16 }, Object.assign({ opacity: 1, y: 0 }, SETTLE), 1.4);
+      tl.fromTo("#f10t-btnA", { opacity: 0, y: 16 }, Object.assign({ opacity: 1, y: 0 }, SETTLE), 1.5);
+      // line 3 types on fast toward "klik"
+      typeOn(A3, 1.95, 0.008);
+      // cursor glides in, clicks on "klik" and on "true"
+      tl.fromTo(cur, { x: 1840, y: 470, opacity: 0 }, { x: 1700, y: 312, opacity: 1, duration: 0.5, ease: "power3.out" }, 1.95);
+      click("#f10t-btnA", "#f10t-rp1", 2.56);
+      swap("#f10t-va0", "#f10t-va1", 2.6);
+      click("#f10t-btnA", "#f10t-rp2", 3.84);
+      swap("#f10t-va1", "#f10t-va2", 3.88);
+
+      // ---- Scene 2 (5.0–6.3): "genoeg." ----
+      tl.fromTo("#f10t-tag", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 5.52);
+
+      // ---- Scene 3 (6.3–11.28): the counter ----
+      tl.to(["#f10t-panelA", "#f10t-rowA"], { opacity: 0.55, duration: 0.5, ease: "power2.out" }, 7.44);
+      tl.fromTo("#f10t-panelB", { opacity: 0, y: 24 }, Object.assign({ opacity: 1, y: 0 }, SETTLE), 7.44);
+      var tb1 = typeOn(B1, 7.6, 0.01);
+      var tb2 = typeOn(B2, tb1 + 0.04, 0.01);
+      var tb4 = typeOn(B4, tb2 + 0.04, 0.01);
+      tl.to(B1.hls, { backgroundColor: AMB, duration: 0.35, ease: "power2.out" }, tb1);
+      tl.to(B2.hls, { backgroundColor: AMB, duration: 0.35, ease: "power2.out" }, tb2);
+      // chip B + button pop on "nemen"
+      tl.fromTo("#f10t-chipB", { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power3.out" }, 7.86);
+      tl.fromTo("#f10t-btnB", { opacity: 0, y: 16 }, Object.assign({ opacity: 1, y: 0 }, SETTLE), 7.95);
+      // cursor travels down to button B, three clicks
+      tl.to(cur, { x: 1700, y: 620, duration: 0.5, ease: "power3.inOut" }, 7.95);
+      click("#f10t-btnB", "#f10t-rp3", 8.56);
+      swap("#f10t-vb0", "#f10t-vb1", 8.6);
+      click("#f10t-btnB", "#f10t-rp4", 9.0);
+      swap("#f10t-vb1", "#f10t-vb2", 9.04);
+      click("#f10t-btnB", "#f10t-rp5", 9.44);
+      swap("#f10t-vb2", "#f10t-vb3", 9.48);
+      // cursor eases off the button so the result stays readable
+      tl.to(cur, { x: 1760, y: 700, duration: 0.6, ease: "power2.inOut" }, 9.75);
+      // "vernieuwd": the note, with the one blue accent moment
+      tl.fromTo("#f10t-note", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 10.4);
+      tl.to("#f10t-bar", { scaleX: 1, duration: 0.5, ease: "power3.out" }, 10.55);
+
+      // hold to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

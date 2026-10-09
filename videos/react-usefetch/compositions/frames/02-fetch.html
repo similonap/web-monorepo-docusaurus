@@ -1,0 +1,402 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 02 positions ---- */
+    #f02f-panel { left: 80px; top: 170px; width: 1060px; height: 720px; }
+    #f02f-label { left: 1236px; top: 186px; }
+    #f02f-card { left: 1236px; top: 232px; width: 604px; height: 308px; }
+    #f02f-mini { left: 1236px; top: 580px; width: 604px; height: 250px; }
+  </style>
+
+  <div data-hf-id="hf-z04m" id="root" data-composition-id="02-fetch" data-width="1920" data-height="1080" data-duration="14.9">
+    <div data-hf-id="hf-eink" class="ts-bg clip" id="f02f-bg" data-start="0" data-duration="14.9" data-track-index="0"></div>
+
+    <div data-hf-id="hf-uqat" class="ts-stage clip" id="f02f-stage" data-start="0" data-duration="14.9" data-track-index="1">
+      <div data-hf-id="hf-hw77" class="ts-kicker" id="f02f-kicker"><div data-hf-id="hf-0h2p" class="ts-kicker-bar" id="f02f-kbar"></div><span data-hf-id="hf-kx02" class="ts-kicker-text" id="f02f-ktext">De basis</span></div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-u22i" class="ts-code-surface" id="f02f-panel">
+        <div data-hf-id="hf-xqb8" class="ts-code-title">App.tsx</div>
+        <div data-hf-id="hf-xqhk" class="ts-code">
+          <div data-hf-id="hf-mxj9" class="ts-row"><span data-hf-id="hf-dycp" class="ts-ln">1</span><span data-hf-id="hf-xtb0" class="ts-txt" id="f02f-l1"></span><span data-hf-id="hf-pbcm" class="ts-caret" id="f02f-c1"></span></div>
+          <div data-hf-id="hf-813t" class="ts-row"><span data-hf-id="hf-f59s" class="ts-ln">2</span><span data-hf-id="hf-hj8w" class="ts-txt"></span></div>
+          <div data-hf-id="hf-980w" class="ts-row"><span data-hf-id="hf-eqyr" class="ts-ln">3</span><span data-hf-id="hf-xi43" class="ts-txt"><span data-hf-id="hf-eghh" class="ts-kw">const</span> <span data-hf-id="hf-x2zd" class="ts-fn ts-hl" id="f02f-hl-app">App</span> = () <span data-hf-id="hf-dh1h" class="ts-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-8tpv" class="ts-row"><span data-hf-id="hf-crfm" class="ts-ln">4</span><span data-hf-id="hf-b6yp" class="ts-txt" id="f02f-l4"></span><span data-hf-id="hf-832b" class="ts-caret" id="f02f-c4"></span></div>
+          <div data-hf-id="hf-6u6q" class="ts-row"><span data-hf-id="hf-cd4l" class="ts-ln">5</span><span data-hf-id="hf-9g94" class="ts-txt"></span></div>
+          <div data-hf-id="hf-6fvp" class="ts-row"><span data-hf-id="hf-dk1o" class="ts-ln">6</span><span data-hf-id="hf-lasj" class="ts-txt" id="f02f-l6"></span><span data-hf-id="hf-06u9" class="ts-caret" id="f02f-c6"></span></div>
+          <div data-hf-id="hf-7mss" class="ts-row"><span data-hf-id="hf-d5qn" class="ts-ln">7</span><span data-hf-id="hf-f52q" class="ts-txt" id="f02f-l7"></span><span data-hf-id="hf-x7ko" class="ts-caret" id="f02f-c7"></span></div>
+          <div data-hf-id="hf-78hr" class="ts-row"><span data-hf-id="hf-b67i" class="ts-ln">8</span><span data-hf-id="hf-75d9" class="ts-txt" id="f02f-l8"></span><span data-hf-id="hf-1tv3" class="ts-caret" id="f02f-c8"></span></div>
+          <div data-hf-id="hf-58ym" class="ts-row"><span data-hf-id="hf-arwh" class="ts-ln">9</span><span data-hf-id="hf-463o" class="ts-txt" id="f02f-l9"></span><span data-hf-id="hf-xvr2" class="ts-caret" id="f02f-c9"></span></div>
+          <div data-hf-id="hf-4unl" class="ts-row"><span data-hf-id="hf-5snv" class="ts-ln">10</span><span data-hf-id="hf-aiik" class="ts-txt" id="f02f-l10"></span><span data-hf-id="hf-72s2" class="ts-caret" id="f02f-c10"></span></div>
+          <div data-hf-id="hf-ucy3" class="ts-row"><span data-hf-id="hf-66yw" class="ts-ln">11</span><span data-hf-id="hf-ba6d" class="ts-txt" id="f02f-l11"></span><span data-hf-id="hf-b0w3" class="ts-caret" id="f02f-c11"></span></div>
+          <div data-hf-id="hf-ur94" class="ts-row"><span data-hf-id="hf-501t" class="ts-ln">12</span><span data-hf-id="hf-f8ae" class="ts-txt" id="f02f-l12"></span><span data-hf-id="hf-2d08" class="ts-caret" id="f02f-c12"></span></div>
+          <div data-hf-id="hf-tkc1" class="ts-row"><span data-hf-id="hf-5ecu" class="ts-ln">13</span><span data-hf-id="hf-j6ef" class="ts-txt" id="f02f-l13"></span><span data-hf-id="hf-34o1" class="ts-caret" id="f02f-c13"></span></div>
+          <div data-hf-id="hf-tyn2" class="ts-row"><span data-hf-id="hf-47fr" class="ts-ln">14</span><span data-hf-id="hf-89c1" class="ts-txt"></span></div>
+          <div data-hf-id="hf-srpz" class="ts-row"><span data-hf-id="hf-4lqs" class="ts-ln">15</span><span data-hf-id="hf-1pug" class="ts-txt">  <span data-hf-id="hf-pme0" class="ts-kw">return</span> ( <span data-hf-id="hf-atj2" class="ts-fold">⋯</span> );</span></div>
+          <div data-hf-id="hf-t610" class="ts-row"><span data-hf-id="hf-3etp" class="ts-ln">16</span><span data-hf-id="hf-qw8n" class="ts-txt">}</span></div>
+        </div>
+        <div data-hf-id="hf-73a6" class="ts-code-status">App · posts</div>
+      </div>
+
+      <!-- right column: scherm -->
+      <div data-hf-id="hf-bwyu" class="ts-label" id="f02f-label">scherm</div>
+      <div data-hf-id="hf-62dc" class="ts-card" id="f02f-card">
+        <div data-hf-id="hf-7a55" class="ts-li" id="f02f-li1" style="top: 24px;"><span data-hf-id="hf-1rml" class="ts-dot"></span>sunt aut facere repellat provident…</div>
+        <div data-hf-id="hf-vjxo" class="ts-li" id="f02f-li2" style="top: 76px;"><span data-hf-id="hf-enn5" class="ts-dot"></span>qui est esse</div>
+        <div data-hf-id="hf-e8at" class="ts-li" id="f02f-li3" style="top: 128px;"><span data-hf-id="hf-fuk8" class="ts-dot"></span>ea molestias quasi exercitationem…</div>
+        <div data-hf-id="hf-aa5t" class="ts-li" id="f02f-li4" style="top: 180px;"><span data-hf-id="hf-fg97" class="ts-dot"></span>eum et est occaecati</div>
+        <div data-hf-id="hf-hp82" class="ts-li" id="f02f-li5" style="top: 232px;"><span data-hf-id="hf-dgq2" class="ts-dot"></span>nesciunt quas odio</div>
+      </div>
+
+      <!-- mini App.tsx: the JSX -->
+      <div data-hf-id="hf-4w0y" class="ts-mini" id="f02f-mini">
+        <div data-hf-id="hf-6fef" class="ts-mini-title">App.tsx</div>
+        <div data-hf-id="hf-ikib" class="ts-mini-code">
+          <div data-hf-id="hf-p90g" class="ts-mini-row"><span data-hf-id="hf-kclj" class="ts-punct">&lt;ul&gt;</span></div>
+          <div data-hf-id="hf-mxls" class="ts-mini-row">  {posts.<span data-hf-id="hf-lzwq" class="ts-fn">map</span>(post <span data-hf-id="hf-lql5" class="ts-kw">=&gt;</span> (</div>
+          <div data-hf-id="hf-26xt" class="ts-mini-row">    <span data-hf-id="hf-gh2p" class="ts-punct">&lt;li</span> key={post.id}<span data-hf-id="hf-5a2c" class="ts-punct">&gt;</span>{post.title}<span data-hf-id="hf-696y" class="ts-punct">&lt;/li&gt;</span></div>
+          <div data-hf-id="hf-y5fl" class="ts-mini-row">  ))}</div>
+          <div data-hf-id="hf-t6u0" class="ts-mini-row"><span data-hf-id="hf-pqiw" class="ts-punct">&lt;/ul&gt;</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.9;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="02-fetch"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // ---- Scene 1 (0.0-4.2): kicker; "eenvoudig." (0.64) code shell; "App" (1.84); "state posts." (2.8 / 3.28) ----
+            // kicker: bar grows from 0 width, text fades/slides 8px
+      tl.fromTo("#f02f-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f02f-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f02f-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.64);
+
+      washOn("#f02f-hl-app", 1.84);
+
+      var l4 = typeLine("#f02f-l4", "#f02f-c4", [
+        { t: "  " },
+        { t: "const", c: "ts-kw" },
+        { t: " [" },
+        { id: "f02f-hl-posts", parts: [{ t: "posts" }] },
+        { t: ", " },
+        { t: "setPosts", c: "ts-fn" },
+        { t: "] = " },
+        { t: "useState", c: "ts-fn" },
+        { t: "<", c: "ts-punct" },
+        { t: "Post[]", c: "ts-type" },
+        { t: ">", c: "ts-punct" },
+        { t: "([]);" }
+      ], 0, 2.8, 0.022);
+      washOff("#f02f-hl-app", 3.2);
+      washOn("#f02f-hl-posts", Math.max(3.28, l4.marks["f02f-hl-posts"] + 0.12));
+
+      // ---- Scene 2 (4.2-9.2): "use effect" (4.56) skeleton; "fetch" (5.76); "url" (6.96) ----
+      washOff("#f02f-hl-posts", 4.56);
+      var e = typeLine("#f02f-l6", "#f02f-c6", [
+        { t: "  " },
+        { t: "useEffect", c: "ts-fn" },
+        { t: "(() " },
+        { t: "=>", c: "ts-kw" },
+        { t: " {" }
+      ], 0, 4.56, 0.016);
+      e = typeLine("#f02f-l13", "#f02f-c13", [
+        { t: "  }, []);" }
+      ], 0, e.end + 0.02, 0.016, 0.03);
+      e = typeLine("#f02f-l7", "#f02f-c7", [
+        { t: "    " },
+        { t: "const", c: "ts-kw" },
+        { t: " " },
+        { t: "fetchData", c: "ts-fn" },
+        { t: " = " },
+        { t: "async", c: "ts-kw" },
+        { t: " () " },
+        { t: "=>", c: "ts-kw" },
+        { t: " {" }
+      ], 0, e.end + 0.02, 0.012, 0.03);
+      e = typeLine("#f02f-l11", "#f02f-c11", [
+        { t: "    }" }
+      ], 0, e.end + 0.02, 0.012, 0.03);
+      typeLine("#f02f-l12", "#f02f-c12", [
+        { t: "    " },
+        { t: "fetchData", c: "ts-fn" },
+        { t: "();" }
+      ], 0, e.end + 0.02, 0.01, 0.03);
+
+      var l8 = typeLine("#f02f-l8", "#f02f-c8", [
+        { t: "      " },
+        { t: "const", c: "ts-kw" },
+        { t: " response = " },
+        { t: "await", c: "ts-kw" },
+        { t: " " },
+        { id: "f02f-hl-fetch", parts: [
+          { t: "fetch", c: "ts-fn" },
+          { t: "(url)" }
+        ] },
+        { t: ";" }
+      ], 0, 5.8, 0.016, 0.06);
+      washOn("#f02f-hl-fetch", l8.marks["f02f-hl-fetch"] + 0.05);
+
+      var l1 = typeLine("#f02f-l1", "#f02f-c1", [
+        { t: "const", c: "ts-kw" },
+        { t: " url = " },
+        { id: "f02f-hl-url", parts: [{ t: "\"https://jsonplaceholder.typicode.com/posts\"", c: "ts-str" }] },
+        { t: ";" }
+      ], 0, 6.96, 0.014);
+      washOff("#f02f-hl-fetch", 6.96);
+      washOn("#f02f-hl-url", l1.marks["f02f-hl-url"] + 0.05);
+
+      // ---- Scene 3 (9.2-14.4): "resultaat" (9.6); "set posts" (10.72 / 11.04); "posts verschijnen" (12.92) ----
+      washOff("#f02f-hl-url", 9.6);
+      typeLine("#f02f-l9", "#f02f-c9", [
+        { t: "      " },
+        { t: "const", c: "ts-kw" },
+        { t: " result" },
+        { t: ": " },
+        { t: "Post[]", c: "ts-type" },
+        { t: " = " },
+        { t: "await", c: "ts-kw" },
+        { t: " response." },
+        { t: "json", c: "ts-fn" },
+        { t: "();" }
+      ], 0, 9.6, 0.018);
+
+      var l10 = typeLine("#f02f-l10", "#f02f-c10", [
+        { t: "      " },
+        { id: "f02f-hl-set", parts: [
+          { t: "setPosts", c: "ts-fn" },
+          { t: "(result)" }
+        ] },
+        { t: ";" }
+      ], 0, 10.72, 0.02);
+      washOn("#f02f-hl-set", Math.max(11.04, l10.marks["f02f-hl-set"] + 0.1));
+
+      // scherm label + card, rows settle one by one (pop @12.92), then the mini panel
+      tl.fromTo("#f02f-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 12.92);
+      tl.fromTo("#f02f-card", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 12.92);
+      tl.fromTo(["#f02f-li1", "#f02f-li2", "#f02f-li3", "#f02f-li4", "#f02f-li5"],
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", stagger: 0.08 }, 13.02);
+      tl.fromTo("#f02f-mini", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 13.2);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["02-fetch"] = tl;
+    })();
+  </script>
+</template>

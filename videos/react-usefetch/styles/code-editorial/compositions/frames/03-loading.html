@@ -1,0 +1,458 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f03l-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f03l-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f03l-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f03l-kicker .f03l-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface (App.tsx) */
+    .f03l-panel {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      width: 1060px;
+      height: 716px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f03l-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 48px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 21px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f03l-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 38px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 18px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f03l-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 62px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 38px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f03l-row { position: relative; height: 38px; white-space: pre; }
+    .f03l-ln {
+      position: absolute;
+      left: 0;
+      width: 52px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 20px;
+    }
+    .f03l-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .f03l-ch { display: inline; }
+    .f03l-kw { color: #CC785C; }
+    .f03l-fn { color: #E8A55A; }
+    .f03l-str { color: #5DB8A6; }
+    .f03l-dim { color: rgba(250, 249, 245, 0.6); }
+    .f03l-fold { color: rgba(250, 249, 245, 0.4); }
+    .f03l-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f03l-caret {
+      position: absolute;
+      top: 5px;
+      left: 0;
+      width: 3px;
+      height: 28px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+
+    /* right column: scherm */
+    .f03l-label {
+      position: absolute;
+      left: 1236px;
+      top: 180px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f03l-card {
+      position: absolute;
+      left: 1236px;
+      top: 232px;
+      width: 604px;
+      height: 308px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    /* fetch progress (scene 1) */
+    .f03l-track {
+      position: absolute;
+      left: 28px;
+      top: 40px;
+      width: 420px;
+      height: 2px;
+      background: rgba(20, 20, 19, 0.12);
+    }
+    .f03l-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 420px;
+      height: 2px;
+      background: rgba(20, 20, 19, 0.55);
+      transform-origin: 0% 50%;
+    }
+    .f03l-ftag {
+      position: absolute;
+      left: 468px;
+      top: 26px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      line-height: 28px;
+      color: rgba(20, 20, 19, 0.62);
+      letter-spacing: 0.02em;
+    }
+    /* empty-state caption */
+    .f03l-empty {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 132px;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-size: 24px;
+      line-height: 32px;
+      color: rgba(20, 20, 19, 0.4);
+    }
+    .f03l-under {
+      position: absolute;
+      left: 254px;
+      top: 168px;
+      width: 96px;
+      height: 12px;
+      overflow: visible;
+    }
+    /* loading chip, card top-right */
+    .f03l-chip {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      height: 46px;
+      padding: 0 16px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      background: #ECE3D4;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: #141413;
+      white-space: pre;
+    }
+    .f03l-vbox {
+      position: relative;
+      display: inline-block;
+      width: 66px;
+      height: 30px;
+      overflow: hidden;
+      vertical-align: middle;
+    }
+    .f03l-v { position: absolute; left: 0; top: 0; line-height: 30px; }
+    /* spinner */
+    .f03l-spin {
+      position: absolute;
+      left: 274px;
+      top: 126px;
+      width: 56px;
+      height: 56px;
+      box-sizing: border-box;
+      border-radius: 50%;
+      border: 4px solid rgba(20, 20, 19, 0.15);
+      border-top-color: #141413;
+    }
+
+    /* mini App.tsx panel */
+    .f03l-mini {
+      position: absolute;
+      left: 1236px;
+      top: 580px;
+      width: 604px;
+      height: 212px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f03l-mbar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 44px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f03l-mcode {
+      position: absolute;
+      left: 0; right: 0;
+      top: 60px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      line-height: 34px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f03l-mrow { position: relative; height: 34px; white-space: pre; }
+    .f03l-mtxt { position: absolute; left: 24px; top: 0; white-space: pre; }
+  </style>
+
+  <div data-hf-id="hf-mcn7" id="root" data-composition-id="03-loading" data-width="1920" data-height="1080" data-duration="14.74">
+    <div data-hf-id="hf-iejm" class="f03l-bg clip" id="f03l-bg" data-start="0" data-duration="14.74" data-track-index="0"></div>
+
+    <div data-hf-id="hf-4i2b" class="f03l-stage clip" id="f03l-stage" data-start="0" data-duration="14.74" data-track-index="1">
+      <div data-hf-id="hf-shve" class="f03l-kicker" id="f03l-kicker"><span data-hf-id="hf-5vke" class="f03l-spike">✱</span>Laden</div>
+
+      <!-- App.tsx -->
+      <div data-hf-id="hf-vbaq" class="f03l-panel" id="f03l-panel">
+        <div data-hf-id="hf-pk1l" class="f03l-titlebar">App.tsx</div>
+        <div data-hf-id="hf-09vn" class="f03l-code">
+          <div data-hf-id="hf-gv1s" class="f03l-row"><span data-hf-id="hf-09eg" class="f03l-ln">1</span><span data-hf-id="hf-04lo" class="f03l-txt"><span data-hf-id="hf-tl9s" class="f03l-kw">const</span> <span data-hf-id="hf-epe6" class="f03l-fn">App</span> = () <span data-hf-id="hf-x9ry" class="f03l-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-1a14" class="f03l-row"><span data-hf-id="hf-z2hd" class="f03l-ln">2</span><span data-hf-id="hf-b08a" class="f03l-txt">  <span data-hf-id="hf-itvs" class="f03l-kw">const</span> [posts, setPosts] = <span data-hf-id="hf-41q7" class="f03l-fn">useState</span><span data-hf-id="hf-k197" class="f03l-dim">&lt;Post[]&gt;</span>([]);</span></div>
+          <div data-hf-id="hf-0341" class="f03l-row"><span data-hf-id="hf-id1b" class="f03l-ln" id="f03l-ln3">3</span><span data-hf-id="hf-5302" class="f03l-txt" id="f03l-l3"></span><span data-hf-id="hf-1xo4" class="f03l-caret" id="f03l-c3"></span></div>
+          <div data-hf-id="hf-0hf2" class="f03l-row"><span data-hf-id="hf-y9vb" class="f03l-ln">4</span><span data-hf-id="hf-hxm1" class="f03l-txt"></span></div>
+          <div data-hf-id="hf-zahz" class="f03l-row"><span data-hf-id="hf-yo6c" class="f03l-ln">5</span><span data-hf-id="hf-3yop" class="f03l-txt">  <span data-hf-id="hf-xqvr" class="f03l-fn">useEffect</span>(() <span data-hf-id="hf-07mq" class="f03l-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-zot0" class="f03l-row"><span data-hf-id="hf-xh99" class="f03l-ln">6</span><span data-hf-id="hf-lzhw" class="f03l-txt">    <span data-hf-id="hf-hmyp" class="f03l-kw">const</span> <span data-hf-id="hf-89bp" class="f03l-fn">fetchData</span> = <span data-hf-id="hf-p3rv" class="f03l-kw">async</span> () <span data-hf-id="hf-0lxr" class="f03l-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-yhvx" class="f03l-row"><span data-hf-id="hf-2867" class="f03l-ln" id="f03l-ln7">7</span><span data-hf-id="hf-sh06" class="f03l-txt" id="f03l-l7"></span><span data-hf-id="hf-ejo0" class="f03l-caret" id="f03l-c7"></span></div>
+          <div data-hf-id="hf-yw6y" class="f03l-row"><span data-hf-id="hf-31jn" class="f03l-ln">8</span><span data-hf-id="hf-i2qc" class="f03l-txt">      <span data-hf-id="hf-i19q" class="f03l-kw">const</span> response = <span data-hf-id="hf-8fhd" class="f03l-kw">await</span> <span data-hf-id="hf-gz11" class="f03l-fn">fetch</span>(url);</span></div>
+          <div data-hf-id="hf-426b" class="f03l-row"><span data-hf-id="hf-3fuo" class="f03l-ln">9</span><span data-hf-id="hf-4k9g" class="f03l-txt">      <span data-hf-id="hf-gucn" class="f03l-kw">const</span> result: <span data-hf-id="hf-cqnt" class="f03l-dim">Post[]</span> = <span data-hf-id="hf-dsvp" class="f03l-kw">await</span> response.<span data-hf-id="hf-o0h5" class="f03l-fn">json</span>();</span></div>
+          <div data-hf-id="hf-8igg" class="f03l-row"><span data-hf-id="hf-rofs" class="f03l-ln">10</span><span data-hf-id="hf-ckuu" class="f03l-txt">      <span data-hf-id="hf-9eag" class="f03l-fn">setPosts</span>(result);</span></div>
+          <div data-hf-id="hf-cb3c" class="f03l-row"><span data-hf-id="hf-f253" class="f03l-ln" id="f03l-ln11">11</span><span data-hf-id="hf-o4s9" class="f03l-txt" id="f03l-l11"></span><span data-hf-id="hf-10tn" class="f03l-caret" id="f03l-c11"></span></div>
+          <div data-hf-id="hf-bwsb" class="f03l-row"><span data-hf-id="hf-qvtq" class="f03l-ln">12</span><span data-hf-id="hf-jfcs" class="f03l-txt">    }</span></div>
+          <div data-hf-id="hf-biha" class="f03l-row"><span data-hf-id="hf-qhip" class="f03l-ln">13</span><span data-hf-id="hf-0eb3" class="f03l-txt">    <span data-hf-id="hf-8vhl" class="f03l-fn">fetchData</span>();</span></div>
+          <div data-hf-id="hf-b469" class="f03l-row"><span data-hf-id="hf-q37o" class="f03l-ln">14</span><span data-hf-id="hf-38xw" class="f03l-txt">  }, []);</span></div>
+          <div data-hf-id="hf-apv8" class="f03l-row"><span data-hf-id="hf-pown" class="f03l-ln">15</span><span data-hf-id="hf-iogt" class="f03l-txt"></span></div>
+          <div data-hf-id="hf-abk7" class="f03l-row"><span data-hf-id="hf-palm" class="f03l-ln">16</span><span data-hf-id="hf-v8cn" class="f03l-txt">  <span data-hf-id="hf-dye3" class="f03l-kw">return</span> ( <span data-hf-id="hf-m6s7" class="f03l-fold">⋯</span> );</span></div>
+        </div>
+        <div data-hf-id="hf-r0oa" class="f03l-status">App · useEffect</div>
+      </div>
+
+      <!-- scherm -->
+      <div data-hf-id="hf-0trq" class="f03l-label" id="f03l-label">scherm</div>
+      <div data-hf-id="hf-s556" class="f03l-card" id="f03l-card">
+        <div data-hf-id="hf-jywa" class="f03l-track" id="f03l-track"><div data-hf-id="hf-5s3s" class="f03l-fill" id="f03l-fill"></div></div>
+        <div data-hf-id="hf-29ao" class="f03l-ftag" id="f03l-ftag">fetch…</div>
+        <div data-hf-id="hf-99ab" class="f03l-empty" id="f03l-empty">niets…</div>
+        <svg data-hf-id="hf-5c9j" class="f03l-under" id="f03l-under" viewBox="0 0 96 12" width="96" height="12">
+          <path data-hf-id="hf-afi0" id="f03l-upath" d="M2 7 C 20 4.5, 38 8.5, 56 6 S 84 4.8, 94 6.6" fill="none" stroke="#CC785C" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" />
+        </svg>
+        <div data-hf-id="hf-dt0k" class="f03l-chip" id="f03l-chip">loading: <span data-hf-id="hf-ybla" class="f03l-vbox"><span data-hf-id="hf-l421" class="f03l-v" id="f03l-v0">true</span><span data-hf-id="hf-gv6z" class="f03l-v" id="f03l-v1">false</span><span data-hf-id="hf-ncxb" class="f03l-v" id="f03l-v2">true</span></span></div>
+        <div data-hf-id="hf-rudm" class="f03l-spin" id="f03l-spin"></div>
+      </div>
+
+      <!-- mini App.tsx -->
+      <div data-hf-id="hf-uzkg" class="f03l-mini" id="f03l-mini">
+        <div data-hf-id="hf-tfgm" class="f03l-mbar">App.tsx</div>
+        <div data-hf-id="hf-jo7q" class="f03l-mcode">
+          <div data-hf-id="hf-06eb" class="f03l-mrow"><span data-hf-id="hf-3bys" class="f03l-mtxt"><span data-hf-id="hf-8yke" class="f03l-hl" id="f03l-mhl">{loading &amp;&amp; <span data-hf-id="hf-g0pl" class="f03l-dim">&lt;</span><span data-hf-id="hf-qivc" class="f03l-fn">Spinner</span><span data-hf-id="hf-lx7u" class="f03l-dim"> /&gt;</span>}</span></span></div>
+          <div data-hf-id="hf-e4wz" class="f03l-mrow"><span data-hf-id="hf-y8oc" class="f03l-mtxt"><span data-hf-id="hf-iyk2" class="f03l-dim">&lt;ul&gt;</span></span></div>
+          <div data-hf-id="hf-dqly" class="f03l-mrow"><span data-hf-id="hf-ndrp" class="f03l-mtxt">  {posts.<span data-hf-id="hf-c64b" class="f03l-fn">map</span>(post <span data-hf-id="hf-108s" class="f03l-kw">=&gt;</span> ( <span data-hf-id="hf-yz13" class="f03l-fold">⋯</span> ))}</span></div>
+          <div data-hf-id="hf-dcax" class="f03l-mrow"><span data-hf-id="hf-x1r9" class="f03l-mtxt"><span data-hf-id="hf-zmcf" class="f03l-dim">&lt;/ul&gt;</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.74;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var WASH = "rgba(232, 165, 90, 0.24)";
+      var CLEAR = "rgba(232, 165, 90, 0)";
+      var root = document.querySelector('[data-composition-id="03-loading"]');
+      var q = function (s) { return root.querySelector(s); };
+      var $ = function (n) { return root.querySelector('[id="f03l-' + n + '"]'); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(line, caret, segments, start, per, fs, x0, lead) {
+        if (lead === undefined) lead = 0.06;
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "f03l-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "f03l-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = fs * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: x0 }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.04, ease: "power1.out" }, at);
+          tl.set(caret, { x: x0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return end;
+      }
+
+      var FS = 26, X0 = 76, per = 0.018;
+
+      // initial states (seek-safe)
+      tl.set([$("ln3"), $("ln7"), $("ln11")], { opacity: 0 }, 0);
+      tl.set([$("fill")], { scaleX: 0 }, 0);
+      tl.set([$("track"), $("ftag"), $("empty"), $("under"), $("chip"), $("spin"), $("mini")], { opacity: 0 }, 0);
+      tl.set($("v0"), { yPercent: 0 }, 0);
+      tl.set([$("v1"), $("v2")], { yPercent: 100 }, 0);
+
+      // ---- Scene 1 (0.0-4.6): code from frame 2, empty scherm, fetch takes a while ----
+      tl.fromTo($("kicker"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      tl.fromTo([$("panel"), $("label"), $("card")], { opacity: 1 }, { opacity: 1, duration: 0.01 }, 0);
+
+      // "duurt even." (1.12): hairline progress bar + fetch… tag
+      tl.to([$("track"), $("ftag")], { opacity: 1, duration: 0.4, ease: "power2.out" }, 1.12);
+      tl.to($("fill"), { scaleX: 0.6, duration: 4.6 - 1.12, ease: "none" }, 1.12);
+
+      // "niets." (3.84): caption + coral underline (the problem, the one coral moment)
+      tl.fromTo($("empty"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.04);
+      tl.set($("under"), { opacity: 1 }, 3.84);
+      tl.to($("upath"), { attr: { "stroke-dashoffset": 0 }, duration: 0.4, ease: "power2.out" }, 3.84);
+
+      // ---- Scene 2 (4.6-11.2): loading state ----
+      // "loading state" (5.84): problem cues fade, line 3 types on
+      tl.to([$("empty"), $("under"), $("track"), $("ftag")], { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 5.84);
+      tl.to($("ln3"), { opacity: 1, duration: 0.2, ease: "power1.out" }, 5.8);
+      typeLine($("l3"), $("c3"), [
+        { t: "  " },
+        { t: "const", c: "f03l-kw" },
+        { t: " [" },
+        { id: "f03l-hl3", parts: [{ t: "loading" }] },
+        { t: ", " },
+        { t: "setLoading", c: "f03l-fn" },
+        { t: "] = " },
+        { t: "useState", c: "f03l-fn" },
+        { t: "<boolean>", c: "f03l-dim" },
+        { t: "(" },
+        { t: "false", c: "f03l-kw" },
+        { t: ");" }
+      ], 5.84, per, FS, X0);
+      tl.to($("hl3"), { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 6.24);
+
+      // "Voor de fetch" (7.6): line 7 setLoading(true);
+      tl.to($("hl3"), { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, 7.28);
+      tl.to($("ln7"), { opacity: 1, duration: 0.2, ease: "power1.out" }, 7.56);
+      typeLine($("l7"), $("c7"), [
+        { t: "      " },
+        { t: "setLoading", c: "f03l-fn" },
+        { t: "(" },
+        { t: "true", c: "f03l-kw" },
+        { t: ");" }
+      ], 7.6, 0.022, FS, X0);
+
+      // "true," (9.04): chip pops in, card top-right
+      tl.fromTo($("chip"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 9.04);
+
+      // "erna" (10.0): line 11 setLoading(false);
+      tl.to($("ln11"), { opacity: 1, duration: 0.2, ease: "power1.out" }, 9.96);
+      typeLine($("l11"), $("c11"), [
+        { t: "      " },
+        { t: "setLoading", c: "f03l-fn" },
+        { t: "(" },
+        { t: "false", c: "f03l-kw" },
+        { t: ");" }
+      ], 10.0, 0.022, FS, X0);
+
+      // "false." (10.56): value swap true -> false
+      tl.to($("v0"), { yPercent: -100, duration: 0.25, ease: "power2.inOut" }, 10.56);
+      tl.to($("v1"), { yPercent: 0, duration: 0.25, ease: "power2.inOut" }, 10.56);
+
+      // ---- Scene 3 (11.2-14.74): spinner while loading ----
+      // "zolang" (11.52): mini App.tsx panel settles in
+      tl.fromTo($("mini"), { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 11.52);
+      // "true" (12.32): chip swaps back, amber wash on the conditional
+      tl.to($("v1"), { yPercent: -100, duration: 0.25, ease: "power2.inOut" }, 12.32);
+      tl.to($("v2"), { yPercent: 0, duration: 0.25, ease: "power2.inOut" }, 12.32);
+      tl.to($("mhl"), { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 12.32);
+
+      // "spinner." (13.6): spinner appears and rotates (timeline-driven) to the end
+      tl.fromTo($("spin"), { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 13.6);
+      tl.fromTo($("spin"), { rotation: 0 }, { rotation: 360 * ((DUR - 13.6) / 0.8), duration: DUR - 13.6, ease: "none" }, 13.6);
+
+      tl.set({}, {}, DUR);
+      window.__timelines["03-loading"] = tl;
+    })();
+  </script>
+</template>

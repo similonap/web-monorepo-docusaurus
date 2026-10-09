@@ -1,0 +1,486 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f09v-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f09v-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f09v-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f09v-kicker .f09v-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f09v-panel {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      width: 1060px;
+      height: 560px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f09v-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f09v-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f09v-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 84px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 38px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f09v-row { position: relative; height: 38px; white-space: pre; }
+    .f09v-ln {
+      position: absolute;
+      left: 0;
+      width: 56px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 20px;
+    }
+    .f09v-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f09v-ch { display: inline; }
+    .f09v-kw { color: #CC785C; }
+    .f09v-fn { color: #E8A55A; }
+    .f09v-str { color: #5DB8A6; }
+    .f09v-dim { color: rgba(250, 249, 245, 0.6); }
+    .f09v-fold { color: rgba(250, 249, 245, 0.4); }
+    .f09v-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f09v-hlb { display: inline-block; }
+    .f09v-caret {
+      position: absolute;
+      top: 5px;
+      left: 0;
+      width: 3px;
+      height: 28px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f09v-under {
+      position: absolute;
+      top: 34px;
+      height: 3px;
+      border-radius: 2px;
+      background: #CC785C;
+      transform-origin: 0% 50%;
+    }
+
+    /* right column: scherm */
+    .f09v-col {
+      position: absolute;
+      left: 1236px;
+      top: 180px;
+      width: 604px;
+      height: 560px;
+    }
+    .f09v-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f09v-card {
+      position: absolute;
+      left: 0;
+      top: 52px;
+      width: 604px;
+      height: 296px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    .f09v-btn {
+      position: absolute;
+      left: 28px;
+      top: 24px;
+      height: 48px;
+      padding: 0 20px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.35);
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.1);
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 22px;
+      line-height: 1;
+      color: #141413;
+    }
+    .f09v-rows {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      top: 28px;
+    }
+    .f09v-li {
+      position: relative;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-family: "Inter", sans-serif;
+      font-size: 23px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f09v-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: #141413;
+      flex: none;
+    }
+    .f09v-spinner {
+      position: absolute;
+      left: 274px;
+      top: 134px;
+      width: 56px;
+      height: 56px;
+      opacity: 0;
+    }
+    .f09v-spinner svg { display: block; width: 100%; height: 100%; }
+    .f09v-ripple {
+      position: absolute;
+      left: 1304px;
+      top: 240px;
+      width: 80px;
+      height: 80px;
+      border-radius: 9999px;
+      border: 2px solid rgba(20, 20, 19, 0.4);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* state chip */
+    .f09v-chip {
+      position: absolute;
+      left: 0;
+      top: 400px;
+      height: 68px;
+      padding: 0 28px 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #141413;
+      white-space: pre;
+    }
+    .f09v-chip-k { color: rgba(20, 20, 19, 0.5); font-size: 22px; letter-spacing: 0.16em; text-transform: uppercase; }
+    .f09v-chip-sep { width: 1px; height: 30px; background: rgba(20, 20, 19, 0.2); }
+    .f09v-valbox {
+      position: relative;
+      display: inline-block;
+      width: 86px;
+      height: 40px;
+      overflow: hidden;
+      vertical-align: middle;
+    }
+    .f09v-val {
+      position: absolute;
+      left: 0;
+      top: 0;
+      line-height: 40px;
+    }
+
+    /* render tag */
+    .f09v-rtag {
+      position: absolute;
+      left: 0;
+      top: 488px;
+      height: 44px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      background: #FAF9F5;
+      border: 1px solid rgba(20, 20, 19, 0.35);
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      letter-spacing: 0.02em;
+      color: #141413;
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    /* oversized cursor (family arrow at 3.5x) */
+    .f09v-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 224px;
+      height: 224px;
+      pointer-events: none;
+      z-index: 20;
+      filter: drop-shadow(0 8px 12px rgba(20, 20, 19, 0.22));
+    }
+    .f09v-cursor svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      fill: #FAF9F5;
+      stroke: #141413;
+      stroke-width: 1.4;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+  </style>
+
+  <div data-hf-id="hf-m7iq" id="root" data-composition-id="09-vernieuwen" data-width="1920" data-height="1080" data-duration="13.14">
+    <div data-hf-id="hf-3x6b" class="f09v-bg clip" id="f09v-bg" data-start="0" data-duration="13.14" data-track-index="0"></div>
+
+    <div data-hf-id="hf-tl0g" class="f09v-stage clip" id="f09v-stage" data-start="0" data-duration="13.14" data-track-index="1">
+      <div data-hf-id="hf-w6gs" class="f09v-kicker" id="f09v-kicker"><span data-hf-id="hf-u8wi" class="f09v-spike">✱</span>Vernieuwen</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-218i" class="f09v-panel" id="f09v-panel">
+        <div data-hf-id="hf-y95t" class="f09v-titlebar">App.tsx</div>
+        <div data-hf-id="hf-iigb" class="f09v-code">
+          <div data-hf-id="hf-6jgo" class="f09v-row"><span data-hf-id="hf-f7n0" class="f09v-ln">1</span><span data-hf-id="hf-tpng" class="f09v-txt" id="f09v-line1"></span><span data-hf-id="hf-rzto" class="f09v-caret" id="f09v-caret1"></span></div>
+          <div data-hf-id="hf-k39c" class="f09v-row"><span data-hf-id="hf-9yqt" class="f09v-ln">2</span><span data-hf-id="hf-mcb1" class="f09v-txt"></span></div>
+          <div data-hf-id="hf-iwc9" class="f09v-row"><span data-hf-id="hf-ad1u" class="f09v-ln">3</span><span data-hf-id="hf-b0gt" class="f09v-txt"><span data-hf-id="hf-noej" class="f09v-fn f09v-hl" id="f09v-hl-effect">useEffect</span>(() <span data-hf-id="hf-xciq" class="f09v-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-jana" class="f09v-row"><span data-hf-id="hf-gek3" class="f09v-ln">4</span><span data-hf-id="hf-l8yk" class="f09v-txt">  <span data-hf-id="hf-l5bu" class="f09v-kw">let</span> cancelled: <span data-hf-id="hf-igzl" class="f09v-dim">boolean</span> = <span data-hf-id="hf-72qg" class="f09v-kw">false</span>;</span></div>
+          <div data-hf-id="hf-i3q7" class="f09v-row"><span data-hf-id="hf-gsv4" class="f09v-ln">5</span><span data-hf-id="hf-d9p3" class="f09v-txt">  <span data-hf-id="hf-l8no" class="f09v-kw">const</span> <span data-hf-id="hf-xjkh" class="f09v-fn">fetchData</span> = <span data-hf-id="hf-tky7" class="f09v-kw">async</span> () <span data-hf-id="hf-zvd2" class="f09v-kw">=&gt;</span> { <span data-hf-id="hf-ed4j" class="f09v-fold">⋯</span> }</span></div>
+          <div data-hf-id="hf-ii18" class="f09v-row"><span data-hf-id="hf-fly1" class="f09v-ln">6</span><span data-hf-id="hf-pr17" class="f09v-txt">  <span data-hf-id="hf-e9c5" class="f09v-fn">fetchData</span>();</span></div>
+          <div data-hf-id="hf-hb45" class="f09v-row"><span data-hf-id="hf-g092" class="f09v-ln">7</span><span data-hf-id="hf-07e3" class="f09v-txt">  <span data-hf-id="hf-0p33" class="f09v-kw">return</span> () <span data-hf-id="hf-09o3" class="f09v-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-hpf6" class="f09v-row"><span data-hf-id="hf-7kwn" class="f09v-ln">8</span><span data-hf-id="hf-0phi" class="f09v-txt">    cancelled = <span data-hf-id="hf-d15x" class="f09v-kw">true</span>;</span></div>
+          <div data-hf-id="hf-gii3" class="f09v-row"><span data-hf-id="hf-7z7o" class="f09v-ln">9</span><span data-hf-id="hf-328g" class="f09v-txt">  }</span></div>
+          <div data-hf-id="hf-gwt4" class="f09v-row"><span data-hf-id="hf-yyms" class="f09v-ln">10</span><span data-hf-id="hf-wc0s" class="f09v-txt">}, <span data-hf-id="hf-zzyq" class="f09v-hl f09v-hlb" id="f09v-hl-deps">[<span data-hf-id="hf-gsjs" id="f09v-deps-in"></span>]</span>);</span><span data-hf-id="hf-wj3w" class="f09v-caret" id="f09v-caret10"></span><span data-hf-id="hf-ltsb" class="f09v-under" id="f09v-under"></span></div>
+        </div>
+        <div data-hf-id="hf-dd3m" class="f09v-status">App · useEffect</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-thoi" class="f09v-col">
+        <div data-hf-id="hf-5dd9" class="f09v-label" id="f09v-lab">scherm</div>
+        <div data-hf-id="hf-mu3u" class="f09v-card" id="f09v-card">
+          <div data-hf-id="hf-5wda" class="f09v-btn" id="f09v-btn">Vernieuwen</div>
+          <div data-hf-id="hf-9ypc" class="f09v-rows" id="f09v-rows">
+            <div data-hf-id="hf-a28k" class="f09v-li" id="f09v-r1"><span data-hf-id="hf-pfmo" class="f09v-dot"></span>sunt aut facere repellat provident…</div>
+            <div data-hf-id="hf-9u36" class="f09v-li" id="f09v-r2"><span data-hf-id="hf-r1w8" class="f09v-dot"></span>qui est esse</div>
+            <div data-hf-id="hf-b8hl" class="f09v-li" id="f09v-r3"><span data-hf-id="hf-puz5" class="f09v-dot"></span>ea molestias quasi exercitationem…</div>
+          </div>
+          <div data-hf-id="hf-z64i" class="f09v-spinner" id="f09v-spinner">
+            <svg data-hf-id="hf-f6na" viewBox="0 0 56 56" aria-hidden="true">
+              <circle data-hf-id="hf-rhgo" cx="28" cy="28" r="26" fill="none" stroke="rgba(20,20,19,0.15)" stroke-width="4" />
+              <path data-hf-id="hf-3d4g" d="M28 2 A26 26 0 0 1 54 28" fill="none" stroke="#141413" stroke-width="4" stroke-linecap="round" />
+            </svg>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-4jc2" class="f09v-chip" id="f09v-chip">
+          <span data-hf-id="hf-7952" class="f09v-chip-k">state</span><span data-hf-id="hf-4a0e" class="f09v-chip-sep"></span><span data-hf-id="hf-c0g7">trigger: <span data-hf-id="hf-9dqn" class="f09v-valbox"><span data-hf-id="hf-y4m3" class="f09v-val" id="f09v-v0">false</span><span data-hf-id="hf-bf6h" class="f09v-val" id="f09v-v1">true</span></span></span>
+        </div>
+
+        <div data-hf-id="hf-px7s" class="f09v-rtag" id="f09v-rtag">effect #2</div>
+      </div>
+
+      <div data-hf-id="hf-5xk2" class="f09v-ripple" id="f09v-ripple"></div>
+
+      <div data-hf-id="hf-as10" class="f09v-cursor" id="f09v-cursor" aria-hidden="true" data-layout-allow-overflow="">
+        <svg data-hf-id="hf-ulu9" viewBox="0 0 24 24"><path data-hf-id="hf-fueh" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 13.14;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 84;
+      var CH = FS * CW;
+      var WASH = "rgba(232, 165, 90, 0.24)";
+      var WASH_HI = "rgba(232, 165, 90, 0.42)";
+      var CLEAR = "rgba(232, 165, 90, 0)";
+      var $ = function (id) { return document.getElementById("f09v-" + id); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends chars into `host`, caret steps per char ----
+      // `hidden: "display"` collapses untyped chars so trailing code shifts as it types.
+      function typeInto(host, caret, parts, col, start, per, lead, collapse) {
+        var chars = [];
+        parts.forEach(function (p) {
+          for (var i = 0; i < p.t.length; i++) {
+            var s = document.createElement("span");
+            s.className = "f09v-ch" + (p.c ? " " + p.c : "");
+            s.textContent = p.t[i];
+            host.appendChild(s);
+            chars.push(s);
+          }
+        });
+        if (collapse) tl.set(chars, { display: "none" }, 0);
+        else tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * CH }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          if (collapse) tl.set(el, { display: "inline" }, at);
+          else tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * CH }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return end;
+      }
+
+      var cursor = $("cursor");
+      var btn = $("btn");
+      var rows = [$("r1"), $("r2"), $("r3")];
+
+      // ---- Scene 1 (0.0–2.4): code + scherm on screen; on "knop" (0.88) the button settles in ----
+      tl.fromTo($("kicker"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo($("panel"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo($("lab"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.04);
+      tl.fromTo($("card"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.04);
+
+      tl.fromTo($("rows"), { y: 0 }, { y: 56, duration: 0.6, ease: "power3.out", immediateRender: false }, 0.88);
+      tl.fromTo(btn, { opacity: 0, y: -10, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "power3.out" }, 0.92);
+
+      // ---- Scene 2 (2.4–8.0): wash on useEffect, then on the dependency array ----
+      tl.to($("hl-effect"), { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 3.28);
+      tl.to($("hl-effect"), { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, 6.5);
+      tl.to($("hl-deps"), { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 6.56);
+
+      // ---- Scene 3 (8.0–13.14): trigger types into the array, line 1 types on ----
+      // "trigger." (9.04): [trigger] with the coral underline (the fix)
+      var tEnd = typeInto($("deps-in"), $("caret10"), [{ t: "trigger" }], 4, 9.04, 0.035, 0.08, true);
+      var under = $("under");
+      tl.set(under, { left: X0 + 4 * CH, width: 7 * CH }, 0);
+      tl.fromTo(under, { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power3.out", immediateRender: true }, tEnd + 0.02);
+
+      typeInto($("line1"), $("caret1"), [
+        { t: "const", c: "f09v-kw" },
+        { t: " [trigger, " },
+        { t: "setTrigger", c: "f09v-fn" },
+        { t: "] = " },
+        { t: "useState", c: "f09v-fn" },
+        { t: "<boolean>", c: "f09v-dim" },
+        { t: "(" },
+        { t: "false", c: "f09v-kw" },
+        { t: ");" }
+      ], 0, tEnd + 0.06, 0.011, 0.04, false);
+
+      // chip trigger: false pops in
+      tl.set($("v1"), { yPercent: 100, opacity: 0 }, 0);
+      tl.fromTo($("chip"), { opacity: 0, y: 12, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, 9.1);
+
+      // cursor glides in toward the button, clicks on "Verandert" (9.92)
+      var TIP_X = 1338;
+      var TIP_Y = 284;
+      var CLICK_AT = 9.92;
+      var PRESS = 0.1;
+      var TIP_ORIGIN = "20.83% 12.5%";
+      tl.fromTo(cursor,
+        { xPercent: -20.83, yPercent: -12.5, x: 2060, y: 760, scale: 1 },
+        { xPercent: -20.83, yPercent: -12.5, x: TIP_X, y: TIP_Y, duration: 0.55, ease: "power3.out" },
+        9.3);
+      tl.to(cursor, { scale: 0.86, duration: PRESS, ease: "power2.in", transformOrigin: TIP_ORIGIN }, CLICK_AT);
+      tl.to(cursor, { scale: 1, duration: 0.22, ease: "power2.out", transformOrigin: TIP_ORIGIN }, CLICK_AT + PRESS);
+      tl.to(btn, { scale: 0.96, duration: PRESS, ease: "power1.in" }, CLICK_AT);
+      tl.to(btn, { scale: 1, duration: 0.4, ease: "power3.out" }, CLICK_AT + PRESS);
+      tl.fromTo($("ripple"), { scale: 0.5, opacity: 0.9 }, { scale: 3, opacity: 0, duration: 0.7, ease: "power2.out", immediateRender: false }, CLICK_AT + 0.02);
+      // cursor eases off to the right so the list stays readable
+      tl.to(cursor, { x: 1736, y: 300, duration: 0.5, ease: "power2.inOut" }, CLICK_AT + 0.4);
+
+      // chip swaps false -> true
+      tl.to($("v0"), { yPercent: -100, opacity: 0, duration: 0.25, ease: "power2.inOut" }, CLICK_AT + 0.1);
+      tl.to($("v1"), { yPercent: 0, opacity: 1, duration: 0.25, ease: "power2.inOut" }, CLICK_AT + 0.1);
+      tl.fromTo($("chip"), { backgroundColor: "#EFE9DE" }, { backgroundColor: "#ECE3D4", duration: 0.3, ease: "power1.out", immediateRender: false }, CLICK_AT + 0.1);
+
+      // "trigger," (10.56): [trigger] pulses
+      var deps = $("hl-deps");
+      tl.to(deps, { scale: 1.08, backgroundColor: WASH_HI, duration: 0.18, ease: "power2.out", transformOrigin: "50% 50%" }, 10.56);
+      tl.to(deps, { scale: 1, backgroundColor: WASH, duration: 0.45, ease: "power3.out" }, 10.74);
+
+      // "loopt het effect opnieuw." (11.32 / 11.68): render tag, spinner flash, rows return
+      var rtag = $("rtag");
+      tl.fromTo(rtag, { opacity: 0, y: 10, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "power3.out" }, 11.32);
+      tl.to(rtag, { scale: 1.1, duration: 0.18, ease: "power2.out" }, 11.68);
+      tl.to(rtag, { scale: 1, duration: 0.4, ease: "power3.out" }, 11.86);
+
+      tl.to(rows, { opacity: 0, duration: 0.2, ease: "power1.out" }, 11.32);
+      var spinner = $("spinner");
+      tl.fromTo(spinner, { opacity: 0, rotation: 0 }, { opacity: 1, rotation: 0, duration: 0.12, ease: "power1.out" }, 11.4);
+      tl.to(spinner, { rotation: 540, duration: 0.72, ease: "none" }, 11.4);
+      tl.to(spinner, { opacity: 0, duration: 0.12, ease: "power1.in" }, 12.0);
+      rows.forEach(function (r, i) {
+        tl.fromTo(r, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, 12.08 + i * 0.06);
+      });
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["09-vernieuwen"] = tl;
+    })();
+  </script>
+</template>

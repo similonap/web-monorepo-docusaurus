@@ -1,0 +1,415 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f04tc-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f04tc-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f04tc-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f04tc-kicker .f04tc-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface (17 lines: 24px / 35px) */
+    .f04tc-panel {
+      position: absolute;
+      left: 80px;
+      top: 166px;
+      width: 1060px;
+      height: 722px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f04tc-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 52px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f04tc-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f04tc-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 72px;
+      height: 595px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      line-height: 35px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f04tc-gut {
+      position: absolute;
+      left: 0;
+      width: 56px;
+      height: 35px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 20px;
+    }
+    .f04tc-row { position: absolute; left: 0; right: 0; height: 35px; white-space: pre; }
+    .f04tc-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f04tc-kw { color: #CC785C; }
+    .f04tc-fn { color: #E8A55A; }
+    .f04tc-str { color: #5DB8A6; }
+    .f04tc-dim { color: rgba(250, 249, 245, 0.6); }
+    .f04tc-hl { border-radius: 4px; background-color: rgba(232, 165, 90, 0); }
+    .f04tc-caret {
+      position: absolute;
+      top: 5px;
+      left: 0;
+      width: 3px;
+      height: 25px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f04tc-trybar {
+      position: absolute;
+      width: 3px;
+      border-radius: 2px;
+      background: rgba(232, 165, 90, 0.7);
+      transform-origin: center top;
+    }
+    .f04tc-mark {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1060px;
+      height: 722px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    /* right column: response card */
+    .f04tc-col {
+      position: absolute;
+      left: 1236px;
+      top: 180px;
+      width: 604px;
+      height: 460px;
+    }
+    .f04tc-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f04tc-card {
+      position: absolute;
+      left: 0;
+      top: 52px;
+      width: 604px;
+      height: 300px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    .f04tc-head {
+      position: absolute;
+      left: 32px;
+      right: 32px;
+      top: 22px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      letter-spacing: 0.08em;
+      color: rgba(20, 20, 19, 0.5);
+      border-bottom: 1px solid rgba(20, 20, 19, 0.12);
+      padding-bottom: 10px;
+    }
+    .f04tc-head span:first-child { width: 132px; }
+    .f04tc-rowc {
+      position: absolute;
+      left: 32px;
+      right: 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      color: #141413;
+      white-space: pre;
+    }
+    .f04tc-r200 { top: 84px; }
+    .f04tc-r404 { top: 152px; }
+    .f04tc-r500 { top: 220px; }
+    .f04tc-code-chip {
+      width: 96px;
+      height: 44px;
+      margin-right: 36px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ECE3D4;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 6px;
+      font-size: 24px;
+    }
+    .f04tc-ok { padding: 2px 8px; border-radius: 4px; background-color: rgba(232, 165, 90, 0); }
+    .f04tc-muted { color: rgba(20, 20, 19, 0.6); }
+    .f04tc-note {
+      position: absolute;
+      left: 0;
+      top: 380px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.6);
+      white-space: nowrap;
+    }
+  </style>
+
+  <div data-hf-id="hf-04r0" id="root" data-composition-id="04-try-catch" data-width="1920" data-height="1080" data-duration="15.86">
+    <div data-hf-id="hf-04b0" class="f04tc-bg clip" id="f04tc-bg" data-start="0" data-duration="15.86" data-track-index="0"></div>
+
+    <div data-hf-id="hf-04s0" class="f04tc-stage clip" id="f04tc-stage" data-start="0" data-duration="15.86" data-track-index="1">
+      <div data-hf-id="hf-04k0" class="f04tc-kicker" id="f04tc-kicker"><span data-hf-id="hf-04k1" class="f04tc-spike">✱</span>Fouten</div>
+
+      <!-- code surface: App.tsx -->
+      <div data-hf-id="hf-04p0" class="f04tc-panel" id="f04tc-panel">
+        <div data-hf-id="hf-04p1" class="f04tc-titlebar">App.tsx</div>
+        <div data-hf-id="hf-04p2" class="f04tc-code" id="f04tc-code">
+          <div data-hf-id="hf-04p3" class="f04tc-trybar" id="f04tc-trybar"></div>
+        </div>
+        <div data-hf-id="hf-04p4" class="f04tc-status">App · useEffect</div>
+        <!-- coral rough box around lines 6-8 (panel coords: rows y 247..352) -->
+        <svg data-hf-id="hf-04m0" class="f04tc-mark" viewBox="0 0 1060 722" width="1060" height="722">
+          <path data-hf-id="hf-04m1" id="f04tc-box" fill="none" stroke="#CC785C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M156,243 C420,238 720,240 1004,245 C1010,280 1009,320 1003,357 C720,362 420,361 152,356 C147,320 148,282 154,242 C240,238 320,239 400,241" />
+        </svg>
+      </div>
+
+      <!-- right column: response -->
+      <div data-hf-id="hf-04c0" class="f04tc-col">
+        <div data-hf-id="hf-04c1" class="f04tc-label" id="f04tc-label">response</div>
+        <div data-hf-id="hf-04c2" class="f04tc-card" id="f04tc-card">
+          <div data-hf-id="hf-04c3" class="f04tc-head"><span data-hf-id="hf-04c4">status</span><span data-hf-id="hf-04c5">ok</span></div>
+          <div data-hf-id="hf-04c6" class="f04tc-rowc f04tc-r200 f04tc-muted" id="f04tc-r200"><span data-hf-id="hf-04c7" class="f04tc-code-chip">200</span><span data-hf-id="hf-04c8">ok: true</span></div>
+          <div data-hf-id="hf-04c9" class="f04tc-rowc f04tc-r404" id="f04tc-r404"><span data-hf-id="hf-04ca" class="f04tc-code-chip">404</span><span data-hf-id="hf-04cb" class="f04tc-ok" id="f04tc-ok404">ok: false</span></div>
+          <div data-hf-id="hf-04cc" class="f04tc-rowc f04tc-r500" id="f04tc-r500"><span data-hf-id="hf-04cd" class="f04tc-code-chip">500</span><span data-hf-id="hf-04ce" class="f04tc-ok" id="f04tc-ok500">ok: false</span></div>
+        </div>
+        <div data-hf-id="hf-04n0" class="f04tc-note" id="f04tc-note">fetch gooit geen fout</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 15.86;
+      var CW = 0.6;          // JetBrains Mono advance (em)
+      var CH = 24 * CW;      // 14.4px per char
+      var X0 = 84;
+      var LH = 35;
+      var WASH = "rgba(232, 165, 90, 0.24)";
+      var CLEAR = "rgba(232, 165, 90, 0)";
+      var root = document.querySelector('[data-composition-id="04-try-catch"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      var code = q("#f04tc-code");
+
+      // ---------- gutter 1..17 ----------
+      for (var g = 1; g <= 17; g++) {
+        var gn = document.createElement("div");
+        gn.className = "f04tc-gut";
+        gn.style.top = ((g - 1) * LH) + "px";
+        gn.textContent = String(g);
+        code.appendChild(gn);
+      }
+
+      // ---------- rows ----------
+      // segs: { t, c } or { id, parts:[{t,c}] } (highlight host)
+      function makeRow(n) {
+        var row = document.createElement("div");
+        row.className = "f04tc-row";
+        row.style.top = ((n - 1) * LH) + "px";
+        var txt = document.createElement("span");
+        txt.className = "f04tc-txt";
+        row.appendChild(txt);
+        var caret = document.createElement("span");
+        caret.className = "f04tc-caret";
+        row.appendChild(caret);
+        code.appendChild(row);
+        return { row: row, txt: txt, caret: caret };
+      }
+      function fill(host, segs, hidden) {
+        var chars = [];
+        segs.forEach(function (seg) {
+          var h = host;
+          if (seg.id) {
+            h = document.createElement("span");
+            h.className = "f04tc-hl";
+            h.id = seg.id;
+            host.appendChild(h);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            if (!hidden) {
+              var el = document.createElement("span");
+              if (p.c) el.className = p.c;
+              el.textContent = p.t;
+              h.appendChild(el);
+              return;
+            }
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              if (p.c) s.className = p.c;
+              s.textContent = p.t[i];
+              h.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        return chars;
+      }
+      function typeOn(r, chars, start, per) {
+        gsap.set(chars, { opacity: 0 });
+        tl.set(r.caret, { opacity: 1, x: X0 }, start - 0.08);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(r.caret, { x: X0 + (i + 1) * CH }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(r.caret, { opacity: 0 }, end + 0.08);
+        return end;
+      }
+
+      var KW = "f04tc-kw", FN = "f04tc-fn", STR = "f04tc-str", DIM = "f04tc-dim";
+
+      // static lines (carry-over from frame 3)
+      fill(makeRow(1).txt, [{ t: "useEffect", c: FN }, { t: "(() " }, { t: "=>", c: KW }, { t: " {" }]);
+      fill(makeRow(2).txt, [{ t: "  " }, { t: "const", c: KW }, { t: " " }, { t: "fetchData", c: FN }, { t: " = " }, { t: "async", c: KW }, { t: " () " }, { t: "=>", c: KW }, { t: " {" }]);
+      fill(makeRow(4).txt, [{ t: "      " }, { t: "setLoading", c: FN }, { t: "(" }, { t: "true", c: KW }, { t: ");" }]);
+      fill(makeRow(5).txt, [{ t: "      " }, { id: "f04tc-hl5", parts: [
+        { t: "const", c: KW }, { t: " response = " }, { t: "await", c: KW }, { t: " " }, { t: "fetch", c: FN }, { t: "(url);" }
+      ] }]);
+      fill(makeRow(9).txt, [{ t: "      " }, { t: "const", c: KW }, { t: " result: " }, { t: "Post[]", c: DIM }, { t: " = " }, { t: "await", c: KW }, { t: " response." }, { t: "json", c: FN }, { t: "();" }]);
+      fill(makeRow(10).txt, [{ t: "      " }, { t: "setPosts", c: FN }, { t: "(result);" }]);
+      fill(makeRow(11).txt, [{ t: "      " }, { t: "setLoading", c: FN }, { t: "(" }, { t: "false", c: KW }, { t: ");" }]);
+      fill(makeRow(15).txt, [{ t: "  }" }]);
+      fill(makeRow(16).txt, [{ t: "  " }, { t: "fetchData", c: FN }, { t: "();" }]);
+      fill(makeRow(17).txt, [{ t: "}, []);" }]);
+
+      // typed lines
+      var r3 = makeRow(3), r6 = makeRow(6), r7 = makeRow(7), r8 = makeRow(8), r12 = makeRow(12), r14 = makeRow(14);
+      var c3 = fill(r3.txt, [{ t: "    " }, { t: "try", c: KW }, { t: " {" }], true);
+      var c12 = fill(r12.txt, [{ t: "    } " }, { t: "catch", c: KW }, { t: " (err) {" }], true);
+      var c14 = fill(r14.txt, [{ t: "    }" }], true);
+      var c6 = fill(r6.txt, [{ t: "      " }, { id: "f04tc-hl6", parts: [{ t: "if", c: KW }, { t: " (!response.ok) {" }] }], true);
+      var c8 = fill(r8.txt, [{ t: "      }" }], true);
+      var c7 = fill(r7.txt, [{ t: "        " }, { t: "throw", c: KW }, { t: " " }, { t: "new", c: KW }, { t: " " }, { t: "Error", c: FN }, { t: "(" }, { t: "\"Something went wrong fetching data\"", c: STR }, { t: ");" }], true);
+
+      // try-body bar (lines 4..11), between try indent and body indent
+      var bar = q("#f04tc-trybar");
+      bar.style.left = (X0 + 4.4 * CH) + "px";
+      bar.style.top = (3 * LH + 4) + "px";
+      bar.style.height = (8 * LH - 8) + "px";
+
+      // initial hidden states
+      gsap.set(q("#f04tc-label"), { opacity: 0 });
+      gsap.set(q("#f04tc-card"), { opacity: 0 });
+      gsap.set([q("#f04tc-r200"), q("#f04tc-r404"), q("#f04tc-r500"), q("#f04tc-note")], { opacity: 0 });
+      gsap.set(bar, { opacity: 0, scaleY: 0 });
+
+      // ---------- Scene 1 (0.0-4.2): kicker, wash on fetch line, try / catch type on ----------
+      tl.fromTo("#f04tc-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.to("#f04tc-hl5", { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 1.04);
+
+      var e3 = typeOn(r3, c3, 3.2, 0.03);
+      var e12 = typeOn(r12, c12, 3.52, 0.022);
+      typeOn(r14, c14, e12 + 0.05, 0.022);
+      tl.fromTo(bar, { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.6, ease: "power3.out" }, 3.6);
+      tl.to("#f04tc-hl5", { backgroundColor: CLEAR, duration: 0.45, ease: "power1.inOut" }, 4.2);
+
+      // ---------- Scene 2 (4.2-9.8): response card, 404 / 500 rows, note + 200 row ----------
+      tl.fromTo("#f04tc-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 4.44);
+      tl.fromTo("#f04tc-card", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 4.44);
+      tl.fromTo("#f04tc-r404", { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 5.52);
+      tl.fromTo("#f04tc-r500", { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 6.72);
+      tl.fromTo("#f04tc-note", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 8.72);
+      tl.fromTo("#f04tc-r200", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.04);
+
+      // ---------- Scene 3 (9.8-15.36): if (!response.ok) guard, coral box, throw ----------
+      var e6 = typeOn(r6, c6, 10.88, 0.03);
+      typeOn(r8, c8, e6 + 0.06, 0.03);
+      tl.to("#f04tc-hl6", { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 11.76);
+      tl.to(["#f04tc-ok404", "#f04tc-ok500"], { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 11.76);
+
+      // coral rough box on "false," (12.96)
+      var box = q("#f04tc-box");
+      var blen = 2400;
+      try { blen = Math.ceil(box.getTotalLength()) || 2400; } catch (err) {}
+      gsap.set(box, { strokeDasharray: blen, strokeDashoffset: blen });
+      tl.to(box, { strokeDashoffset: 0, duration: 0.5, ease: "power1.inOut" }, 12.96);
+      tl.to("#f04tc-hl6", { backgroundColor: CLEAR, duration: 0.45, ease: "power1.inOut" }, 13.2);
+
+      // throw line types fast on "gooien" (14.0)
+      typeOn(r7, c7, 14.0, 0.012);
+
+      // hold
+      tl.set({}, {}, DUR);
+      window.__timelines["04-try-catch"] = tl;
+    })();
+  </script>
+</template>

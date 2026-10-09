@@ -1,0 +1,342 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 07 positions ---- */
+    /* statement (scene 1): two plain Inter words side by side */
+    .f07-statement {
+      position: absolute; left: 0; right: 0; top: 340px; height: 220px;
+      display: flex; align-items: center; justify-content: center; gap: 56px;
+      font-family: var(--ts-sans); font-size: 150px; line-height: 1;
+      letter-spacing: -0.035em; white-space: nowrap;
+    }
+    #f07-klaar { font-weight: 700; color: var(--ts-ink); display: inline-block; }
+    #f07-nee { font-weight: 500; color: var(--ts-ink-soft); display: inline-block; }
+
+    /* compact code surface (metrics kept: 24px / 35px) */
+    #f07-panel { left: 80px; top: 220px; width: 760px; height: 520px; }
+    .f07-code {
+      position: absolute; left: 0; right: 0; top: 76px;
+      font-family: var(--ts-mono); font-size: 24px; line-height: 35px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .f07-row { position: relative; height: 35px; white-space: pre; opacity: 0.55; }
+    #f07-uline { position: absolute; transform-origin: left center; left: 133.6px; top: 31px; width: 245px; height: 4px; border-radius: 2px; background: var(--ts-error); }
+
+    /* dashed cleanup slot */
+    .f07-slotrow { position: relative; height: 0; overflow: hidden; }
+    .f07-slot {
+      position: absolute; left: 104.8px; top: 8px; width: 440px; height: 54px;
+      box-sizing: border-box; border: 2px dashed var(--ts-muted); border-radius: 8px;
+      display: flex; align-items: center; padding: 0 18px;
+      font-family: var(--ts-mono); font-size: 22px; color: var(--ts-muted);
+    }
+
+    /* timeline */
+    .f07-lanelab { left: 920px; height: 48px; display: flex; align-items: center; }
+    #f07-lab1 { top: 360px; }
+    #f07-lab2 { top: 470px; }
+    .f07-bar {
+      position: absolute; left: 1120px; width: 0; height: 48px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 6px;
+    }
+    #f07-bar1 { top: 360px; }
+    #f07-bar2 { top: 470px; }
+    .f07-axis {
+      position: absolute; left: 1120px; top: 580px; width: 700px; height: 2px;
+      background: var(--ts-muted); transform-origin: left center;
+    }
+    #f07-axislab { left: 920px; top: 571px; }
+    .f07-marker {
+      position: absolute; left: 1345px; top: 262px; width: 2px; height: 318px;
+      background: var(--ts-ink); transform-origin: center top;
+    }
+    .f07-tag {
+      position: absolute; height: 38px; padding: 0 14px; box-sizing: border-box;
+      display: flex; align-items: center; background: var(--ts-panel); border: 1px solid var(--ts-hairline);
+      border-radius: 6px;
+      font-family: var(--ts-mono); font-size: 22px; font-weight: 500; line-height: 1; color: var(--ts-ink); white-space: pre;
+    }
+    #f07-tag-unmount { left: 1360px; top: 262px; }
+    #f07-tag-again { left: 1360px; top: 308px; color: var(--ts-ink-soft); }
+    #f07-tag-busy { left: 1360px; top: 530px; }
+    .f07-arrow { position: absolute; left: 1790px; top: 526px; width: 24px; height: 104px; }
+    .f07-land {
+      position: absolute; left: 1809px; top: 483px; width: 22px; height: 22px;
+      background: var(--ts-error); border-radius: 50%; box-sizing: border-box;
+    }
+    #f07-chip { left: auto; right: 80px; top: 640px; height: 56px; font-size: 26px; }
+  </style>
+
+  <div data-hf-id="hf-myg9" id="root" data-composition-id="07-opkuis" data-width="1920" data-height="1080" data-duration="14.66">
+    <div data-hf-id="hf-zszp" class="ts-bg clip" id="f07-bg" data-start="0" data-duration="14.66" data-track-index="0"></div>
+
+    <div data-hf-id="hf-kjve" class="ts-stage clip" id="f07-stage" data-start="0" data-duration="14.66" data-track-index="1">
+      <div data-hf-id="hf-q85h" class="ts-kicker" id="f07-kicker"><div data-hf-id="hf-kb07" class="ts-kicker-bar" id="f07-kbar"></div><span data-hf-id="hf-x4o2" class="ts-kicker-text" id="f07-ktext">Opkuis</span></div>
+
+      <!-- Scene 1 statement -->
+      <div data-hf-id="hf-qvuk" class="f07-statement" id="f07-statement">
+        <span data-hf-id="hf-3s41" id="f07-klaar">Klaar?</span>
+        <span data-hf-id="hf-zzia" id="f07-nee">Nee hoor.</span>
+      </div>
+
+      <!-- compact code surface -->
+      <div data-hf-id="hf-49au" class="ts-code-surface" id="f07-panel">
+        <div data-hf-id="hf-nymv" class="ts-code-title">App.tsx</div>
+        <div data-hf-id="hf-1ygd" class="f07-code">
+          <div data-hf-id="hf-c7oq" class="f07-row"><span data-hf-id="hf-3hjw" class="ts-ln">1</span><span data-hf-id="hf-s2qi" class="ts-txt"><span data-hf-id="hf-gedv" class="ts-fn">useEffect</span>(() <span data-hf-id="hf-ar71" class="ts-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-1xgu" class="f07-row"><span data-hf-id="hf-2amt" class="ts-ln">2</span><span data-hf-id="hf-v60r" class="ts-txt">  <span data-hf-id="hf-4fk4" class="ts-kw">const</span> <span data-hf-id="hf-3bdt" class="ts-fn">fetchData</span> = <span data-hf-id="hf-c18f" class="ts-kw">async</span> () <span data-hf-id="hf-ar72" class="ts-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-2brv" class="f07-row"><span data-hf-id="hf-2oxu" class="ts-ln">3</span><span data-hf-id="hf-fb0d" class="ts-txt">    <span data-hf-id="hf-av7n" class="ts-fold">⋯</span></span></div>
+          <div data-hf-id="hf-7o0o" class="f07-row" id="f07-setline"><span data-hf-id="hf-4ogz" class="ts-ln">4</span><span data-hf-id="hf-l21u" class="ts-txt">    <span data-hf-id="hf-mqkk" class="ts-fn">setPosts</span>(result);</span><span data-hf-id="hf-i5n5" class="f07-uline-el" id="f07-uline"></span></div>
+          <div data-hf-id="hf-2q2w" class="f07-row"><span data-hf-id="hf-52s0" class="ts-ln">5</span><span data-hf-id="hf-wgi9" class="ts-txt">    <span data-hf-id="hf-ixab" class="ts-fold">⋯</span></span></div>
+          <div data-hf-id="hf-zxxp" class="f07-row"><span data-hf-id="hf-3vux" class="ts-ln">6</span><span data-hf-id="hf-1zwg" class="ts-txt">  }</span></div>
+          <div data-hf-id="hf-0c8q" class="f07-row"><span data-hf-id="hf-4a5y" class="ts-ln">7</span><span data-hf-id="hf-p3m3" class="ts-txt">  <span data-hf-id="hf-0nzp" class="ts-fn">fetchData</span>();</span></div>
+          <div data-hf-id="hf-koka" class="f07-slotrow" id="f07-slotrow"><div data-hf-id="hf-6yqn" class="f07-slot" id="f07-slot">cleanup?</div></div>
+          <div data-hf-id="hf-0qjr" class="f07-row"><span data-hf-id="hf-zwsn" class="ts-ln">8</span><span data-hf-id="hf-rq88" class="ts-txt">}, []);</span></div>
+        </div>
+        <div data-hf-id="hf-5emz" class="ts-code-status">useEffect · deps [] · geen cleanup</div>
+      </div>
+
+      <!-- timeline -->
+      <div data-hf-id="hf-gipq" class="ts-label f07-lanelab" id="f07-lab1">component</div>
+      <div data-hf-id="hf-b9dk" class="ts-label f07-lanelab" id="f07-lab2">fetch #1</div>
+      <div data-hf-id="hf-so5t" class="f07-bar" id="f07-bar1"></div>
+      <div data-hf-id="hf-ytvm" class="f07-bar" id="f07-bar2"></div>
+      <div data-hf-id="hf-pvyn" class="ts-label" id="f07-axislab">tijd</div>
+      <div data-hf-id="hf-n836" class="f07-axis" id="f07-axis"></div>
+
+      <div data-hf-id="hf-puka" class="f07-marker" id="f07-marker"></div>
+      <div data-hf-id="hf-az3f" class="f07-tag" id="f07-tag-unmount">unmount</div>
+      <div data-hf-id="hf-55v2" class="f07-tag" id="f07-tag-again">of: effect opnieuw</div>
+      <div data-hf-id="hf-87r9" class="f07-tag" id="f07-tag-busy">nog bezig…</div>
+
+      <svg data-hf-id="hf-qown" class="f07-arrow" id="f07-arrow" viewBox="0 0 24 104" fill="none">
+        <path data-hf-id="hf-z2pq" d="M12 2 L12 90" stroke="#1E293B" stroke-width="2" />
+        <path data-hf-id="hf-ia8w" d="M4 88 L20 88 L12 102 Z" fill="#1E293B" />
+      </svg>
+      <div data-hf-id="hf-17u6" class="f07-land" id="f07-land"></div>
+      <div data-hf-id="hf-sejq" class="ts-chip ts-chip--unwanted" id="f07-chip">setPosts(…)</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.66;
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // geometry: track 1120..1820 (700px), both lanes grow at the same speed from 3.8s
+      var T0 = 3.8, TEND = 11.96, TRACK = 700;
+      var speed = TRACK / (TEND - T0);
+      var T_UNMOUNT = 6.44;
+      var W1 = Math.round((T_UNMOUNT - T0) * speed); // ~226px -> marker at x 1346
+
+      // ---- Scene 1 (0.0-3.8): kicker, "Klaar?" / "Nee hoor.", then code settles in ----
+      tl.fromTo("#f07-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.0);
+      tl.fromTo("#f07-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.1);
+
+
+      tl.fromTo("#f07-klaar", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.0);
+      tl.fromTo("#f07-nee", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.88);
+      tl.to("#f07-statement", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 3.04);
+      tl.fromTo("#f07-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 3.1);
+
+      // timeline scaffold: axis drawn, lane labels in, by 3.8s
+      tl.fromTo("#f07-axis", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, 3.24);
+      tl.fromTo("#f07-axislab", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 3.4);
+      tl.fromTo(["#f07-lab1", "#f07-lab2"], { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", stagger: 0.1 }, 3.4);
+
+      // lanes grow at constant speed
+      // hide the bordered bars until they start growing (a 0-width bar would still show its hairline)
+      tl.set(["#f07-bar1", "#f07-bar2"], { opacity: 0 }, 0);
+      tl.set(["#f07-bar1", "#f07-bar2"], { opacity: 1 }, T0);
+      tl.fromTo("#f07-bar1", { width: 0 }, { width: W1, duration: T_UNMOUNT - T0, ease: "none" }, T0);
+      tl.fromTo("#f07-bar2", { width: 0 }, { width: TRACK, duration: TEND - T0, ease: "none" }, T0);
+
+      // ---- Scene 2 (3.8-5.5): the dashed cleanup slot opens ----
+      tl.fromTo("#f07-slotrow", { height: 0 }, { height: 70, duration: 0.8, ease: "power3.out" }, 4.04);
+      tl.fromTo("#f07-slot", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 4.3);
+
+      // ---- Scene 3 (5.5-11.0): component unmounts, fetch keeps running ----
+      tl.fromTo("#f07-marker", { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: "power3.out" }, T_UNMOUNT);
+      tl.fromTo("#f07-tag-unmount", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, T_UNMOUNT + 0.08);
+      tl.to("#f07-bar1", { opacity: 0.45, duration: 0.5, ease: "power1.inOut" }, T_UNMOUNT + 0.1);
+      tl.to("#f07-lab1", { opacity: 0.45, duration: 0.5, ease: "power1.inOut" }, T_UNMOUNT + 0.1);
+      tl.fromTo("#f07-tag-again", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 7.2);
+      tl.fromTo("#f07-tag-busy", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.24);
+
+      // ---- Scene 4 (11.0-14.16): fetch lands late and still sets state ----
+      tl.fromTo("#f07-arrow", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 11.96);
+      // the one problem moment (#D14343): landing marker + chip, linked underline in the code
+      tl.fromTo("#f07-land", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 12.64);
+      tl.fromTo("#f07-chip", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 12.66);
+      tl.to("#f07-setline", { opacity: 1, duration: 0.4, ease: "power1.out" }, 13.6);
+      tl.fromTo("#f07-uline", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 13.72);
+
+      tl.set({}, {}, DUR);
+      window.__timelines["07-opkuis"] = tl;
+    })();
+  </script>
+</template>
