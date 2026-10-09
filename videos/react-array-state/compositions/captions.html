@@ -2,27 +2,24 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
 
 
-<style data-brand-tokens>
-      @font-face { font-family: 'EB Garamond'; src: url('assets/fonts/EBGaramond-400.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: block; }
-      @font-face { font-family: 'EB Garamond'; src: url('assets/fonts/EBGaramond-700.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: block; }
-      @font-face { font-family: 'EB Garamond'; src: url('assets/fonts/EB_Garamond-400-italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: block; }
+<style data-brand-tokens="">
       @font-face { font-family: 'Inter'; src: url('assets/fonts/Inter-400-normal.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: block; }
       @font-face { font-family: 'Inter'; src: url('assets/fonts/Inter-500-normal.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: block; }
       @font-face { font-family: 'Inter'; src: url('assets/fonts/Inter-700-normal.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: block; }
       :root {
-      --ink: #141413;
-      --cream: #FAF9F5;
-      --tile: #EFE9DE;
-      --tile-strong: #ECE3D4;
-      --coral: #CC785C;
+      --ink: #1E293B;
+      --cream: #FFFFFF;
+      --tile: #F1F5F9;
+      --tile-strong: #E2E8F0;
+      --coral: #3178C6;
       --navy: #181715;
       --navy-soft: #1F1E1B;
       --navy-elev: #252320;
-      --cap-ink: #141413;
-      --cap-canvas: #FAF9F5;
-      --cap-accent: #CC785C;
-      --cap-accent-2: #ECE3D4;
-      --font-display: "EB Garamond", system-ui, serif;
+      --cap-ink: #1E293B;
+      --cap-canvas: #FFFFFF;
+      --cap-accent: #3178C6;
+      --cap-accent-2: #3178C6;
+      --font-display: "Inter", system-ui, sans-serif;
       --font-body: "Inter", system-ui, sans-serif;
       --cap-band-top: 900px;
       --cap-band-height: 180px;
@@ -64,60 +61,58 @@
   }
 
   /* THE lifted cream card — warm cream fill, 1px hairline ink border, one soft warm
-     shadow (code-editorial's only elevation language), 12px radius, no tilt */
+     TS light: white card, hairline, 12px radius, faint shadow */
   .caption-pill {
     max-width: 78%;
-    padding: 22px 44px 26px;
-    background: var(--cap-canvas, #faf9f5);
-    border: 1px solid color-mix(in srgb, var(--cap-ink, #141413) 12%, transparent);
+    padding: 18px 40px 22px;
+    background: var(--cap-canvas, #ffffff);
+    border: 1px solid #E2E8F0;
     border-radius: 12px;
-    box-shadow:
-      0 1px 3px color-mix(in srgb, var(--cap-ink, #141413) 8%, transparent),
-      0 4px 16px color-mix(in srgb, var(--cap-ink, #141413) 4%, transparent);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
   }
   .caption-line {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.12em 0.3em;
-    font-family: "EB Garamond", Georgia, serif;
+    font-family: "Inter", system-ui, sans-serif;
     font-weight: 500;
-    font-size: clamp(40px, 4.4vw, 56px);
+    font-size: clamp(36px, 4.0vw, 46px);
     line-height: 1.24;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 
   /* upcoming — faint warm ink, no underline */
   .caption-word {
     display: inline-block;
     padding: 0 0.02em 0.06em;
-    color: color-mix(in srgb, var(--cap-ink, #141413) 40%, var(--cap-canvas, #faf9f5));
-    border-bottom: 3px solid transparent;
+    color: color-mix(in srgb, var(--cap-ink, #1E293B) 40%, var(--cap-canvas, #ffffff));
+    border-bottom: 4px solid transparent;
   }
   /* current word — full ink under the coral voltage underline (the brand's signature
      inline-link gesture; border-bottom = underline without layout shift) */
   .caption-word.is-active {
     color: var(--cap-ink, #141413);
-    border-bottom: 3px solid var(--cap-accent, #cc785c);
+    border-bottom: 4px solid var(--cap-accent, #3178c6);
   }
   /* already spoken — solid warm ink, underline cleared */
   .caption-word.is-spoken {
     color: var(--cap-ink, #141413);
-    border-bottom: 3px solid transparent;
+    border-bottom: 4px solid transparent;
   }
 
   /* optional per-word accents (dormant until a word-classer tags them) */
-  /* brand / key term — the expressive EB Garamond italic */
+  /* brand / key term — kept upright */
   .caption-word.cap-brand {
-    font-style: italic;
+    font-style: normal;
     color: var(--cap-ink, #141413);
   }
   .caption-word.cap-brand.is-active {
-    border-bottom: 3px solid var(--cap-accent, #cc785c);
+    border-bottom: 4px solid var(--cap-accent, #3178c6);
   }
   /* numerals / data — slightly recessed warm ink */
   .caption-word.cap-num {
-    color: color-mix(in srgb, var(--cap-ink, #141413) 72%, var(--cap-canvas, #faf9f5));
+    color: color-mix(in srgb, var(--cap-ink, #1E293B) 72%, var(--cap-canvas, #ffffff));
   }
   /* emphasis — a persistent coral voltage underline */
   .caption-word.cap-cta {

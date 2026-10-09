@@ -15,7 +15,7 @@ Alles wat verandert doorheen de levenscyclus van een component, wordt opgeslagen
 
 ## useState hook
 
-<YouTubeVideo src="https://youtu.be/s0M8q1iPHJE" title="React - useState uitgelegd" />
+<YouTubeVideo src="https://youtu.be/pjc82aX1vv8" title="React - useState uitgelegd" />
 
 We gaan het gebruik van state eens demonstreren aan de hand van een voorbeeld. We gaan hiervoor terug naar ons `InputView` voorbeeld. Stel dat we elke keer de gebruiker iets intypt in de input box, dat we deze text willen laten tonen ergens anders in de applicatie. Dit is dus informatie die aangepast wordt over de looptijd van de applicatie. 
 
@@ -268,7 +268,7 @@ De uitwerking van dit voorbeeld kan je vinden op [Voorbeelden](./voorbeelden.md#
 
 ## Array als state
 
-<YouTubeVideo src="https://youtu.be/K6ETcj_Q8z4" title="React - State met array uitgelegd" />
+<YouTubeVideo src="https://youtu.be/zKLVCzg1q4s" title="React - State met array uitgelegd" />
 
 Een array als state definieren gebeurd op identiek dezelfde manier als een state met andere data types:
 

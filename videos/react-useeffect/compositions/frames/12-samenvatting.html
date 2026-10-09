@@ -1,170 +1,219 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); }
-    @font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/Inter-400.woff2") format("woff2"); }
-    @font-face { font-family: "Inter"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/Inter-700.woff2") format("woff2"); }
-    @font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); }
-    @font-face { font-family: "JetBrains Mono"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
 
-    #root[data-composition-id="12-samenvatting"] {
-      font-variant-ligatures: none;
-      position: absolute;
-      inset: 0;
-      width: 1920px;
-      height: 1080px;
-      overflow: hidden;
-      color: #141413;
-      font-family: "Inter", sans-serif;
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
     }
-    .f12-bg {
-      position: absolute;
-      inset: 0;
-      background: #FAF9F5;
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
     }
-    .f12-stage {
-      position: absolute;
-      inset: 0;
-      container-type: size;
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
     }
-    .f12-kicker {
-      position: absolute;
-      left: 80px;
-      top: 72px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 1.46cqw;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.55);
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
     }
-    .f12-kicker-mark {
-      margin-right: 0.5em;
-      color: rgba(20, 20, 19, 0.55);
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
     }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 12 positions ---- */
+    #root[data-composition-id="12-samenvatting"] { font-variant-ligatures: none; }
     .f12-head {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 132px;
-      text-align: center;
-      font-family: "EB Garamond", Georgia, serif;
-      font-weight: 400;
-      font-size: 7.3cqw;
-      line-height: 1.02;
-      letter-spacing: -0.022em;
-      white-space: nowrap;
+      position: absolute; left: 0; right: 0; top: 140px; text-align: center; white-space: nowrap;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 104px; line-height: 1.05;
+      letter-spacing: -0.03em; color: var(--ts-ink);
     }
-    .f12-word {
-      display: inline-block;
-      margin-right: 0.22em;
-    }
-    .f12-spike {
-      display: inline-block;
-      margin-left: 0.18em;
-      color: #CC785C;
-      font-size: 0.62em;
-      vertical-align: 0.42em;
-      transform-origin: 50% 50%;
-    }
+    .f12-head-inner { position: relative; display: inline-block; }
+    .f12-word { display: inline-block; margin-right: 0.24em; }
+    #f12-bar { left: 0; right: 0; bottom: -12px; }
     .f12-chips {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 360px;
-      display: flex;
-      justify-content: center;
-      gap: 48px;
+      position: absolute; left: 0; right: 0; top: 360px;
+      display: flex; justify-content: center; gap: 48px;
     }
     .f12-chip {
-      position: relative;
-      width: 560px;
-      height: 360px;
-      box-sizing: border-box;
-      padding: 34px 36px;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-      transform-origin: 50% 50%;
+      position: relative; width: 560px; height: 360px; box-sizing: border-box; padding: 34px 36px;
+      background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 12px;
+      box-shadow: var(--ts-shadow); transform-origin: 50% 50%;
     }
-    .f12-chip-top {
-      display: flex;
-      align-items: baseline;
-      gap: 18px;
-    }
-    .f12-idx {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      letter-spacing: 0.06em;
-      color: rgba(20, 20, 19, 0.45);
-    }
+    .f12-chip-top { display: flex; align-items: baseline; gap: 18px; }
+    .f12-idx { font-family: var(--ts-mono); font-size: 24px; letter-spacing: 0.06em; color: var(--ts-muted); }
     .f12-title {
-      font-family: "Inter", sans-serif;
-      font-size: 2.3cqw;
-      font-weight: 400;
-      line-height: 1.25;
-      letter-spacing: -0.005em;
+      font-family: var(--ts-sans); font-size: 44px; font-weight: 500; line-height: 1.25;
+      letter-spacing: -0.015em; color: var(--ts-ink);
     }
     .f12-code {
-      margin-top: 22px;
-      height: 112px;
-      box-sizing: border-box;
-      padding: 0 26px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      line-height: 1.45;
-      color: #FAF9F5;
-      white-space: pre;
+      margin-top: 22px; height: 112px; box-sizing: border-box; padding: 0 26px;
+      display: flex; flex-direction: column; justify-content: center;
+      background: var(--ts-code-bg); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 1.45; color: var(--ts-code-text); white-space: pre;
+      font-variant-ligatures: none;
     }
     .f12-line { display: block; }
-    .f12-p { color: rgba(250, 249, 245, 0.6); }
-    .f12-k { color: #E8A55A; }
-    .f12-m { color: #5DB8A6; }
     .f12-caret {
-      display: inline-block;
-      width: 3px;
-      height: 30px;
-      margin-left: 2px;
-      vertical-align: -5px;
-      background: #FAF9F5;
+      display: inline-block; width: 2px; height: 28px; margin-left: 2px; vertical-align: -5px;
+      background: var(--ts-blue);
     }
-    .f12-strip {
-      margin-top: 30px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .f12-tag {
-      padding: 10px 16px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 8px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: #141413;
-      white-space: nowrap;
-    }
-    .f12-arrow {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(20, 20, 19, 0.45);
-    }
+    .f12-strip { margin-top: 30px; display: flex; align-items: center; gap: 14px; }
+    .f12-tag { position: relative; height: 46px; padding: 0 16px; font-size: 22px; }
+    .f12-arrow { font-family: var(--ts-mono); font-size: 22px; color: var(--ts-muted); }
   </style>
 
   <div data-hf-id="hf-5s85" id="root" data-composition-id="12-samenvatting" data-width="1920" data-height="1080" data-duration="11.22">
-    <div data-hf-id="hf-25i9" id="f12-bg" class="f12-bg clip" data-start="0" data-duration="11.22" data-track-index="0"></div>
+    <div data-hf-id="hf-25i9" id="f12-bg" class="ts-bg clip" data-start="0" data-duration="11.22" data-track-index="0"></div>
 
-    <div data-hf-id="hf-1vuc" id="f12-stage" class="f12-stage clip" data-start="0" data-duration="11.22" data-track-index="1">
-      <div data-hf-id="hf-oivk" class="f12-kicker"><span data-hf-id="hf-2mcr" class="f12-kicker-mark">✱</span>Samengevat</div>
+    <div data-hf-id="hf-1vuc" id="f12-stage" class="ts-stage f12-stage clip" data-start="0" data-duration="11.22" data-track-index="1">
+      <div data-hf-id="hf-oivk" class="ts-kicker f12-kicker"><div data-hf-id="hf-2mcr" class="ts-kicker-bar" id="f12-kbar"></div><span data-hf-id="hf-k12t" class="ts-kicker-text" id="f12-ktext">Samengevat</span></div>
 
       <div data-hf-id="hf-uwwa" class="f12-head">
-        <span data-hf-id="hf-2ok3" class="f12-word">Wat</span><span data-hf-id="hf-8giw" class="f12-word">je</span><span data-hf-id="hf-twbt" class="f12-word">start,</span><span data-hf-id="hf-bz6a" class="f12-word">ruim</span><span data-hf-id="hf-5sio" class="f12-word">je</span><span data-hf-id="hf-023h" class="f12-word" style="margin-right:0">op.</span><span data-hf-id="hf-ehac" class="f12-spike">✱</span>
+        <span data-hf-id="hf-k12h" class="f12-head-inner"><span data-hf-id="hf-2ok3" class="f12-word">Wat</span><span data-hf-id="hf-8giw" class="f12-word">je</span><span data-hf-id="hf-twbt" class="f12-word">start,</span><span data-hf-id="hf-bz6a" class="f12-word">ruim</span><span data-hf-id="hf-5sio" class="f12-word">je</span><span data-hf-id="hf-023h" class="f12-word" style="margin-right:0">op.</span><span data-hf-id="hf-ehac" class="ts-hero-bar f12-spike" id="f12-bar"></span></span>
       </div>
 
       <div data-hf-id="hf-2oj9" class="f12-chips">
@@ -172,23 +221,23 @@
           <div data-hf-id="hf-mg7k" class="f12-chip-top"><span data-hf-id="hf-ez75" class="f12-idx">01</span><span data-hf-id="hf-gsso" class="f12-title">side effects</span></div>
           <div data-hf-id="hf-5g2i" class="f12-code" data-code="0"></div>
           <div data-hf-id="hf-pl5q" class="f12-strip">
-            <span data-hf-id="hf-uw47" class="f12-tag">render</span><span data-hf-id="hf-shj2" class="f12-arrow">→</span><span data-hf-id="hf-g2mu" class="f12-tag">effect</span>
+            <span data-hf-id="hf-uw47" class="ts-chip f12-tag">render</span><span data-hf-id="hf-shj2" class="f12-arrow">→</span><span data-hf-id="hf-g2mu" class="ts-chip f12-tag">effect</span>
           </div>
         </div>
         <div data-hf-id="hf-wyye" class="f12-chip">
           <div data-hf-id="hf-i4iw" class="f12-chip-top"><span data-hf-id="hf-g648" class="f12-idx">02</span><span data-hf-id="hf-66me" class="f12-title">bepaalt wanneer</span></div>
           <div data-hf-id="hf-9e6j" class="f12-code" data-code="1"></div>
           <div data-hf-id="hf-bz2a" class="f12-strip">
-            <span data-hf-id="hf-cy6n" class="f12-tag">[ ]</span><span data-hf-id="hf-wazm" class="f12-arrow">→</span><span data-hf-id="hf-fkv7" class="f12-tag">1×</span>
+            <span data-hf-id="hf-cy6n" class="ts-chip f12-tag">[ ]</span><span data-hf-id="hf-wazm" class="f12-arrow">→</span><span data-hf-id="hf-fkv7" class="ts-chip f12-tag">1×</span>
             <span data-hf-id="hf-ct8d" class="f12-arrow">·</span>
-            <span data-hf-id="hf-yn0e" class="f12-tag">[count]</span><span data-hf-id="hf-wpan" class="f12-arrow">→</span><span data-hf-id="hf-8mat" class="f12-tag">Δ</span>
+            <span data-hf-id="hf-yn0e" class="ts-chip f12-tag">[count]</span><span data-hf-id="hf-wpan" class="f12-arrow">→</span><span data-hf-id="hf-8mat" class="ts-chip f12-tag">Δ</span>
           </div>
         </div>
         <div data-hf-id="hf-xd9f" class="f12-chip">
           <div data-hf-id="hf-gxlt" class="f12-chip-top"><span data-hf-id="hf-frt7" class="f12-idx">03</span><span data-hf-id="hf-tbm7" class="f12-title">cleanup</span></div>
           <div data-hf-id="hf-0qao" class="f12-code" data-code="2"></div>
           <div data-hf-id="hf-cddb" class="f12-strip">
-            <span data-hf-id="hf-9d3w" class="f12-tag">setInterval</span><span data-hf-id="hf-x3lo" class="f12-arrow">→</span><span data-hf-id="hf-cd1p" class="f12-tag">clearInterval</span>
+            <span data-hf-id="hf-9d3w" class="ts-chip f12-tag">setInterval</span><span data-hf-id="hf-x3lo" class="f12-arrow">→</span><span data-hf-id="hf-cd1p" class="ts-chip f12-tag">clearInterval</span>
           </div>
         </div>
       </div>
@@ -204,16 +253,17 @@
       function one(n, scope) { return all(n, scope)[0]; }
 
       // ---- code tokens: lines of [text, class] → per-char spans (seek-safe type-on) ----
+      // classes: "fn" functions, "kw" keywords, "punct" punctuation (shared ts-* syntax colours)
       var CODE = [
         [
-          [["useEffect", "m"], ["(", "p"], ["() ", "p"], ["=>", "k"], [" { ", "p"], ["…", ""], [" })", "p"]]
+          [["useEffect", "fn"], ["(", "punct"], ["() ", "punct"], ["=>", "kw"], [" { ", "punct"], ["…", ""], [" })", "punct"]]
         ],
         [
-          [["[ ]", "p"], ["  ·  ", "p"], ["[", "p"], ["count", ""], ["]", "p"]]
+          [["[ ]", "punct"], ["  ·  ", "punct"], ["[", "punct"], ["count", ""], ["]", "punct"]]
         ],
         [
-          [["return", "k"], [" () ", "p"], ["=>", "k"]],
-          [["  ", ""], ["clearInterval", "m"], ["(", "p"], ["handle", ""], [")", "p"]]
+          [["return", "kw"], [" () ", "punct"], ["=>", "kw"]],
+          [["  ", ""], ["clearInterval", "fn"], ["(", "punct"], ["handle", ""], [")", "punct"]]
         ]
       ];
       var codeChars = [], carets = [];
@@ -228,7 +278,7 @@
           tokens.forEach(function (t) {
             for (var i = 0; i < t[0].length; i++) {
               var s = document.createElement("span");
-              s.className = P + "ch" + (t[1] ? " " + P + t[1] : "");
+              s.className = "ts-ch" + (t[1] ? " ts-" + t[1] : "");
               s.textContent = t[0][i];
               line.appendChild(s);
               chars.push(s);
@@ -245,12 +295,13 @@
       var tl = gsap.timeline({ paused: true });
 
       // Scene 1 (0.0–1.3): kicker; headline area reserved (hidden until its cue)
-      tl.fromTo(one("kicker"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      tl.fromTo(root.querySelector("#f12-kbar"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.05);
+      tl.fromTo(root.querySelector("#f12-ktext"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.15);
       var words = all("word");
       words.forEach(function (w) {
         tl.fromTo(w, { opacity: 0, y: 24 }, { opacity: 0, y: 24, duration: 0.01 }, 0);
       });
-      tl.fromTo(one("spike"), { opacity: 0, scale: 0.92 }, { opacity: 0, scale: 0.92, duration: 0.01 }, 0);
+      tl.fromTo(one("spike"), { scaleX: 0 }, { scaleX: 0, duration: 0.01 }, 0);
 
       // Scenes 2–4: chips land on their spoken cue, code types on, then the mini strip settles
       var CHIP_AT = [1.38, 5.48, 10.76];
@@ -259,7 +310,7 @@
       var chips = all("chip");
       chips.forEach(function (chip, k) {
         var at = CHIP_AT[k];
-        tl.fromTo(chip, { scale: 0.9, opacity: 0, y: 24 }, { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, at);
+        tl.fromTo(chip, { scale: 0.96, opacity: 0, y: 20 }, { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, at);
 
         var chars = codeChars[k];
         var tStart = at + 0.2;
@@ -281,8 +332,8 @@
         tl.to(w, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 9.52 + i * 0.16);
       });
 
-      // Scene 5 (12.7–14.4): coral spike settles beside the headline; hold; gentle final fade
-      tl.to(one("spike"), { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 12.72);
+      // Scene 5 (12.7–14.4): the one blue moment, the hero bar wipes in under the headline; hold; gentle final fade
+      tl.to(one("spike"), { scaleX: 1, duration: 0.6, ease: "power3.out" }, 12.72);
       tl.fromTo(one("stage"), { opacity: 1 }, { opacity: 0, duration: 0.4, ease: "power2.inOut", immediateRender: false }, 14.0);
 
       window.__timelines = window.__timelines || {};

@@ -1,298 +1,231 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
-    .f09-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f09-stage { position: absolute; inset: 0; }
 
-    /* kicker */
-    .f09-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-    }
-    .f09-kicker .f09-spike { color: #CC785C; margin-right: 14px; }
 
-    /* code surface */
-    .f09-panel {
-      position: absolute;
-      left: 80px;
-      top: 170px;
-      width: 1060px;
-      height: 654px;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .f09-titlebar {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 56px;
-      background: #252320;
-      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(250, 249, 245, 0.62);
-      letter-spacing: 0.02em;
-    }
-    .f09-status {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 46px;
-      background: #252320;
-      border-top: 1px solid rgba(250, 249, 245, 0.14);
-      font-family: "JetBrains Mono", monospace;
-      font-size: 19px;
-      color: rgba(250, 249, 245, 0.45);
-      letter-spacing: 0.04em;
-    }
-    .f09-st {
-      position: absolute;
-      left: 28px;
-      top: 0;
-      line-height: 46px;
-      white-space: nowrap;
-    }
+    /* ---- frame 09 positions + frame-only parts ---- */
+    #f09-panel { left: 80px; top: 170px; width: 1060px; height: 654px; }
+    .f09-st { position: absolute; left: 28px; top: 0; line-height: 40px; white-space: nowrap; }
+    /* code metrics kept from the original frame (36px / 56px rows) */
     .f09-code {
-      position: absolute;
-      left: 0; right: 0;
-      top: 80px;
-      height: 504px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 36px;
-      line-height: 56px;
-      color: #FAF9F5;
-      font-variant-ligatures: none;
+      position: absolute; left: 0; right: 0; top: 80px; height: 504px;
+      font-family: var(--ts-mono); font-size: 36px; line-height: 56px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
     }
-    .f09-wash {
-      position: absolute;
-      left: 0;
-      top: 280px;
-      width: 1060px;
-      height: 168px;
-      background: rgba(204, 120, 92, 0.16);
-      transform-origin: left center;
-    }
-    .f09-wash-edge {
-      position: absolute;
-      left: 0;
-      top: 280px;
-      width: 4px;
-      height: 168px;
-      background: #CC785C;
-      transform-origin: center top;
-    }
-    .f09-row {
-      position: absolute;
-      left: 0; right: 0;
-      height: 56px;
-      white-space: pre;
-    }
-    .f09-ln {
-      position: absolute;
-      left: 0;
-      width: 64px;
-      text-align: right;
-      color: rgba(250, 249, 245, 0.32);
-      font-size: 26px;
-    }
-    .f09-txt {
-      position: absolute;
-      left: 112px;
-      top: 0;
-      white-space: pre;
-    }
-    .f09-ch { display: inline; }
-    .f09-kw { color: #CC785C; }
-    .f09-fn { color: #E8A55A; }
-    .f09-dim { color: rgba(250, 249, 245, 0.6); }
-    .f09-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
-    .f09-caret {
-      position: absolute;
-      top: 10px;
-      left: 0;
-      width: 3px;
-      height: 36px;
-      background: #FAF9F5;
-      opacity: 0;
-    }
-    .f09-link {
-      position: absolute;
-      left: 0; top: 0;
-      width: 1060px;
-      height: 654px;
-      overflow: visible;
-      pointer-events: none;
-    }
+    .f09-wash { position: absolute; left: 0; top: 280px; width: 1060px; height: 168px; background: var(--ts-wash); transform-origin: left center; }
+    .f09-wash-edge { position: absolute; left: 0; top: 280px; width: 4px; height: 168px; background: var(--ts-blue); transform-origin: center top; }
+    .f09-row { position: absolute; left: 0; right: 0; height: 56px; white-space: pre; }
+    .f09-ln { position: absolute; left: 0; width: 64px; text-align: right; color: var(--ts-code-ln); font-size: 26px; }
+    .f09-txt { position: absolute; left: 112px; top: 0; white-space: pre; }
+    .f09-h7 { border-radius: 0; }
+    .f09-caret { position: absolute; top: 10px; left: 0; width: 3px; height: 36px; background: var(--ts-blue); opacity: 0; }
+    .f09-link { position: absolute; left: 0; top: 0; width: 1060px; height: 654px; overflow: visible; pointer-events: none; }
 
     /* right column */
-    .f09-col {
-      position: absolute;
-      left: 1220px;
-      top: 170px;
-      width: 620px;
-      height: 680px;
-    }
-    .f09-label {
-      position: absolute;
-      left: 0;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
-      white-space: nowrap;
-    }
-    .f09-rail {
-      position: absolute;
-      left: 14px;
-      top: 69px;
-      width: 1px;
-      height: 248px;
-      background: rgba(20, 20, 19, 0.2);
-      transform-origin: center top;
-    }
-    .f09-node {
-      position: absolute;
-      left: 10px;
-      width: 9px;
-      height: 9px;
-      border-radius: 9999px;
-      background: #141413;
-    }
+    .f09-col { position: absolute; left: 1220px; top: 170px; width: 620px; height: 680px; }
+    .f09-col .ts-label { left: 0; white-space: nowrap; }
+    .f09-rail { position: absolute; left: 14px; top: 69px; width: 2px; margin-left: -0.5px; height: 248px; background: #CBD5E1; transform-origin: center top; }
+    .f09-node { position: absolute; left: 10px; width: 9px; height: 9px; border-radius: 9999px; background: var(--ts-ink); }
     .f09-pill {
-      position: absolute;
-      height: 50px;
-      padding: 0 22px;
-      border-radius: 9999px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      line-height: 48px;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-      box-sizing: border-box;
+      position: absolute; height: 50px; padding: 0 22px; border-radius: 9999px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; line-height: 48px;
+      white-space: nowrap; box-sizing: border-box;
     }
-    .f09-eff {
-      left: 36px;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      color: #141413;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .f09-cln {
-      left: 76px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      color: rgba(20, 20, 19, 0.78);
-    }
-    .f09-cln .f09-x { color: rgba(20, 20, 19, 0.5); }
-    .f09-unm {
-      left: 36px;
-      background: transparent;
-      border: 1px dashed rgba(20, 20, 19, 0.3);
-      color: rgba(20, 20, 19, 0.55);
-    }
+    .f09-eff { left: 36px; background: var(--ts-ground); border: 1px solid var(--ts-hairline); color: var(--ts-ink); box-shadow: var(--ts-shadow); }
+    .f09-cln { left: 76px; background: var(--ts-panel); border: 1px solid var(--ts-hairline); color: var(--ts-ink-soft); }
+    .f09-x { color: var(--ts-muted); }
+    .f09-unm { left: 36px; background: transparent; border: 1px dashed #CBD5E1; color: var(--ts-label); }
 
-    .f09-chip {
-      position: absolute;
-      left: 0;
-      width: 360px;
-      height: 48px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 8px;
-      box-sizing: border-box;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      line-height: 46px;
-      letter-spacing: 0.02em;
-      color: #141413;
-      white-space: nowrap;
-    }
+    .f09-chip { left: 0; width: 360px; height: 48px; padding: 0; gap: 0; line-height: 46px; }
     .f09-chip-txt { position: absolute; left: 48px; top: 0; }
-    .f09-dot {
-      position: absolute;
-      left: 20px;
-      top: 18px;
-      width: 10px;
-      height: 10px;
-      border-radius: 9999px;
-      background: #5DB872;
-    }
+    .f09-dot { position: absolute; left: 20px; top: 18px; width: 10px; height: 10px; border-radius: 9999px; background: var(--ts-ink-soft); }
     .f09-ring {
-      position: absolute;
-      left: 15px;
-      top: 13px;
-      width: 20px;
-      height: 20px;
-      border-radius: 9999px;
-      border: 1.5px solid #5DB872;
-      box-sizing: border-box;
-      opacity: 0;
+      position: absolute; left: 15px; top: 13px; width: 20px; height: 20px; border-radius: 9999px;
+      border: 1.5px solid var(--ts-muted); box-sizing: border-box; opacity: 0;
     }
-    .f09-strike {
-      position: absolute;
-      left: 44px;
-      top: 23px;
-      width: 248px;
-      height: 1.5px;
-      background: #141413;
-      transform-origin: left center;
-    }
-    .f09-note {
-      position: absolute;
-      right: 0;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      letter-spacing: 0.02em;
-      color: #141413;
-      white-space: nowrap;
-    }
-    .f09-note .f09-ok { color: #5DB872; }
+    .f09-strike { position: absolute; left: 44px; top: 23px; width: 248px; height: 2px; background: var(--ts-ink); transform-origin: left center; }
+    .f09-note { position: absolute; right: 0; font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink); white-space: nowrap; }
+    .f09-ok { color: var(--ts-blue); }
   </style>
 
   <div data-hf-id="hf-4qyp" id="root" data-composition-id="09-cleanup-oplossing" data-width="1920" data-height="1080" data-duration="18.2">
-    <div data-hf-id="hf-uqan" class="f09-bg clip" id="f09-bg" data-start="0" data-duration="18.2" data-track-index="0"></div>
+    <div data-hf-id="hf-uqan" class="ts-bg clip" id="f09-bg" data-start="0" data-duration="18.2" data-track-index="0"></div>
 
-    <div data-hf-id="hf-tg4s" class="f09-stage clip" id="f09-stage" data-start="0" data-duration="18.2" data-track-index="1">
-      <div data-hf-id="hf-ykaq" class="f09-kicker" id="f09-kicker"><span data-hf-id="hf-4epc" class="f09-spike">✱</span>Cleanup</div>
+    <div data-hf-id="hf-tg4s" class="ts-stage clip" id="f09-stage" data-start="0" data-duration="18.2" data-track-index="1">
+      <div data-hf-id="hf-ykaq" class="ts-kicker" id="f09-kicker"><div data-hf-id="hf-4epc" class="ts-kicker-bar" id="f09-kbar"></div><span data-hf-id="hf-k09t" class="ts-kicker-text" id="f09-ktext">Cleanup</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-u0te" class="f09-panel" id="f09-panel">
-        <div data-hf-id="hf-iceb" class="f09-titlebar">Timer.tsx</div>
+      <div data-hf-id="hf-u0te" class="ts-code-surface" id="f09-panel">
+        <div data-hf-id="hf-iceb" class="ts-code-title">Timer.tsx</div>
         <div data-hf-id="hf-vu4v" class="f09-code">
           <div data-hf-id="hf-6q4u" class="f09-wash" id="f09-wash"></div>
           <div data-hf-id="hf-6l24" class="f09-wash-edge" id="f09-wash-edge"></div>
 
-          <div data-hf-id="hf-f1jv" class="f09-row" style="top:0px"><span data-hf-id="hf-n202" class="f09-ln">1</span><span data-hf-id="hf-elr8" class="f09-txt"><span data-hf-id="hf-czbh" class="f09-fn">useEffect</span>(() =&gt; {</span></div>
-          <div data-hf-id="hf-pqi4" class="f09-row" style="top:56px"><span data-hf-id="hf-ngb3" class="f09-ln">2</span><span data-hf-id="hf-vrut" class="f09-txt">  <span data-hf-id="hf-h2p8" class="f09-kw">let</span> <span data-hf-id="hf-2v4z" class="f09-hl" id="f09-h2">handle</span> = <span data-hf-id="hf-rme2" class="f09-fn">setInterval</span>(() =&gt; {</span></div>
-          <div data-hf-id="hf-oop3" class="f09-row" style="top:112px"><span data-hf-id="hf-rwl8" class="f09-ln">3</span><span data-hf-id="hf-tzcb" class="f09-txt">    <span data-hf-id="hf-h10y" class="f09-fn">setNumber</span>(number =&gt; number + <span data-hf-id="hf-tajw" class="f09-fn">1</span>);</span></div>
+          <div data-hf-id="hf-f1jv" class="f09-row" style="top:0px"><span data-hf-id="hf-n202" class="f09-ln">1</span><span data-hf-id="hf-elr8" class="f09-txt"><span data-hf-id="hf-czbh" class="ts-fn">useEffect</span>(() =&gt; {</span></div>
+          <div data-hf-id="hf-pqi4" class="f09-row" style="top:56px"><span data-hf-id="hf-ngb3" class="f09-ln">2</span><span data-hf-id="hf-vrut" class="f09-txt">  <span data-hf-id="hf-h2p8" class="ts-kw">let</span> <span data-hf-id="hf-2v4z" class="ts-hl" id="f09-h2">handle</span> = <span data-hf-id="hf-rme2" class="ts-fn">setInterval</span>(() =&gt; {</span></div>
+          <div data-hf-id="hf-oop3" class="f09-row" style="top:112px"><span data-hf-id="hf-rwl8" class="f09-ln">3</span><span data-hf-id="hf-tzcb" class="f09-txt">    <span data-hf-id="hf-h10y" class="ts-fn">setNumber</span>(number =&gt; number + <span data-hf-id="hf-tajw" class="ts-fn">1</span>);</span></div>
           <div data-hf-id="hf-td3c" class="f09-row" style="top:168px"><span data-hf-id="hf-saw9" class="f09-ln">4</span><span data-hf-id="hf-6rer" class="f09-txt">  }, interval);</span></div>
           <div data-hf-id="hf-34gv" class="f09-row" style="top:224px"><span data-hf-id="hf-nvi6" class="f09-ln f09-newln">5</span></div>
           <div data-hf-id="hf-j08p" class="f09-row" style="top:280px"><span data-hf-id="hf-o9t7" class="f09-ln f09-newln">6</span><span data-hf-id="hf-6ibj" class="f09-txt" id="f09-line6"></span><span data-hf-id="hf-7zyx" class="f09-caret" id="f09-caret6"></span></div>
@@ -303,12 +236,12 @@
 
         <!-- handle ↔ handle hairline connector in the gutter -->
         <svg data-hf-id="hf-p94p" class="f09-link" id="f09-link" viewBox="0 0 1060 654" width="1060" height="654">
-          <path data-hf-id="hf-3fwv" id="f09-link-path" fill="none" stroke="#E8A55A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M106,164 H84 V444 H106" />
-          <circle data-hf-id="hf-w9ne" id="f09-link-a" cx="106" cy="164" r="4" fill="#E8A55A" />
-          <circle data-hf-id="hf-zdr8" id="f09-link-b" cx="106" cy="444" r="4" fill="#E8A55A" />
+          <path data-hf-id="hf-3fwv" id="f09-link-path" fill="none" stroke="#3178C6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M106,164 H84 V444 H106" />
+          <circle data-hf-id="hf-w9ne" id="f09-link-a" cx="106" cy="164" r="4" fill="#3178C6" />
+          <circle data-hf-id="hf-zdr8" id="f09-link-b" cx="106" cy="444" r="4" fill="#3178C6" />
         </svg>
 
-        <div data-hf-id="hf-h5jy" class="f09-status">
+        <div data-hf-id="hf-h5jy" class="ts-code-status">
           <span data-hf-id="hf-tkfx" class="f09-st" id="f09-st-a">useEffect · [interval] · geen cleanup</span>
           <span data-hf-id="hf-ml0w" class="f09-st" id="f09-st-b">useEffect · [interval] · cleanup ✓</span>
         </div>
@@ -316,7 +249,7 @@
 
       <!-- right column: sequence + timers -->
       <div data-hf-id="hf-ibli" class="f09-col">
-        <div data-hf-id="hf-l0zg" class="f09-label" id="f09-lab-seq" style="top:0px">volgorde</div>
+        <div data-hf-id="hf-l0zg" class="ts-label" id="f09-lab-seq" style="top:0px">volgorde</div>
         <div data-hf-id="hf-fkyu" class="f09-rail" id="f09-rail"></div>
         <div data-hf-id="hf-fywx" class="f09-node" id="f09-n1" style="top:65px"></div>
         <div data-hf-id="hf-3x81" class="f09-node" id="f09-n2" style="top:189px"></div>
@@ -329,12 +262,12 @@
         <div data-hf-id="hf-l389" class="f09-pill f09-eff" id="f09-p5" style="top:292px">effect · 200ms</div>
         <div data-hf-id="hf-29l9" class="f09-pill f09-unm" id="f09-p6" style="top:372px">unmount → cleanup ✕</div>
 
-        <div data-hf-id="hf-d1iy" class="f09-label" id="f09-lab-tim" style="top:458px">timers</div>
+        <div data-hf-id="hf-d1iy" class="ts-label" id="f09-lab-tim" style="top:458px">timers</div>
         <div data-hf-id="hf-zzw4" class="f09-note" id="f09-note" style="top:454px"><span data-hf-id="hf-qayw" class="f09-ok">✓</span> 1 timer actief</div>
 
-        <div data-hf-id="hf-8gva" class="f09-chip" id="f09-c1" style="top:500px"><span data-hf-id="hf-cwnq" class="f09-ring" id="f09-r1"></span><span data-hf-id="hf-tbo1" class="f09-dot" id="f09-d1"></span><span data-hf-id="hf-mf96" class="f09-chip-txt" id="f09-t1">timer #1 · 1000ms</span><span data-hf-id="hf-ezld" class="f09-strike" id="f09-s1"></span></div>
-        <div data-hf-id="hf-wi9i" class="f09-chip" id="f09-c2" style="top:558px"><span data-hf-id="hf-8yjp" class="f09-ring" id="f09-r2"></span><span data-hf-id="hf-zhdu" class="f09-dot" id="f09-d2"></span><span data-hf-id="hf-8iug" class="f09-chip-txt" id="f09-t2">timer #2 · 500ms</span><span data-hf-id="hf-69jz" class="f09-strike" id="f09-s2" style="width:234px"></span></div>
-        <div data-hf-id="hf-gl4q" class="f09-chip" id="f09-c3" style="top:616px"><span data-hf-id="hf-86vw" class="f09-ring" id="f09-r3"></span><span data-hf-id="hf-3fhv" class="f09-dot" id="f09-d3"></span><span data-hf-id="hf-2o23" class="f09-chip-txt" id="f09-t3">timer #3 · 200ms</span></div>
+        <div data-hf-id="hf-8gva" class="ts-chip f09-chip" id="f09-c1" style="top:500px"><span data-hf-id="hf-cwnq" class="f09-ring" id="f09-r1"></span><span data-hf-id="hf-tbo1" class="f09-dot" id="f09-d1"></span><span data-hf-id="hf-mf96" class="f09-chip-txt" id="f09-t1">timer #1 · 1000ms</span><span data-hf-id="hf-ezld" class="f09-strike" id="f09-s1"></span></div>
+        <div data-hf-id="hf-wi9i" class="ts-chip f09-chip" id="f09-c2" style="top:558px"><span data-hf-id="hf-8yjp" class="f09-ring" id="f09-r2"></span><span data-hf-id="hf-zhdu" class="f09-dot" id="f09-d2"></span><span data-hf-id="hf-8iug" class="f09-chip-txt" id="f09-t2">timer #2 · 500ms</span><span data-hf-id="hf-69jz" class="f09-strike" id="f09-s2" style="width:234px"></span></div>
+        <div data-hf-id="hf-gl4q" class="ts-chip f09-chip" id="f09-c3" style="top:616px"><span data-hf-id="hf-86vw" class="f09-ring" id="f09-r3"></span><span data-hf-id="hf-3fhv" class="f09-dot" id="f09-d3"></span><span data-hf-id="hf-2o23" class="f09-chip-txt" id="f09-t3">timer #3 · 200ms</span></div>
       </div>
     </div>
   </div>
@@ -387,8 +320,9 @@
       }
 
       // ---- Scene 1 (0.0–5.0): kicker + frame-8 effect; return () => { … }; types on ----
-      tl.fromTo("#f09-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
-      tl.fromTo("#f09-panel", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.12);
+      tl.fromTo("#f09-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f09-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f09-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.12);
       tl.fromTo(qa(".f09-newln"), { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
       tl.fromTo("#f09-wash", { scaleX: 0 }, { scaleX: 0, duration: 0.01 }, 0);
       tl.fromTo("#f09-wash-edge", { scaleY: 0 }, { scaleY: 0, duration: 0.01 }, 0);
@@ -406,17 +340,17 @@
       tl.fromTo(qa(".f09-newln"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out", stagger: 0.06, immediateRender: false }, 3.1);
 
       typeLine("#f09-line6", "#f09-caret6", [
-        { t: "  " }, { t: "return", c: "f09-kw" }, { t: " () => {" }
+        { t: "  " }, { t: "return", c: "ts-kw" }, { t: " () => {" }
       ], 3.4, 0.035);
       typeLine("#f09-line8", "#f09-caret8", [{ t: "  };" }], 4.05, 0.05);
 
-      // coral wash — the one voltage — on the new cleanup block
+      // blue wash (the fix) on the new cleanup block
       tl.fromTo("#f09-wash-edge", { scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, 4.35);
       tl.fromTo("#f09-wash", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out", immediateRender: false }, 4.4);
 
       // ---- Scene 2 (5.0–9.9): clearInterval(handle); + handle ↔ handle link ----
       typeLine("#f09-line7", "#f09-caret7", [
-        { t: "    " }, { t: "clearInterval", c: "f09-fn" }, { t: "(" }, { t: "handle", c: "f09-h7" }, { t: ");" }
+        { t: "    " }, { t: "clearInterval", c: "ts-fn" }, { t: "(" }, { t: "handle", c: "f09-h7" }, { t: ");" }
       ], 6.16, 0.03);
       tl.to("#f09-st-a", { opacity: 0, duration: 0.3, ease: "power1.out" }, 7.1);
       tl.fromTo("#f09-st-b", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out", immediateRender: false }, 7.15);
@@ -427,14 +361,14 @@
       tl.set(linkPath, { strokeDasharray: linkLen, strokeDashoffset: linkLen }, 0);
       tl.fromTo(["#f09-link-a", "#f09-link-b"], { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
 
-      tl.to("#f09-h2", { backgroundColor: "rgba(232, 165, 90, 0.3)", duration: 0.35, ease: "power1.out" }, 8.14);
-      tl.to(qa(".f09-h7"), { backgroundColor: "rgba(232, 165, 90, 0.3)", duration: 0.35, ease: "power1.out" }, 8.24);
+      tl.to("#f09-h2", { backgroundColor: "rgba(49, 120, 198, 0.24)", duration: 0.35, ease: "power1.out" }, 8.14);
+      tl.to(qa(".f09-h7"), { backgroundColor: "rgba(49, 120, 198, 0.24)", duration: 0.35, ease: "power1.out" }, 8.24);
       tl.fromTo("#f09-link-a", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power3.out", transformOrigin: "50% 50%", immediateRender: false }, 8.2);
       tl.to(linkPath, { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut" }, 8.25);
       tl.fromTo("#f09-link-b", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power3.out", transformOrigin: "50% 50%", immediateRender: false }, 8.8);
       // settle the link back so the sequence diagram can lead
-      tl.to(["#f09-h2"], { backgroundColor: "rgba(232, 165, 90, 0.12)", duration: 0.6, ease: "power1.inOut" }, 10.6);
-      tl.to(qa(".f09-h7"), { backgroundColor: "rgba(232, 165, 90, 0.12)", duration: 0.6, ease: "power1.inOut" }, 10.6);
+      tl.to(["#f09-h2"], { backgroundColor: "rgba(49, 120, 198, 0.12)", duration: 0.6, ease: "power1.inOut" }, 10.6);
+      tl.to(qa(".f09-h7"), { backgroundColor: "rgba(49, 120, 198, 0.12)", duration: 0.6, ease: "power1.inOut" }, 10.6);
       tl.to("#f09-link", { opacity: 0.45, duration: 0.6, ease: "power1.inOut" }, 10.6);
 
       // ---- Scene 3 (9.9–16.4): sequence stack builds top-down ----
@@ -468,15 +402,15 @@
       // ---- Scene 4 (16.4–19.96): only one timer left ----
       tl.to("#f09-s1", { scaleX: 1, duration: 0.4, ease: "power2.inOut" }, 17.3);
       tl.to(["#f09-t1", "#f09-s1", "#f09-d1"], { opacity: 0.35, duration: 0.4, ease: "power1.inOut" }, 17.4);
-      tl.to("#f09-d1", { backgroundColor: "rgba(20, 20, 19, 0.5)", duration: 0.3, ease: "power1.out" }, 17.4);
-      tl.to("#f09-c1", { backgroundColor: "rgba(239, 233, 222, 0.5)", duration: 0.4, ease: "power1.inOut" }, 17.4);
+      tl.to("#f09-d1", { backgroundColor: "#94A3B8", duration: 0.3, ease: "power1.out" }, 17.4);
+      tl.to("#f09-c1", { backgroundColor: "rgba(241, 245, 249, 0.5)", duration: 0.4, ease: "power1.inOut" }, 17.4);
 
       tl.to("#f09-s2", { scaleX: 1, duration: 0.4, ease: "power2.inOut" }, 17.5);
       tl.to(["#f09-t2", "#f09-s2", "#f09-d2"], { opacity: 0.35, duration: 0.4, ease: "power1.inOut" }, 17.6);
-      tl.to("#f09-d2", { backgroundColor: "rgba(20, 20, 19, 0.5)", duration: 0.3, ease: "power1.out" }, 17.6);
-      tl.to("#f09-c2", { backgroundColor: "rgba(239, 233, 222, 0.5)", duration: 0.4, ease: "power1.inOut" }, 17.6);
+      tl.to("#f09-d2", { backgroundColor: "#94A3B8", duration: 0.3, ease: "power1.out" }, 17.6);
+      tl.to("#f09-c2", { backgroundColor: "rgba(241, 245, 249, 0.5)", duration: 0.4, ease: "power1.inOut" }, 17.6);
 
-      tl.to("#f09-c3", { backgroundColor: "#ECE3D4", borderColor: "rgba(20, 20, 19, 0.32)", duration: 0.4, ease: "power1.out" }, 17.8);
+      tl.to("#f09-c3", { backgroundColor: "#EAF2FB", borderColor: "#3178C6", duration: 0.4, ease: "power1.out" }, 17.8);
       tl.fromTo("#f09-note", { opacity: 0, x: 12 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 18.0);
 
       // hold to full duration

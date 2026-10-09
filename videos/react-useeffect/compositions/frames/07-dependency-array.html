@@ -1,225 +1,252 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); }
-    @font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/Inter-400.woff2") format("woff2"); }
-    @font-face { font-family: "Inter"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/Inter-700.woff2") format("woff2"); }
-    @font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); }
-    @font-face { font-family: "JetBrains Mono"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
 
-    #root[data-composition-id="07-dependency-array"] {
-      position: absolute;
-      inset: 0;
-      width: 1920px;
-      height: 1080px;
-      overflow: hidden;
-      color: #141413;
-      font-family: "Inter", sans-serif;
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
     }
-    .f07-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f07-stage { position: absolute; inset: 0; container-type: size; }
 
-    .f07-kicker {
-      position: absolute;
-      left: 80px;
-      top: 64px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.6);
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
     }
-    .f07-spike { color: #CC785C; margin-right: 14px; }
 
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+
+    /* ---- frame 07 ---- */
     .f07-head {
-      position: absolute;
-      left: 80px;
-      top: 112px;
-      font-family: "EB Garamond", Georgia, serif;
-      font-weight: 400;
-      font-size: 5cqw;
-      line-height: 1.06;
-      letter-spacing: -0.018em;
-      white-space: nowrap;
+      position: absolute; left: 80px; top: 140px;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 84px; line-height: 1.0;
+      letter-spacing: -0.025em; color: var(--ts-ink); white-space: nowrap;
     }
     .f07-word { display: inline-block; margin-right: 0.22em; }
     .f07-sub {
-      position: absolute;
-      left: 82px;
-      top: 232px;
-      font-family: "Inter", sans-serif;
-      font-size: 2.08cqw;
-      line-height: 1.3;
-      color: rgba(20, 20, 19, 0.62);
+      position: absolute; left: 82px; top: 246px;
+      font-family: var(--ts-sans); font-weight: 400; font-size: 36px; line-height: 1.3; color: var(--ts-ink-soft);
     }
-
-    .f07-cards {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 326px;
-      display: flex;
-      justify-content: center;
-      gap: 60px;
-    }
+    .f07-cards { position: absolute; left: 0; right: 0; top: 326px; display: flex; justify-content: center; gap: 60px; }
     .f07-card {
-      position: relative;
-      width: 540px;
-      height: 460px;
-      box-sizing: border-box;
-      padding: 30px 36px;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-      transform-origin: 50% 60%;
+      position: relative; width: 540px; height: 460px; box-sizing: border-box; padding: 30px 36px;
+      background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 12px;
+      box-shadow: var(--ts-shadow); transform-origin: 50% 60%;
     }
     .f07-top { display: flex; align-items: baseline; gap: 16px; }
-    .f07-idx {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      letter-spacing: 0.06em;
-      color: rgba(20, 20, 19, 0.45);
-    }
-    .f07-label {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      letter-spacing: 0.02em;
-      color: rgba(20, 20, 19, 0.75);
-    }
+    .f07-idx { font-family: var(--ts-mono); font-size: 24px; letter-spacing: 0.06em; color: var(--ts-muted); }
+    .f07-label { font-family: var(--ts-mono); font-size: 24px; font-weight: 500; letter-spacing: 0.02em; color: var(--ts-ink-soft); }
     .f07-code {
-      margin-top: 18px;
-      height: 80px;
-      box-sizing: border-box;
-      padding: 0 22px;
-      display: flex;
-      align-items: center;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 29px;
-      color: #FAF9F5;
-      white-space: pre;
+      margin-top: 18px; height: 80px; box-sizing: border-box; padding: 0 22px;
+      display: flex; align-items: center; background: var(--ts-code-bg);
+      border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 29px; color: var(--ts-code-text); white-space: pre;
+      font-variant-ligatures: none;
     }
-    .f07-p { color: rgba(250, 249, 245, 0.55); }
-    .f07-d { color: #5DB8A6; }
-
-    .f07-tl {
-      position: relative;
-      margin-top: 22px;
-      width: 468px;
-      height: 130px;
-    }
+    .f07-tl { position: relative; margin-top: 22px; width: 468px; height: 130px; }
     .f07-tl-name {
-      position: absolute;
-      left: 0;
-      top: 0;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 16px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.4);
+      position: absolute; left: 0; top: 0; font-family: var(--ts-sans); font-weight: 600; font-size: 16px;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted);
     }
-    .f07-axis {
-      position: absolute;
-      left: 0;
-      width: 468px;
-      top: 70px;
-      height: 1px;
-      background: rgba(20, 20, 19, 0.2);
-      transform-origin: 0% 50%;
-    }
-    .f07-tick {
-      position: absolute;
-      top: 59px;
-      width: 2px;
-      height: 23px;
-      margin-left: -1px;
-      background: #141413;
-      transform-origin: 50% 50%;
-    }
+    .f07-axis { position: absolute; left: 0; width: 468px; top: 70px; height: 2px; margin-top: -1px; background: var(--ts-hairline); transform-origin: 0% 50%; }
+    .f07-tick { position: absolute; top: 59px; width: 2px; height: 23px; margin-left: -1px; background: var(--ts-ink); transform-origin: 50% 50%; }
     .f07-tnum {
-      position: absolute;
-      top: 92px;
-      width: 40px;
-      margin-left: -20px;
-      text-align: center;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 17px;
-      color: rgba(20, 20, 19, 0.45);
+      position: absolute; top: 92px; width: 40px; margin-left: -20px; text-align: center;
+      font-family: var(--ts-mono); font-size: 17px; color: var(--ts-muted);
     }
     .f07-cnt {
-      position: absolute;
-      top: 20px;
-      width: 40px;
-      margin-left: -20px;
-      text-align: center;
-      font-family: "JetBrains Mono", monospace;
-      font-weight: 700;
-      font-size: 26px;
-      color: #141413;
+      position: absolute; top: 20px; width: 40px; margin-left: -20px; text-align: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 26px; color: var(--ts-ink);
     }
     .f07-ghost, .f07-dot {
-      position: absolute;
-      top: 59px;
-      width: 22px;
-      height: 22px;
-      margin-left: -11px;
-      box-sizing: border-box;
-      border-radius: 9999px;
+      position: absolute; top: 59px; width: 22px; height: 22px; margin-left: -11px;
+      box-sizing: border-box; border-radius: 9999px;
     }
-    .f07-ghost { border: 1px dashed rgba(20, 20, 19, 0.24); }
-    .f07-dot { background: #E8A55A; transform-origin: 50% 50%; }
-
-    .f07-rule {
-      position: absolute;
-      left: 36px;
-      right: 36px;
-      bottom: 92px;
-      height: 1px;
-      background: rgba(20, 20, 19, 0.12);
-      transform-origin: 0% 50%;
-    }
+    .f07-ghost { border: 1px dashed #CBD5E1; }
+    .f07-dot { background: var(--ts-blue); transform-origin: 50% 50%; }
+    .f07-rule { position: absolute; left: 36px; right: 36px; bottom: 92px; height: 1px; background: var(--ts-hairline); transform-origin: 0% 50%; }
     .f07-cap {
-      position: absolute;
-      left: 36px;
-      right: 36px;
-      bottom: 34px;
-      font-family: "Inter", sans-serif;
-      font-size: 33px;
-      line-height: 1.2;
-      color: #141413;
-      white-space: nowrap;
+      position: absolute; left: 36px; right: 36px; bottom: 34px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 33px; line-height: 1.2; letter-spacing: -0.01em;
+      color: var(--ts-ink); white-space: nowrap;
     }
   </style>
 
   <div data-hf-id="hf-6qty" id="root" data-composition-id="07-dependency-array" data-width="1920" data-height="1080" data-duration="16.58">
-    <div data-hf-id="hf-0gem" id="f07-bg" class="f07-bg clip" data-start="0" data-duration="16.58" data-track-index="0"></div>
+    <div data-hf-id="hf-0gem" id="f07-bg" class="ts-bg clip" data-start="0" data-duration="16.58" data-track-index="0"></div>
 
-    <div data-hf-id="hf-pn0f" id="f07-stage" class="f07-stage clip" data-start="0" data-duration="16.58" data-track-index="1">
-      <div data-hf-id="hf-lgyo" class="f07-kicker"><span data-hf-id="hf-x4o2" class="f07-spike">✱</span>Tweede argument</div>
+    <div data-hf-id="hf-pn0f" id="f07-stage" class="ts-stage clip" data-start="0" data-duration="16.58" data-track-index="1">
+      <div data-hf-id="hf-lgyo" class="ts-kicker" id="f07-kicker"><div data-hf-id="hf-x4o2" class="ts-kicker-bar" id="f07-kbar"></div><span data-hf-id="hf-k07t" class="ts-kicker-text" id="f07-ktext">Tweede argument</span></div>
       <div data-hf-id="hf-94fg" class="f07-head"><span data-hf-id="hf-bpw4" class="f07-word">De</span><span data-hf-id="hf-r3yq" class="f07-word">dependency</span><span data-hf-id="hf-mpq5" class="f07-word" style="margin-right:0">array</span></div>
       <div data-hf-id="hf-qv9p" class="f07-sub">bepaalt wanneer je effect loopt</div>
 
       <div data-hf-id="hf-4swz" class="f07-cards">
         <div data-hf-id="hf-c82g" class="f07-card" data-card="0">
           <div data-hf-id="hf-s90v" class="f07-top"><span data-hf-id="hf-7dff" class="f07-idx">01</span><span data-hf-id="hf-icp1" class="f07-label">geen array</span></div>
-          <div data-hf-id="hf-1ygd" class="f07-code"><span data-hf-id="hf-gnx5">useEffect</span><span data-hf-id="hf-2urj" class="f07-p">(</span><span data-hf-id="hf-okz5">fn</span><span data-hf-id="hf-392k" class="f07-p">)</span></div>
+          <div data-hf-id="hf-1ygd" class="f07-code"><span data-hf-id="hf-gnx5" class="ts-fn">useEffect</span><span data-hf-id="hf-2urj" class="ts-punct">(</span><span data-hf-id="hf-okz5">fn</span><span data-hf-id="hf-392k" class="ts-punct">)</span></div>
           <div data-hf-id="hf-k9fw" class="f07-tl" data-tl="0"><div data-hf-id="hf-522n" class="f07-tl-name">renders</div><div data-hf-id="hf-58hp" class="f07-axis"></div></div>
           <div data-hf-id="hf-okt8" class="f07-rule"></div>
           <div data-hf-id="hf-p6os" class="f07-cap">na elke render</div>
         </div>
         <div data-hf-id="hf-czq9" class="f07-card" data-card="1">
           <div data-hf-id="hf-z2rz" class="f07-top"><span data-hf-id="hf-6z4e" class="f07-idx">02</span><span data-hf-id="hf-nt5t" class="f07-label">lege array</span></div>
-          <div data-hf-id="hf-proh" class="f07-code"><span data-hf-id="hf-w4x9">useEffect</span><span data-hf-id="hf-a8n3" class="f07-p">(</span><span data-hf-id="hf-qn1h">fn</span><span data-hf-id="hf-4fzn" class="f07-p">, </span><span data-hf-id="hf-4d35" class="f07-d">[]</span><span data-hf-id="hf-weo4" class="f07-p">)</span></div>
+          <div data-hf-id="hf-proh" class="f07-code"><span data-hf-id="hf-w4x9" class="ts-fn">useEffect</span><span data-hf-id="hf-a8n3" class="ts-punct">(</span><span data-hf-id="hf-qn1h">fn</span><span data-hf-id="hf-4fzn" class="ts-punct">, </span><span data-hf-id="hf-4d35" class="ts-type">[]</span><span data-hf-id="hf-weo4" class="ts-punct">)</span></div>
           <div data-hf-id="hf-n8ph" class="f07-tl" data-tl="1"><div data-hf-id="hf-mqwv" class="f07-tl-name">renders</div><div data-hf-id="hf-at75" class="f07-axis"></div></div>
           <div data-hf-id="hf-edsk" class="f07-rule"></div>
-          <div data-hf-id="hf-2xys" class="f07-cap">1× — na de eerste render</div>
+          <div data-hf-id="hf-2xys" class="f07-cap">1× · na de eerste render</div>
         </div>
         <div data-hf-id="hf-gxua" class="f07-card" data-card="2">
           <div data-hf-id="hf-yogy" class="f07-top"><span data-hf-id="hf-6ktd" class="f07-idx">03</span><span data-hf-id="hf-ilsq" class="f07-label">[count]</span></div>
-          <div data-hf-id="hf-qylk" class="f07-code"><span data-hf-id="hf-xbuc">useEffect</span><span data-hf-id="hf-9uc2" class="f07-p">(</span><span data-hf-id="hf-rtyk">fn</span><span data-hf-id="hf-w76b" class="f07-p">, </span><span data-hf-id="hf-bm7s" class="f07-d">[count]</span><span data-hf-id="hf-v7r1" class="f07-p">)</span></div>
+          <div data-hf-id="hf-qylk" class="f07-code"><span data-hf-id="hf-xbuc" class="ts-fn">useEffect</span><span data-hf-id="hf-9uc2" class="ts-punct">(</span><span data-hf-id="hf-rtyk">fn</span><span data-hf-id="hf-w76b" class="ts-punct">, </span><span data-hf-id="hf-bm7s" class="ts-type">[count]</span><span data-hf-id="hf-v7r1" class="ts-punct">)</span></div>
           <div data-hf-id="hf-r6ti" class="f07-tl" data-tl="2"><div data-hf-id="hf-51ax" class="f07-tl-name">count</div><div data-hf-id="hf-c048" class="f07-axis"></div></div>
           <div data-hf-id="hf-d6vh" class="f07-rule"></div>
           <div data-hf-id="hf-nxwk" class="f07-cap">als count verandert</div>
@@ -287,14 +314,15 @@
       var E = "power3.out";
       var tl = gsap.timeline({ paused: true });
 
-      // Scene 1 (0.0–5.5): kicker, headline on "dependency array", sub-line on "bepaalt…"
-      tl.fromTo(one("kicker"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.55, ease: E }, 0.08);
+      // Scene 1 (0.0-5.5): kicker, headline on "dependency array", sub-line on "bepaalt…"
+      tl.fromTo("#f07-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: E }, 0.08);
+      tl.fromTo("#f07-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: E }, 0.18);
       all("word").forEach(function (w, i) {
         tl.fromTo(w, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.7, ease: E }, 1.18 + i * 0.12);
       });
       tl.fromTo(one("sub"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, 3.2);
 
-      // Scenes 2–4: each card lands on its cue, ticks sweep in, dots fire on the "when" cue
+      // Scenes 2-4: each card lands on its cue, ticks sweep in, dots fire on the "when" cue
       var CARD_AT = [5.6, 8.06, 11.84];
       var DOT_AT = [6.6, 9.36, 13.34];
       var DOT_STAGGER = [0.12, 0.12, 0.22];
@@ -317,13 +345,13 @@
 
         r.dots.forEach(function (d, j) {
           var dt = DOT_AT[k] + j * DOT_STAGGER[k];
-          tl.fromTo(d.el, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, dt);
+          tl.fromTo(d.el, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.4, ease: E }, dt);
           if (k === 2) {
             var c = r.cnts[d.i];
-            tl.fromTo(c, { color: "#141413" }, { color: "#CC785C", duration: 0.2, ease: "power2.out", immediateRender: false }, dt - 0.04);
+            tl.fromTo(c, { color: "#1E293B" }, { color: "#3178C6", duration: 0.2, ease: "power2.out", immediateRender: false }, dt - 0.04);
             tl.fromTo(c, { scale: 1 }, { scale: 1.22, duration: 0.2, ease: "power2.out", immediateRender: false }, dt - 0.04);
             tl.to(c, { scale: 1, duration: 0.35, ease: "power2.out" }, dt + 0.2);
-            tl.to(c, { color: "#141413", duration: 0.5, ease: "power2.inOut" }, dt + 1.1);
+            tl.to(c, { color: "#1E293B", duration: 0.5, ease: "power2.inOut" }, dt + 1.1);
           }
         });
         tl.fromTo(one("cap", card), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.55, ease: E }, DOT_AT[k] + 0.1);

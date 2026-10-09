@@ -1,449 +1,289 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EB_Garamond-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
     @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
-    .f13-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f13-stage { position: absolute; inset: 0; }
 
-    /* kicker */
-    .f13-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-      white-space: nowrap;
-    }
-    .f13-kicker .f13-spike { color: #CC785C; margin-right: 14px; }
-
-    /* code surface */
-    .f13-panel {
-      position: absolute;
-      left: 80px;
-      top: 170px;
-      width: 1080px;
-      height: 690px;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .f13-titlebar {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 56px;
-      background: #252320;
-      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(250, 249, 245, 0.62);
-      letter-spacing: 0.02em;
-    }
-    .f13-status {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 46px;
-      background: #252320;
-      border-top: 1px solid rgba(250, 249, 245, 0.14);
-      font-family: "JetBrains Mono", monospace;
-      font-size: 19px;
-      color: rgba(250, 249, 245, 0.45);
-      letter-spacing: 0.04em;
-    }
-    .f13-st {
-      position: absolute;
-      left: 28px;
-      top: 0;
-      line-height: 46px;
-      white-space: nowrap;
-    }
+    /* ---- frame 13 positions ---- */
+    #f13-kicker { white-space: nowrap; }
+    #f13-panel { left: 80px; top: 170px; width: 1080px; height: 690px; }
+    .f13-st { position: absolute; left: 28px; top: 0; line-height: 40px; white-space: nowrap; }
     .f13-code {
-      position: absolute;
-      left: 0; right: 0;
-      top: 80px;
-      height: 560px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 32px;
-      line-height: 50px;
-      color: #FAF9F5;
-      font-variant-ligatures: none;
+      position: absolute; left: 0; right: 0; top: 80px; height: 560px;
+      font-family: var(--ts-mono); font-size: 32px; line-height: 50px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
     }
-    .f13-wash {
-      position: absolute;
-      left: 0;
-      top: 150px;
-      width: 1080px;
-      height: 50px;
-      background: rgba(204, 120, 92, 0.18);
-      transform-origin: left center;
-    }
-    .f13-wash-edge {
-      position: absolute;
-      left: 0;
-      top: 150px;
-      width: 4px;
-      height: 50px;
-      background: #CC785C;
-      transform-origin: center top;
-    }
-    .f13-ln {
-      position: absolute;
-      left: 0;
-      width: 60px;
-      height: 50px;
-      text-align: right;
-      color: rgba(250, 249, 245, 0.32);
-      font-size: 24px;
-    }
-    .f13-row {
-      position: absolute;
-      left: 0; right: 0;
-      height: 50px;
-      white-space: pre;
-    }
-    .f13-txt {
-      position: absolute;
-      left: 92px;
-      top: 0;
-      white-space: pre;
-    }
+    .f13-wash { position: absolute; left: 0; top: 150px; width: 1080px; height: 50px; background: var(--ts-wash); transform-origin: left center; }
+    .f13-wash-edge { position: absolute; left: 0; top: 150px; width: 4px; height: 50px; background: var(--ts-blue); transform-origin: center top; }
+    .f13-ln { position: absolute; left: 0; width: 60px; height: 50px; text-align: right; color: var(--ts-code-ln); font-size: 22px; }
+    .f13-row { position: absolute; left: 0; right: 0; height: 50px; white-space: pre; }
+    .f13-txt { position: absolute; left: 92px; top: 0; white-space: pre; }
     .f13-ch { display: inline; }
-    .f13-kw { color: #CC785C; }
-    .f13-fn { color: #E8A55A; }
-    .f13-str { color: #5DB8A6; }
-    .f13-dim { color: rgba(250, 249, 245, 0.6); }
-    .f13-caret {
-      position: absolute;
-      top: 8px;
-      left: 0;
-      width: 3px;
-      height: 34px;
-      background: #FAF9F5;
-      opacity: 0;
-    }
+    .f13-attr { color: var(--ts-ink-soft); }
+    .f13-caret { position: absolute; top: 8px; left: 0; width: 2px; height: 34px; background: var(--ts-blue); opacity: 0; }
 
     /* labels */
     .f13-label {
-      position: absolute;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
-      white-space: nowrap;
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label); white-space: nowrap;
     }
 
     /* scherm card group */
     .f13-scr { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 1520px 360px; }
-    .f13-card {
-      position: absolute;
-      left: 1200px;
-      top: 200px;
-      width: 640px;
-      height: 320px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
+    #f13-card { left: 1200px; top: 200px; width: 640px; height: 320px; }
     .f13-input {
-      position: absolute;
-      left: 40px;
-      top: 40px;
-      width: 560px;
-      height: 72px;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.28);
-      border-radius: 8px;
-      overflow: hidden;
+      position: absolute; left: 40px; top: 40px; width: 560px; height: 72px; box-sizing: border-box;
+      background: var(--ts-ground); border: 1px solid var(--ts-muted); border-radius: 6px; overflow: hidden;
     }
-    .f13-intext {
-      position: absolute;
-      left: 22px;
-      top: 0;
-      font-family: "Inter", sans-serif;
-      font-size: 34px;
-      line-height: 70px;
-      color: #141413;
-    }
-    .f13-incaret {
-      position: absolute;
-      left: 22px;
-      top: 18px;
-      width: 2px;
-      height: 36px;
-      background: #141413;
-    }
+    .f13-intext { position: absolute; left: 22px; top: 0; font-family: var(--ts-sans); font-size: 34px; line-height: 70px; color: var(--ts-ink); }
+    .f13-incaret { position: absolute; left: 22px; top: 18px; width: 2px; height: 36px; background: var(--ts-ink); }
     .f13-ring {
-      position: absolute;
-      left: 32px;
-      top: 32px;
-      width: 576px;
-      height: 88px;
-      border: 3px solid #E8A55A;
-      border-radius: 12px;
-      box-sizing: border-box;
+      position: absolute; left: 32px; top: 32px; width: 576px; height: 88px; box-sizing: border-box;
+      border: 2px solid var(--ts-blue); border-radius: 8px;
     }
-    .f13-btn {
-      position: absolute;
-      left: 40px;
-      top: 140px;
-      height: 60px;
-      padding: 0 26px;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.32);
-      border-radius: 8px;
-      font-family: "Inter", sans-serif;
-      font-weight: 500;
-      font-size: 28px;
-      line-height: 58px;
-      color: #141413;
-      white-space: nowrap;
-      box-sizing: border-box;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.12);
-    }
-    .f13-p {
-      position: absolute;
-      left: 40px;
-      top: 236px;
-      font-family: "Inter", sans-serif;
-      font-size: 32px;
-      line-height: 44px;
-      color: #141413;
-      white-space: nowrap;
-    }
+    #f13-btn { position: absolute; left: 40px; top: 142px; white-space: nowrap; }
+    .f13-p { position: absolute; left: 40px; top: 236px; font-family: var(--ts-sans); font-size: 32px; line-height: 44px; color: var(--ts-ink); white-space: nowrap; }
     .f13-pname { display: inline-block; }
     .f13-rtag {
-      position: absolute;
-      right: 104px;
-      top: 185px;
-      height: 32px;
-      padding: 0 12px;
-      border: 1px solid rgba(20, 20, 19, 0.28);
-      border-radius: 6px;
-      background: #ECE3D4;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 20px;
-      line-height: 30px;
-      color: #141413;
-      white-space: nowrap;
-      box-sizing: border-box;
+      position: absolute; right: 104px; top: 185px; height: 32px; padding: 0 14px; box-sizing: border-box;
+      border-radius: 999px; background: var(--ts-blue-tint);
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; line-height: 32px; color: var(--ts-blue-dark); white-space: nowrap;
     }
     .f13-ripple {
-      position: absolute;
-      left: 1292px;
-      top: 320px;
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 2px solid rgba(20, 20, 19, 0.35);
-      opacity: 0;
+      position: absolute; left: 1292px; top: 320px; width: 100px; height: 100px; border-radius: 50%;
+      border: 2px solid rgba(49, 120, 198, 0.2); background: rgba(49, 120, 198, 0.08); opacity: 0;
     }
 
     /* state chip */
     .f13-chip {
-      position: absolute;
-      left: 1200px;
-      top: 560px;
-      height: 56px;
-      padding: 0 22px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 8px;
-      box-sizing: border-box;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      line-height: 54px;
-      color: #141413;
-      white-space: nowrap;
+      position: absolute; left: 1200px; top: 560px; height: 56px; padding: 0 22px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 26px; font-weight: 500; line-height: 54px; color: var(--ts-ink); white-space: nowrap;
     }
-    .f13-chip-lab { color: rgba(20, 20, 19, 0.5); font-size: 20px; letter-spacing: 0.16em; text-transform: uppercase; margin-right: 18px; }
-    .f13-val {
-      position: relative;
-      display: inline-block;
-      vertical-align: top;
-      height: 54px;
-      overflow: hidden;
-    }
+    .f13-chip-lab { font-family: var(--ts-sans); font-weight: 600; color: var(--ts-muted); font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 18px; }
+    .f13-val { position: relative; display: inline-block; vertical-align: top; height: 54px; overflow: hidden; }
     .f13-val span { display: block; white-space: pre; }
     .f13-val .f13-v2 { position: absolute; left: 0; top: 0; }
     .f13-note {
-      position: absolute;
-      right: 80px;
-      top: 572px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      letter-spacing: 0.02em;
-      color: #141413;
-      white-space: nowrap;
+      position: absolute; right: 80px; top: 570px;
+      font-family: var(--ts-sans); font-weight: 600; font-size: 30px; letter-spacing: -0.01em; color: var(--ts-ink); white-space: nowrap;
     }
 
     /* cursor */
-    .f13-cursor {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 224px;
-      height: 224px;
-      pointer-events: none;
-      z-index: 20;
-      filter: drop-shadow(0 8px 12px rgba(20, 20, 19, 0.22));
-    }
+    .f13-cursor { position: absolute; left: 0; top: 0; width: 224px; height: 224px; pointer-events: none; z-index: 20; }
     .f13-cursor svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-      fill: #FAF9F5;
-      stroke: #141413;
-      stroke-width: 1.4;
-      stroke-linejoin: round;
-      stroke-linecap: round;
+      display: block; width: 100%; height: 100%;
+      fill: #1E293B; stroke: #FFFFFF; stroke-width: 1.2; stroke-linejoin: round; stroke-linecap: round;
     }
 
     /* two-way diagram */
     .f13-node {
-      position: absolute;
-      top: 365px;
-      width: 260px;
-      height: 150px;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      border-radius: 12px;
-      box-sizing: border-box;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      position: absolute; top: 365px; width: 260px; height: 150px; box-sizing: border-box;
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
     }
-    .f13-node-in { left: 1000px; background: #FAF9F5; }
-    .f13-node-st { left: 1560px; background: #EFE9DE; }
-    .f13-node .f13-label { left: 22px; top: 18px; font-size: 20px; }
+    .f13-node-in { left: 1000px; background: var(--ts-ground); }
+    .f13-node-st { left: 1560px; background: var(--ts-panel); }
+    .f13-node .f13-label { left: 22px; top: 22px; font-size: 18px; }
     .f13-mini {
-      position: absolute;
-      left: 22px;
-      top: 64px;
-      width: 214px;
-      height: 56px;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.28);
-      border-radius: 8px;
-      box-sizing: border-box;
+      position: absolute; left: 22px; top: 64px; width: 214px; height: 56px; box-sizing: border-box;
+      background: var(--ts-ground); border: 1px solid var(--ts-muted); border-radius: 6px;
     }
-    .f13-mini-txt {
-      position: absolute;
-      left: 16px;
-      top: 0;
-      font-family: "Inter", sans-serif;
-      font-size: 28px;
-      line-height: 54px;
-      color: #141413;
-      white-space: pre;
-    }
-    .f13-mini-caret {
-      position: absolute;
-      left: 16px;
-      top: 13px;
-      width: 2px;
-      height: 28px;
-      background: #141413;
-    }
+    .f13-mini-txt { position: absolute; left: 16px; top: 0; font-family: var(--ts-sans); font-size: 28px; line-height: 54px; color: var(--ts-ink); white-space: pre; }
+    .f13-mini-caret { position: absolute; left: 16px; top: 13px; width: 2px; height: 28px; background: var(--ts-ink); }
     .f13-mini-ring {
-      position: absolute;
-      left: 14px;
-      top: 56px;
-      width: 230px;
-      height: 72px;
-      border: 3px solid #E8A55A;
-      border-radius: 11px;
-      box-sizing: border-box;
-      opacity: 0;
+      position: absolute; left: 14px; top: 56px; width: 230px; height: 72px; box-sizing: border-box;
+      border: 2px solid var(--ts-blue); border-radius: 8px; opacity: 0;
     }
-    .f13-sval {
-      position: absolute;
-      left: 22px;
-      top: 66px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 30px;
-      line-height: 54px;
-      color: #141413;
-    }
+    .f13-sval { position: absolute; left: 22px; top: 66px; font-family: var(--ts-mono); font-size: 30px; font-weight: 500; line-height: 54px; color: var(--ts-ink); }
     .f13-sval .f13-val { height: 54px; min-width: 10ch; }
-    .f13-diag {
-      position: absolute;
-      left: 0; top: 0;
-      width: 1920px;
-      height: 1080px;
-      overflow: visible;
-      pointer-events: none;
-    }
+    .f13-diag { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
     .f13-alab {
-      position: absolute;
-      left: 1110px;
-      width: 600px;
-      text-align: center;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      letter-spacing: 0.02em;
-      color: #141413;
-      white-space: nowrap;
+      position: absolute; left: 1110px; width: 600px; text-align: center;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
     }
 
     /* term */
     .f13-term-lab { left: 1110px; width: 600px; top: 676px; text-align: center; }
     .f13-term {
-      position: absolute;
-      left: 960px;
-      width: 900px;
-      top: 712px;
-      text-align: center;
-      font-family: "EB Garamond", serif;
-      font-style: italic;
-      font-weight: 400;
-      font-size: 92px;
-      line-height: 1.05;
-      letter-spacing: -0.012em;
-      color: #141413;
-      white-space: nowrap;
+      position: absolute; left: 960px; width: 900px; top: 714px; text-align: center;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 76px; line-height: 1.05;
+      letter-spacing: -0.03em; color: var(--ts-ink); white-space: nowrap;
     }
     .f13-term-rule {
-      position: absolute;
-      left: 1210px;
-      top: 830px;
-      width: 400px;
-      height: 1px;
-      background: rgba(20, 20, 19, 0.2);
-      transform-origin: center center;
+      position: absolute; left: 1210px; top: 822px; width: 400px; height: 6px; border-radius: 3px;
+      background: var(--ts-blue); transform-origin: left center;
     }
   </style>
 
   <div data-hf-id="hf-f13r" id="root" data-composition-id="13-dubbele-binding" data-width="1920" data-height="1080" data-duration="17.36">
-    <div data-hf-id="hf-f13b" class="f13-bg clip" id="f13-bg" data-start="0" data-duration="17.36" data-track-index="0"></div>
+    <div data-hf-id="hf-f13b" class="ts-bg clip" id="f13-bg" data-start="0" data-duration="17.36" data-track-index="0"></div>
 
-    <div data-hf-id="hf-f13s" class="f13-stage clip" id="f13-stage" data-start="0" data-duration="17.36" data-track-index="1">
-      <div data-hf-id="hf-f13k" class="f13-kicker" id="f13-kicker"><span data-hf-id="hf-f13k1" class="f13-spike">✱</span>De oplossing</div>
+    <div data-hf-id="hf-f13s" class="ts-stage clip" id="f13-stage" data-start="0" data-duration="17.36" data-track-index="1">
+      <div data-hf-id="hf-f13k" class="ts-kicker" id="f13-kicker"><div data-hf-id="hf-f13k1" class="ts-kicker-bar" id="f13-kbar"></div><span data-hf-id="hf-f13k2" class="ts-kicker-text" id="f13-ktext">De oplossing</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-f13p" class="f13-panel" id="f13-panel">
-        <div data-hf-id="hf-f13t" class="f13-titlebar">NameInput.tsx</div>
+      <div data-hf-id="hf-f13p" class="ts-code-surface" id="f13-panel">
+        <div data-hf-id="hf-f13t" class="ts-code-title">NameInput.tsx</div>
         <div data-hf-id="hf-f13c" class="f13-code">
           <div data-hf-id="hf-f13w" class="f13-wash" id="f13-wash"></div>
           <div data-hf-id="hf-f13we" class="f13-wash-edge" id="f13-wash-edge"></div>
@@ -462,25 +302,25 @@
           <div data-hf-id="hf-f13g11" class="f13-ln" id="f13-ln14" style="top:500px">14</div>
 
           <!-- lines above the insert -->
-          <div data-hf-id="hf-f13l1" class="f13-row" style="top:0px"><span data-hf-id="hf-f13l1t" class="f13-txt"><span data-hf-id="hf-f13l1k" class="f13-kw">return</span> (</span></div>
-          <div data-hf-id="hf-f13l2" class="f13-row" style="top:50px"><span data-hf-id="hf-f13l2t" class="f13-txt">  &lt;&gt;</span></div>
-          <div data-hf-id="hf-f13l3" class="f13-row" style="top:100px"><span data-hf-id="hf-f13l3t" class="f13-txt">    &lt;input <span data-hf-id="hf-f13l3a" class="f13-dim">type</span>=<span data-hf-id="hf-f13l3s" class="f13-str">"text"</span></span></div>
+          <div data-hf-id="hf-f13l1" class="f13-row" style="top:0px"><span data-hf-id="hf-f13l1t" class="f13-txt"><span data-hf-id="hf-f13l1k" class="ts-kw">return</span> (</span></div>
+          <div data-hf-id="hf-f13l2" class="f13-row" style="top:50px"><span data-hf-id="hf-f13l2t" class="f13-txt">  <span data-hf-id="hf-f13l2p" class="ts-punct">&lt;&gt;</span></span></div>
+          <div data-hf-id="hf-f13l3" class="f13-row" style="top:100px"><span data-hf-id="hf-f13l3t" class="f13-txt">    <span data-hf-id="hf-f13l3p" class="ts-punct">&lt;input</span> <span data-hf-id="hf-f13l3a" class="f13-attr">type</span>=<span data-hf-id="hf-f13l3s" class="ts-str">"text"</span></span></div>
 
           <!-- the new line -->
           <div data-hf-id="hf-f13nv" class="f13-row" style="top:150px"><span data-hf-id="hf-f13nvt" class="f13-txt" id="f13-vline"></span><span data-hf-id="hf-f13nvc" class="f13-caret" id="f13-vcaret"></span></div>
 
           <!-- lines below the insert (shift down on cue) -->
           <div data-hf-id="hf-f13low" id="f13-lower" style="position:absolute;left:0;right:0;top:150px;height:350px;">
-            <div data-hf-id="hf-f13l4" class="f13-row" style="top:0px"><span data-hf-id="hf-f13l4t" class="f13-txt">      <span data-hf-id="hf-f13l4a" class="f13-dim">onChange</span>={(e) =&gt; <span data-hf-id="hf-f13l4f" class="f13-fn">setName</span>(e.target.value)} /&gt;</span></div>
-            <div data-hf-id="hf-f13l5" class="f13-row" style="top:50px"><span data-hf-id="hf-f13l5t" class="f13-txt">    &lt;button <span data-hf-id="hf-f13l5a" class="f13-dim">onClick</span>={() =&gt; <span data-hf-id="hf-f13l5f" class="f13-fn">setName</span>(<span data-hf-id="hf-f13l5s" class="f13-str">''</span>)}&gt;</span></div>
+            <div data-hf-id="hf-f13l4" class="f13-row" style="top:0px"><span data-hf-id="hf-f13l4t" class="f13-txt">      <span data-hf-id="hf-f13l4a" class="f13-attr">onChange</span>={(e) <span data-hf-id="hf-f13l4k" class="ts-kw">=&gt;</span> <span data-hf-id="hf-f13l4f" class="ts-fn">setName</span>(e.target.value)} <span data-hf-id="hf-f13l4p" class="ts-punct">/&gt;</span></span></div>
+            <div data-hf-id="hf-f13l5" class="f13-row" style="top:50px"><span data-hf-id="hf-f13l5t" class="f13-txt">    <span data-hf-id="hf-f13l5p" class="ts-punct">&lt;button</span> <span data-hf-id="hf-f13l5a" class="f13-attr">onClick</span>={() <span data-hf-id="hf-f13l5k" class="ts-kw">=&gt;</span> <span data-hf-id="hf-f13l5f" class="ts-fn">setName</span>(<span data-hf-id="hf-f13l5s" class="ts-str">''</span>)}<span data-hf-id="hf-f13l5q" class="ts-punct">&gt;</span></span></div>
             <div data-hf-id="hf-f13l6" class="f13-row" style="top:100px"><span data-hf-id="hf-f13l6t" class="f13-txt">      Leegmaken</span></div>
-            <div data-hf-id="hf-f13l7" class="f13-row" style="top:150px"><span data-hf-id="hf-f13l7t" class="f13-txt">    &lt;/button&gt;</span></div>
-            <div data-hf-id="hf-f13l8" class="f13-row" style="top:200px"><span data-hf-id="hf-f13l8t" class="f13-txt">    &lt;p&gt;Je typte: {name}&lt;/p&gt;</span></div>
-            <div data-hf-id="hf-f13l9" class="f13-row" style="top:250px"><span data-hf-id="hf-f13l9t" class="f13-txt">  &lt;/&gt;</span></div>
+            <div data-hf-id="hf-f13l7" class="f13-row" style="top:150px"><span data-hf-id="hf-f13l7t" class="f13-txt">    <span data-hf-id="hf-f13l7p" class="ts-punct">&lt;/button&gt;</span></span></div>
+            <div data-hf-id="hf-f13l8" class="f13-row" style="top:200px"><span data-hf-id="hf-f13l8t" class="f13-txt">    <span data-hf-id="hf-f13l8p" class="ts-punct">&lt;p&gt;</span>Je typte: {name}<span data-hf-id="hf-f13l8q" class="ts-punct">&lt;/p&gt;</span></span></div>
+            <div data-hf-id="hf-f13l9" class="f13-row" style="top:250px"><span data-hf-id="hf-f13l9t" class="f13-txt">  <span data-hf-id="hf-f13l9p" class="ts-punct">&lt;/&gt;</span></span></div>
             <div data-hf-id="hf-f13l10" class="f13-row" style="top:300px"><span data-hf-id="hf-f13l10t" class="f13-txt">);</span></div>
           </div>
         </div>
-        <div data-hf-id="hf-f13ss" class="f13-status">
+        <div data-hf-id="hf-f13ss" class="ts-code-status">
           <span data-hf-id="hf-f13sa" class="f13-st" id="f13-st-a">input · onChange · geen value</span>
           <span data-hf-id="hf-f13sb" class="f13-st" id="f13-st-b">input · value={name} · onChange</span>
         </div>
@@ -489,13 +329,13 @@
       <!-- scherm card group (first half) -->
       <div data-hf-id="hf-f13sg" class="f13-scr" id="f13-scr">
         <div data-hf-id="hf-f13sl" class="f13-label" id="f13-lab-scr" style="left:1200px;top:156px">scherm</div>
-        <div data-hf-id="hf-f13cd" class="f13-card" id="f13-card">
+        <div data-hf-id="hf-f13cd" class="ts-card" id="f13-card">
           <div data-hf-id="hf-f13in" class="f13-input" id="f13-input">
             <span data-hf-id="hf-f13it" class="f13-intext" id="f13-intext">Sam</span>
             <span data-hf-id="hf-f13ic" class="f13-incaret" id="f13-incaret"></span>
           </div>
           <div data-hf-id="hf-f13rg" class="f13-ring" id="f13-ring"></div>
-          <div data-hf-id="hf-f13bt" class="f13-btn" id="f13-btn">Leegmaken</div>
+          <div data-hf-id="hf-f13bt" class="ts-btn" id="f13-btn">Leegmaken</div>
           <div data-hf-id="hf-f13pp" class="f13-p">Je typte: <span data-hf-id="hf-f13pn" class="f13-pname" id="f13-pname">Sam</span></div>
         </div>
         <div data-hf-id="hf-f13rt" class="f13-rtag" id="f13-rtag"><span data-hf-id="hf-f13rv" class="f13-val" style="height:30px"><span data-hf-id="hf-f13r1" class="f13-v1" id="f13-r1">render #4</span><span data-hf-id="hf-f13r2" class="f13-v2" id="f13-r2">render #5</span></span></div>
@@ -508,11 +348,11 @@
 
       <!-- two-way diagram (second half) -->
       <svg data-hf-id="hf-f13dg" class="f13-diag" id="f13-diag" viewBox="0 0 1920 1080" width="1920" height="1080">
-        <path data-hf-id="hf-f13au" id="f13-arc-up" fill="none" stroke="rgba(20,20,19,0.72)" stroke-width="2.5" stroke-linecap="round" d="M1260,410 C1340,290 1480,290 1560,410" />
-        <path data-hf-id="hf-f13hu" id="f13-head-up" fill="none" stroke="rgba(20,20,19,0.72)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M1541.7,400.5 L1560,410 L1558.3,389.5" />
-        <path data-hf-id="hf-f13ad" id="f13-arc-dn" fill="none" stroke="rgba(20,20,19,0.72)" stroke-width="2.5" stroke-linecap="round" d="M1560,470 C1480,590 1340,590 1260,470" />
-        <path data-hf-id="hf-f13hd" id="f13-head-dn" fill="none" stroke="rgba(20,20,19,0.72)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M1278.3,479.5 L1260,470 L1261.7,490.5" />
-        <circle data-hf-id="hf-f13dt" id="f13-dot" cx="1260" cy="410" r="10" fill="#E8A55A" />
+        <path data-hf-id="hf-f13au" id="f13-arc-up" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" d="M1260,410 C1340,290 1480,290 1560,410" />
+        <path data-hf-id="hf-f13hu" id="f13-head-up" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M1541.7,400.5 L1560,410 L1558.3,389.5" />
+        <path data-hf-id="hf-f13ad" id="f13-arc-dn" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" d="M1560,470 C1480,590 1340,590 1260,470" />
+        <path data-hf-id="hf-f13hd" id="f13-head-dn" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M1278.3,479.5 L1260,470 L1261.7,490.5" />
+        <circle data-hf-id="hf-f13dt" id="f13-dot" cx="1260" cy="410" r="10" fill="#3178C6" />
       </svg>
       <div data-hf-id="hf-f13lu" class="f13-alab" id="f13-lab-up" style="top:240px">onChange → setName</div>
       <div data-hf-id="hf-f13ld" class="f13-alab" id="f13-lab-dn" style="top:592px">value={name}</div>
@@ -596,7 +436,8 @@
       gsap.set("#f13-term-rule", { scaleX: 0 });
 
       // ---- Scene 1 (0.0–3.0): code from frame 12; value={name} types on ----
-      tl.fromTo("#f13-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f13-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f13-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.18);
       tl.fromTo("#f13-panel", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
       tl.fromTo(["#f13-lab-scr", "#f13-card", "#f13-rtag"], { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", stagger: 0.05 }, 0.08);
       tl.fromTo("#f13-chip", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 0.2);
@@ -605,9 +446,9 @@
       tl.to("#f13-lower", { y: 50, duration: 0.45, ease: "power3.inOut" }, 0.88);
       tl.to("#f13-ln14", { opacity: 1, duration: 0.3, ease: "power1.out" }, 1.1);
       typeLine("#f13-vline", "#f13-vcaret", [
-        { t: "      " }, { t: "value", c: "f13-dim" }, { t: "={name}" }
+        { t: "      " }, { t: "value", c: "f13-attr" }, { t: "={name}" }
       ], 1.3, 0.05);
-      // the one voltage: coral wash on the fix (2.2)
+      // the one accent: blue wash on the fix (2.2)
       tl.fromTo("#f13-wash-edge", { scaleY: 0 }, { scaleY: 1, duration: 0.35, ease: "power3.out", immediateRender: false }, 2.2);
       tl.fromTo("#f13-wash", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out", immediateRender: false }, 2.25);
       tl.to("#f13-st-a", { opacity: 0, duration: 0.3, ease: "power1.out" }, 2.4);
@@ -618,7 +459,7 @@
       var TIP_X = 1342, TIP_Y = 372, CLICK_AT = 3.9, PRESS = 0.1;
       var TIP_ORIGIN = "20.83% 12.5%";
       gsap.set(cursor, { xPercent: -20.83, yPercent: -12.5, x: 2080, y: 760, scale: 1 });
-      tl.to("#f13-card", { borderColor: "rgba(20, 20, 19, 0.3)", duration: 0.3, ease: "power1.out" }, 3.09);
+      tl.to("#f13-card", { borderColor: "#94A3B8", duration: 0.3, ease: "power1.out" }, 3.09);
       tl.fromTo(cursor, { x: 2080, y: 760 }, { x: TIP_X, y: TIP_Y, duration: 0.6, ease: "power3.out", immediateRender: false }, 3.12);
       tl.to(cursor, { scale: 0.86, duration: PRESS, ease: "power2.in", transformOrigin: TIP_ORIGIN }, CLICK_AT);
       tl.to(cursor, { scale: 1, duration: 0.22, ease: "power2.out", transformOrigin: TIP_ORIGIN }, CLICK_AT + PRESS);
@@ -637,9 +478,9 @@
       tl.to("#f13-intext", { y: -40, opacity: 0, duration: 0.3, ease: "power3.out" }, 4.3);
       tl.to("#f13-pname", { y: -24, opacity: 0, duration: 0.3, ease: "power3.out" }, 4.33);
       tl.to("#f13-incaret", { opacity: 1, duration: 0.2, ease: "power1.out" }, 4.55);
-      tl.to("#f13-card", { borderColor: "rgba(20, 20, 19, 0.12)", duration: 0.4, ease: "power1.inOut" }, 4.8);
+      tl.to("#f13-card", { borderColor: "#E2E8F0", duration: 0.4, ease: "power1.inOut" }, 4.8);
 
-      // "wat er in de state zit" (5.65): amber ring on the empty input + note
+      // "wat er in de state zit" (5.65): blue ring on the empty input + note
       tl.fromTo("#f13-ring", { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out", immediateRender: false }, 5.65);
       tl.fromTo("#f13-note", { opacity: 0, x: 14 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, 5.75);
 
@@ -667,7 +508,7 @@
       tl.to("#f13-head-dn", { opacity: 1, duration: 0.2, ease: "power1.out" }, 10.04);
       tl.fromTo("#f13-lab-dn", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, 9.66);
 
-      // amber dot travels a cubic bezier (deterministic, pure math)
+      // blue dot travels a cubic bezier (deterministic, pure math)
       var dot = q("#f13-dot");
       function bez(p, t) {
         var u = 1 - t;
@@ -693,8 +534,8 @@
       tl.set("#f13-mcaret", { x: 33 }, 10.62);
       travel([1260, 1340, 1480, 1560], [410, 290, 290, 410], 10.72, 0.8);
       flip("#f13-s1", "#f13-s2", 11.5);
-      tl.fromTo("#f13-node-st", { borderColor: "rgba(20, 20, 19, 0.2)" }, { borderColor: "rgba(232, 165, 90, 1)", duration: 0.2, ease: "power1.out", immediateRender: false }, 11.5);
-      tl.to("#f13-node-st", { borderColor: "rgba(20, 20, 19, 0.2)", duration: 0.5, ease: "power1.inOut" }, 11.9);
+      tl.fromTo("#f13-node-st", { borderColor: "#E2E8F0" }, { borderColor: "#3178C6", duration: 0.2, ease: "power1.out", immediateRender: false }, 11.5);
+      tl.to("#f13-node-st", { borderColor: "#E2E8F0", duration: 0.5, ease: "power1.inOut" }, 11.9);
 
       // "de state past het veld aan" (12.67 / 13.68): dot state -> input, field confirms
       travel([1560, 1480, 1340, 1260], [470, 590, 590, 470], 12.7, 0.85);

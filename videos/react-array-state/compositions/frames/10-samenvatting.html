@@ -1,230 +1,244 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); }
-    @font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/Inter-400.woff2") format("woff2"); }
-    @font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
 
-    #root[data-composition-id="10-samenvatting"] {
-      position: absolute;
-      inset: 0;
-      width: 1920px;
-      height: 1080px;
-      overflow: hidden;
-      color: #141413;
-      font-family: "Inter", sans-serif;
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
     }
-    .\31 0-samenvatting-bg {
-      position: absolute;
-      inset: 0;
-      background: #FAF9F5;
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
     }
-    .\31 0-samenvatting-stage {
-      position: absolute;
-      inset: 0;
-      container-type: size;
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
     }
-    .\31 0-samenvatting-kicker {
-      position: absolute;
-      left: 80px;
-      top: 72px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 1.46cqw;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.55);
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
     }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 10 positions ---- */
+    .\31 0-samenvatting-stage { position: absolute; inset: 0; container-type: size; }
     .\31 0-samenvatting-head {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 120px;
-      text-align: center;
-      font-family: "EB Garamond", Georgia, serif;
-      font-weight: 400;
-      font-size: 7.3cqw;
-      line-height: 1.02;
-      letter-spacing: -0.022em;
-      white-space: nowrap;
+      position: absolute; left: 0; right: 0; top: 128px; text-align: center;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 112px; line-height: 1.02;
+      letter-spacing: -0.03em; color: var(--ts-ink); white-space: nowrap;
     }
-    .\31 0-samenvatting-word {
-      display: inline-block;
-      margin-right: 0.22em;
-    }
-    .\31 0-samenvatting-spike {
-      display: inline-block;
-      margin-left: 0.18em;
-      color: #CC785C;
-      font-size: 0.62em;
-      vertical-align: 0.42em;
-      transform-origin: 50% 50%;
-    }
+    .\31 0-samenvatting-word { display: inline-block; margin-right: 0.22em; }
+    .\31 0-samenvatting-word-key { position: relative; }
+    /* the closing accent: a blue underline under "readonly." */
+    .\31 0-samenvatting-spike { left: 0; right: 0.3em; bottom: -10px; }
+
     .\31 0-samenvatting-chips {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 340px;
-      display: flex;
-      justify-content: center;
-      gap: 60px;
+      position: absolute; left: 0; right: 0; top: 340px; display: flex; justify-content: center; gap: 60px;
     }
     .\31 0-samenvatting-chip {
-      position: relative;
-      width: 540px;
-      height: 360px;
-      box-sizing: border-box;
-      padding: 34px 36px;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-      transform-origin: 50% 50%;
+      position: relative; width: 540px; height: 360px; box-sizing: border-box; padding: 34px 36px;
+      background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 12px;
+      box-shadow: var(--ts-shadow); transform-origin: 50% 50%;
     }
-    .\31 0-samenvatting-chip-top {
-      display: flex;
-      align-items: baseline;
-      gap: 18px;
-    }
-    .\31 0-samenvatting-idx {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      letter-spacing: 0.06em;
-      color: rgba(20, 20, 19, 0.45);
-    }
+    .\31 0-samenvatting-chip-top { display: flex; align-items: baseline; gap: 18px; }
+    .\31 0-samenvatting-idx { font-family: var(--ts-mono); font-size: 24px; letter-spacing: 0.06em; color: var(--ts-muted); }
     .\31 0-samenvatting-title {
-      font-family: "Inter", sans-serif;
-      font-size: 2.3cqw;
-      font-weight: 400;
-      line-height: 1.25;
-      letter-spacing: -0.005em;
+      font-family: var(--ts-sans); font-size: 2.3cqw; font-weight: 600; line-height: 1.25;
+      letter-spacing: -0.015em; color: var(--ts-ink);
     }
     .\31 0-samenvatting-code {
-      margin-top: 22px;
-      height: 88px;
-      box-sizing: border-box;
-      padding: 0 26px;
-      display: flex;
-      align-items: center;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 34px;
-      color: #FAF9F5;
-      white-space: pre;
+      margin-top: 22px; height: 88px; box-sizing: border-box; padding: 0 26px;
+      display: flex; align-items: center;
+      background: var(--ts-code-bg); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 34px; color: var(--ts-code-text); white-space: pre;
     }
-    .\31 0-samenvatting-p { color: rgba(250, 249, 245, 0.6); }
-    .\31 0-samenvatting-m { color: #5DB8A6; }
-    .\31 0-samenvatting-caret {
-      display: inline-block;
-      width: 3px;
-      height: 38px;
-      margin-left: 2px;
-      background: #FAF9F5;
-    }
-    .\31 0-samenvatting-strip {
-      margin-top: 30px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
+    .\31 0-samenvatting-p { color: var(--ts-code-punct); }
+    .\31 0-samenvatting-m { color: var(--ts-code-fn); }
+    .\31 0-samenvatting-caret { display: inline-block; width: 2px; height: 38px; margin-left: 2px; background: var(--ts-blue); }
+    .\31 0-samenvatting-strip { margin-top: 30px; display: flex; align-items: flex-start; gap: 12px; }
     .\31 0-samenvatting-ref {
-      position: relative;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-right: 8px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      color: rgba(20, 20, 19, 0.7);
+      position: relative; height: 64px; display: flex; align-items: center; gap: 10px; margin-right: 8px;
+      font-family: var(--ts-mono); font-size: 24px; color: var(--ts-muted);
     }
     .\31 0-samenvatting-ref-tag {
-      position: relative;
-      padding: 6px 12px;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      border-radius: 6px;
-      color: #141413;
+      position: relative; padding: 6px 12px; border: 1px solid var(--ts-hairline); border-radius: 6px;
+      background: var(--ts-ground); color: var(--ts-ink);
     }
     .\31 0-samenvatting-ref-ul {
-      position: absolute;
-      left: 6px;
-      right: 6px;
-      bottom: -10px;
-      height: 1px;
-      background: #141413;
-      transform-origin: 0% 50%;
+      position: absolute; left: 6px; right: 6px; bottom: -10px; height: 2px; border-radius: 1px;
+      background: var(--ts-ink-soft); transform-origin: 0% 50%;
     }
-    .\31 0-samenvatting-cell {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
+    .\31 0-samenvatting-cell { display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .\31 0-samenvatting-box {
-      width: 64px;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 8px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      color: #141413;
+      width: 64px; height: 64px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 28px; color: var(--ts-ink);
     }
-    .\31 0-samenvatting-ci {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 16px;
-      color: rgba(20, 20, 19, 0.45);
-    }
+    .\31 0-samenvatting-ci { font-family: var(--ts-mono); font-size: 16px; color: var(--ts-muted); }
     .\31 0-samenvatting-foot {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 748px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      position: absolute; left: 0; right: 0; top: 748px; display: flex; flex-direction: column; align-items: center;
     }
-    .\31 0-samenvatting-foot-rule {
-      width: 720px;
-      height: 1px;
-      background: rgba(20, 20, 19, 0.12);
-      transform-origin: 50% 50%;
-    }
-    .\31 0-samenvatting-foot-row {
-      margin-top: 28px;
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
+    .\31 0-samenvatting-foot-rule { width: 720px; height: 1px; background: var(--ts-hairline); transform-origin: 50% 50%; }
+    .\31 0-samenvatting-foot-row { margin-top: 28px; display: flex; align-items: center; gap: 28px; }
     .\31 0-samenvatting-pill {
-      padding: 12px 24px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 8px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 30px;
-      letter-spacing: 0.02em;
-      color: #141413;
+      padding: 12px 24px; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 30px; font-weight: 500; letter-spacing: 0.02em; color: var(--ts-ink);
     }
-    .\31 0-samenvatting-sep {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 30px;
-      color: rgba(20, 20, 19, 0.4);
-    }
+    .\31 0-samenvatting-sep { font-family: var(--ts-mono); font-size: 30px; color: var(--ts-muted); }
   </style>
 
   <div data-hf-id="hf-vz2e" id="root" data-composition-id="10-samenvatting" data-width="1920" data-height="1080">
-    <div data-hf-id="hf-h734" class="10-samenvatting-bg clip" data-start="0" data-duration="10.24" data-track-index="0"></div>
+    <div data-hf-id="hf-h734" class="ts-bg 10-samenvatting-bg clip" data-start="0" data-duration="10.24" data-track-index="0"></div>
 
     <div data-hf-id="hf-umxy" class="10-samenvatting-stage clip" data-start="0" data-duration="10.24" data-track-index="1">
-      <div data-hf-id="hf-i632" class="10-samenvatting-kicker">Samenvatting</div>
+      <div data-hf-id="hf-i632" class="ts-kicker 10-samenvatting-kicker"><div data-hf-id="hf-k10b" class="ts-kicker-bar 10-samenvatting-kbar"></div><span data-hf-id="hf-k10t" class="ts-kicker-text 10-samenvatting-ktext">Samenvatting</span></div>
 
       <div data-hf-id="hf-0pxw" class="10-samenvatting-head">
-        <span data-hf-id="hf-pqek" class="10-samenvatting-word">State</span><span data-hf-id="hf-lbgv" class="10-samenvatting-word">is</span><span data-hf-id="hf-gazg" class="10-samenvatting-word" style="margin-right:0">readonly.</span><span data-hf-id="hf-xdw6" class="10-samenvatting-spike">✱</span>
+        <span data-hf-id="hf-pqek" class="10-samenvatting-word">State</span><span data-hf-id="hf-lbgv" class="10-samenvatting-word">is</span><span data-hf-id="hf-gazg" class="10-samenvatting-word 10-samenvatting-word-key" style="margin-right:0">readonly.<span data-hf-id="hf-xdw6" class="ts-underline 10-samenvatting-spike"></span></span>
       </div>
 
       <div data-hf-id="hf-a9v7" class="10-samenvatting-chips">
@@ -315,11 +329,12 @@
       var tl = gsap.timeline({ paused: true });
 
       // Scene 1 (0.0–1.1): callback rule settles at the top
-      tl.fromTo(one("kicker"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      tl.fromTo(one("kbar"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.05);
+      tl.fromTo(one("ktext"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.05);
       all("word").forEach(function (w, i) {
         tl.fromTo(w, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1 + i * 0.1);
       });
-      tl.fromTo(one("spike"), { opacity: 0, scale: 0.92 }, { opacity: 0, scale: 0.92, duration: 0.01 }, 0);
+      tl.fromTo(one("spike"), { scaleX: 0 }, { scaleX: 0, duration: 0.01 }, 0);
 
       // Scenes 2–4: chips pop in on their spoken cue, code types on, then the new array strip lands
       var CHIP_AT = [1.08, 2.94, 3.92];
@@ -359,8 +374,8 @@
         tl.to(st.ul, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 6.26 + k * 0.1);
       });
 
-      // Scene 6 (7.5–9.44): coral spike mark beside the rule, then hold; gentle final fade
-      tl.to(one("spike"), { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 7.72);
+      // Scene 6 (7.5–9.44): blue underline wipes in under "readonly.", then hold; gentle final fade
+      tl.to(one("spike"), { scaleX: 1, duration: 0.6, ease: "power3.out" }, 7.72);
       tl.fromTo(one("stage"), { opacity: 1 }, { opacity: 0, duration: 0.4, ease: "power2.inOut", immediateRender: false }, 9.04);
 
       window.__timelines = window.__timelines || {};

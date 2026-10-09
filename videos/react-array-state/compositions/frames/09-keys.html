@@ -1,115 +1,246 @@
 <template id="09-keys-template">
   <div data-hf-id="hf-ix69" id="root" data-composition-id="09-keys" data-width="1920" data-height="1080" data-start="0" data-duration="16.36">
     <style>
-      @font-face { font-family: 'EB Garamond'; src: url('assets/fonts/EB_Garamond-400-normal.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: block; }
-      @font-face { font-family: 'Inter'; src: url('assets/fonts/Inter-400-normal.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: block; }
-      @font-face { font-family: 'Inter'; src: url('assets/fonts/Inter-500-normal.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: block; }
-      @font-face { font-family: 'JetBrains Mono'; src: url('assets/fonts/JetBrains_Mono-400-normal.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: block; }
-      @font-face { font-family: 'JetBrains Mono'; src: url('assets/fonts/JetBrains_Mono-500-normal.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
 
-      #root {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        font-family: 'Inter', sans-serif;
-        color: #141413;
-        --ink: #141413;
-        --cream: #FAF9F5;
-        --tile: #EFE9DE;
-        --tile-strong: #ECE3D4;
-        --coral: #CC785C;
-      }
-      .keys09-bg { position: absolute; inset: 0; background: #FAF9F5; }
-      .keys09-stage { position: absolute; inset: 0; container-type: size; }
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
 
-      .keys09-kicker {
-        position: absolute; left: 80px; top: 64px;
-        font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 28px;
-        letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink);
-      }
-      .keys09-spike { color: var(--coral); margin-right: 14px; }
-      .keys09-headline {
-        position: absolute; left: 80px; top: 112px;
-        font-family: 'EB Garamond', serif; font-weight: 400; font-size: 104px;
-        line-height: 1.02; letter-spacing: -0.022em; color: var(--ink); white-space: nowrap;
-      }
-      .keys09-word { display: inline-block; margin-right: 0.22em; }
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
 
-      .keys09-card {
-        position: absolute; top: 280px; height: 520px;
-        background: var(--tile);
-        border: 1px solid rgba(20, 20, 19, 0.12);
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-        overflow: hidden;
-      }
-      .keys09-card-left { left: 80px; width: 1020px; }
-      .keys09-card-right { left: 1180px; width: 660px; }
-      .keys09-card-head {
-        position: absolute; left: 0; right: 0; top: 0; height: 100px;
-        border-bottom: 1px solid rgba(20, 20, 19, 0.12);
-      }
-      .keys09-head-label {
-        position: absolute; left: 40px; top: 0; line-height: 100px;
-        font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 30px; color: var(--ink);
-      }
-      .keys09-card-right .keys09-head-label { left: 28px; }
-      .keys09-check { position: absolute; right: 36px; top: 28px; width: 44px; height: 44px; }
-      .keys09-rows { position: absolute; left: 0; right: 0; top: 110px; height: 380px; }
-      .keys09-divider {
-        position: absolute; left: 28px; right: 28px; height: 1px; background: rgba(20, 20, 19, 0.12);
-      }
-      .keys09-row { position: absolute; left: 0; right: 0; height: 120px; }
-      .keys09-pill {
-        position: absolute; top: 32px; height: 56px;
-        background: var(--cream); border: 1px solid rgba(20, 20, 19, 0.2); border-radius: 6px;
-        font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 27px;
-        letter-spacing: 0.02em; color: var(--ink); overflow: hidden;
-      }
-      .keys09-pill span { position: absolute; left: 0; right: 0; top: 0; line-height: 54px; text-align: center; }
-      .keys09-name {
-        position: absolute; top: 0; line-height: 120px;
-        font-family: 'Inter', sans-serif; font-weight: 500; font-size: 44px; color: var(--ink);
-      }
-      .keys09-input {
-        position: absolute; top: 22px; height: 76px;
-        background: var(--cream); border: 1px solid rgba(20, 20, 19, 0.2); border-radius: 6px;
-      }
-      .keys09-input-text {
-        position: absolute; left: 22px; top: 0; line-height: 74px;
-        font-family: 'Inter', sans-serif; font-weight: 400; font-size: 36px; color: var(--ink); white-space: nowrap;
-      }
-      .keys09-caret {
-        display: inline-block; width: 3px; height: 40px; margin-left: 3px;
-        background: var(--ink); vertical-align: -6px;
-      }
-      .keys09-del {
-        position: absolute; width: 56px; height: 56px; top: 32px;
-        border: 1px solid rgba(20, 20, 19, 0.2); border-radius: 6px; background: var(--cream);
-        font-family: 'Inter', sans-serif; font-size: 34px; line-height: 52px; text-align: center; color: var(--ink);
-      }
-      .keys09-ring {
-        position: absolute; left: -12px; top: -12px; right: -12px; bottom: -12px;
-        border: 3px solid var(--coral); border-radius: 14px;
-      }
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
 
-      /* left card geometry */
-      .keys09-card-left .keys09-pill { left: 40px; width: 150px; }
-      .keys09-card-left .keys09-name { left: 224px; }
-      .keys09-card-left .keys09-input { left: 560px; width: 320px; }
-      .keys09-card-left .keys09-del { left: 924px; }
-      /* right card geometry */
-      .keys09-card-right .keys09-pill { left: 28px; width: 170px; }
-      .keys09-card-right .keys09-name { left: 222px; font-size: 40px; }
-      .keys09-card-right .keys09-input { left: 360px; width: 210px; }
-      .keys09-card-right .keys09-del { left: 586px; width: 46px; height: 46px; top: 37px; line-height: 42px; font-size: 28px; }
-    </style>
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
 
-    <div data-hf-id="hf-g0op" class="clip keys09-bg" data-start="0" data-duration="16.36" data-track-index="0"></div>
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 09 positions ---- */
+    .keys09-stage { position: absolute; inset: 0; container-type: size; }
+
+    .keys09-headline {
+      position: absolute; left: 80px; top: 128px;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 88px;
+      line-height: 1.02; letter-spacing: -0.025em; color: var(--ts-ink); white-space: nowrap;
+    }
+    .keys09-word { display: inline-block; margin-right: 0.22em; }
+
+    .keys09-card {
+      position: absolute; top: 280px; height: 520px; box-sizing: border-box;
+      background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 12px;
+      box-shadow: var(--ts-shadow); overflow: hidden;
+    }
+    .keys09-card-left { left: 80px; width: 1020px; }
+    .keys09-card-right { left: 1180px; width: 660px; }
+    .keys09-card-head {
+      position: absolute; left: 0; right: 0; top: 0; height: 100px; box-sizing: border-box;
+      background: var(--ts-ground-subtle); border-bottom: 1px solid var(--ts-hairline);
+    }
+    .keys09-head-label {
+      position: absolute; left: 40px; top: 0; line-height: 100px;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 30px; color: var(--ts-ink);
+    }
+    .keys09-card-right .keys09-head-label { left: 28px; }
+    .keys09-check { position: absolute; right: 36px; top: 28px; width: 44px; height: 44px; }
+    .keys09-rows { position: absolute; left: 0; right: 0; top: 110px; height: 380px; }
+    .keys09-divider { position: absolute; left: 28px; right: 28px; height: 1px; background: var(--ts-hairline); }
+    .keys09-row { position: absolute; left: 0; right: 0; height: 120px; }
+    .keys09-pill {
+      position: absolute; top: 32px; height: 56px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 27px;
+      letter-spacing: 0.02em; color: var(--ts-ink); overflow: hidden;
+    }
+    .keys09-pill span { position: absolute; left: 0; right: 0; top: 0; line-height: 54px; text-align: center; }
+    .keys09-name {
+      position: absolute; top: 0; line-height: 120px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 44px; color: var(--ts-ink);
+    }
+    .keys09-input {
+      position: absolute; top: 22px; height: 76px; box-sizing: border-box;
+      background: var(--ts-ground); border: 1px solid var(--ts-muted); border-radius: 6px;
+    }
+    .keys09-input-text {
+      position: absolute; left: 22px; top: 0; line-height: 74px;
+      font-family: var(--ts-sans); font-weight: 400; font-size: 36px; color: var(--ts-ink); white-space: nowrap;
+    }
+    .keys09-caret { display: inline-block; width: 2px; height: 40px; margin-left: 3px; background: var(--ts-blue); vertical-align: -6px; }
+    .keys09-del {
+      position: absolute; width: 56px; height: 56px; top: 32px; box-sizing: border-box;
+      border: 1px solid var(--ts-hairline); border-radius: 6px; background: var(--ts-panel);
+      font-family: var(--ts-sans); font-size: 34px; line-height: 52px; text-align: center; color: var(--ts-ink-soft);
+    }
+    /* wrong mark: the typed note now sits in the wrong row */
+    .keys09-ring {
+      position: absolute; left: -12px; top: -12px; right: -12px; bottom: -12px;
+      border: 2px solid var(--ts-error); border-radius: 10px;
+    }
+
+    /* left card geometry */
+    .keys09-card-left .keys09-pill { left: 40px; width: 150px; }
+    .keys09-card-left .keys09-name { left: 224px; }
+    .keys09-card-left .keys09-input { left: 560px; width: 320px; }
+    .keys09-card-left .keys09-del { left: 924px; }
+    /* right card geometry */
+    .keys09-card-right .keys09-pill { left: 28px; width: 170px; }
+    .keys09-card-right .keys09-name { left: 222px; font-size: 40px; }
+    .keys09-card-right .keys09-input { left: 360px; width: 210px; }
+    .keys09-card-right .keys09-del { left: 586px; width: 46px; height: 46px; top: 37px; line-height: 42px; font-size: 28px; }
+  </style>
+
+    <div data-hf-id="hf-g0op" class="clip ts-bg keys09-bg" data-start="0" data-duration="16.36" data-track-index="0"></div>
 
     <div data-hf-id="hf-owuj" class="clip keys09-stage" data-start="0" data-duration="16.36" data-track-index="1">
-      <div data-hf-id="hf-7d5s" class="keys09-kicker" id="keys09-kicker"><span data-hf-id="hf-rrz8" class="keys09-spike">✱</span>Keys</div>
+      <div data-hf-id="hf-7d5s" class="ts-kicker" id="keys09-kicker"><div data-hf-id="hf-rrz8" class="ts-kicker-bar" id="keys09-kbar"></div><span data-hf-id="hf-k09t" class="ts-kicker-text" id="keys09-ktext">Keys</span></div>
       <div data-hf-id="hf-k57y" class="keys09-headline">
         <span data-hf-id="hf-t823" class="keys09-word">Index</span><span data-hf-id="hf-easo" class="keys09-word">of</span><span data-hf-id="hf-pvf1" class="keys09-word">id?</span>
       </div>
@@ -118,7 +249,7 @@
       <div data-hf-id="hf-sg3i" class="keys09-card keys09-card-left" id="keys09-card-left">
         <div data-hf-id="hf-102b" class="keys09-card-head">
           <div data-hf-id="hf-s9ox" class="keys09-head-label" id="keys09-lhead">key={index}</div>
-          <svg data-hf-id="hf-1zso" class="keys09-check" id="keys09-lcheck" viewBox="0 0 44 44"><path data-hf-id="hf-hbvg" id="keys09-lcheck-path" d="M6 23 L18 34 L38 10" fill="none" stroke="#141413" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <svg data-hf-id="hf-1zso" class="keys09-check" id="keys09-lcheck" viewBox="0 0 44 44"><path data-hf-id="hf-hbvg" id="keys09-lcheck-path" d="M6 23 L18 34 L38 10" fill="none" stroke="#475569" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </div>
         <div data-hf-id="hf-s7t5" class="keys09-rows">
           <div data-hf-id="hf-ty4n" class="keys09-divider" style="top:120px" id="keys09-ldiv1"></div>
@@ -155,7 +286,7 @@
       <div data-hf-id="hf-rets" class="keys09-card keys09-card-right" id="keys09-card-right">
         <div data-hf-id="hf-806r" class="keys09-card-head">
           <div data-hf-id="hf-o9bx" class="keys09-head-label" id="keys09-rhead">key={item.id}</div>
-          <svg data-hf-id="hf-mxmi" class="keys09-check" id="keys09-rcheck" viewBox="0 0 44 44"><path data-hf-id="hf-uwa6" id="keys09-rcheck-path" d="M6 23 L18 34 L38 10" fill="none" stroke="#141413" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <svg data-hf-id="hf-mxmi" class="keys09-check" id="keys09-rcheck" viewBox="0 0 44 44"><path data-hf-id="hf-uwa6" id="keys09-rcheck-path" d="M6 23 L18 34 L38 10" fill="none" stroke="#3178C6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </div>
         <div data-hf-id="hf-gz25" class="keys09-rows">
           <div data-hf-id="hf-ki85" class="keys09-divider" style="top:120px"></div>
@@ -194,7 +325,8 @@
         var E = 'power3.out';
 
         /* ---------- Scene 1 (0.0–3.8): list card enters, key=index labels, typed note ---------- */
-        tl.fromTo($('keys09-kicker'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, 0.05);
+        tl.fromTo($('keys09-kbar'), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: E }, 0.05);
+        tl.fromTo($('keys09-ktext'), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: E }, 0.05);
         tl.fromTo($$('.keys09-word'), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: E, stagger: 0.12 }, 0.12);
         tl.fromTo($('keys09-card-left'), { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.7, ease: E }, 0.1);
 
@@ -233,10 +365,12 @@
         tl.to([$('keys09-lk1b'), $('keys09-lk2b')], { opacity: 1, y: 0, duration: 0.35, ease: E, stagger: 0.1 }, 8.66);
         // the last DOM slot (key=2) is the one React removes
         tl.to([$('keys09-lin2'), $('keys09-ldiv2')], { opacity: 0, duration: 0.4, ease: 'power2.out' }, 8.85);
-        // "door elkaar" → coral outline on the mismatched input (css-marker circle mode, rounded-rect)
-        tl.fromTo($('keys09-ring'), { scale: 0.7, rotation: 0, opacity: 0 }, { scale: 1, rotation: -1.5, opacity: 1, duration: 0.55, ease: 'power2.out' }, 10.37);
+        // "door elkaar" → thin red wrong-mark on the mismatched input (clean rounded rect)
+        tl.fromTo($('keys09-ring'), { scale: 0.92, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.55, ease: 'power2.out' }, 10.37);
 
         /* ---------- Scene 5 (11.5–15.28): same list with stable ids ---------- */
+        // the problem mark steps back so the fix owns the accent
+        tl.to($('keys09-ring'), { opacity: 0.35, duration: 0.5, ease: 'power2.out' }, 11.54);
         tl.fromTo($('keys09-card-right'), { opacity: 0, x: 48 }, { opacity: 1, x: 0, duration: 0.7, ease: E }, 11.54);
         tl.fromTo($('keys09-rhead'), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: E }, 11.8);
         ['keys09-ritem0', 'keys09-ritem1', 'keys09-ritem2'].forEach(function (id, i) {

@@ -1,167 +1,234 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); }
-    @font-face { font-family: "EB Garamond"; font-weight: 400; font-style: italic; font-display: block; src: url("assets/fonts/EB_Garamond-400-italic.woff2") format("woff2"); }
-    @font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/Inter-400.woff2") format("woff2"); }
-    @font-face { font-family: "Inter"; font-weight: 500; font-style: normal; font-display: block; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); }
-    @font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); }
-    @font-face { font-family: "JetBrains Mono"; font-weight: 500; font-style: normal; font-display: block; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
 
-    #root[data-composition-id="05-usestate"] {
-      position: absolute;
-      inset: 0;
-      width: 1920px;
-      height: 1080px;
-      overflow: hidden;
-      color: #141413;
-      font-family: "Inter", sans-serif;
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
     }
-    .f05-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f05-stage { position: absolute; inset: 0; }
 
-    .f05-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-weight: 500;
-      font-size: 28px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.6);
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
     }
-    .f05-spike { color: #CC785C; margin-right: 14px; }
 
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 05 ---- */
     .f05-head {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 150px;
-      text-align: center;
-      font-family: "EB Garamond", Georgia, serif;
-      font-weight: 400;
-      font-size: 88px;
-      line-height: 1.06;
-      letter-spacing: -0.018em;
-      white-space: nowrap;
+      position: absolute; left: 0; right: 0; top: 150px; text-align: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 84px; line-height: 1.06;
+      letter-spacing: -0.025em; color: var(--ts-ink); white-space: nowrap;
     }
     .f05-word { display: inline-block; margin: 0 0.11em; }
-    .f05-it { font-style: italic; }
+    .f05-it { font-weight: 700; }
 
-    /* wide navy code strip */
-    .f05-strip {
-      position: absolute;
-      left: 110px;
-      top: 380px;
-      width: 1700px;
-      height: 150px;
-      box-sizing: border-box;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
+    /* wide light code strip */
+    #f05-strip { left: 110px; top: 380px; width: 1700px; height: 150px; }
     .f05-file {
-      position: absolute;
-      right: 28px;
-      top: 16px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 20px;
-      letter-spacing: 0.04em;
-      color: rgba(250, 249, 245, 0.38);
+      position: absolute; right: 28px; top: 16px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
     }
+    .f05-file::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
     .f05-line {
-      position: absolute;
-      left: 298px;
-      top: 380px;
-      width: 1340px;
-      height: 150px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 48px;
-      line-height: 150px;
-      color: #FAF9F5;
-      white-space: pre;
-      font-variant-ligatures: none;
+      position: absolute; left: 298px; top: 380px; width: 1340px; height: 150px;
+      font-family: var(--ts-mono); font-size: 48px; line-height: 150px; color: var(--ts-code-text);
+      white-space: pre; font-variant-ligatures: none;
     }
     .f05-text { position: absolute; left: 0; top: 0; height: 150px; white-space: pre; }
     .f05-ch { display: inline; }
-    .f05-kw { color: #CC785C; }
-    .f05-fn { color: #E8A55A; }
-    .f05-num { color: #E8A55A; }
-    .f05-dim { color: rgba(250, 249, 245, 0.6); }
     .f05-wash {
-      position: absolute;
-      top: 42px;
-      height: 66px;
-      border-radius: 6px;
-      transform-origin: 0% 50%;
+      position: absolute; top: 42px; height: 66px; border-radius: 6px; box-sizing: border-box;
+      background: var(--ts-wash); transform-origin: 0% 50%;
     }
-    .f05-wash-amber { background: rgba(232, 165, 90, 0.24); }
-    .f05-wash-coral { background: rgba(204, 120, 92, 0.34); }
-    .f05-caret {
-      position: absolute;
-      top: 47px;
-      left: 0;
-      width: 4px;
-      height: 56px;
-      background: #FAF9F5;
-    }
+    .f05-wash-key { border: 2px solid var(--ts-blue); }
+    .f05-caret { position: absolute; top: 47px; left: 0; width: 3px; height: 56px; background: var(--ts-blue); }
 
     /* annotation layer */
     .f05-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
-    .f05-br { fill: none; stroke: rgba(20, 20, 19, 0.55); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .f05-br-soft { stroke: rgba(20, 20, 19, 0.32); }
+    .f05-br { fill: none; stroke: var(--ts-muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .f05-br-soft { stroke: var(--ts-hairline); stroke-width: 2; }
     .f05-hint {
-      position: absolute;
-      top: 284px;
-      width: 200px;
-      text-align: center;
-      font-family: "JetBrains Mono", monospace;
-      font-weight: 500;
-      font-size: 30px;
-      letter-spacing: 0.12em;
-      color: rgba(20, 20, 19, 0.55);
-      white-space: pre;
+      position: absolute; top: 284px; width: 200px; text-align: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 30px; letter-spacing: 0.12em;
+      color: var(--ts-label); white-space: pre;
     }
     .f05-label {
-      position: absolute;
-      width: 600px;
-      text-align: center;
-      font-family: "Inter", sans-serif;
-      font-weight: 400;
-      font-size: 40px;
-      line-height: 1.2;
-      color: #141413;
-      white-space: nowrap;
+      position: absolute; width: 600px; text-align: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 38px; line-height: 1.2;
+      letter-spacing: -0.01em; color: var(--ts-ink); white-space: nowrap;
     }
     .f05-note {
-      position: absolute;
-      width: 400px;
-      text-align: center;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      letter-spacing: 0.02em;
-      color: rgba(20, 20, 19, 0.45);
-      white-space: pre;
+      position: absolute; width: 400px; text-align: center;
+      font-family: var(--ts-mono); font-size: 26px; color: var(--ts-muted); white-space: pre;
     }
   </style>
 
   <div data-hf-id="hf-oue8" id="root" data-composition-id="05-usestate" data-width="1920" data-height="1080" data-duration="15.02">
-    <div data-hf-id="hf-mgmx" id="f05-bg" class="f05-bg clip" data-start="0" data-duration="15.02" data-track-index="0"></div>
+    <div data-hf-id="hf-mgmx" id="f05-bg" class="ts-bg clip" data-start="0" data-duration="15.02" data-track-index="0"></div>
 
-    <div data-hf-id="hf-7boi" id="f05-stage" class="f05-stage clip" data-start="0" data-duration="15.02" data-track-index="1">
-      <div data-hf-id="hf-smkn" id="f05-kicker" class="f05-kicker"><span data-hf-id="hf-8nf8" class="f05-spike">✱</span>State</div>
+    <div data-hf-id="hf-7boi" id="f05-stage" class="ts-stage clip" data-start="0" data-duration="15.02" data-track-index="1">
+      <div data-hf-id="hf-smkn" id="f05-kicker" class="ts-kicker"><div data-hf-id="hf-8nf8" class="ts-kicker-bar" id="f05-kbar"></div><span data-hf-id="hf-f05k" class="ts-kicker-text" id="f05-ktext">State</span></div>
 
       <div data-hf-id="hf-3ug2" id="f05-head" class="f05-head"><span data-hf-id="hf-mj6f" class="f05-word">Zo'n</span><span data-hf-id="hf-e86l" class="f05-word">waarde</span><span data-hf-id="hf-lcmr" class="f05-word">noemen</span><span data-hf-id="hf-rsyh" class="f05-word">we</span><span data-hf-id="hf-4mu9" class="f05-word"><span data-hf-id="hf-puev" class="f05-it">state</span>.</span></div>
 
-      <div data-hf-id="hf-dfdm" id="f05-strip" class="f05-strip"><div data-hf-id="hf-1vi7" class="f05-file">Counter.tsx</div></div>
+      <div data-hf-id="hf-dfdm" id="f05-strip" class="ts-code-surface"><div data-hf-id="hf-1vi7" class="f05-file">Counter.tsx</div></div>
 
       <div data-hf-id="hf-5rwi" id="f05-line" class="f05-line">
-        <div data-hf-id="hf-aq8j" id="f05-wash-use" class="f05-wash f05-wash-coral"></div>
-        <div data-hf-id="hf-k3f5" id="f05-wash-count" class="f05-wash f05-wash-amber"></div>
-        <div data-hf-id="hf-7egc" id="f05-wash-set" class="f05-wash f05-wash-amber"></div>
-        <div data-hf-id="hf-xliq" id="f05-wash-zero" class="f05-wash f05-wash-amber"></div>
+        <div data-hf-id="hf-aq8j" id="f05-wash-use" class="f05-wash f05-wash-key"></div>
+        <div data-hf-id="hf-k3f5" id="f05-wash-count" class="f05-wash"></div>
+        <div data-hf-id="hf-7egc" id="f05-wash-set" class="f05-wash"></div>
+        <div data-hf-id="hf-xliq" id="f05-wash-zero" class="f05-wash"></div>
         <div data-hf-id="hf-83gu" id="f05-text" class="f05-text"></div>
         <div data-hf-id="hf-pd7g" id="f05-caret" class="f05-caret"></div>
       </div>
@@ -196,9 +263,10 @@
 
       // ---- code line: const [count, setCount] = useState<number>(0);
       var SEGS = [
-        { t: "const", c: "f05-kw" }, { t: " [" }, { t: "count" }, { t: ", " },
-        { t: "setCount", c: "f05-fn" }, { t: "] = " }, { t: "useState", c: "f05-fn" },
-        { t: "<number>", c: "f05-dim" }, { t: "(" }, { t: "0", c: "f05-num" }, { t: ");" }
+        { t: "const", c: "ts-kw" }, { t: " [" }, { t: "count" }, { t: ", " },
+        { t: "setCount", c: "ts-fn" }, { t: "] = " }, { t: "useState", c: "ts-fn" },
+        { t: "<", c: "ts-punct" }, { t: "number", c: "ts-type" }, { t: ">", c: "ts-punct" },
+        { t: "(" }, { t: "0", c: "ts-fn" }, { t: ");" }
       ];
       var text = q("#f05-text");
       var chars = [];
@@ -258,12 +326,13 @@
       var tl = gsap.timeline({ paused: true });
 
       // ---- Scene 1 (0.0–2.6): kicker, headline builds per word on "noemen we state" ----
-      tl.fromTo("#f05-kicker", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, 0.1);
+      tl.fromTo("#f05-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: E }, 0.1);
+      tl.fromTo("#f05-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: E }, 0.2);
       qa(".f05-word").forEach(function (w, i) {
         tl.fromTo(w, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.7, ease: E }, 0.42 + i * 0.11);
       });
 
-      // ---- Scene 2 (2.6–4.6): on "useState" (3.1) strip enters, line types on, coral wash on useState ----
+      // ---- Scene 2 (2.6–4.6): on "useState" (3.1) strip enters, line types on, blue key mark on useState ----
       tl.fromTo("#f05-strip", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, 3.0);
       tl.set(chars, { opacity: 0 }, 0);
       tl.fromTo("#f05-caret", { opacity: 0, x: 0 }, { opacity: 1, x: 0, duration: 0.01 }, 3.12);

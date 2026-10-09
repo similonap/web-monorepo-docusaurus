@@ -6,7 +6,7 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Props
 
-<YouTubeVideo src="https://youtu.be/TjEnmW_vRMk" title="React - Props uitgelegd" />
+<YouTubeVideo src="https://youtu.be/FQA8LBf78wI" title="React - Props uitgelegd" />
 
 Componenten staan meestal niet zomaar op zichzelf. Vaak hebben ze data nodig dat van buitenaf komt. Afhankelijk van welke data er doorgegeven wordt aan het component zal het zich anders gedragen. Deze data worden doorgeven aan der hand van properties (of props in het kort).
 

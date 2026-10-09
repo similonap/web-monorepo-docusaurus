@@ -1,165 +1,208 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EB_Garamond-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
+
+
+
+    /* ---- frame 01 positions ---- */
     #root *, #root *::before, #root *::after { box-sizing: border-box; }
-
-    /* cream ground + faint hairline grid */
-    .us01-ground {
-      position: absolute;
-      inset: 0;
-      background-color: #FAF9F5;
-      background-image:
-        linear-gradient(rgba(20, 20, 19, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(20, 20, 19, 0.045) 1px, transparent 1px);
-      background-size: 64px 64px;
-      background-position: 32px 28px;
-    }
-    .us01-stage { position: absolute; inset: 0; }
-
-    /* group that holds button + cursor; slides left + shrinks in scene 4 */
     .us01-group { position: absolute; inset: 0; }
-
-    /* the counter button: ink hairline, radius-md, centred on (960, 440) */
+    /* the counter button: TS-blue, centred on (960, 440) */
     .us01-btn {
-      position: absolute;
-      left: 740px;
-      top: 290px;
-      width: 440px;
-      height: 300px;
-      background: #EFE9DE;
-      border: 2px solid rgba(20, 20, 19, 0.78);
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      position: absolute; left: 740px; top: 290px; width: 440px; height: 300px;
+      background: var(--ts-blue); border-radius: 12px; box-shadow: var(--ts-shadow);
     }
-    .us01-window {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      border-radius: 8px;
-    }
+    .us01-window { position: absolute; inset: 0; overflow: hidden; border-radius: 12px; }
     .us01-digit {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "EB Garamond", serif;
-      font-weight: 400;
-      font-size: 180px;
-      line-height: 1;
-      letter-spacing: -0.025em;
-      color: #141413;
-      padding-bottom: 14px;
+      position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 180px; line-height: 1;
+      letter-spacing: -0.035em; color: #FFFFFF; padding-bottom: 8px;
     }
-
-    /* ink ring ripple on click */
     .us01-ring {
-      position: absolute;
-      left: 740px;
-      top: 290px;
-      width: 440px;
-      height: 300px;
-      border: 2px solid rgba(20, 20, 19, 0.5);
-      border-radius: 12px;
-      opacity: 0;
-      pointer-events: none;
+      position: absolute; left: 740px; top: 290px; width: 440px; height: 300px;
+      border: 3px solid rgba(49, 120, 198, 0.34); border-radius: 14px; opacity: 0; pointer-events: none;
     }
-
-    /* tiny mono +1 floats */
     .us01-plus {
-      position: absolute;
-      left: 1196px;
-      top: 270px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 34px;
-      letter-spacing: 0.02em;
-      color: rgba(20, 20, 19, 0.72);
-      opacity: 0;
+      position: absolute; left: 1196px; top: 270px;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 34px; color: var(--ts-ink-soft); opacity: 0;
     }
-
-    /* oversized cursor actor (family arrow at 3.5x) */
-    .us01-cursor {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 224px;
-      height: 224px;
-      pointer-events: none;
-      z-index: 20;
-      filter: drop-shadow(0 8px 12px rgba(20, 20, 19, 0.22));
-    }
+    .us01-cursor { position: absolute; left: 0; top: 0; width: 224px; height: 224px; pointer-events: none; z-index: 20; }
     .us01-cursor svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-      fill: #FAF9F5;
-      stroke: #141413;
-      stroke-width: 1.4;
-      stroke-linejoin: round;
-      stroke-linecap: round;
+      display: block; width: 100%; height: 100%;
+      fill: #1E293B; stroke: #FFFFFF; stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round;
     }
-
-    /* right side: mono label + hero word */
-    .us01-label {
-      position: absolute;
-      left: 1168px;
-      top: 300px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      letter-spacing: 0.02em;
-      color: rgba(20, 20, 19, 0.62);
-      padding: 6px 14px;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      border-radius: 6px;
-      background: #EFE9DE;
-    }
-    .us01-hero {
-      position: absolute;
-      left: 1150px;
-      top: 372px;
-      font-family: "EB Garamond", serif;
-      font-style: italic;
-      font-weight: 400;
-      font-size: 200px;
-      line-height: 1;
-      letter-spacing: -0.02em;
-      color: #141413;
-      white-space: nowrap;
-    }
-    .us01-underline {
-      position: absolute;
-      left: 1166px;
-      top: 600px;
-      width: 470px;
-      height: 6px;
-      border-radius: 3px;
-      background: #CC785C;
-      transform-origin: left center;
-    }
+    #\30 1-hook-label { left: 1160px; top: 300px; color: var(--ts-ink-soft); }
+    #\30 1-hook-hero { left: 1150px; top: 384px; }
+    #\30 1-hook-underline { left: 1160px; top: 568px; width: 416px; }
   </style>
 
   <div data-hf-id="hf-m1ft" id="root" data-composition-id="01-hook" data-width="1920" data-height="1080" data-duration="10.46">
-    <div data-hf-id="hf-p1zl" id="01-hook-ground" class="us01-ground clip" data-start="0" data-duration="10.46" data-track-index="0"></div>
+    <div data-hf-id="hf-p1zl" id="01-hook-ground" class="ts-bg clip" data-start="0" data-duration="10.46" data-track-index="0"></div>
 
-    <div data-hf-id="hf-25h2" id="01-hook-stage" class="us01-stage clip" data-start="0" data-duration="10.46" data-track-index="1">
+    <div data-hf-id="hf-25h2" id="01-hook-stage" class="ts-stage clip" data-start="0" data-duration="10.46" data-track-index="1">
       <div data-hf-id="hf-09ha" id="01-hook-group" class="us01-group">
         <div data-hf-id="hf-x2ux" id="01-hook-ring1" class="us01-ring"></div>
         <div data-hf-id="hf-38kq" id="01-hook-ring2" class="us01-ring"></div>
@@ -183,9 +226,9 @@
         </div>
       </div>
 
-      <div data-hf-id="hf-n75j" id="01-hook-label" class="us01-label">react</div>
-      <div data-hf-id="hf-4h9t" id="01-hook-hero" class="us01-hero">state.</div>
-      <div data-hf-id="hf-i8l4" id="01-hook-underline" class="us01-underline"></div>
+      <div data-hf-id="hf-n75j" id="01-hook-label" class="ts-chip">react</div>
+      <div data-hf-id="hf-4h9t" id="01-hook-hero" class="ts-hero">state.</div>
+      <div data-hf-id="hf-i8l4" id="01-hook-underline" class="ts-hero-bar"></div>
     </div>
   </div>
 
@@ -256,7 +299,7 @@
       tl.to(group, { x: 520 - 960, scale: 0.8, transformOrigin: "960px 440px", duration: 0.9, ease: "power3.out" }, 7.49);
       // "React" → mono label on the right
       tl.fromTo($("01-hook-label"),{ opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 8.71);
-      // "state." → hero word lands, coral underline draws
+      // "state." → hero word lands, blue underline draws
       tl.fromTo($("01-hook-hero"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 10.01);
       tl.fromTo($("01-hook-underline"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power2.inOut" }, 10.36);
 

@@ -1,384 +1,295 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EB_Garamond-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
     @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
-    .f06r-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f06r-stage { position: absolute; inset: 0; }
 
-    /* kicker */
-    .f06r-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-    }
-    .f06r-kicker .f06r-spike { color: #CC785C; margin-right: 14px; }
-
-    /* code surface */
-    .f06r-panel {
-      position: absolute;
-      left: 80px;
-      top: 180px;
-      width: 1100px;
-      height: 646px;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .f06r-titlebar {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 56px;
-      background: #252320;
-      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(250, 249, 245, 0.62);
-      letter-spacing: 0.02em;
-    }
-    .f06r-status {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 46px;
-      background: #252320;
-      border-top: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 19px;
-      color: rgba(250, 249, 245, 0.45);
-      letter-spacing: 0.04em;
-    }
+    /* ---- frame 06 ---- */
+    .f06r-panel { left: 80px; top: 180px; width: 1100px; height: 646px; }
     .f06r-code {
-      position: absolute;
-      left: 0; right: 0;
-      top: 84px;
-      height: 486px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 32px;
-      line-height: 54px;
-      color: #FAF9F5;
-      font-variant-ligatures: none;
+      position: absolute; left: 0; right: 0; top: 84px; height: 486px;
+      font-family: var(--ts-mono); font-size: 32px; line-height: 54px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
     }
     .f06r-row { position: relative; height: 54px; white-space: pre; }
-    .f06r-ln {
-      position: absolute;
-      left: 0;
-      width: 56px;
-      text-align: right;
-      color: rgba(250, 249, 245, 0.32);
-      font-size: 24px;
-    }
+    .f06r-ln { position: absolute; left: 0; width: 56px; text-align: right; color: var(--ts-code-ln); font-size: 24px; }
     .f06r-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
-    .f06r-kw { color: #CC785C; }
-    .f06r-fn { color: #E8A55A; }
-    .f06r-num { color: #E8A55A; }
-    .f06r-dim { color: rgba(250, 249, 245, 0.6); }
 
-    /* amber "now executing" pointer (full line) */
+    /* blue "now executing" pointer (full line) */
     .f06r-scan {
-      position: absolute;
-      left: 8px;
-      right: 8px;
-      top: 0;
-      height: 54px;
-      border-radius: 4px;
-      background: rgba(232, 165, 90, 0.24);
-      opacity: 0;
+      position: absolute; left: 8px; right: 8px; top: 0; height: 54px; border-radius: 4px;
+      background: var(--ts-wash); opacity: 0;
     }
-    /* amber wash on setCount(count + 1): row 5, chars 27..46 at 19.2px */
+    /* blue wash on setCount(count + 1): row 5, chars 27..46 at 19.2px */
     .f06r-wash {
-      position: absolute;
-      left: 598px;
-      top: 220px;
-      width: 373px;
-      height: 46px;
-      border-radius: 4px;
-      background: rgba(232, 165, 90, 0.24);
-      transform-origin: 0% 50%;
-      opacity: 0;
+      position: absolute; left: 598px; top: 220px; width: 373px; height: 46px; border-radius: 4px;
+      background: var(--ts-wash); transform-origin: 0% 50%; opacity: 0;
     }
     /* floating mono label above the onClick line (sits in row 4's empty tail) */
     .f06r-sum {
-      position: absolute;
-      left: 760px;
-      top: 168px;
-      height: 42px;
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      background: #252320;
-      border: 1px solid rgba(232, 165, 90, 0.7);
-      border-radius: 6px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      letter-spacing: 0.02em;
-      color: #FAF9F5;
-      white-space: pre;
-      opacity: 0;
+      position: absolute; left: 760px; top: 168px; height: 42px; padding: 0 16px;
+      display: flex; align-items: center; box-sizing: border-box;
+      background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 6px;
+      box-shadow: var(--ts-shadow);
+      font-family: var(--ts-mono); font-size: 24px; color: var(--ts-ink); white-space: pre; opacity: 0;
     }
-    .f06r-sum .f06r-num { color: #E8A55A; }
     /* "→ 1" return tag right of useState<number>(0) (row 2) */
     .f06r-ret {
-      position: absolute;
-      left: 1002px;
-      top: 63px;
-      height: 36px;
-      padding: 0 12px;
-      display: flex;
-      align-items: center;
-      background: #252320;
-      border: 1px solid rgba(232, 165, 90, 0.7);
-      border-radius: 6px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: #E8A55A;
-      white-space: pre;
-      opacity: 0;
+      position: absolute; left: 1002px; top: 63px; height: 36px; padding: 0 12px;
+      display: flex; align-items: center; background: var(--ts-blue-tint); border-radius: 6px;
+      font-family: var(--ts-mono); font-size: 22px; font-weight: 500; color: var(--ts-blue-dark);
+      white-space: pre; opacity: 0;
     }
 
     /* right column */
-    .f06r-col {
-      position: absolute;
-      left: 1224px;
-      top: 0;
-      width: 616px;
-      height: 900px;
-    }
-    .f06r-label {
-      position: absolute;
-      left: 0;
-      top: 150px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
-    }
-    .f06r-card {
-      position: absolute;
-      left: 0;
-      top: 200px;
-      width: 616px;
-      height: 300px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
+    .f06r-col { position: absolute; left: 1224px; top: 0; width: 616px; height: 900px; }
+    .f06r-label { left: 0; top: 162px; }
+    .f06r-card { left: 0; top: 200px; width: 616px; height: 300px; }
     .f06r-btn {
-      position: absolute;
-      left: 208px;
-      top: 92px;
-      width: 200px;
-      height: 116px;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.35);
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.12), 0 4px 12px rgba(20, 20, 19, 0.06);
-      overflow: hidden;
+      position: absolute; left: 208px; top: 92px; width: 200px; height: 116px;
+      display: block; padding: 0; overflow: hidden;
     }
     .f06r-btn-digit {
-      position: absolute;
-      left: 0; right: 0;
-      top: 0;
-      height: 116px;
-      line-height: 116px;
-      text-align: center;
-      font-family: "Inter", sans-serif;
-      font-weight: 500;
-      font-size: 56px;
-      color: #141413;
+      position: absolute; left: 0; right: 0; top: 0; height: 116px; line-height: 116px; text-align: center;
+      font-family: var(--ts-sans); font-weight: 600; font-size: 56px; color: #FFFFFF;
     }
     .f06r-btn-focus {
-      position: absolute;
-      inset: -1px;
-      border: 2px solid #141413;
-      border-radius: 8px;
-      opacity: 0;
+      position: absolute; inset: 0; box-sizing: border-box; border: 3px solid var(--ts-blue-dark);
+      border-radius: 6px; opacity: 0;
     }
     .f06r-ripple {
-      position: absolute;
-      left: 1492px;
-      top: 310px;
-      width: 80px;
-      height: 80px;
-      border-radius: 9999px;
-      border: 2px solid rgba(20, 20, 19, 0.4);
-      opacity: 0;
-      pointer-events: none;
+      position: absolute; left: 1492px; top: 310px; width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(49, 120, 198, 0.2); opacity: 0; pointer-events: none;
     }
 
     /* render tags on the card's top edge */
-    .f06r-rtag {
-      position: absolute;
-      right: 24px;
-      top: -19px;
-      height: 38px;
-      padding: 0 14px;
-      display: flex;
-      align-items: center;
-      border-radius: 6px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-    }
-    .f06r-rtag1 {
-      background: #ECE3D4;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      color: rgba(20, 20, 19, 0.5);
-    }
-    .f06r-rtag2 {
-      background: #FAF9F5;
-      border: 2px solid #CC785C;
-      color: #CC785C;
-      opacity: 0;
-    }
+    .f06r-rtag { right: 24px; top: -19px; height: 38px; padding: 0 14px; box-sizing: border-box; display: flex; align-items: center; }
+    .f06r-rtag1 { background: var(--ts-panel); border: 1px solid var(--ts-hairline); color: var(--ts-muted); }
+    .f06r-rtag2 { background: var(--ts-blue-tint); border: 2px solid var(--ts-blue); color: var(--ts-blue-dark); opacity: 0; }
 
     /* state chip */
-    .f06r-chip {
-      position: absolute;
-      left: 0;
-      top: 560px;
-      height: 68px;
-      padding: 0 28px 0 24px;
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      border-radius: 9999px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      color: #141413;
-      white-space: pre;
-    }
-    .f06r-chip-k { color: rgba(20, 20, 19, 0.5); font-size: 22px; letter-spacing: 0.16em; text-transform: uppercase; }
-    .f06r-chip-sep { width: 1px; height: 30px; background: rgba(20, 20, 19, 0.2); }
-    .f06r-digitbox {
-      position: relative;
-      display: inline-block;
-      width: 17px;
-      height: 40px;
-      overflow: hidden;
-      vertical-align: middle;
-    }
-    .f06r-cd {
-      position: absolute;
-      left: 0;
-      top: 0;
-      line-height: 40px;
-    }
+    .f06r-chip { left: 0; top: 560px; height: 68px; padding: 0 26px 0 22px; gap: 20px; font-size: 28px; }
+    .f06r-chip-sep { width: 1px; height: 30px; background: var(--ts-hairline); }
+    .f06r-digitbox { position: relative; display: inline-block; width: 17px; height: 40px; overflow: hidden; vertical-align: middle; }
+    .f06r-cd { position: absolute; left: 0; top: 0; line-height: 40px; }
 
     /* hero word */
     .f06r-word {
-      position: absolute;
-      left: 0;
-      top: 676px;
-      font-family: "EB Garamond", serif;
-      font-style: italic;
-      font-weight: 400;
-      font-size: 104px;
-      line-height: 1.05;
-      letter-spacing: -0.012em;
-      color: #141413;
-      white-space: nowrap;
-      opacity: 0;
+      position: absolute; left: 0; top: 676px; font-family: var(--ts-sans); font-weight: 700;
+      font-size: 104px; line-height: 1.05; letter-spacing: -0.035em; color: var(--ts-ink);
+      white-space: nowrap; opacity: 0;
     }
 
     /* oversized cursor actor (family arrow at 3.5x) */
-    .f06r-cursor {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 224px;
-      height: 224px;
-      pointer-events: none;
-      z-index: 20;
-      filter: drop-shadow(0 8px 12px rgba(20, 20, 19, 0.22));
-    }
+    .f06r-cursor { position: absolute; left: 0; top: 0; width: 224px; height: 224px; pointer-events: none; z-index: 20; }
     .f06r-cursor svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-      fill: #FAF9F5;
-      stroke: #141413;
-      stroke-width: 1.4;
-      stroke-linejoin: round;
-      stroke-linecap: round;
+      display: block; width: 100%; height: 100%;
+      fill: #1E293B; stroke: #FFFFFF; stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round;
     }
   </style>
 
   <div data-hf-id="hf-qf7h" id="root" data-composition-id="06-renderen" data-width="1920" data-height="1080" data-duration="16.14">
-    <div data-hf-id="hf-24a2" id="06-renderen-bg" class="f06r-bg clip" data-start="0" data-duration="16.14" data-track-index="0"></div>
+    <div data-hf-id="hf-24a2" id="06-renderen-bg" class="ts-bg clip" data-start="0" data-duration="16.14" data-track-index="0"></div>
 
-    <div data-hf-id="hf-5ibf" id="06-renderen-stage" class="f06r-stage clip" data-start="0" data-duration="16.14" data-track-index="1">
-      <div data-hf-id="hf-8dr5" id="06-renderen-kicker" class="f06r-kicker"><span data-hf-id="hf-es2x" class="f06r-spike">✱</span>Renderen</div>
+    <div data-hf-id="hf-5ibf" id="06-renderen-stage" class="ts-stage clip" data-start="0" data-duration="16.14" data-track-index="1">
+      <div data-hf-id="hf-8dr5" id="06-renderen-kicker" class="ts-kicker"><div data-hf-id="hf-es2x" class="ts-kicker-bar" id="06-renderen-kbar"></div><span data-hf-id="hf-f06k" class="ts-kicker-text" id="06-renderen-ktext">Renderen</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-eq1w" id="06-renderen-panel" class="f06r-panel">
-        <div data-hf-id="hf-8sdj" class="f06r-titlebar">Counter.tsx</div>
+      <div data-hf-id="hf-eq1w" id="06-renderen-panel" class="ts-code-surface f06r-panel">
+        <div data-hf-id="hf-8sdj" class="ts-code-title">Counter.tsx</div>
         <div data-hf-id="hf-kdv4" class="f06r-code">
           <div data-hf-id="hf-rrya" id="06-renderen-scan" class="f06r-scan"></div>
           <div data-hf-id="hf-zn92" id="06-renderen-wash" class="f06r-wash"></div>
-          <div data-hf-id="hf-2qtp" class="f06r-row"><span data-hf-id="hf-jdtd" class="f06r-ln">1</span><span data-hf-id="hf-rpy3" class="f06r-txt"><span data-hf-id="hf-g7t9" class="f06r-kw">const</span> <span data-hf-id="hf-86y8" class="f06r-fn">Counter</span> = () <span data-hf-id="hf-m0i5" class="f06r-kw">=&gt;</span> {</span></div>
-          <div data-hf-id="hf-vfy9" class="f06r-row"><span data-hf-id="hf-kkqg" class="f06r-ln">2</span><span data-hf-id="hf-j7y1" class="f06r-txt">  <span data-hf-id="hf-qzsx" class="f06r-kw">const</span> [count, setCount] = <span data-hf-id="hf-q4eg" class="f06r-fn">useState</span><span data-hf-id="hf-9r43" class="f06r-dim">&lt;number&gt;</span>(<span data-hf-id="hf-u75k" class="f06r-num">0</span>);</span></div>
+          <div data-hf-id="hf-2qtp" class="f06r-row"><span data-hf-id="hf-jdtd" class="f06r-ln">1</span><span data-hf-id="hf-rpy3" class="f06r-txt"><span data-hf-id="hf-g7t9" class="ts-kw">const</span> <span data-hf-id="hf-86y8" class="ts-fn">Counter</span> = () <span data-hf-id="hf-m0i5" class="ts-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-vfy9" class="f06r-row"><span data-hf-id="hf-kkqg" class="f06r-ln">2</span><span data-hf-id="hf-j7y1" class="f06r-txt">  <span data-hf-id="hf-qzsx" class="ts-kw">const</span> [count, setCount] = <span data-hf-id="hf-q4eg" class="ts-fn">useState</span><span data-hf-id="hf-9r43" class="ts-punct">&lt;</span><span data-hf-id="hf-9r4t" class="ts-type">number</span><span data-hf-id="hf-9r4p" class="ts-punct">&gt;</span>(<span data-hf-id="hf-u75k" class="ts-fn">0</span>);</span></div>
           <div data-hf-id="hf-wmvc" class="f06r-row"><span data-hf-id="hf-k6ff" class="f06r-ln">3</span></div>
-          <div data-hf-id="hf-w8kb" class="f06r-row"><span data-hf-id="hf-i6wa" class="f06r-ln">4</span><span data-hf-id="hf-z7gg" class="f06r-txt">  <span data-hf-id="hf-c59s" class="f06r-kw">return</span> (</span></div>
-          <div data-hf-id="hf-u916" class="f06r-row"><span data-hf-id="hf-hsl9" class="f06r-ln">5</span><span data-hf-id="hf-eneg" class="f06r-txt">    <span data-hf-id="hf-ha22" class="f06r-dim">&lt;button</span> onClick={() <span data-hf-id="hf-sapt" class="f06r-kw">=&gt;</span> <span data-hf-id="hf-mqaj" class="f06r-fn">setCount</span>(count + <span data-hf-id="hf-tsuj" class="f06r-num">1</span>)}<span data-hf-id="hf-oabg" class="f06r-dim">&gt;</span></span></div>
+          <div data-hf-id="hf-w8kb" class="f06r-row"><span data-hf-id="hf-i6wa" class="f06r-ln">4</span><span data-hf-id="hf-z7gg" class="f06r-txt">  <span data-hf-id="hf-c59s" class="ts-kw">return</span> (</span></div>
+          <div data-hf-id="hf-u916" class="f06r-row"><span data-hf-id="hf-hsl9" class="f06r-ln">5</span><span data-hf-id="hf-eneg" class="f06r-txt">    <span data-hf-id="hf-ha22" class="ts-punct">&lt;button</span> onClick={() <span data-hf-id="hf-sapt" class="ts-kw">=&gt;</span> <span data-hf-id="hf-mqaj" class="ts-fn">setCount</span>(count + <span data-hf-id="hf-tsuj" class="ts-fn">1</span>)}<span data-hf-id="hf-oabg" class="ts-punct">&gt;</span></span></div>
           <div data-hf-id="hf-tuq5" class="f06r-row"><span data-hf-id="hf-izic" class="f06r-ln">6</span><span data-hf-id="hf-ad07" class="f06r-txt">      {count}</span></div>
-          <div data-hf-id="hf-v1n8" class="f06r-row"><span data-hf-id="hf-il7b" class="f06r-ln">7</span><span data-hf-id="hf-xl0o" class="f06r-txt">    <span data-hf-id="hf-3ly3" class="f06r-dim">&lt;/button&gt;</span></span></div>
+          <div data-hf-id="hf-v1n8" class="f06r-row"><span data-hf-id="hf-il7b" class="f06r-ln">7</span><span data-hf-id="hf-xl0o" class="f06r-txt">    <span data-hf-id="hf-3ly3" class="ts-punct">&lt;/button&gt;</span></span></div>
           <div data-hf-id="hf-unc7" class="f06r-row"><span data-hf-id="hf-mykm" class="f06r-ln">8</span><span data-hf-id="hf-s1ko" class="f06r-txt">  );</span></div>
           <div data-hf-id="hf-z0pi" class="f06r-row"><span data-hf-id="hf-mk9l" class="f06r-ln">9</span><span data-hf-id="hf-1ff3" class="f06r-txt">}</span></div>
-          <div data-hf-id="hf-wp4m" id="06-renderen-sum" class="f06r-sum"><span data-hf-id="hf-b3bk" class="f06r-num">0</span> + <span data-hf-id="hf-hvvv" class="f06r-num">1</span> = <span data-hf-id="hf-hhku" class="f06r-num">1</span></div>
+          <div data-hf-id="hf-wp4m" id="06-renderen-sum" class="f06r-sum"><span data-hf-id="hf-b3bk" class="ts-fn">0</span> + <span data-hf-id="hf-hvvv" class="ts-fn">1</span> = <span data-hf-id="hf-hhku" class="ts-fn">1</span></div>
           <div data-hf-id="hf-m6dz" id="06-renderen-ret" class="f06r-ret">→ 1</div>
         </div>
-        <div data-hf-id="hf-vvg1" class="f06r-status">Counter · functiecomponent</div>
+        <div data-hf-id="hf-vvg1" class="ts-code-status">Counter · functiecomponent</div>
       </div>
 
       <!-- right column: scherm card + state chip + hero word -->
       <div data-hf-id="hf-o4y7" class="f06r-col">
-        <div data-hf-id="hf-ip7g" id="06-renderen-label" class="f06r-label">scherm</div>
-        <div data-hf-id="hf-lopi" id="06-renderen-card" class="f06r-card">
-          <div data-hf-id="hf-9yvo" id="06-renderen-btn" class="f06r-btn">
+        <div data-hf-id="hf-ip7g" id="06-renderen-label" class="ts-label f06r-label">scherm</div>
+        <div data-hf-id="hf-lopi" id="06-renderen-card" class="ts-card f06r-card">
+          <div data-hf-id="hf-9yvo" id="06-renderen-btn" class="ts-btn f06r-btn">
             <div data-hf-id="hf-qj7m" id="06-renderen-b0" class="f06r-btn-digit">0</div>
             <div data-hf-id="hf-286q" id="06-renderen-b1" class="f06r-btn-digit">1</div>
             <div data-hf-id="hf-50bd" id="06-renderen-bfocus" class="f06r-btn-focus"></div>
           </div>
-          <div data-hf-id="hf-qblp" id="06-renderen-rtag1" class="f06r-rtag f06r-rtag1">render #1</div>
-          <div data-hf-id="hf-u4oi" id="06-renderen-rtag2" class="f06r-rtag f06r-rtag2">render #2</div>
+          <div data-hf-id="hf-qblp" id="06-renderen-rtag1" class="ts-tag f06r-rtag f06r-rtag1">render #1</div>
+          <div data-hf-id="hf-u4oi" id="06-renderen-rtag2" class="ts-tag f06r-rtag f06r-rtag2">render #2</div>
         </div>
 
-        <div data-hf-id="hf-5y02" id="06-renderen-chip" class="f06r-chip">
-          <span data-hf-id="hf-phub" class="f06r-chip-k">state</span><span data-hf-id="hf-5myl" class="f06r-chip-sep"></span><span data-hf-id="hf-w7ie">count: <span data-hf-id="hf-10ji" class="f06r-digitbox"><span data-hf-id="hf-xg4j" id="06-renderen-c0" class="f06r-cd">0</span><span data-hf-id="hf-lr1n" id="06-renderen-c1" class="f06r-cd">1</span></span></span>
+        <div data-hf-id="hf-5y02" id="06-renderen-chip" class="ts-chip f06r-chip">
+          <span data-hf-id="hf-phub" class="ts-chip-key">state</span><span data-hf-id="hf-5myl" class="f06r-chip-sep"></span><span data-hf-id="hf-w7ie">count: <span data-hf-id="hf-10ji" class="f06r-digitbox"><span data-hf-id="hf-xg4j" id="06-renderen-c0" class="f06r-cd">0</span><span data-hf-id="hf-lr1n" id="06-renderen-c1" class="f06r-cd">1</span></span></span>
         </div>
 
         <div data-hf-id="hf-onvt" id="06-renderen-word" class="f06r-word">renderen</div>
@@ -406,7 +317,8 @@
       var scan = $("scan");
 
       // ---- Scene 1 (0.0–4.9): code + scherm on screen; cursor clicks; wash; 0 + 1 = 1 ----
-      tl.fromTo($("kicker"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo($("kbar"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0);
+      tl.fromTo($("ktext"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.1);
       tl.fromTo($("panel"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
       tl.fromTo($("label"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.04);
       tl.fromTo($("card"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.04);
@@ -439,7 +351,7 @@
       // cursor eases just below/right so the button stays readable
       tl.to(cursor, { x: TIP_X + 70, y: TIP_Y + 88, duration: 0.5, ease: "power2.inOut" }, 1.05);
 
-      // "setCount": amber wash sweeps over setCount(count + 1)
+      // "setCount": blue wash sweeps over setCount(count + 1)
       tl.fromTo($("wash"), { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: "power3.out" }, 1.94);
       // "count plus één": floating sum label
       tl.fromTo($("sum"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 3.37);
@@ -449,21 +361,21 @@
       tl.to($("chip"), { scale: 1, duration: 0.4, ease: "power3.out" }, 5.49);
       tl.to($("c0"), { yPercent: -100, duration: 0.25, ease: "power2.inOut" }, 5.36);
       tl.to($("c1"), { yPercent: 0, duration: 0.25, ease: "power2.inOut" }, 5.36);
-      tl.fromTo($("chip"), { backgroundColor: "#EFE9DE" }, { backgroundColor: "#ECE3D4", duration: 0.3, ease: "power1.out", immediateRender: false }, 5.36);
+      tl.fromTo($("chip"), { backgroundColor: "#F1F5F9", borderColor: "#E2E8F0" }, { backgroundColor: "#EAF2FB", borderColor: "#3178C6", duration: 0.3, ease: "power1.out", immediateRender: false }, 5.36);
       // "nieuwe waarde": the stored value nods once
       tl.to($("c1"), { scale: 1.25, duration: 0.16, ease: "power2.out" }, 7.18);
       tl.to($("c1"), { scale: 1, duration: 0.35, ease: "power3.out" }, 7.34);
 
       // the scan takes over from the wash/sum
       tl.to([$("wash"), $("sum")], { opacity: 0.3, duration: 0.3, ease: "power1.out" }, 7.85);
-      // "roept je functie opnieuw op": amber line scans top to bottom, 0.18s per line
+      // "roept je functie opnieuw op": blue line scans top to bottom, 0.18s per line
       tl.fromTo(scan, { opacity: 0, y: 0 }, { opacity: 1, y: 0, duration: 0.08, ease: "power1.out" }, 8.05);
       for (var i = 1; i < 9; i++) {
         tl.set(scan, { y: i * LINE_H }, 8.05 + i * 0.18);
       }
       tl.to(scan, { opacity: 0.4, duration: 0.3, ease: "power1.out" }, 8.05 + 9 * 0.18);
 
-      // ---- Scene 3 (9.8–12.5): render tag flips to coral render #2; hero word ----
+      // ---- Scene 3 (9.8–12.5): render tag flips to blue render #2; hero word ----
       tl.to($("rtag1"), { opacity: 0, y: -10, duration: 0.25, ease: "power2.in" }, 9.92);
       tl.fromTo($("rtag2"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 10.0);
       tl.to($("rtag2"), { scale: 1.14, duration: 0.2, ease: "power2.out" }, 11.45);

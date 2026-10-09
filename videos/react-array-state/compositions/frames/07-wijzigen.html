@@ -1,288 +1,259 @@
 <template>
   <div data-hf-id="hf-yy7f" id="root" data-composition-id="07-wijzigen" data-start="0" data-duration="9.5" data-width="1920" data-height="1080">
     <style>
-      @font-face {
-        font-family: "EB Garamond";
-        src: url("assets/fonts/EBGaramond-400.woff2") format("woff2");
-        font-weight: 400;
-        font-style: normal;
-        font-display: block;
-      }
-      @font-face {
-        font-family: "Inter";
-        src: url("assets/fonts/Inter-400.woff2") format("woff2");
-        font-weight: 400;
-        font-style: normal;
-        font-display: block;
-      }
-      @font-face {
-        font-family: "JetBrains Mono";
-        src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
-        font-weight: 400;
-        font-style: normal;
-        font-display: block;
-      }
-      @font-face {
-        font-family: "JetBrains Mono";
-        src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
-        font-weight: 700;
-        font-style: normal;
-        font-display: block;
-      }
-      #root {
-        position: relative;
-        width: 1920px;
-        height: 1080px;
-        overflow: hidden;
-        font-family: "Inter", sans-serif;
-        color: #141413;
-      }
-      [id="07-wijzigen-ground"] {
-        position: absolute;
-        inset: 0;
-        background: #faf9f5;
-      }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
 
-      /* ---- kicker + title ---- */
-      [id="07-wijzigen-kicker"] {
-        position: absolute;
-        left: 80px;
-        top: 60px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 28px;
-        font-weight: 400;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: #141413;
-        white-space: nowrap;
-      }
-      [class~="07-wijzigen-spike"] {
-        display: inline-block;
-        width: 26px;
-        height: 26px;
-        margin-right: 16px;
-        vertical-align: -3px;
-      }
-      [class~="07-wijzigen-spike"] line {
-        stroke: #cc785c;
-        stroke-width: 14;
-        stroke-linecap: round;
-      }
-      [id="07-wijzigen-title"] {
-        position: absolute;
-        left: 76px;
-        top: 114px;
-        font-family: "EB Garamond", Georgia, serif;
-        font-size: 88px; /* headline 4.6cqw */
-        line-height: 1.06;
-        letter-spacing: -0.018em;
-        font-weight: 400;
-        white-space: nowrap;
-      }
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
 
-      /* ---- code surface ---- */
-      [id="07-wijzigen-panel"] {
-        position: absolute;
-        left: 80px;
-        top: 236px;
-        width: 1760px;
-        height: 220px;
-        background: #181715;
-        border: 1px solid rgba(250, 249, 245, 0.14);
-        border-radius: 8px;
-        overflow: hidden;
-      }
-      [id="07-wijzigen-bar"] {
-        position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        height: 44px;
-        background: #252320;
-        border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-        font-family: "JetBrains Mono", monospace;
-        font-size: 20px;
-        line-height: 44px;
-        padding-left: 28px;
-        color: rgba(250, 249, 245, 0.5);
-        letter-spacing: 0.02em;
-      }
-      [id="07-wijzigen-gutter"] {
-        position: absolute;
-        left: 28px;
-        top: 72px;
-        width: 40px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 40px;
-        line-height: 60px;
-        color: rgba(250, 249, 245, 0.28);
-        text-align: right;
-      }
-      [id="07-wijzigen-code"] {
-        position: absolute;
-        left: 112px;
-        top: 72px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 40px;
-        line-height: 60px;
-        font-variant-ligatures: none;
-        white-space: normal;
-        color: #faf9f5;
-      }
-      [class~="07-wijzigen-line"] {
-        display: block;
-        height: 60px;
-        white-space: pre;
-        position: relative;
-        z-index: 1;
-      }
-      [class~="07-wijzigen-ch"] {
-        display: inline-block;
-        width: 24px; /* JetBrains Mono advance = 0.6em */
-        white-space: pre;
-      }
-      [class~="07-wijzigen-p"] {
-        color: rgba(250, 249, 245, 0.55);
-      }
-      [id="07-wijzigen-caret"] {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 3px;
-        height: 44px;
-        margin-top: 8px;
-        background: #faf9f5;
-        z-index: 3;
-      }
-      [id="07-wijzigen-hl"] {
-        position: absolute;
-        left: 40px; /* col 2 */
-        top: 64px; /* row 2 */
-        width: 280px; /* "index === i" = 11ch + pad */
-        height: 52px;
-        background: rgba(250, 249, 245, 0.12);
-        border-radius: 6px;
-        z-index: 0;
-        transform-origin: left center;
-      }
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
 
-      /* ---- array strips ---- */
-      [class~="07-wijzigen-tag"] {
-        position: absolute;
-        left: 511px;
-        width: 170px;
-        height: 52px;
-        border: 1px solid rgba(20, 20, 19, 0.2);
-        border-radius: 6px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 26px;
-        line-height: 50px;
-        letter-spacing: 0.02em;
-        text-align: center;
-        color: rgba(20, 20, 19, 0.78);
-        background: #faf9f5;
-        white-space: nowrap;
-      }
-      [class~="07-wijzigen-letter"] {
-        position: relative;
-        display: inline-block;
-        width: 16px;
-        height: 50px;
-        vertical-align: top;
-      }
-      [class~="07-wijzigen-letter"] span {
-        position: absolute;
-        left: 0;
-        top: 0;
-      }
-      [class~="07-wijzigen-tile"] {
-        position: absolute;
-        width: 120px;
-        height: 120px;
-        background: #efe9de;
-        border: 1px solid rgba(20, 20, 19, 0.12);
-        border-radius: 8px;
-        box-shadow:
-          0 1px 3px rgba(20, 20, 19, 0.08),
-          0 4px 16px rgba(20, 20, 19, 0.04);
-        font-family: "JetBrains Mono", monospace;
-        font-size: 52px;
-        line-height: 118px;
-        text-align: center;
-        color: #141413;
-      }
-      [class~="07-wijzigen-idx"] {
-        position: absolute;
-        width: 120px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 20px;
-        line-height: 24px;
-        text-align: center;
-        color: rgba(20, 20, 19, 0.5);
-        white-space: nowrap;
-      }
-      [id="07-wijzigen-dslot"] {
-        position: absolute;
-        left: 701px;
-        top: 688px;
-        width: 720px;
-        height: 144px;
-        border: 1px dashed rgba(20, 20, 19, 0.28);
-        border-radius: 12px;
-      }
-      [id="07-wijzigen-maplbl"] {
-        position: absolute;
-        left: 511px;
-        top: 628px;
-        width: 170px;
-        text-align: center;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 24px;
-        line-height: 32px;
-        color: rgba(20, 20, 19, 0.55);
-        white-space: nowrap;
-      }
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
 
-      /* ---- swapped tile (hacker-flip-3d) ---- */
-      [id="07-wijzigen-swap"] {
-        perspective: 500px;
-      }
-      [id="07-wijzigen-coral"] {
-        position: absolute;
-        inset: -1px;
-        border-radius: 8px;
-        background: #cc785c;
-      }
-      [id="07-wijzigen-old"] {
-        position: absolute;
-        inset: 0;
-      }
-      [id="07-wijzigen-flip"] {
-        position: absolute;
-        inset: 0;
-        color: #141413;
-      }
-      [class~="07-wijzigen-fc"] {
-        display: inline-block;
-        width: 31.2px; /* 0.6em at 52px — mono holds width while glyphs flicker */
-        transform-origin: bottom;
-        transform-style: preserve-3d;
-      }
-      [id="07-wijzigen-ilbl"] {
-        position: absolute;
-        width: 120px;
-        text-align: center;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 20px;
-        line-height: 24px;
-        color: #141413;
-        white-space: nowrap;
-      }
-    </style>
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
 
-    <div data-hf-id="hf-dp52" id="07-wijzigen-ground" class="clip" data-start="0" data-duration="9.5" data-track-index="0"></div>
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
 
-    <div data-hf-id="hf-rzru" id="07-wijzigen-kicker"><svg data-hf-id="hf-ty82" class="07-wijzigen-spike" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line data-hf-id="hf-6g1y" x1="50" y1="10" x2="50" y2="90" /><line data-hf-id="hf-nn7i" x1="15.4" y1="30" x2="84.6" y2="70" /><line data-hf-id="hf-her2" x1="15.4" y1="70" x2="84.6" y2="30" /></svg>Recept 3/3 · Wijzigen</div>
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 07 positions ---- */
+    [id="07-wijzigen-title"] {
+      position: absolute; left: 80px; top: 128px;
+      font-family: var(--ts-sans); font-size: 76px; line-height: 1.06;
+      letter-spacing: -0.025em; font-weight: 700; color: var(--ts-ink); white-space: nowrap;
+    }
+
+    /* light code surface (positions and line metrics kept) */
+    [id="07-wijzigen-panel"] {
+      position: absolute; left: 80px; top: 236px; width: 1760px; height: 220px; box-sizing: border-box;
+      background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden;
+    }
+    [id="07-wijzigen-bar"] {
+      position: absolute; left: 0; top: 0; right: 0; height: 44px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding-left: 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    [id="07-wijzigen-bar"]::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    [id="07-wijzigen-gutter"] {
+      position: absolute; left: 28px; top: 72px; width: 40px;
+      font-family: var(--ts-mono); font-size: 40px; line-height: 60px; color: var(--ts-code-ln); text-align: right;
+    }
+    [id="07-wijzigen-code"] {
+      position: absolute; left: 112px; top: 72px;
+      font-family: var(--ts-mono); font-size: 40px; line-height: 60px;
+      font-variant-ligatures: none; white-space: normal; color: var(--ts-code-text);
+    }
+    [class~="07-wijzigen-line"] { display: block; height: 60px; white-space: pre; position: relative; z-index: 1; }
+    [class~="07-wijzigen-ch"] { display: inline-block; width: 24px; white-space: pre; }
+    [class~="07-wijzigen-p"] { color: var(--ts-code-punct); }
+    [class~="07-wijzigen-fn"] { color: var(--ts-code-fn); }
+    [id="07-wijzigen-caret"] {
+      position: absolute; left: 0; top: 0; width: 2px; height: 44px; margin-top: 8px;
+      background: var(--ts-blue); z-index: 3;
+    }
+    [id="07-wijzigen-hl"] {
+      position: absolute; left: 40px; top: 64px; width: 280px; height: 52px;
+      background: var(--ts-wash); border-radius: 6px; z-index: 0; transform-origin: left center;
+    }
+
+    /* array strips */
+    [class~="07-wijzigen-tag"] {
+      position: absolute; left: 511px; width: 170px; height: 52px; box-sizing: border-box;
+      border: 1px solid var(--ts-hairline); border-radius: 6px; background: var(--ts-ground);
+      font-family: var(--ts-mono); font-size: 26px; line-height: 50px; letter-spacing: 0.02em;
+      text-align: center; color: var(--ts-ink-soft); white-space: nowrap;
+    }
+    [class~="07-wijzigen-letter"] { position: relative; display: inline-block; width: 16px; height: 50px; vertical-align: top; }
+    [class~="07-wijzigen-letter"] span { position: absolute; left: 0; top: 0; }
+    [class~="07-wijzigen-tile"] {
+      position: absolute; width: 120px; height: 120px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      box-shadow: var(--ts-shadow);
+      font-family: var(--ts-mono); font-size: 52px; line-height: 118px; text-align: center; color: var(--ts-ink);
+    }
+    [class~="07-wijzigen-idx"] {
+      position: absolute; width: 120px; font-family: var(--ts-mono); font-size: 20px; line-height: 24px;
+      text-align: center; color: var(--ts-muted); white-space: nowrap;
+    }
+    [id="07-wijzigen-dslot"] {
+      position: absolute; left: 701px; top: 688px; width: 720px; height: 144px;
+      box-sizing: border-box; border: 2px dashed var(--ts-hairline); border-radius: 12px;
+    }
+    [id="07-wijzigen-maplbl"] {
+      position: absolute; left: 511px; top: 628px; width: 170px; text-align: center;
+      font-family: var(--ts-mono); font-size: 24px; line-height: 32px; color: var(--ts-label); white-space: nowrap;
+    }
+
+    /* swapped tile: blue-tint + 2px blue border (the key change) */
+    [id="07-wijzigen-swap"] { perspective: 500px; }
+    [id="07-wijzigen-accent"] {
+      position: absolute; inset: -1px; border-radius: 8px; box-sizing: border-box;
+      background: var(--ts-blue-tint); border: 2px solid var(--ts-blue);
+    }
+    [id="07-wijzigen-old"] { position: absolute; inset: 0; }
+    [id="07-wijzigen-flip"] { position: absolute; inset: 0; color: var(--ts-ink); }
+    [class~="07-wijzigen-fc"] {
+      display: inline-block; width: 31.2px; transform-origin: bottom; transform-style: preserve-3d;
+    }
+    [id="07-wijzigen-ilbl"] {
+      position: absolute; width: 120px; text-align: center;
+      font-family: var(--ts-mono); font-size: 20px; line-height: 24px; color: var(--ts-blue-dark); white-space: nowrap;
+    }
+  </style>
+
+    <div data-hf-id="hf-dp52" id="07-wijzigen-ground" class="ts-bg clip" data-start="0" data-duration="9.5" data-track-index="0"></div>
+
+    <div data-hf-id="hf-rzru" class="ts-kicker" id="07-wijzigen-kicker"><div data-hf-id="hf-ty82" class="ts-kicker-bar" id="07-wijzigen-kbar"></div><span data-hf-id="hf-6g1y" class="ts-kicker-text" id="07-wijzigen-ktext">Recept 3/3 · Wijzigen</span></div>
     <div data-hf-id="hf-j7sg" id="07-wijzigen-title">Wijzigen</div>
 
     <div data-hf-id="hf-eoiv" id="07-wijzigen-panel">
@@ -302,7 +273,7 @@
     <div data-hf-id="hf-18fh" id="07-wijzigen-dslot"></div>
     <div data-hf-id="hf-yic6" id="07-wijzigen-maplbl">↓ map</div>
     <div data-hf-id="hf-qm33" class="07-wijzigen-tag" id="07-wijzigen-tagD" style="top: 734px">
-      ref #<span data-hf-id="hf-9rof" class="07-wijzigen-letter"><span data-hf-id="hf-8nxx" id="07-wijzigen-q" style="color: rgba(20, 20, 19, 0.3)">?</span><span data-hf-id="hf-4wig" id="07-wijzigen-D">D</span></span>
+      ref #<span data-hf-id="hf-9rof" class="07-wijzigen-letter"><span data-hf-id="hf-8nxx" id="07-wijzigen-q" style="color: #94A3B8">?</span><span data-hf-id="hf-4wig" id="07-wijzigen-D">D</span></span>
     </div>
     <div data-hf-id="hf-nsjp" id="07-wijzigen-stripD"></div>
 
@@ -360,9 +331,9 @@
           t.style.top = D_TOP + "px";
           if (i === SWAP_I) {
             t.id = P + "swap";
-            var coral = el("div");
-            coral.id = P + "coral";
-            t.appendChild(coral);
+            var accent = el("div");
+            accent.id = P + "accent";
+            t.appendChild(accent);
             var old = el("div", null, String(v));
             old.id = P + "old";
             t.appendChild(old);
@@ -388,13 +359,13 @@
         // ---------------- build code (per-char, code-typing mechanics) ----------------
         var LINES = [
           [
-            ["setNumbers", ""],
+            ["setNumbers", "fn"],
             ["(", "p"],
             ["prev", ""],
             [" => ", "p"],
             ["prev", ""],
             [".", "p"],
-            ["map", ""],
+            ["map", "fn"],
             ["((", "p"],
             ["oldNumber", ""],
             [", ", "p"],
@@ -437,7 +408,8 @@
         // =================== TIMELINE ===================
 
         // ---- Scene 1 (0.0–1.4): kicker + title + strip ref #C ----
-        tl.fromTo($("kicker"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+        tl.fromTo($("kbar"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0);
+        tl.fromTo($("ktext"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0);
         tl.fromTo($("title"), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.08);
         tl.fromTo($("tagC"), { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 0.12);
         cTiles.forEach(function (t, i) {
@@ -475,14 +447,14 @@
           tl.fromTo(t, { y: -DROP }, { y: 0, duration: 0.72, ease: "power3.out" }, at);
           tl.fromTo(t, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "none" }, at);
           // the source tile acknowledges the pass
-          tl.fromTo(cTiles[i], { backgroundColor: "#efe9de" }, { backgroundColor: "#ece3d4", duration: 0.2, ease: "power1.out" }, at);
-          tl.to(cTiles[i], { backgroundColor: "#efe9de", duration: 0.5, ease: "power1.out" }, at + 0.25);
+          tl.fromTo(cTiles[i], { backgroundColor: "#F1F5F9" }, { backgroundColor: "#E2E8F0", duration: 0.2, ease: "power1.out" }, at);
+          tl.to(cTiles[i], { backgroundColor: "#F1F5F9", duration: 0.5, ease: "power1.out" }, at + 0.25);
           tl.fromTo(dIdx[i], { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, at + 0.4);
         });
         // "nieuwe array" (4.18): the tag resolves ref #D, the dashed slot becomes a real array
         tl.to($("q"), { opacity: 0, duration: 0.18, ease: "power1.out" }, 4.16);
         tl.fromTo($("D"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 4.18);
-        tl.fromTo($("tagD"), { borderColor: "rgba(20,20,19,0.2)", color: "rgba(20,20,19,0.78)" }, { borderColor: "rgba(20,20,19,0.45)", color: "rgba(20,20,19,1)", duration: 0.4, ease: "power1.out" }, 4.18);
+        tl.fromTo($("tagD"), { borderColor: "#E2E8F0", color: "#475569" }, { borderColor: "#94A3B8", color: "#1E293B", duration: 0.4, ease: "power1.out" }, 4.18);
         tl.to($("dslot"), { opacity: 0, duration: 0.5, ease: "power1.out" }, 4.24);
 
         // ---- Scene 4 (5.0–7.68): index i → flip to the new value ----
@@ -492,7 +464,7 @@
         tl.to(dIdx[SWAP_I], { opacity: 0, duration: 0.2, ease: "power1.out" }, 5.6);
         tl.fromTo(ilbl, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 5.66);
         // "i" (5.98): that one tile steps forward
-        tl.to(swap, { y: -10, borderColor: "rgba(20,20,19,0.45)", duration: 0.45, ease: "power3.out" }, 5.98);
+        tl.to(swap, { y: -10, borderColor: "#94A3B8", duration: 0.45, ease: "power3.out" }, 5.98);
 
         // hacker-flip-3d (number-only pool): 1 → 42, settling on "nieuwe waarde" (7.1)
         var oldEl = $("old");
@@ -541,10 +513,10 @@
             FLIP_START + i * CHAR_STAGGER,
           );
         });
-        // the one voltage: the swapped tile turns coral as "42" clicks in
-        tl.fromTo($("coral"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 6.98);
-        tl.fromTo(flipEl, { color: "#141413" }, { color: "#faf9f5", duration: 0.3, ease: "power1.out" }, 6.98);
-        tl.to(swap, { boxShadow: "0 1px 3px rgba(20,20,19,0.08), 0 4px 16px rgba(20,20,19,0.04)", borderColor: "rgba(204,120,92,1)", duration: 0.3, ease: "power1.out" }, 6.98);
+        // the one accent: the swapped tile turns blue as "42" clicks in
+        tl.fromTo($("accent"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 6.98);
+        tl.fromTo(flipEl, { color: "#1E293B" }, { color: "#235A97", duration: 0.3, ease: "power1.out" }, 6.98);
+        tl.to(swap, { boxShadow: "0 1px 2px rgba(15,23,42,0.06)", borderColor: "#3178C6", duration: 0.3, ease: "power1.out" }, 6.98);
 
         // hold to the end of the shot
         tl.to({}, { duration: 7.68 }, 0);

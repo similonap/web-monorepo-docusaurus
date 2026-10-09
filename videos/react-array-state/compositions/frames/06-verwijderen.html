@@ -1,243 +1,233 @@
 <template>
   <div data-hf-id="hf-1vg1" id="root" data-composition-id="06-verwijderen" data-start="0" data-duration="11.14" data-width="1920" data-height="1080">
     <style>
-      /* Fonts: EB Garamond / Inter / JetBrains Mono are HyperFrames bundled families
-         (resolved by the renderer's font alias map), so no external file is referenced. */
-      #root {
-        position: relative;
-        width: 1920px;
-        height: 1080px;
-        overflow: hidden;
-        font-family: "Inter", sans-serif;
-        color: #141413;
-      }
-      [id="06-verwijderen-ground"] {
-        position: absolute;
-        inset: 0;
-        background: #faf9f5;
-      }
-      [id="06-verwijderen-stage"] {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 1920px;
-        height: 900px;
-      }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
 
-      /* ── chrome: kicker + title ─────────────────────────────── */
-      [id="06-verwijderen-kicker"] {
-        position: absolute;
-        left: 80px;
-        top: 60px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 28px;
-        font-weight: 500;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: #141413;
-        white-space: nowrap;
-      }
-      [id="06-verwijderen-kicker"] .vw06-spike {
-        color: #cc785c;
-        margin-right: 0.35em;
-      }
-      [id="06-verwijderen-title"] {
-        position: absolute;
-        left: 76px;
-        top: 114px;
-        font-family: "EB Garamond", Georgia, serif;
-        font-size: 88px; /* headline 4.6cqw */
-        font-weight: 400;
-        line-height: 1.06;
-        letter-spacing: -0.018em;
-        white-space: nowrap;
-      }
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
 
-      /* ── code surface (warm navy) ───────────────────────────── */
-      [id="06-verwijderen-code"] {
-        position: absolute;
-        left: 80px;
-        top: 222px;
-        width: 1760px;
-        height: 164px;
-        background: #181715;
-        border: 1px solid rgba(250, 249, 245, 0.14);
-        border-radius: 8px;
-        overflow: hidden;
-      }
-      [id="06-verwijderen-codebar"] {
-        height: 44px;
-        background: #252320;
-        border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-        display: flex;
-        align-items: center;
-        padding: 0 24px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 20px;
-        letter-spacing: 0.02em;
-        color: rgba(250, 249, 245, 0.55);
-      }
-      [id="06-verwijderen-gutter"] {
-        position: absolute;
-        left: 0;
-        top: 44px;
-        width: 84px;
-        height: 120px;
-        padding-right: 22px;
-        text-align: right;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 36px;
-        line-height: 120px;
-        color: rgba(250, 249, 245, 0.3);
-      }
-      [id="06-verwijderen-line"] {
-        position: absolute;
-        left: 112px;
-        top: 44px;
-        height: 120px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 36px;
-        line-height: 120px;
-        white-space: pre;
-        font-variant-ligatures: none;
-        color: #faf9f5;
-      }
-      .vw06-ch {
-        display: inline-block;
-        white-space: pre;
-      }
-      .vw06-id { color: #faf9f5; }
-      .vw06-pu { color: rgba(250, 249, 245, 0.6); }
-      .vw06-fn { color: #5db8a6; }
-      [id="06-verwijderen-caret"] {
-        position: absolute;
-        left: 0;
-        top: 40px;
-        width: 3px;
-        height: 40px;
-        background: #faf9f5;
-        border-radius: 1px;
-      }
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
 
-      /* ── array strips ───────────────────────────────────────── */
-      .vw06-ref {
-        position: absolute;
-        left: 340px;
-        width: 190px;
-        height: 112px;
-        line-height: 112px;
-        text-align: right;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 26px;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        color: rgba(20, 20, 19, 0.62);
-        white-space: nowrap;
-      }
-      .vw06-ref b {
-        font-weight: 500;
-        color: #141413;
-      }
-      .vw06-tile {
-        position: absolute;
-        width: 112px;
-        height: 112px;
-        background: #efe9de;
-        border: 1px solid rgba(20, 20, 19, 0.12);
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 44px;
-        font-weight: 500;
-        color: #141413;
-      }
-      .vw06-copy {
-        background: #ece3d4;
-        border-color: rgba(20, 20, 19, 0.2);
-      }
-      .vw06-reject-fill {
-        position: absolute;
-        inset: -1px;
-        border-radius: 8px;
-        background: #cc785c;
-        opacity: 0;
-      }
-      .vw06-tile .vw06-val {
-        position: relative;
-      }
-      .vw06-idx {
-        position: absolute;
-        width: 112px;
-        text-align: center;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 20px;
-        letter-spacing: 0.02em;
-        color: rgba(20, 20, 19, 0.5);
-      }
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
 
-      /* ── the filter gate ────────────────────────────────────── */
-      [id="06-verwijderen-gate"] {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 1920px;
-        height: 900px;
-        overflow: visible;
-      }
-      [id="06-verwijderen-gate"] path {
-        fill: none;
-        stroke: rgba(20, 20, 19, 0.45);
-        stroke-width: 1.5;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-      [id="06-verwijderen-gatelabel"] {
-        position: absolute;
-        left: 1404px;
-        top: 596px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 24px;
-        letter-spacing: 0.02em;
-        color: rgba(20, 20, 19, 0.55);
-        white-space: nowrap;
-      }
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
 
-      /* ── i = 2 pointer ──────────────────────────────────────── */
-      [id="06-verwijderen-ilabel"] {
-        position: absolute;
-        left: 836px;
-        top: 618px;
-        width: 112px;
-        text-align: center;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 26px;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        color: #141413;
-        white-space: nowrap;
-      }
-      [id="06-verwijderen-ilabel"] .vw06-stem {
-        display: block;
-        width: 1px;
-        height: 22px;
-        margin: 0 auto 6px;
-        background: rgba(20, 20, 19, 0.45);
-      }
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 06 positions ---- */
+    [id="06-verwijderen-stage"] { position: absolute; left: 0; top: 0; width: 1920px; height: 900px; }
+    [id="06-verwijderen-title"] {
+      position: absolute; left: 76px; top: 128px;
+      font-family: var(--ts-sans); font-size: 72px; font-weight: 700; line-height: 1.06;
+      letter-spacing: -0.025em; color: var(--ts-ink); white-space: nowrap;
+    }
+    [id="06-verwijderen-code"] { left: 80px; top: 222px; width: 1760px; height: 164px; }
+    [id="06-verwijderen-gutter"] {
+      position: absolute; left: 0; top: 50px; width: 84px; height: 114px; padding-right: 22px; box-sizing: content-box;
+      text-align: right; font-family: var(--ts-mono); font-size: 36px; line-height: 114px; color: var(--ts-code-ln);
+    }
+    [id="06-verwijderen-line"] {
+      position: absolute; left: 112px; top: 50px; height: 114px; font-family: var(--ts-mono);
+      font-size: 36px; line-height: 114px; white-space: pre; font-variant-ligatures: none; color: var(--ts-code-text);
+    }
+    .vw06-ch { display: inline-block; white-space: pre; }
+    .vw06-id { color: var(--ts-code-text); }
+    .vw06-pu { color: var(--ts-code-punct); }
+    .vw06-fn { color: var(--ts-code-fn); }
+    [id="06-verwijderen-caret"] { position: absolute; left: 0; top: 37px; width: 2px; height: 40px; background: var(--ts-blue); border-radius: 1px; }
+    .vw06-ref {
+      position: absolute; left: 340px; width: 190px; height: 112px; line-height: 112px; text-align: right;
+      font-family: var(--ts-mono); font-size: 26px; font-weight: 500; letter-spacing: 0.02em;
+      color: var(--ts-muted); white-space: nowrap;
+    }
+    .vw06-ref b { font-weight: 500; color: var(--ts-ink); }
+    .vw06-tile {
+      position: absolute; width: 112px; height: 112px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px; box-shadow: var(--ts-shadow);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-mono); font-size: 44px; font-weight: 500; color: var(--ts-ink);
+    }
+    .vw06-copy { background: var(--ts-ground); border-color: #CBD5E1; }
+    .vw06-reject-fill { position: absolute; inset: -1px; border-radius: 8px; border: 2px solid var(--ts-error); opacity: 0; }
+    .vw06-tile .vw06-val { position: relative; }
+    .vw06-idx {
+      position: absolute; width: 112px; text-align: center; font-family: var(--ts-mono);
+      font-size: 20px; letter-spacing: 0.02em; color: var(--ts-muted);
+    }
+    [id="06-verwijderen-gate"] { position: absolute; left: 0; top: 0; width: 1920px; height: 900px; overflow: visible; }
+    [id="06-verwijderen-gate"] path { fill: none; stroke: var(--ts-muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    [id="06-verwijderen-gatelabel"] {
+      position: absolute; left: 1404px; top: 596px; font-family: var(--ts-mono); font-size: 24px;
+      letter-spacing: 0.02em; color: var(--ts-ink-soft); white-space: nowrap;
+    }
+    [id="06-verwijderen-ilabel"] {
+      position: absolute; left: 836px; top: 618px; width: 112px; text-align: center;
+      font-family: var(--ts-mono); font-size: 26px; font-weight: 500; letter-spacing: 0.02em;
+      color: var(--ts-ink); white-space: nowrap;
+    }
+    [id="06-verwijderen-ilabel"] .vw06-stem { display: block; width: 2px; height: 22px; margin: 0 auto 6px; background: var(--ts-muted); }
     </style>
 
-    <!-- background: flat cream field, full duration -->
-    <div data-hf-id="hf-rab8" id="06-verwijderen-ground" class="clip" data-start="0" data-duration="11.14" data-track-index="0"></div>
+    <!-- background: white ground, full duration -->
+    <div data-hf-id="hf-rab8" id="06-verwijderen-ground" class="ts-bg clip" data-start="0" data-duration="11.14" data-track-index="0"></div>
 
     <div data-hf-id="hf-33oo" id="06-verwijderen-stage" class="clip" data-start="0" data-duration="11.14" data-track-index="1">
-      <div data-hf-id="hf-we7m" id="06-verwijderen-kicker"><span data-hf-id="hf-3552" class="vw06-spike">✱</span>Recept 2/3 · Verwijderen</div>
+      <div data-hf-id="hf-we7m" class="ts-kicker" id="06-verwijderen-kicker"><div data-hf-id="hf-3552" class="ts-kicker-bar" id="06-verwijderen-kbar"></div><span data-hf-id="hf-k06t" class="ts-kicker-text" id="06-verwijderen-ktext">Recept 2/3 · Verwijderen</span></div>
       <div data-hf-id="hf-r9qb" id="06-verwijderen-title">Verwijderen</div>
 
       <!-- foreground: code surface, typed on "filter" -->
-      <div data-hf-id="hf-orb5" id="06-verwijderen-code">
-        <div data-hf-id="hf-mn1c" id="06-verwijderen-codebar">App.jsx</div>
+      <div data-hf-id="hf-orb5" class="ts-code-surface" id="06-verwijderen-code">
+        <div data-hf-id="hf-mn1c" class="ts-code-title" id="06-verwijderen-codebar">App.jsx</div>
         <div data-hf-id="hf-gqnm" id="06-verwijderen-gutter">1</div>
         <div data-hf-id="hf-er8c" id="06-verwijderen-line"></div>
       </div>
@@ -369,12 +359,8 @@
 
         // ───────────────────────────────────────────────────────
         // Scene 1 (0.0–1.5s): kicker + title on "Verwijderen"; strip #B already resting.
-        tl.fromTo(
-          $("kicker"),
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
-          0.05,
-        );
+        tl.fromTo($("kbar"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.05);
+        tl.fromTo($("ktext"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.12);
         tl.fromTo(
           $("title"),
           { opacity: 0, y: 22, filter: "blur(6px)" },
@@ -464,7 +450,7 @@
           { opacity: 1, duration: 0.25, ease: "power1.out", immediateRender: false },
           5.34,
         );
-        tl.to(rej, { color: "#faf9f5", duration: 0.25, ease: "power1.out" }, 5.34);
+        tl.to(rej, { color: "#D14343", duration: 0.25, ease: "power1.out" }, 5.34);
         tl.fromTo(
           $("ilabel"),
           { opacity: 0, y: 10 },

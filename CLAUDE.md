@@ -77,36 +77,40 @@ automatisch ingeladen en is versiebeheerd, zodat afspraken met het team gedeeld 
 
 ### Stijl en inhoud
 
-Alle clips zijn siblings van `videos/react-array-state`, `videos/react-useeffect` en
-`videos/react-usestate`; een nieuw filmpje moet er niet van te onderscheiden zijn.
-Kopieer uit een bestaand project: `frame.md` (preset **code-editorial**, de volledige
-designspec), `assets/fonts/`, `assets/sfx/`, `compositions/captions.html` en
-`compositions/components/oversized-cursor.html`. Twijfel je, kijk dan hoe
+Alle clips zijn siblings van `videos/react-usefetch`, `videos/react-usestate`,
+`videos/react-useeffect`, `videos/react-array-state` en `videos/react-props`; een nieuw
+filmpje moet er niet van te onderscheiden zijn. Huisstijl: **TS light** (rustig wit met
+TypeScript-blauw, past bij de cursussite). Kopieer uit een bestaand project: `frame.md`
+(de volledige designspec), `assets/fonts/`, `assets/sfx/`, `compositions/captions.html` en
+`compositions/components/oversized-cursor.html`. De referentieframe is
+`videos/react-usefetch/compositions/frames/02-fetch.html`: neem het `<style>`-blok met de
+`--ts-*`-tokens en `ts-*`-klassen letterlijk over. Twijfel je, kijk dan hoe
 `compositions/frames/*.html` van de siblings het oploste en doe hetzelfde. Neem ook de
-sectie "Video direction" uit hun `STORYBOARD.md` over als vertrekpunt.
+sectie "Video direction" uit `videos/react-usefetch/.hyperframes/frame-packets/_direction.md`
+over als vertrekpunt.
 
-**Kleur (cream / ink / coral + navy)**
+**Kleur (wit / slate + TypeScript-blauw)**
 
-- Grond: warm crème `#FAF9F5` op elk frame (nooit puur wit, nooit koel grijs).
-  Inhoudskaarten op tile `#EFE9DE` / `#ECE3D4`, een halve stap donkerder.
-- Alle tekst in ink `#141413` (op navy: crème).
-- Warm navy `#181715` (titelbalk/statusbalk `#252320`) **enkel** voor het codevlak.
-- Coral `#CC785C` is het enige accent: **max. één coral-moment per frame**, nooit voor
-  een titel of lopende tekst. In probleemframes markeert coral wat fout gaat (de foute
-  regel, de extra timer, het scherm dat op 0 blijft); in oplossingsframes de fix zelf.
-- Syntaxkleuren in het codevlak: keywords coral, strings teal `#5DB8A6`, getallen en
-  functienamen amber `#E8A55A`, types gedimd crème (60%).
-- Geen gradients, glow, bokeh, zware schaduwen of paars/blauw. Diepte = 1px hairline
-  (ink 12%) + hooguit één zachte warme schaduw. Radii 6 / 8 / 12px.
+- Grond: wit `#FFFFFF` op elk frame. Panelen `#F1F5F9`, hairlines `#E2E8F0`.
+- Tekst in ink `#1E293B`, secundair `#475569`, gedimd `#94A3B8`.
+- TypeScript-blauw `#3178C6` (donker `#235A97`, tint `#EAF2FB`) is het enige accent:
+  kicker, onderlijnen, highlights, knoppen, spinner en de fix of het kernbegrip.
+  Waas `rgba(49,120,198,0.12)`.
+- Rood `#D14343` enkel dun en spaarzaam voor wat fout gaat (foute regel, foutmelding,
+  ongewenste chip). Nooit tegelijk een rood en een blauw sleutelmoment.
+- Codevlak is licht (`#F8FAFC`, hairline, radius 12), zoals de codeblokken op de site.
+  Syntax: keywords `#235A97`, strings `#0F7B6C`, functies/getallen/true/false `#9A5B13`,
+  types `#3178C6`, leestekens/JSX `#64748B`.
+- Geen logo's, decoratieve vormen, kleurblokken achter tekst, gradients, glow of zware
+  schaduwen (hooguit `0 1px 2px rgba(15,23,42,0.06)`). Radii 6 / 8 / 12px.
 
 **Typografie**
 
-- **EB Garamond** (gewicht 400, sentence case, lichte negatieve tracking) voor de ene
-  statement per frame, grote getallen en het hero-woord. Italic voor een definitie of
-  standpunt. Nooit in hoofdletters.
-- **Inter** voor labels, UI en uitleg.
-- **JetBrains Mono** voor code, chips, tags en kickers. Kicker = uppercase, tracking
-  0.16em, voorafgegaan door een coral ✱ (bv. `✱ ZO NIET`), linksboven op (80, 92).
+- **Inter** voor alle tekst: hero-woord Inter 700 (~150-180px, strakke tracking, zoals
+  geschreven), statements Inter 500/700, labels Inter 600 uppercase klein.
+- **JetBrains Mono** voor code en chips.
+- Kicker: blauw streepje (28×4px) + Inter 600 22px uppercase in blauw, tracking 0.14em,
+  linksboven op (80, 84). Geen ✱.
 - Elk frame heeft één duidelijk focuspunt; leesbare tekst minstens ~1.4cqw (~27px).
 
 **Layout (1920×1080)**
@@ -117,28 +121,28 @@ sectie "Video direction" uit hun `STORYBOARD.md` over als vertrekpunt.
 
 **Terugkerende elementen**
 
-- **Codevlak**: navy paneel met titelbalk (bestandsnaam, bv. `Counter.tsx`) en
-  statusbalk, regelnummers, JetBrains Mono 34-36px. Code verschijnt via type-on met een
-  caret die per karakter stapt. Highlight = amber waas `rgba(232,165,90,0.24)`; de foute
-  regel krijgt een coral "rough box" (getekend SVG-pad) of coral onderlijn. Geen echte
-  browser- of VS Code-chrome.
-- **`scherm`-kaart**: tile-kaart met mono label `scherm` erboven, staat voor de
+- **Codevlak**: licht paneel met titelbalk (blauw vierkantje + bestandsnaam, bv.
+  `Counter.tsx`) en statusbalk, regelnummers, JetBrains Mono 24-26px. Code verschijnt via
+  type-on met een caret die per karakter stapt. Highlight = blauwe waas; de fix krijgt een
+  blauwe afgeronde box of onderlijn, de foute regel een dunne rode. Geen echte browser- of
+  VS Code-chrome.
+- **`scherm`-kaart**: witte kaart met hairline en label `SCHERM` erboven, staat voor de
   browseroutput (knop, `<p>`, inputveld, eenvoudig getekend). Altijd op dezelfde plek
   (x ≈ 1200-1840, y ≈ 200-520).
-- **Chips**: kleine tile-chips met hairline en mono label, bv. `state` met `count: 0`
+- **Chips**: kleine `#F1F5F9`-chips met hairline en mono label, bv. `state` met `count: 0`
   (y ≈ 580) of `timer #1 · 1000ms` met een tikkend puntje. Een ongewenste chip krijgt een
-  coral rand; een gestopte wordt doorstreept en gedimd tot 35%. Waardewissel: oude waarde
+  rode rand; een gestopte wordt doorstreept en gedimd tot 35%. Waardewissel: oude waarde
   schuift omhoog weg, nieuwe schuift in (0.25s).
 - **Render-tag**: mono pill `render #n` die pulseert of op een tijdlijn valt telkens
   React opnieuw rendert.
 - **Cursor**: de oversized-cursor-component voor elke klik; klik = kleine dip
   (scale 0.96 → 1) + ink-rimpel op het doel, met `click-soft`.
-- Hook (frame 1): klein interactief voorbeeld + het kernwoord als groot EB Garamond
-  hero-woord met coral onderlijn. Laatste frame: samenvatting.
+- Hook (frame 1): klein interactief voorbeeld + het kernwoord als groot Inter 700
+  hero-woord met blauwe onderlijn. Laatste frame: samenvatting.
 
 **Beweging**
 
-- Rustig en editoriaal: `power3.out`-settles met lange uitloop, geen bounce, overshoot of
+- Rustig: `power3.out`-settles met lange uitloop, geen bounce, overshoot of
   elastic. Holds staan stil (geen "ademen", drift of camerapush).
 - Elke onthulling valt op het gesproken woord dat ze benoemt (timing uit de
   woordtimings). Nooit iets tonen voor de stem het noemt.
@@ -148,9 +152,10 @@ sectie "Video direction" uit hun `STORYBOARD.md` over als vertrekpunt.
 
 **Ondertitels**
 
-- Altijd aan, in de band onderaan (top 900px, hoogte 180px). Crème kaart met hairline,
-  radius 12px en zachte schaduw, max. 78% breed. Woorden in EB Garamond ~56px; komende
-  woorden in ink 40%, het actieve woord in vol ink met een 3px coral onderlijn.
+- Altijd aan, in de band onderaan (top 900px, hoogte 180px). Witte kaart met hairline,
+  radius 12px en hooguit een heel zachte schaduw, max. 78% breed. Woorden in Inter 500
+  ~46px; komende woorden in ink 40%, het actieve woord in vol ink met een 4px blauwe
+  onderlijn.
 - Code-tokens in de ondertitels blijven geschreven zoals in de code (`numbers.push`,
   `setInterval`), ook al worden ze anders uitgesproken.
 

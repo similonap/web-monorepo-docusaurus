@@ -1,207 +1,210 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
     @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
-    .f02t-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f02t-stage { position: absolute; inset: 0; }
 
-    /* kicker */
-    .f02t-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-    }
-    .f02t-kicker .f02t-spike { color: #CC785C; margin-right: 14px; }
 
-    /* code surface */
-    .f02t-panel {
-      position: absolute;
-      left: 80px;
-      top: 180px;
-      width: 1060px;
-      height: 660px;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .f02t-titlebar {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 56px;
-      background: #252320;
-      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(250, 249, 245, 0.62);
-      letter-spacing: 0.02em;
-    }
-    .f02t-status {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 46px;
-      background: #252320;
-      border-top: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 19px;
-      color: rgba(250, 249, 245, 0.45);
-      letter-spacing: 0.04em;
-    }
+
+    /* ---- frame 02 positions ---- */
+    #f02t-panel { left: 80px; top: 180px; width: 1060px; height: 660px; }
     .f02t-code {
-      position: absolute;
-      left: 0; right: 0;
-      top: 86px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 32px;
-      line-height: 56px;
-      color: #FAF9F5;
-      font-variant-ligatures: none;
+      position: absolute; left: 0; right: 0; top: 86px;
+      font-family: var(--ts-mono); font-size: 32px; line-height: 56px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
     }
     .f02t-row { position: relative; height: 56px; white-space: pre; }
-    .f02t-ln {
-      position: absolute;
-      left: 0;
-      width: 60px;
-      text-align: right;
-      color: rgba(250, 249, 245, 0.32);
-      font-size: 24px;
-    }
+    .f02t-ln { position: absolute; left: 0; width: 60px; text-align: right; color: var(--ts-code-ln); font-size: 24px; }
     .f02t-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
     .f02t-ch { display: inline; }
-    .f02t-kw { color: #CC785C; }
-    .f02t-fn { color: #E8A55A; }
-    .f02t-dim { color: rgba(250, 249, 245, 0.6); }
-    .f02t-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
-    .f02t-caret {
-      position: absolute;
-      top: 11px;
-      left: 0;
-      width: 3px;
-      height: 34px;
-      background: #FAF9F5;
-      opacity: 0;
-    }
+    .f02t-hl { border-radius: 4px; background: rgba(49, 120, 198, 0); }
+    .f02t-caret { position: absolute; top: 11px; left: 0; width: 2px; height: 34px; background: var(--ts-blue); opacity: 0; }
 
-    /* right column: scherm */
-    .f02t-col {
-      position: absolute;
-      left: 1236px;
-      top: 180px;
-      width: 604px;
-      height: 660px;
-    }
-    .f02t-label {
-      position: absolute;
-      left: 0;
-      top: 0;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
-    }
-    .f02t-card {
-      position: absolute;
-      left: 0;
-      top: 52px;
-      width: 604px;
-      height: 290px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-      overflow: hidden;
-    }
-    .f02t-ptag {
-      position: absolute;
-      left: 22px;
-      top: 18px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 20px;
-      color: rgba(20, 20, 19, 0.45);
-    }
-    .f02t-btnwrap {
-      position: absolute;
-      left: 0; right: 0;
-      top: 40px;
-      bottom: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .f02t-btn {
-      min-width: 170px;
-      height: 104px;
-      padding: 0 40px;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.28);
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-      font-family: "Inter", sans-serif;
-      font-weight: 500;
-      font-size: 48px;
-      line-height: 1;
-      color: #141413;
-    }
+    .f02t-col { position: absolute; left: 1236px; top: 180px; width: 604px; height: 660px; }
+    #f02t-lab-scr { left: 0; top: 6px; }
+    #f02t-card { left: 0; top: 52px; width: 604px; height: 290px; overflow: hidden; }
+    .f02t-ptag { position: absolute; left: 22px; top: 18px; font-family: var(--ts-mono); font-size: 20px; color: var(--ts-muted); }
+    .f02t-btnwrap { position: absolute; left: 0; right: 0; top: 40px; bottom: 0; display: flex; align-items: center; justify-content: center; }
+    #f02t-btn { min-width: 170px; height: 104px; padding: 0 40px; justify-content: center; font-size: 48px; line-height: 1; }
     .f02t-note {
-      position: absolute;
-      left: 4px;
-      top: 392px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 30px;
-      color: #141413;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
+      position: absolute; left: 4px; top: 392px; font-family: var(--ts-mono); font-size: 30px;
+      color: var(--ts-ink); white-space: nowrap;
     }
-    .f02t-note .f02t-goal-k { color: rgba(20, 20, 19, 0.55); }
-    .f02t-plus { display: inline-block; color: #CC785C; font-weight: 700; }
+    .f02t-note .f02t-goal-k { color: var(--ts-muted); }
+    .f02t-plus { display: inline-block; color: var(--ts-blue); font-weight: 500; }
   </style>
 
   <div data-hf-id="hf-b70o" id="root" data-composition-id="02-teller" data-width="1920" data-height="1080" data-duration="9.74">
-    <div data-hf-id="hf-v12i" class="f02t-bg clip" id="f02t-bg" data-start="0" data-duration="9.74" data-track-index="0"></div>
+    <div data-hf-id="hf-v12i" class="ts-bg clip" id="f02t-bg" data-start="0" data-duration="9.74" data-track-index="0"></div>
 
-    <div data-hf-id="hf-hgp5" class="f02t-stage clip" id="f02t-stage" data-start="0" data-duration="9.74" data-track-index="1">
-      <div data-hf-id="hf-qgeh" class="f02t-kicker" id="f02t-kicker"><span data-hf-id="hf-me4b" class="f02t-spike">✱</span>Het voorbeeld</div>
+    <div data-hf-id="hf-hgp5" class="ts-stage clip" id="f02t-stage" data-start="0" data-duration="9.74" data-track-index="1">
+      <div data-hf-id="hf-qgeh" class="ts-kicker" id="f02t-kicker"><div data-hf-id="hf-me4b" class="ts-kicker-bar" id="f02t-kbar"></div><span data-hf-id="hf-f02tkt" class="ts-kicker-text" id="f02t-ktext">Het voorbeeld</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-myb6" class="f02t-panel" id="f02t-panel">
-        <div data-hf-id="hf-vl0l" class="f02t-titlebar">Counter.tsx</div>
+      <div data-hf-id="hf-myb6" class="ts-code-surface" id="f02t-panel">
+        <div data-hf-id="hf-vl0l" class="ts-code-title">Counter.tsx</div>
         <div data-hf-id="hf-jdkq" class="f02t-code">
-          <div data-hf-id="hf-zdmv" class="f02t-row"><span data-hf-id="hf-eg1n" class="f02t-ln">1</span><span data-hf-id="hf-flch" class="f02t-txt"><span data-hf-id="hf-0pub" class="f02t-kw">const</span> <span data-hf-id="hf-n6ye" class="f02t-fn">Counter</span> = () <span data-hf-id="hf-nyqj" class="f02t-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-zdmv" class="f02t-row"><span data-hf-id="hf-eg1n" class="f02t-ln">1</span><span data-hf-id="hf-flch" class="f02t-txt"><span data-hf-id="hf-0pub" class="ts-kw">const</span> <span data-hf-id="hf-n6ye" class="ts-fn">Counter</span> = () <span data-hf-id="hf-nyqj" class="ts-kw">=&gt;</span> {</span></div>
           <div data-hf-id="hf-adwn" class="f02t-row"><span data-hf-id="hf-e1qm" class="f02t-ln">2</span><span data-hf-id="hf-oogz" class="f02t-txt" id="f02t-line2"></span><span data-hf-id="hf-73ub" class="f02t-caret" id="f02t-caret2"></span></div>
           <div data-hf-id="hf-9zlm" class="f02t-row"><span data-hf-id="hf-dnfl" class="f02t-ln">3</span><span data-hf-id="hf-iir6" class="f02t-txt" id="f02t-line3"></span><span data-hf-id="hf-35qa" class="f02t-caret" id="f02t-caret3"></span></div>
           <div data-hf-id="hf-9lal" class="f02t-row"><span data-hf-id="hf-d94k" class="f02t-ln">4</span><span data-hf-id="hf-1yn9" class="f02t-txt" id="f02t-line4"></span><span data-hf-id="hf-ke0l" class="f02t-caret" id="f02t-caret4"></span></div>
@@ -211,16 +214,16 @@
           <div data-hf-id="hf-b6ip" class="f02t-row"><span data-hf-id="hf-i0sw" class="f02t-ln">8</span><span data-hf-id="hf-n51l" class="f02t-txt" id="f02t-line8"></span><span data-hf-id="hf-5kex" class="f02t-caret" id="f02t-caret8"></span></div>
           <div data-hf-id="hf-dynw" class="f02t-row"><span data-hf-id="hf-hmhv" class="f02t-ln">9</span><span data-hf-id="hf-abhl" class="f02t-txt">}</span></div>
         </div>
-        <div data-hf-id="hf-1iqv" class="f02t-status">Counter · component</div>
+        <div data-hf-id="hf-1iqv" class="ts-code-status">Counter · component</div>
       </div>
 
       <!-- right column -->
       <div data-hf-id="hf-mfrp" class="f02t-col">
-        <div data-hf-id="hf-2mca" class="f02t-label" id="f02t-lab-scr">scherm</div>
-        <div data-hf-id="hf-khic" class="f02t-card" id="f02t-card">
+        <div data-hf-id="hf-2mca" class="ts-label" id="f02t-lab-scr">scherm</div>
+        <div data-hf-id="hf-khic" class="ts-card" id="f02t-card">
           <div data-hf-id="hf-11nv" class="f02t-ptag">&lt;button&gt;</div>
           <div data-hf-id="hf-ec53" class="f02t-btnwrap">
-            <div data-hf-id="hf-nv46" class="f02t-btn" id="f02t-btn">0</div>
+            <div data-hf-id="hf-nv46" class="ts-btn" id="f02t-btn">0</div>
           </div>
         </div>
         <div data-hf-id="hf-40z1" class="f02t-note" id="f02t-note"><span data-hf-id="hf-f6zf" class="f02t-goal-k">doel:</span> klik → <span data-hf-id="hf-znxt" class="f02t-plus" id="f02t-plus">+1</span></div>
@@ -278,37 +281,38 @@
       }
 
       // ---- Scene 1 (0.0–2.4): kicker, then on "component" the code shell ----
-      tl.fromTo("#f02t-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
-      tl.fromTo("#f02t-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.45);
+      tl.fromTo("#f02t-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f02t-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f02t-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.45);
 
       // ---- Scene 2 (2.4–4.5): "In de knop" → return block types on ----
       var per = 0.021;
       var e6 = typeLine("#f02t-line6", "#f02t-caret6", [
         { t: "  " },
-        { t: "return", c: "f02t-kw" },
+        { t: "return", c: "ts-kw" },
         { t: " (" }
       ], 2.45, per);
       var e7 = typeLine("#f02t-line7", "#f02t-caret7", [
         { t: "    " },
-        { t: "<button", c: "f02t-dim" },
+        { t: "<button", c: "ts-punct" },
         { t: " " },
         { id: "f02t-hl-onclick", parts: [
           { t: "onClick" },
           { t: "={" },
-          { t: "handleClick", c: "f02t-fn" },
+          { t: "handleClick", c: "ts-fn" },
           { t: "}" }
         ] },
-        { t: ">", c: "f02t-dim" },
+        { t: ">", c: "ts-punct" },
         { id: "f02t-hl-count", parts: [{ t: "{count}" }] },
-        { t: "</button>", c: "f02t-dim" }
+        { t: "</button>", c: "ts-punct" }
       ], e6 + 0.06, per, 0.03);
       typeLine("#f02t-line8", "#f02t-caret8", [
         { t: "  );" }
       ], e7 + 0.06, per, 0.03);
 
-      // "teller" (3.82) → amber wash on {count}
-      tl.to("#f02t-hl-count", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.35, ease: "power1.out" }, 3.82);
-      tl.to("#f02t-hl-count", { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.5, ease: "power1.inOut" }, 5.5);
+      // "teller" (3.82) → blue wash on {count}
+      tl.to("#f02t-hl-count", { backgroundColor: "rgba(49, 120, 198, 0.12)", duration: 0.35, ease: "power1.out" }, 3.82);
+      tl.to("#f02t-hl-count", { backgroundColor: "rgba(49, 120, 198, 0)", duration: 0.5, ease: "power1.inOut" }, 5.5);
 
       // scherm label + card with the rendered button 0
       tl.fromTo("#f02t-lab-scr", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.9);
@@ -317,25 +321,25 @@
       // ---- Scene 3 (4.5–9.4): "telkens je op de knop klikt" → handleClick types on ----
       var e2 = typeLine("#f02t-line2", "#f02t-caret2", [
         { t: "  " },
-        { t: "const", c: "f02t-kw" },
+        { t: "const", c: "ts-kw" },
         { t: " " },
-        { t: "handleClick", c: "f02t-fn" },
+        { t: "handleClick", c: "ts-fn" },
         { t: " = () " },
-        { t: "=>", c: "f02t-kw" },
+        { t: "=>", c: "ts-kw" },
         { t: " {" }
       ], 4.94, per);
       var e3 = typeLine("#f02t-line3", "#f02t-caret3", [
         { t: "    " },
-        { t: "// teller + 1 ... maar hoe?", c: "f02t-dim" }
+        { t: "// teller + 1 ... maar hoe?", c: "ts-fold" }
       ], e2 + 0.06, per, 0.03);
       typeLine("#f02t-line4", "#f02t-caret4", [
         { t: "  };" }
       ], e3 + 0.06, per, 0.03);
 
-      // 5.8 → amber wash on onClick={handleClick}
-      tl.to("#f02t-hl-onclick", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.35, ease: "power1.out" }, 5.8);
+      // 5.8 → blue wash on onClick={handleClick}
+      tl.to("#f02t-hl-onclick", { backgroundColor: "rgba(49, 120, 198, 0.12)", duration: 0.35, ease: "power1.out" }, 5.8);
 
-      // "één omhoog gaan" (7.36) → goal note with coral +1
+      // "één omhoog gaan" (7.36) → goal note with blue +1
       tl.fromTo("#f02t-note", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 7.36);
       tl.fromTo("#f02t-plus", { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 7.5);
 

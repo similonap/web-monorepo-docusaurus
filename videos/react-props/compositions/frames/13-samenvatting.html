@@ -1,107 +1,235 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); }
-    @font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/Inter-400.woff2") format("woff2"); }
-    @font-face { font-family: "Inter"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/Inter-700.woff2") format("woff2"); }
-    @font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: block; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
 
-    #root[data-composition-id="13-samenvatting"] {
-      font-variant-ligatures: none;
-      position: absolute;
-      inset: 0;
-      width: 1920px;
-      height: 1080px;
-      overflow: hidden;
-      color: #141413;
-      font-family: "Inter", sans-serif;
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
     }
-    .f13s-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f13s-stage { position: absolute; inset: 0; container-type: size; }
-    .f13s-kicker {
-      position: absolute; left: 80px; top: 72px;
-      font-family: "JetBrains Mono", monospace; font-size: 1.46cqw;
-      letter-spacing: 0.16em; text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.55);
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
     }
-    .f13s-kicker-mark { margin-right: 0.5em; color: rgba(20, 20, 19, 0.55); }
-    .f13s-head {
-      position: absolute; left: 160px; top: 118px;
-      font-family: "EB Garamond", Georgia, serif; font-weight: 400;
-      font-size: 6.2cqw; line-height: 1.02; letter-spacing: -0.022em;
-      white-space: nowrap;
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
     }
-    .f13s-word { display: inline-block; margin-right: 0.22em; }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 13 positions ---- */
+    #f13s-head {
+      position: absolute; left: 160px; top: 142px; white-space: nowrap;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 80px; line-height: 1.05; letter-spacing: -0.025em;
+      color: var(--ts-ink);
+    }
+    .f13s-word { display: inline-block; margin-right: 0.24em; }
     .f13s-list { position: absolute; left: 160px; top: 270px; width: 1600px; }
     .f13s-row { position: relative; height: 130px; display: flex; align-items: center; }
-    .f13s-rule {
-      position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
-      background: rgba(20, 20, 19, 0.12); transform-origin: 0 50%;
-    }
+    .f13s-rule { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--ts-hairline); transform-origin: 0 50%; }
     .f13s-rule-top { top: 0; bottom: auto; }
-    .f13s-slot {
-      width: 48px; flex: 0 0 48px;
-      font-family: "JetBrains Mono", monospace; font-size: 30px;
-      color: rgba(20, 20, 19, 0.22);
-    }
+    .f13s-slot { width: 48px; flex: 0 0 48px; display: flex; align-items: center; }
+    .f13s-slot-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ts-hairline); }
     .f13s-idx {
       width: 84px; flex: 0 0 84px;
-      font-family: "JetBrains Mono", monospace; font-size: 28px;
-      letter-spacing: 0.06em; color: rgba(20, 20, 19, 0.5);
+      font-family: var(--ts-mono); font-size: 28px; font-weight: 500; letter-spacing: 0.06em; color: var(--ts-muted);
     }
     .f13s-text {
       flex: 1 1 auto;
-      font-family: "Inter", sans-serif; font-size: 2.08cqw;
-      line-height: 1.3; letter-spacing: -0.005em; white-space: nowrap;
+      font-family: var(--ts-sans); font-size: 40px; font-weight: 400;
+      line-height: 1.3; letter-spacing: -0.01em; color: var(--ts-ink); white-space: nowrap;
     }
     .f13s-part { display: inline-block; white-space: pre; }
     .f13s-em { font-weight: 700; }
     .f13s-chip {
-      flex: 0 0 auto; padding: 14px 24px;
-      background: #EFE9DE; border: 1px solid rgba(20, 20, 19, 0.12); border-radius: 8px;
-      font-family: "JetBrains Mono", monospace; font-size: 30px; line-height: 1;
-      color: #141413; white-space: pre;
+      flex: 0 0 auto; height: 60px; padding: 0 22px; box-sizing: border-box; display: inline-flex; align-items: center;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 28px; font-weight: 500; line-height: 1; color: var(--ts-ink); white-space: pre;
     }
-    .f13s-spike {
-      position: absolute; left: 160px; top: 270px; width: 48px; height: 130px;
-      display: flex; align-items: center;
-      font-family: "JetBrains Mono", monospace; font-size: 30px; color: #CC785C;
-    }
+    .f13s-spike { position: absolute; left: 160px; top: 270px; width: 48px; height: 130px; display: flex; align-items: center; }
+    .f13s-spike-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--ts-blue); margin-left: -1px; }
   </style>
 
   <div data-hf-id="hf-6con" id="root" data-composition-id="13-samenvatting" data-width="1920" data-height="1080" data-duration="16.38">
-    <div data-hf-id="hf-ppow" id="f13s-bg" class="f13s-bg clip" data-start="0" data-duration="16.38" data-track-index="0"></div>
+    <div data-hf-id="hf-ppow" id="f13s-bg" class="ts-bg clip" data-start="0" data-duration="16.38" data-track-index="0"></div>
 
-    <div data-hf-id="hf-xh3x" id="f13s-stage" class="f13s-stage clip" data-start="0" data-duration="16.38" data-track-index="1">
-      <div data-hf-id="hf-gzsi" class="f13s-kicker"><span data-hf-id="hf-ugcr" class="f13s-kicker-mark">✱</span>Samenvatting</div>
+    <div data-hf-id="hf-xh3x" id="f13s-stage" class="ts-stage clip" data-start="0" data-duration="16.38" data-track-index="1">
+      <div data-hf-id="hf-gzsi" class="ts-kicker" id="f13s-kicker"><div data-hf-id="hf-ugcr" class="ts-kicker-bar" id="f13s-kbar"></div><span data-hf-id="hf-f13k" class="ts-kicker-text" id="f13s-ktext">Samenvatting</span></div>
 
-      <div data-hf-id="hf-gl00" class="f13s-head"><span data-hf-id="hf-w0mx" class="f13s-word">Kort</span><span data-hf-id="hf-avut" class="f13s-word" style="margin-right:0">samengevat</span></div>
+      <div data-hf-id="hf-gl00" id="f13s-head"><span data-hf-id="hf-w0mx" class="f13s-word">Kort</span><span data-hf-id="hf-avut" class="f13s-word" style="margin-right:0">samengevat</span></div>
 
       <div data-hf-id="hf-qhmu" class="f13s-list">
         <div data-hf-id="hf-ljcm" class="f13s-row">
           <div data-hf-id="hf-udne" class="f13s-rule f13s-rule-top"></div>
-          <span data-hf-id="hf-hir0" class="f13s-slot">✱</span>
+          <span data-hf-id="hf-hir0" class="f13s-slot"><span data-hf-id="hf-s1d0" class="f13s-slot-dot"></span></span>
           <span data-hf-id="hf-lp75" class="f13s-idx">01</span>
           <span data-hf-id="hf-rn5w" class="f13s-text"><span data-hf-id="hf-m40g" class="f13s-part" data-at="1.44">herhaal je code? </span><span data-hf-id="hf-wemc" class="f13s-part" data-at="2.72">maak er een <span data-hf-id="hf-bcf6" class="f13s-em">component</span> van</span></span>
           <span data-hf-id="hf-v9j3" class="f13s-chip" data-at="3.48">&lt;Badge /&gt;</span>
           <div data-hf-id="hf-5iug" class="f13s-rule"></div>
         </div>
         <div data-hf-id="hf-d8yi" class="f13s-row">
-          <span data-hf-id="hf-fmpw" class="f13s-slot">✱</span>
+          <span data-hf-id="hf-fmpw" class="f13s-slot"><span data-hf-id="hf-s2d0" class="f13s-slot-dot"></span></span>
           <span data-hf-id="hf-mw48" class="f13s-idx">02</span>
           <span data-hf-id="hf-mloc" class="f13s-text"><span data-hf-id="hf-a74f" class="f13s-part" data-at="4.92"><span data-hf-id="hf-qf2z" class="f13s-em">props</span> geven data door </span><span data-hf-id="hf-hybe" class="f13s-part" data-at="7.16">aan een component</span></span>
           <span data-hf-id="hf-v4en" class="f13s-chip" data-at="5.76">label="Nieuw"</span>
           <div data-hf-id="hf-4g4g" class="f13s-rule"></div>
         </div>
         <div data-hf-id="hf-dn9j" class="f13s-row">
-          <span data-hf-id="hf-efst" class="f13s-slot">✱</span>
+          <span data-hf-id="hf-efst" class="f13s-slot"><span data-hf-id="hf-s3d0" class="f13s-slot-dot"></span></span>
           <span data-hf-id="hf-mht7" class="f13s-idx">03</span>
           <span data-hf-id="hf-ler9" class="f13s-text"><span data-hf-id="hf-p5bq" class="f13s-part" data-at="9.24">een <span data-hf-id="hf-fmbz" class="f13s-em">eigen type</span> </span><span data-hf-id="hf-lagg" class="f13s-part" data-at="10.0">beperkt wat mag</span></span>
           <span data-hf-id="hf-59fh" class="f13s-chip" data-at="9.6">'red' | 'green' | 'blue'</span>
           <div data-hf-id="hf-397d" class="f13s-rule"></div>
         </div>
         <div data-hf-id="hf-e1kk" class="f13s-row">
-          <span data-hf-id="hf-eu3u" class="f13s-slot">✱</span>
+          <span data-hf-id="hf-eu3u" class="f13s-slot"><span data-hf-id="hf-s4d0" class="f13s-slot-dot"></span></span>
           <span data-hf-id="hf-kia2" class="f13s-idx">04</span>
           <span data-hf-id="hf-lt2a" class="f13s-text"><span data-hf-id="hf-7slz" class="f13s-part" data-at="12.16">een <span data-hf-id="hf-ss0t" class="f13s-em">standaardwaarde</span>: </span><span data-hf-id="hf-3839" class="f13s-part" data-at="13.04">de prop mag wegblijven</span></span>
           <span data-hf-id="hf-2hwt" class="f13s-chip" data-at="12.5">color = 'green'</span>
@@ -109,7 +237,7 @@
         </div>
       </div>
 
-      <div data-hf-id="hf-c9qb" class="f13s-spike">✱</div>
+      <div data-hf-id="hf-c9qb" class="f13s-spike"><span data-hf-id="hf-c9qd" class="f13s-spike-dot"></span></div>
     </div>
   </div>
 
@@ -130,9 +258,10 @@
       var tl = gsap.timeline({ paused: true });
 
       // Scene 1: kicker + headline settle
-      tl.fromTo(one("kicker"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.0);
+      tl.fromTo("#f13s-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.0);
+      tl.fromTo("#f13s-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.1);
       all("word").forEach(function (w, i) {
-        tl.fromTo(w, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.2 + i * 0.12);
+        tl.fromTo(w, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.2 + i * 0.12);
       });
 
       var rows = all("row");
@@ -148,7 +277,7 @@
           tl.fromTo(p, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.7, ease: "power3.out" }, t);
         });
         var chip = one("chip", row);
-        tl.fromTo(chip, { opacity: 0, x: 18, scale: 0.96 }, { opacity: 1, x: 0, scale: 1, duration: 0.6, ease: "power3.out" }, parseFloat(chip.getAttribute("data-at")));
+        tl.fromTo(chip, { opacity: 0, x: 18 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, parseFloat(chip.getAttribute("data-at")));
 
         // previous row steps back when this one lands
         if (k > 0) {
@@ -157,14 +286,14 @@
         }
       });
 
-      // coral spike: lands on row 01, then moves row to row (one coral at a time)
+      // blue marker: lands on row 01, then moves row to row (one accent at a time)
       var spike = one("spike");
       tl.fromTo(spike, { opacity: 0, y: 0, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" }, ROW_AT[0]);
       for (var k = 1; k < ROW_AT.length; k++) {
         tl.to(spike, { y: k * ROW_H, duration: 0.6, ease: "power3.inOut" }, ROW_AT[k] - 0.05);
       }
 
-      // Scene 4 close: all rows settle back to full ink at 14.2s; coral stays on 04; hold
+      // Scene 4 close: all rows settle back to full ink at 14.2s; blue marker stays on 04; hold
       rows.slice(0, 3).forEach(function (row) {
         tl.to([one("idx", row), one("text", row), one("chip", row)], { opacity: 1, duration: 0.6, ease: "power2.out" }, 14.2);
       });

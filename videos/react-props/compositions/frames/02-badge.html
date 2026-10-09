@@ -1,211 +1,212 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
     @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
-    .f02b-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f02b-stage { position: absolute; inset: 0; }
-
-    /* kicker */
-    .f02b-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-    }
-    .f02b-kicker .f02b-spike { color: #CC785C; margin-right: 14px; }
-
-    /* code surface */
-    .f02b-panel {
-      position: absolute;
-      left: 80px;
-      top: 180px;
-      width: 1060px;
-      height: 480px;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .f02b-titlebar {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 56px;
-      background: #252320;
-      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(250, 249, 245, 0.62);
-      letter-spacing: 0.02em;
-    }
-    .f02b-status {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 46px;
-      background: #252320;
-      border-top: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 19px;
-      color: rgba(250, 249, 245, 0.45);
-      letter-spacing: 0.04em;
-    }
-    .f02b-code {
-      position: absolute;
-      left: 0; right: 0;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      line-height: 44px;
-      color: #FAF9F5;
-      font-variant-ligatures: none;
-    }
-    .f02b-row { position: relative; height: 44px; white-space: pre; }
-    .f02b-ln {
-      position: absolute;
-      left: 0;
-      width: 56px;
-      text-align: right;
-      color: rgba(250, 249, 245, 0.32);
-      font-size: 22px;
-    }
-    .f02b-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
-    .f02b-ch { display: inline; }
-    .f02b-kw { color: #CC785C; }
-    .f02b-fn { color: #E8A55A; }
-    .f02b-str { color: #5DB8A6; }
-    .f02b-dim { color: rgba(250, 249, 245, 0.6); }
-    .f02b-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
-    .f02b-caret {
-      position: absolute;
-      top: 7px;
-      left: 0;
-      width: 3px;
-      height: 30px;
-      background: #FAF9F5;
-      opacity: 0;
-    }
-    .f02b-tag {
-      position: absolute;
-      right: 28px;
-      top: 4px;
-      height: 36px;
-      padding: 0 14px;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 6px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      line-height: 1;
-      letter-spacing: 0.02em;
-      color: #141413;
-    }
-
-    /* right column: scherm */
-    .f02b-col {
-      position: absolute;
-      left: 1236px;
-      top: 180px;
-      width: 604px;
-      height: 400px;
-    }
-    .f02b-label {
-      position: absolute;
-      left: 0;
-      top: 0;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
-    }
-    .f02b-card {
-      position: absolute;
-      left: 0;
-      top: 52px;
-      width: 604px;
-      height: 308px;
-      box-sizing: border-box;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-      overflow: hidden;
-    }
+    /* ---- frame 02 positions (line metrics kept: 28px / 44px rows) ---- */
+    #f02b-panel { left: 80px; top: 180px; width: 1060px; height: 480px; }
+    #f02b-code { top: 92px; font-size: 28px; line-height: 44px; }
+    #f02b-code .ts-row { height: 44px; }
+    #f02b-code .ts-ln { width: 56px; font-size: 22px; }
+    #f02b-code .ts-txt { left: 84px; }
+    #f02b-code .ts-caret { top: 7px; height: 30px; }
+    #f02b-tag { right: 28px; top: 4px; }
+    #f02b-col { position: absolute; left: 1236px; top: 180px; width: 604px; height: 400px; }
+    #f02b-lab-scr { left: 0; top: 6px; }
+    #f02b-card { left: 0; top: 52px; width: 604px; height: 308px; overflow: hidden; }
+    /* badge strip: lesson content, colour kept exactly */
     .f02b-badge {
-      position: absolute;
-      left: 28px;
-      right: 28px;
-      top: 28px;
-      height: 58px;
-      box-sizing: border-box;
-      padding-left: 10px;
-      display: flex;
-      align-items: center;
-      background: #3F7D4E;
-      border-radius: 0;
-      font-family: "Inter", sans-serif;
-      font-weight: 500;
-      font-size: 30px;
-      line-height: 1;
-      color: #FFFFFF;
+      position: absolute; left: 28px; right: 28px; top: 28px; height: 58px; box-sizing: border-box;
+      padding-left: 10px; display: flex; align-items: center; background: #3F7D4E; border-radius: 0;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 30px; line-height: 1; color: #FFFFFF;
     }
   </style>
 
   <div data-hf-id="hf-sjm1" id="root" data-composition-id="02-badge" data-width="1920" data-height="1080" data-duration="11.6">
-    <div data-hf-id="hf-n4eq" class="f02b-bg clip" id="f02b-bg" data-start="0" data-duration="11.6" data-track-index="0"></div>
+    <div data-hf-id="hf-n4eq" class="ts-bg clip" id="f02b-bg" data-start="0" data-duration="11.6" data-track-index="0"></div>
 
-    <div data-hf-id="hf-wolv" class="f02b-stage clip" id="f02b-stage" data-start="0" data-duration="11.6" data-track-index="1">
-      <div data-hf-id="hf-3gh9" class="f02b-kicker" id="f02b-kicker"><span data-hf-id="hf-kgb9" class="f02b-spike">✱</span>Het voorbeeld</div>
+    <div data-hf-id="hf-wolv" class="ts-stage clip" id="f02b-stage" data-start="0" data-duration="11.6" data-track-index="1">
+      <div data-hf-id="hf-3gh9" class="ts-kicker" id="f02b-kicker"><div data-hf-id="hf-kgb9" class="ts-kicker-bar" id="f02b-kbar"></div><span data-hf-id="hf-f02k" class="ts-kicker-text" id="f02b-ktext">Het voorbeeld</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-bqyy" class="f02b-panel" id="f02b-panel">
-        <div data-hf-id="hf-evhc" class="f02b-titlebar">App.tsx</div>
-        <div data-hf-id="hf-sn10" class="f02b-code">
-          <div data-hf-id="hf-cwf5" class="f02b-row"><span data-hf-id="hf-3kz1" class="f02b-ln">1</span><span data-hf-id="hf-ahh3" class="f02b-txt"><span data-hf-id="hf-5cjt" class="f02b-kw">const</span> <span data-hf-id="hf-76ed" class="f02b-fn f02b-hl" id="f02b-hl-app">App</span> = () <span data-hf-id="hf-mrop" class="f02b-kw">=&gt;</span> {</span><span data-hf-id="hf-txvf" class="f02b-tag" id="f02b-tag">in App</span></div>
-          <div data-hf-id="hf-7v3p" class="f02b-row"><span data-hf-id="hf-4rw4" class="f02b-ln">2</span><span data-hf-id="hf-goxw" class="f02b-txt">  <span data-hf-id="hf-r8p8" class="f02b-kw">return</span> (</span></div>
-          <div data-hf-id="hf-920s" class="f02b-row"><span data-hf-id="hf-4dl3" class="f02b-ln">3</span><span data-hf-id="hf-j7bm" class="f02b-txt" id="f02b-line3"></span><span data-hf-id="hf-xc4q" class="f02b-caret" id="f02b-caret3"></span></div>
-          <div data-hf-id="hf-8npr" class="f02b-row"><span data-hf-id="hf-5ki6" class="f02b-ln">4</span><span data-hf-id="hf-0flx" class="f02b-txt" id="f02b-line4"></span><span data-hf-id="hf-ekf1" class="f02b-caret" id="f02b-caret4"></span></div>
-          <div data-hf-id="hf-9umu" class="f02b-row"><span data-hf-id="hf-5675" class="f02b-ln">5</span><span data-hf-id="hf-zny4" class="f02b-txt" id="f02b-line5"></span><span data-hf-id="hf-dsr8" class="f02b-caret" id="f02b-caret5"></span></div>
-          <div data-hf-id="hf-9gbt" class="f02b-row"><span data-hf-id="hf-6d48" class="f02b-ln">6</span><span data-hf-id="hf-r4hw" class="f02b-txt">  );</span></div>
-          <div data-hf-id="hf-an8w" class="f02b-row"><span data-hf-id="hf-5yt7" class="f02b-ln">7</span><span data-hf-id="hf-m3cr" class="f02b-txt">}</span></div>
+      <div data-hf-id="hf-bqyy" class="ts-code-surface" id="f02b-panel">
+        <div data-hf-id="hf-evhc" class="ts-code-title">App.tsx</div>
+        <div data-hf-id="hf-sn10" class="ts-code" id="f02b-code">
+          <div data-hf-id="hf-cwf5" class="ts-row"><span data-hf-id="hf-3kz1" class="ts-ln">1</span><span data-hf-id="hf-ahh3" class="ts-txt"><span data-hf-id="hf-5cjt" class="ts-kw">const</span> <span data-hf-id="hf-76ed" class="ts-fn ts-hl" id="f02b-hl-app">App</span> = () <span data-hf-id="hf-mrop" class="ts-kw">=&gt;</span> {</span><span data-hf-id="hf-txvf" class="ts-tag" id="f02b-tag">in App</span></div>
+          <div data-hf-id="hf-7v3p" class="ts-row"><span data-hf-id="hf-4rw4" class="ts-ln">2</span><span data-hf-id="hf-goxw" class="ts-txt">  <span data-hf-id="hf-r8p8" class="ts-kw">return</span> (</span></div>
+          <div data-hf-id="hf-920s" class="ts-row"><span data-hf-id="hf-4dl3" class="ts-ln">3</span><span data-hf-id="hf-j7bm" class="ts-txt" id="f02b-line3"></span><span data-hf-id="hf-xc4q" class="ts-caret" id="f02b-caret3"></span></div>
+          <div data-hf-id="hf-8npr" class="ts-row"><span data-hf-id="hf-5ki6" class="ts-ln">4</span><span data-hf-id="hf-0flx" class="ts-txt" id="f02b-line4"></span><span data-hf-id="hf-ekf1" class="ts-caret" id="f02b-caret4"></span></div>
+          <div data-hf-id="hf-9umu" class="ts-row"><span data-hf-id="hf-5675" class="ts-ln">5</span><span data-hf-id="hf-zny4" class="ts-txt" id="f02b-line5"></span><span data-hf-id="hf-dsr8" class="ts-caret" id="f02b-caret5"></span></div>
+          <div data-hf-id="hf-9gbt" class="ts-row"><span data-hf-id="hf-6d48" class="ts-ln">6</span><span data-hf-id="hf-r4hw" class="ts-txt">  );</span></div>
+          <div data-hf-id="hf-an8w" class="ts-row"><span data-hf-id="hf-5yt7" class="ts-ln">7</span><span data-hf-id="hf-m3cr" class="ts-txt">}</span></div>
         </div>
-        <div data-hf-id="hf-4zee" class="f02b-status">App · component</div>
+        <div data-hf-id="hf-4zee" class="ts-code-status">App · component</div>
       </div>
 
       <!-- right column -->
-      <div data-hf-id="hf-f46r" class="f02b-col">
-        <div data-hf-id="hf-lnxm" class="f02b-label" id="f02b-lab-scr">scherm</div>
-        <div data-hf-id="hf-bjgg" class="f02b-card" id="f02b-card">
+      <div data-hf-id="hf-f46r" id="f02b-col">
+        <div data-hf-id="hf-lnxm" class="ts-label" id="f02b-lab-scr">scherm</div>
+        <div data-hf-id="hf-bjgg" class="ts-card" id="f02b-card">
           <div data-hf-id="hf-e2d6" class="f02b-badge" id="f02b-badge">Nieuw</div>
         </div>
       </div>
@@ -218,8 +219,8 @@
       var CW = 0.6; // JetBrains Mono advance (em)
       var FS = 28;
       var X0 = 84;
-      var WASH = "rgba(232, 165, 90, 0.24)";
-      var CLEAR = "rgba(232, 165, 90, 0)";
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
       var root = document.querySelector('[data-composition-id="02-badge"]');
       var q = function (s) { return root.querySelector(s); };
 
@@ -236,14 +237,14 @@
           var host = line;
           if (seg.id) {
             host = document.createElement("span");
-            host.className = "f02b-hl";
+            host.className = "ts-hl";
             host.id = seg.id;
             line.appendChild(host);
           }
           (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
             for (var i = 0; i < p.t.length; i++) {
               var s = document.createElement("span");
-              s.className = "f02b-ch" + (p.c ? " " + p.c : "");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
               s.textContent = p.t[i];
               host.appendChild(s);
               chars.push(s);
@@ -266,26 +267,27 @@
       var per = 0.024;
 
       // ---- Scene 1 (0.0–2.4): kicker, then on "badge" (1.6) the code shell ----
-      tl.fromTo("#f02b-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f02b-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f02b-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
       tl.fromTo("#f02b-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 1.6);
 
       // ---- Scene 2 (2.4–7.7) ----
       // "div" (3.12): line 3 opener + closing </div> on line 5
       var a = typeLine("#f02b-line3", "#f02b-caret3", [
         { t: "    " },
-        { t: "<div", c: "f02b-dim" },
+        { t: "<div", c: "ts-punct" },
         { t: " style={{ " }
       ], 0, 3.12, per);
       typeLine("#f02b-line5", "#f02b-caret5", [
         { t: "    " },
-        { t: "</div>", c: "f02b-dim" }
+        { t: "</div>", c: "ts-punct" }
       ], 0, a.end + 0.05, per, 0.03);
 
       // "tekstkleur" (3.92): color: 'white',
       var b = typeLine("#f02b-line3", "#f02b-caret3", [
         { id: "f02b-hl-color", parts: [
           { t: "color: " },
-          { t: "'white'", c: "f02b-str" }
+          { t: "'white'", c: "ts-str" }
         ] },
         { t: "," }
       ], a.col, 3.92, per, 0.06);
@@ -296,10 +298,10 @@
         { t: " " },
         { id: "f02b-hl-bg", parts: [
           { t: "background: " },
-          { t: "'green'", c: "f02b-str" }
+          { t: "'green'", c: "ts-str" }
         ] },
         { t: " }}" },
-        { t: ">", c: "f02b-dim" }
+        { t: ">", c: "ts-punct" }
       ], b.col, 4.88, per, 0.06);
       tl.to("#f02b-hl-color", { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, 4.95);
       tl.to("#f02b-hl-bg", { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 5.05);

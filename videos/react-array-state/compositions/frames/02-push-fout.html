@@ -1,316 +1,262 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
-    }
-    .p02-bg {
-      position: absolute;
-      inset: 0;
-      background: #FAF9F5;
-    }
-    .p02-stage {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
 
-    /* kicker */
-    .p02-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-    }
-    .p02-kicker .p02-spike { color: #CC785C; margin-right: 14px; }
-
-    /* code surface */
-    .p02-panel {
-      position: absolute;
-      left: 80px;
-      top: 190px;
-      width: 1060px;
-      height: 560px;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .p02-titlebar {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 56px;
-      background: #252320;
-      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(250, 249, 245, 0.62);
-      letter-spacing: 0.02em;
-    }
-    .p02-status {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 46px;
-      background: #252320;
-      border-top: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 19px;
-      color: rgba(250, 249, 245, 0.45);
-      letter-spacing: 0.04em;
-    }
+    /* ---- frame 02 positions + line metrics (36px / 58px rows kept) ---- */
+    #p02-panel { left: 80px; top: 190px; width: 1060px; height: 560px; }
     .p02-code {
-      position: absolute;
-      left: 0; right: 0;
-      top: 88px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 36px;
-      line-height: 58px;
-      color: #FAF9F5;
-      font-variant-ligatures: none;
+      position: absolute; left: 0; right: 0; top: 88px;
+      font-family: var(--ts-mono); font-size: 36px; line-height: 58px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
     }
-    .p02-row {
-      position: relative;
-      height: 58px;
-      white-space: pre;
-    }
-    .p02-ln {
-      position: absolute;
-      left: 0;
-      width: 72px;
-      text-align: right;
-      color: rgba(250, 249, 245, 0.32);
-      font-size: 26px;
-    }
-    .p02-txt {
-      position: absolute;
-      left: 100px;
-      top: 0;
-      white-space: pre;
-    }
-    .p02-ch { display: inline; }
-    .p02-kw { color: #CC785C; }
-    .p02-fn { color: #E8A55A; }
-    .p02-dim { color: rgba(250, 249, 245, 0.6); }
-    .p02-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
-    .p02-caret {
-      position: absolute;
-      top: 12px;
-      left: 0;
-      width: 3px;
-      height: 36px;
-      background: #FAF9F5;
-      opacity: 0;
-    }
+    .p02-row { position: relative; height: 58px; white-space: pre; }
+    .p02-ln { position: absolute; left: 0; width: 72px; text-align: right; color: var(--ts-code-ln); font-size: 26px; }
+    .p02-txt { position: absolute; left: 100px; top: 0; white-space: pre; }
+    .p02-caret { position: absolute; top: 12px; left: 0; width: 3px; height: 36px; background: var(--ts-blue); opacity: 0; }
 
-    /* coral rough box + stamp (the one voltage) */
-    .p02-mark {
-      position: absolute;
-      left: 0; top: 0;
-      width: 1060px;
-      height: 560px;
-      pointer-events: none;
-      overflow: visible;
-    }
+    /* the wrong mark: thin red rounded box around lines 5-6 + FOUT label */
+    #p02-box { left: 126px; top: 318px; width: 510px; height: 124px; opacity: 0; }
     .p02-stamp {
-      position: absolute;
-      left: 600px;
-      top: 340px;
-      padding: 10px 26px 8px;
-      border: 3px solid #CC785C;
-      border-radius: 6px;
-      background: #181715;
-      font-family: "JetBrains Mono", monospace;
-      font-weight: 700;
-      font-size: 54px;
-      line-height: 1;
-      letter-spacing: 0.16em;
-      color: #CC785C;
+      position: absolute; left: 660px; top: 340px; padding: 10px 22px;
+      border: 2px solid var(--ts-error); border-radius: 6px; background: var(--ts-ground);
+      font-family: var(--ts-sans); font-weight: 700; font-size: 40px; line-height: 1;
+      letter-spacing: 0.14em; color: var(--ts-error);
     }
 
-    /* right column — memory vs screen */
-    .p02-col {
-      position: absolute;
-      left: 1236px;
-      top: 190px;
-      width: 604px;
-    }
-    .p02-label {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
-    }
+    /* right column: memory vs screen */
+    .p02-col { position: absolute; left: 1236px; top: 190px; width: 604px; height: 620px; }
+    #p02-lab-mem { left: 0; top: 4px; }
+    #p02-lab-scr { left: 0; top: 292px; }
     .p02-ref {
-      position: absolute;
-      left: 0;
-      top: 50px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      color: #141413;
-      padding: 4px 12px;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      border-radius: 6px;
-      background: #EFE9DE;
+      position: absolute; left: 0; top: 50px; padding: 4px 12px;
+      font-family: var(--ts-mono); font-size: 24px; color: var(--ts-ink);
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 6px;
     }
-    .p02-strip {
-      position: absolute;
-      left: 0;
-      top: 104px;
-      height: 120px;
-      width: 604px;
-    }
+    .p02-strip { position: absolute; left: 0; top: 104px; height: 120px; width: 604px; }
     .p02-tile {
-      position: absolute;
-      top: 0;
-      width: 88px;
-      height: 88px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 38px;
-      color: #141413;
+      position: absolute; top: 0; width: 88px; height: 88px;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-mono); font-size: 38px; color: var(--ts-ink);
     }
-    .p02-tile.p02-new {
-      background: #ECE3D4;
-      border: 1px solid rgba(20, 20, 19, 0.32);
-    }
+    .p02-tile.p02-new { background: var(--ts-hairline); border: 1px solid #CBD5E1; }
     .p02-idx {
-      position: absolute;
-      top: 96px;
-      width: 88px;
-      text-align: center;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 17px;
-      color: rgba(20, 20, 19, 0.45);
+      position: absolute; top: 96px; width: 88px; text-align: center;
+      font-family: var(--ts-mono); font-size: 17px; color: var(--ts-muted);
     }
-    .p02-len {
-      position: absolute;
-      right: 0;
-      top: 56px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(20, 20, 19, 0.62);
-    }
+    .p02-len { position: absolute; right: 0; top: 56px; font-family: var(--ts-mono); font-size: 22px; color: var(--ts-ink-soft); }
     .p02-divider {
-      position: absolute;
-      left: 0;
-      top: 262px;
-      width: 604px;
-      height: 1px;
-      background: rgba(20, 20, 19, 0.2);
-      transform-origin: left center;
-    }
-    .p02-label2 {
-      position: absolute;
-      left: 0;
-      top: 288px;
+      position: absolute; left: 0; top: 262px; width: 604px; height: 1px;
+      background: var(--ts-hairline); transform-origin: left center;
     }
     .p02-table {
-      position: absolute;
-      left: 0;
-      top: 340px;
-      width: 604px;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-      overflow: hidden;
+      position: absolute; left: 0; top: 340px; width: 604px; overflow: hidden;
+      background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
     }
     .p02-thead {
-      height: 46px;
-      display: flex;
-      align-items: center;
-      padding: 0 24px;
-      background: #EFE9DE;
-      border-bottom: 1px solid rgba(20, 20, 19, 0.12);
-      font-family: "Inter", sans-serif;
-      font-size: 20px;
-      font-weight: 400;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
+      height: 46px; display: flex; align-items: center; padding: 0 24px;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      font-family: var(--ts-sans); font-size: 18px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ts-label);
     }
     .p02-tr {
-      height: 50px;
-      display: flex;
-      align-items: center;
-      padding: 0 24px;
-      border-bottom: 1px solid rgba(20, 20, 19, 0.12);
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      color: #141413;
+      height: 50px; display: flex; align-items: center; padding: 0 24px;
+      border-bottom: 1px solid var(--ts-hairline);
+      font-family: var(--ts-mono); font-size: 28px; color: var(--ts-ink);
     }
     .p02-tr:last-child { border-bottom: none; }
-    .p02-tr span { width: 64px; color: rgba(20, 20, 19, 0.4); font-size: 20px; }
-    .p02-rows {
-      position: absolute;
-      right: 0;
-      top: 292px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(20, 20, 19, 0.62);
-    }
+    .p02-tr span { width: 64px; color: var(--ts-muted); font-size: 20px; }
+    .p02-rows { position: absolute; right: 0; top: 292px; font-family: var(--ts-mono); font-size: 22px; color: var(--ts-ink-soft); }
   </style>
 
   <div data-hf-id="hf-rmu1" id="root" data-composition-id="02-push-fout" data-width="1920" data-height="1080" data-duration="11.4">
-    <div data-hf-id="hf-5n3y" class="p02-bg clip" id="p02-bg" data-start="0" data-duration="11.4" data-track-index="0"></div>
+    <div data-hf-id="hf-5n3y" class="ts-bg clip" id="p02-bg" data-start="0" data-duration="11.4" data-track-index="0"></div>
 
-    <div data-hf-id="hf-fsoh" class="p02-stage clip" id="p02-stage" data-start="0" data-duration="11.4" data-track-index="1">
-      <div data-hf-id="hf-0evj" class="p02-kicker" id="p02-kicker"><span data-hf-id="hf-iocr" class="p02-spike">✱</span>Zo niet</div>
+    <div data-hf-id="hf-fsoh" class="ts-stage clip" id="p02-stage" data-start="0" data-duration="11.4" data-track-index="1">
+      <div data-hf-id="hf-0evj" class="ts-kicker" id="p02-kicker"><div data-hf-id="hf-iocr" class="ts-kicker-bar" id="p02-kbar"></div><span data-hf-id="hf-p02k" class="ts-kicker-text" id="p02-ktext">Zo niet</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-hnus" class="p02-panel" id="p02-panel">
-        <div data-hf-id="hf-1sre" class="p02-titlebar">App.jsx</div>
+      <div data-hf-id="hf-hnus" class="ts-code-surface" id="p02-panel">
+        <div data-hf-id="hf-1sre" class="ts-code-title">App.jsx</div>
         <div data-hf-id="hf-fvs8" class="p02-code">
-          <div data-hf-id="hf-st01" class="p02-row"><span data-hf-id="hf-st02" class="p02-ln">1</span><span data-hf-id="hf-st03" class="p02-txt"><span data-hf-id="hf-st04" class="p02-kw">const</span> [numbers, <span data-hf-id="hf-st05" class="p02-hl" id="p02-setter">setNumbers</span>] =</span></div>
-          <div data-hf-id="hf-st06" class="p02-row"><span data-hf-id="hf-st07" class="p02-ln">2</span><span data-hf-id="hf-st08" class="p02-txt">  <span data-hf-id="hf-st09" class="p02-fn">useState</span><span data-hf-id="hf-st10" class="p02-dim">&lt;number[]&gt;</span>(<span data-hf-id="hf-st11" class="p02-hl" id="p02-init">[0,1,2,3,4]</span>);</span></div>
+          <div data-hf-id="hf-st01" class="p02-row"><span data-hf-id="hf-st02" class="p02-ln">1</span><span data-hf-id="hf-st03" class="p02-txt"><span data-hf-id="hf-st04" class="ts-kw">const</span> [numbers, <span data-hf-id="hf-st05" class="ts-hl" id="p02-setter">setNumbers</span>] =</span></div>
+          <div data-hf-id="hf-st06" class="p02-row"><span data-hf-id="hf-st07" class="p02-ln">2</span><span data-hf-id="hf-st08" class="p02-txt">  <span data-hf-id="hf-st09" class="ts-fn">useState</span><span data-hf-id="hf-st10" class="ts-type">&lt;number[]&gt;</span>(<span data-hf-id="hf-st11" class="ts-hl" id="p02-init">[0,1,2,3,4]</span>);</span></div>
           <div data-hf-id="hf-st12" class="p02-row"><span data-hf-id="hf-st13" class="p02-ln">3</span></div>
-          <div data-hf-id="hf-b985" class="p02-row"><span data-hf-id="hf-ojxn" class="p02-ln">4</span><span data-hf-id="hf-886m" class="p02-txt"><span data-hf-id="hf-o64j" class="p02-kw">const</span> <span data-hf-id="hf-aa1q" class="p02-fn">addClicked</span> = () =&gt; {</span></div>
+          <div data-hf-id="hf-b985" class="p02-row"><span data-hf-id="hf-ojxn" class="p02-ln">4</span><span data-hf-id="hf-886m" class="p02-txt"><span data-hf-id="hf-o64j" class="ts-kw">const</span> <span data-hf-id="hf-aa1q" class="ts-fn">addClicked</span> = () =&gt; {</span></div>
           <div data-hf-id="hf-7n1y" class="p02-row" id="p02-row2"><span data-hf-id="hf-o5mm" class="p02-ln">5</span><span data-hf-id="hf-69lx" class="p02-txt" id="p02-line2"></span><span data-hf-id="hf-m29v" class="p02-caret" id="p02-caret2"></span></div>
           <div data-hf-id="hf-bl5z" class="p02-row" id="p02-row3"><span data-hf-id="hf-nrbl" class="p02-ln">6</span><span data-hf-id="hf-5hy4" class="p02-txt" id="p02-line3"></span><span data-hf-id="hf-i45u" class="p02-caret" id="p02-caret3"></span></div>
           <div data-hf-id="hf-uvmx" class="p02-row"><span data-hf-id="hf-nd0k" class="p02-ln">7</span><span data-hf-id="hf-44na" class="p02-txt">};</span></div>
         </div>
-        <div data-hf-id="hf-rce7" class="p02-status">addClicked · onClick</div>
-
-        <svg data-hf-id="hf-hnyz" class="p02-mark" id="p02-mark" viewBox="0 0 1060 560" width="1060" height="560">
-          <path data-hf-id="hf-2gp1" id="p02-box" transform="translate(0,190) scale(1,0.94)" fill="none" stroke="#CC785C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M150,140 C300,134 480,137 632,141 C638,182 636,226 633,268 C470,272 300,270 128,266 C124,226 125,180 130,138 C200,135 260,137 300,139" />
-        </svg>
+        <div data-hf-id="hf-rce7" class="ts-code-status">addClicked · onClick</div>
+        <div data-hf-id="hf-hnyz" class="ts-mark ts-mark--wrong" id="p02-box"></div>
         <div data-hf-id="hf-2sc0" class="p02-stamp" id="p02-stamp">FOUT</div>
       </div>
 
       <!-- right column: memory vs screen -->
       <div data-hf-id="hf-i1t3" class="p02-col">
-        <div data-hf-id="hf-2l3r" class="p02-label" id="p02-lab-mem">geheugen</div>
+        <div data-hf-id="hf-2l3r" class="ts-label" id="p02-lab-mem">geheugen</div>
         <div data-hf-id="hf-jxw5" class="p02-ref" id="p02-ref">ref #A</div>
         <div data-hf-id="hf-8txi" class="p02-len" id="p02-len">length <span data-hf-id="hf-zbpy" id="p02-len-n">5</span></div>
         <div data-hf-id="hf-7gz0" class="p02-strip" id="p02-strip">
@@ -329,7 +275,7 @@
         </div>
 
         <div data-hf-id="hf-2h1u" class="p02-divider" id="p02-divider"></div>
-        <div data-hf-id="hf-lk7f" class="p02-label p02-label2" id="p02-lab-scr">scherm</div>
+        <div data-hf-id="hf-lk7f" class="ts-label" id="p02-lab-scr">scherm</div>
         <div data-hf-id="hf-bop7" class="p02-rows" id="p02-rows">5 rijen</div>
         <div data-hf-id="hf-oqaw" class="p02-table" id="p02-table">
           <div data-hf-id="hf-gm0s" class="p02-thead">Getal</div>
@@ -362,7 +308,7 @@
         segments.forEach(function (seg) {
           for (var i = 0; i < seg.t.length; i++) {
             var s = document.createElement("span");
-            s.className = "p02-ch" + (seg.c ? " " + seg.c : "");
+            s.className = "ts-ch" + (seg.c ? " " + seg.c : "");
             s.textContent = seg.t[i];
             line.appendChild(s);
             chars.push(s);
@@ -383,13 +329,14 @@
       }
 
       // ---- Scene 1 (0.0–2.0): kicker + code surface enter ----
-      tl.fromTo("#p02-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#p02-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#p02-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
       tl.fromTo("#p02-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.15);
 
       // ---- Scene 2 (2.0–3.4): "numbers.push" → line 2 types ----
       typeLine("#p02-line2", "#p02-caret2", [
         { t: "  numbers." },
-        { t: "push", c: "p02-fn" },
+        { t: "push", c: "ts-fn" },
         { t: "(number);" }
       ], 2.15, 0.03);
 
@@ -400,8 +347,8 @@
       tl.fromTo(qa(".p02-i"), { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out", stagger: 0.05 }, 3.45);
       tl.fromTo("#p02-len", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 3.6);
       // the strip IS the state from useState: light up its initial value while the tiles land
-      tl.to("#p02-init", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.4, ease: "power1.out" }, 3.3);
-      tl.to("#p02-init", { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.5, ease: "power1.inOut" }, 4.9);
+      tl.to("#p02-init", { backgroundColor: "rgba(49, 120, 198, 0.12)", duration: 0.4, ease: "power1.out" }, 3.3);
+      tl.to("#p02-init", { backgroundColor: "rgba(49, 120, 198, 0)", duration: 0.5, ease: "power1.inOut" }, 4.9);
       // the 6th tile slides onto the end on "verandert"
       tl.fromTo("#p02-tile6", { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 4.0);
       tl.fromTo("#p02-idx6", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 4.15);
@@ -418,19 +365,15 @@
       // ---- Scene 5 (6.3–8.6): "setNumbers" → line 3 types ----
       typeLine("#p02-line3", "#p02-caret3", [
         { t: "  " },
-        { t: "setNumbers", c: "p02-fn" },
+        { t: "setNumbers", c: "ts-fn" },
         { t: "(numbers);" }
       ], 7.3, 0.03);
-      tl.to("#p02-setter", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.4, ease: "power1.out" }, 7.3);
-      tl.to("#p02-setter", { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.5, ease: "power1.inOut" }, 8.5);
+      tl.to("#p02-setter", { backgroundColor: "rgba(49, 120, 198, 0.12)", duration: 0.4, ease: "power1.out" }, 7.3);
+      tl.to("#p02-setter", { backgroundColor: "rgba(49, 120, 198, 0)", duration: 0.5, ease: "power1.inOut" }, 8.5);
 
-      // ---- Scene 6 (8.6–9.84): "helpt niet" → coral rough box + FOUT stamp ----
-      var box = q("#p02-box");
-      var len = 1500;
-      try { len = Math.ceil(box.getTotalLength()) || 1500; } catch (e) {}
-      tl.set(box, { strokeDasharray: len, strokeDashoffset: len }, 0);
-      tl.to(box, { strokeDashoffset: 0, duration: 0.5, ease: "power1.inOut" }, 8.62);
-      tl.fromTo("#p02-stamp", { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 9.0);
+      // ---- Scene 6 (8.6–9.84): "helpt niet" → red wrong-mark + FOUT label ----
+      tl.fromTo("#p02-box", { opacity: 0, scale: 1.02 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" }, 8.62);
+      tl.fromTo("#p02-stamp", { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 9.0);
 
       // hold to full duration
       tl.set({}, {}, DUR);

@@ -1,274 +1,255 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
     @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
-    .f06al-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f06al-stage { position: absolute; inset: 0; }
 
-    /* kicker */
-    .f06al-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-    }
-    .f06al-kicker .f06al-spike { color: #CC785C; margin-right: 14px; }
-
-    /* code surface */
-    .f06al-panel {
-      position: absolute;
-      left: 80px;
-      top: 170px;
-      width: 1060px;
-      height: 720px;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .f06al-titlebar {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 52px;
-      background: #252320;
-      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(250, 249, 245, 0.62);
-      letter-spacing: 0.02em;
-    }
-    .f06al-status {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 44px;
-      background: #252320;
-      border-top: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 19px;
-      color: rgba(250, 249, 245, 0.45);
-      letter-spacing: 0.04em;
-    }
-    .f06al-code {
-      position: absolute;
-      left: 0; right: 0;
-      top: 80px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      line-height: 38px;
-      color: #FAF9F5;
-      font-variant-ligatures: none;
-    }
-    .f06al-row { position: relative; height: 38px; white-space: pre; }
-    .f06al-ln {
-      position: absolute;
-      left: 0;
-      width: 60px;
-      text-align: right;
-      color: rgba(250, 249, 245, 0.32);
-      font-size: 22px;
-    }
-    .f06al-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    /* ---- frame 06 positions ---- */
+    #f06al-panel { left: 80px; top: 170px; width: 1060px; height: 720px; }
+    #f06al-code { top: 80px; }
+    #f06al-code .ts-ln { width: 60px; }
+    #f06al-code .ts-txt { left: 84px; }
+    #f06al-code .ts-caret { top: 6px; height: 27px; }
     .f06al-wash {
-      position: absolute;
-      left: 76px;
-      top: 2px;
-      height: 34px;
-      border-radius: 4px;
-      background: rgba(232, 165, 90, 0.24);
-      opacity: 0;
+      position: absolute; left: 76px; top: 2px; height: 34px; border-radius: 4px;
+      background: var(--ts-wash); opacity: 0;
     }
-    .f06al-ch { display: inline; }
-    .f06al-kw { color: #CC785C; }
-    .f06al-fn { color: #E8A55A; }
-    .f06al-str { color: #5DB8A6; }
-    .f06al-dim { color: rgba(250, 249, 245, 0.6); }
-    .f06al-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
-    .f06al-caret {
-      position: absolute;
-      top: 4px;
-      left: 0;
-      width: 3px;
-      height: 30px;
-      background: #FAF9F5;
-      opacity: 0;
-    }
-    .f06al-mark {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 1060px;
-      height: 720px;
-      overflow: visible;
-      pointer-events: none;
+    /* wrong mark around lines 9-15 + strike (panel coords) */
+    #f06al-box { left: 70px; top: 376px; width: 944px; height: 286px; }
+    .f06al-strike {
+      position: absolute; left: 98px; top: 641px; width: 920px; height: 2px; border-radius: 1px;
+      background: var(--ts-error); transform-origin: 0 50%;
     }
 
     /* right column */
-    .f06al-chip {
-      position: absolute;
-      left: 1236px;
-      top: 80px;
-      height: 52px;
-      padding: 0 22px;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 6px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      color: #141413;
-      letter-spacing: 0.02em;
-    }
+    #f06al-chip { left: 1236px; top: 80px; }
     .f06al-chipstrike {
-      position: absolute;
-      left: 14px;
-      right: 14px;
-      top: 25px;
-      height: 2px;
-      background: #141413;
-      transform-origin: 0 50%;
+      position: absolute; left: 14px; right: 14px; top: 25px; height: 2px;
+      background: var(--ts-ink); transform-origin: 0 50%;
     }
-    .f06al-col {
-      position: absolute;
-      left: 1236px;
-      top: 180px;
-      width: 604px;
-      height: 680px;
-    }
-    .f06al-label {
-      position: absolute;
-      left: 0;
-      top: 0;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
-    }
-    .f06al-card {
-      position: absolute;
-      left: 0;
-      top: 52px;
-      width: 604px;
-      height: 308px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-      overflow: hidden;
-    }
+    .f06al-col { position: absolute; left: 1236px; top: 180px; width: 604px; height: 680px; }
+    #f06al-lab-scr { left: 0; top: 6px; }
+    #f06al-card { left: 0; top: 52px; width: 604px; height: 308px; overflow: hidden; }
     .f06al-strip {
-      position: absolute;
-      left: 28px;
-      right: 28px;
-      height: 58px;
-      box-sizing: border-box;
-      padding-left: 10px;
-      display: flex;
-      align-items: center;
-      font-family: "Inter", sans-serif;
-      font-weight: 500;
-      font-size: 30px;
-      line-height: 1;
+      position: absolute; left: 28px; right: 28px; height: 58px; box-sizing: border-box; padding-left: 10px;
+      display: flex; align-items: center;
+      font-family: "Inter", sans-serif; font-weight: 500; font-size: 30px; line-height: 1;
     }
     .f06al-green { top: 28px; background: #3F7D4E; color: #FFFFFF; }
     .f06al-dash {
-      top: 100px;
-      border: 2px dashed rgba(20, 20, 19, 0.4);
-      color: rgba(20, 20, 19, 0.4);
-      padding-left: 8px;
+      top: 100px; border: 2px dashed var(--ts-muted); border-radius: 6px; color: var(--ts-muted); padding-left: 8px;
     }
     .f06al-note {
-      position: absolute;
-      left: 4px;
-      top: 404px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      color: #141413;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
+      position: absolute; left: 4px; top: 404px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 28px; color: var(--ts-ink);
+      white-space: nowrap; display: flex; align-items: center;
     }
     .f06al-note-sw {
-      display: inline-block;
-      width: 30px;
-      height: 22px;
-      margin-right: 16px;
-      border-radius: 4px;
-      background: rgba(232, 165, 90, 0.45);
+      display: inline-block; width: 30px; height: 22px; margin-right: 16px; border-radius: 4px;
+      background: rgba(49, 120, 198, 0.16); border: 1px solid var(--ts-blue); box-sizing: border-box;
     }
   </style>
 
   <div data-hf-id="hf-00b1" id="root" data-composition-id="06-ander-label" data-width="1920" data-height="1080" data-duration="13.84">
-    <div data-hf-id="hf-ns84" class="f06al-bg clip" id="f06al-bg" data-start="0" data-duration="13.84" data-track-index="0"></div>
+    <div data-hf-id="hf-ns84" class="ts-bg clip" id="f06al-bg" data-start="0" data-duration="13.84" data-track-index="0"></div>
 
-    <div data-hf-id="hf-rij5" class="f06al-stage clip" id="f06al-stage" data-start="0" data-duration="13.84" data-track-index="1">
-      <div data-hf-id="hf-h3za" class="f06al-kicker" id="f06al-kicker"><span data-hf-id="hf-dna0" class="f06al-spike">✱</span>Nieuwe vraag</div>
+    <div data-hf-id="hf-rij5" class="ts-stage clip" id="f06al-stage" data-start="0" data-duration="13.84" data-track-index="1">
+      <div data-hf-id="hf-h3za" class="ts-kicker" id="f06al-kicker"><div data-hf-id="hf-dna0" class="ts-kicker-bar" id="f06al-kbar"></div><span data-hf-id="hf-k06t" class="ts-kicker-text" id="f06al-ktext">Nieuwe vraag</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-26gy" class="f06al-panel" id="f06al-panel">
-        <div data-hf-id="hf-jeht" class="f06al-titlebar">Badge.tsx</div>
-        <div data-hf-id="hf-lvnj" class="f06al-code">
-          <div data-hf-id="hf-wfl8" class="f06al-row"><span data-hf-id="hf-asd6" class="f06al-ln">1</span><span data-hf-id="hf-i60y" class="f06al-txt"><span data-hf-id="hf-nela" class="f06al-kw">const</span> <span data-hf-id="hf-vs9c" class="f06al-fn">Badge</span> = () <span data-hf-id="hf-wbto" class="f06al-kw">=&gt;</span> {</span></div>
-          <div data-hf-id="hf-iemc" class="f06al-row"><span data-hf-id="hf-b6o7" class="f06al-ln">2</span><span data-hf-id="hf-e991" class="f06al-wash" id="f06al-w2" style="width:172px"></span><span data-hf-id="hf-3xv9" class="f06al-txt">  <span data-hf-id="hf-d1xt" class="f06al-kw">return</span> (</span></div>
-          <div data-hf-id="hf-h7p9" class="f06al-row"><span data-hf-id="hf-bkz8" class="f06al-ln">3</span><span data-hf-id="hf-yq6t" class="f06al-wash" id="f06al-w3" style="width:906px"></span><span data-hf-id="hf-b9bs" class="f06al-txt">    <span data-hf-id="hf-6foe" class="f06al-dim">&lt;div</span> style={{ color: <span data-hf-id="hf-gui5" class="f06al-str">'white'</span>, background: <span data-hf-id="hf-21eb" class="f06al-str">'green'</span> }}<span data-hf-id="hf-x0nl" class="f06al-dim">&gt;</span></span></div>
-          <div data-hf-id="hf-hm0a" class="f06al-row"><span data-hf-id="hf-bza9" class="f06al-ln">4</span><span data-hf-id="hf-ijox" class="f06al-txt">      Nieuw</span></div>
-          <div data-hf-id="hf-jljf" class="f06al-row"><span data-hf-id="hf-cdla" class="f06al-ln">5</span><span data-hf-id="hf-bv4y" class="f06al-wash" id="f06al-w5" style="width:172px"></span><span data-hf-id="hf-aw5b" class="f06al-txt">    <span data-hf-id="hf-q8qr" class="f06al-dim">&lt;/div&gt;</span></span></div>
-          <div data-hf-id="hf-jzug" class="f06al-row"><span data-hf-id="hf-crwb" class="f06al-ln">6</span><span data-hf-id="hf-3m6k" class="f06al-wash" id="f06al-w6" style="width:78px"></span><span data-hf-id="hf-8xcr" class="f06al-txt">  );</span></div>
-          <div data-hf-id="hf-isxd" class="f06al-row"><span data-hf-id="hf-d67c" class="f06al-ln">7</span><span data-hf-id="hf-vp65" class="f06al-wash" id="f06al-w7" style="width:32px"></span><span data-hf-id="hf-mup2" class="f06al-txt">}</span></div>
-          <div data-hf-id="hf-j78e" class="f06al-row"><span data-hf-id="hf-dkid" class="f06al-ln">8</span></div>
-          <div data-hf-id="hf-l6rj" class="f06al-row"><span data-hf-id="hf-dyte" class="f06al-ln">9</span><span data-hf-id="hf-dewj" class="f06al-txt f06al-blk" id="f06al-line9"></span><span data-hf-id="hf-qm0e" class="f06al-caret" id="f06al-caret9"></span></div>
-          <div data-hf-id="hf-ll2k" class="f06al-row"><span data-hf-id="hf-ee5a" class="f06al-ln">10</span><span data-hf-id="hf-fh42" class="f06al-wash" id="f06al-w10" style="width:172px"></span><span data-hf-id="hf-qp9l" class="f06al-txt f06al-blk" id="f06al-line10"></span><span data-hf-id="hf-2pz6" class="f06al-caret" id="f06al-caret10"></span></div>
-          <div data-hf-id="hf-am3g" class="f06al-row"><span data-hf-id="hf-dzu9" class="f06al-ln">11</span><span data-hf-id="hf-nooe" class="f06al-wash" id="f06al-w11" style="width:906px"></span><span data-hf-id="hf-pxls" class="f06al-txt f06al-blk" id="f06al-line11"></span><span data-hf-id="hf-6o37" class="f06al-caret" id="f06al-caret11"></span></div>
-          <div data-hf-id="hf-65tb" class="f06al-row"><span data-hf-id="hf-f6rc" class="f06al-ln">12</span><span data-hf-id="hf-0t3f" class="f06al-txt f06al-blk" id="f06al-line12"></span><span data-hf-id="hf-y07c" class="f06al-caret" id="f06al-caret12"></span></div>
-          <div data-hf-id="hf-5ria" class="f06al-row"><span data-hf-id="hf-esgb" class="f06al-ln">13</span><span data-hf-id="hf-sytl" class="f06al-wash" id="f06al-w13" style="width:172px"></span><span data-hf-id="hf-wuze" class="f06al-txt f06al-blk" id="f06al-line13"></span><span data-hf-id="hf-yrv5" class="f06al-caret" id="f06al-caret13"></span></div>
-          <div data-hf-id="hf-5d79" class="f06al-row"><span data-hf-id="hf-csx6" class="f06al-ln">14</span><span data-hf-id="hf-ozd9" class="f06al-wash" id="f06al-w14" style="width:78px"></span><span data-hf-id="hf-e39p" class="f06al-txt f06al-blk" id="f06al-line14"></span><span data-hf-id="hf-nwdi" class="f06al-caret" id="f06al-caret14"></span></div>
-          <div data-hf-id="hf-c7bk" class="f06al-row"><span data-hf-id="hf-cem5" class="f06al-ln">15</span><span data-hf-id="hf-7amg" class="f06al-wash" id="f06al-w15" style="width:32px"></span><span data-hf-id="hf-dblw" class="f06al-txt f06al-blk" id="f06al-line15"></span><span data-hf-id="hf-u23b" class="f06al-caret" id="f06al-caret15"></span></div>
+      <div data-hf-id="hf-26gy" class="ts-code-surface" id="f06al-panel">
+        <div data-hf-id="hf-jeht" class="ts-code-title">Badge.tsx</div>
+        <div data-hf-id="hf-lvnj" class="ts-code" id="f06al-code">
+          <div data-hf-id="hf-wfl8" class="ts-row"><span data-hf-id="hf-asd6" class="ts-ln">1</span><span data-hf-id="hf-i60y" class="ts-txt"><span data-hf-id="hf-nela" class="ts-kw">const</span> <span data-hf-id="hf-vs9c" class="ts-fn">Badge</span> = () <span data-hf-id="hf-wbto" class="ts-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-iemc" class="ts-row"><span data-hf-id="hf-b6o7" class="ts-ln">2</span><span data-hf-id="hf-e991" class="f06al-wash" id="f06al-w2" style="width:172px"></span><span data-hf-id="hf-3xv9" class="ts-txt">  <span data-hf-id="hf-d1xt" class="ts-kw">return</span> (</span></div>
+          <div data-hf-id="hf-h7p9" class="ts-row"><span data-hf-id="hf-bkz8" class="ts-ln">3</span><span data-hf-id="hf-yq6t" class="f06al-wash" id="f06al-w3" style="width:906px"></span><span data-hf-id="hf-b9bs" class="ts-txt">    <span data-hf-id="hf-6foe" class="ts-punct">&lt;div</span> style={{ color: <span data-hf-id="hf-gui5" class="ts-str">'white'</span>, background: <span data-hf-id="hf-21eb" class="ts-str">'green'</span> }}<span data-hf-id="hf-x0nl" class="ts-punct">&gt;</span></span></div>
+          <div data-hf-id="hf-hm0a" class="ts-row"><span data-hf-id="hf-bza9" class="ts-ln">4</span><span data-hf-id="hf-ijox" class="ts-txt">      Nieuw</span></div>
+          <div data-hf-id="hf-jljf" class="ts-row"><span data-hf-id="hf-cdla" class="ts-ln">5</span><span data-hf-id="hf-bv4y" class="f06al-wash" id="f06al-w5" style="width:172px"></span><span data-hf-id="hf-aw5b" class="ts-txt">    <span data-hf-id="hf-q8qr" class="ts-punct">&lt;/div&gt;</span></span></div>
+          <div data-hf-id="hf-jzug" class="ts-row"><span data-hf-id="hf-crwb" class="ts-ln">6</span><span data-hf-id="hf-3m6k" class="f06al-wash" id="f06al-w6" style="width:78px"></span><span data-hf-id="hf-8xcr" class="ts-txt">  );</span></div>
+          <div data-hf-id="hf-isxd" class="ts-row"><span data-hf-id="hf-d67c" class="ts-ln">7</span><span data-hf-id="hf-vp65" class="f06al-wash" id="f06al-w7" style="width:32px"></span><span data-hf-id="hf-mup2" class="ts-txt">}</span></div>
+          <div data-hf-id="hf-j78e" class="ts-row"><span data-hf-id="hf-dkid" class="ts-ln">8</span></div>
+          <div data-hf-id="hf-l6rj" class="ts-row"><span data-hf-id="hf-dyte" class="ts-ln">9</span><span data-hf-id="hf-dewj" class="ts-txt f06al-blk" id="f06al-line9"></span><span data-hf-id="hf-qm0e" class="ts-caret" id="f06al-caret9"></span></div>
+          <div data-hf-id="hf-ll2k" class="ts-row"><span data-hf-id="hf-ee5a" class="ts-ln">10</span><span data-hf-id="hf-fh42" class="f06al-wash" id="f06al-w10" style="width:172px"></span><span data-hf-id="hf-qp9l" class="ts-txt f06al-blk" id="f06al-line10"></span><span data-hf-id="hf-2pz6" class="ts-caret" id="f06al-caret10"></span></div>
+          <div data-hf-id="hf-am3g" class="ts-row"><span data-hf-id="hf-dzu9" class="ts-ln">11</span><span data-hf-id="hf-nooe" class="f06al-wash" id="f06al-w11" style="width:906px"></span><span data-hf-id="hf-pxls" class="ts-txt f06al-blk" id="f06al-line11"></span><span data-hf-id="hf-6o37" class="ts-caret" id="f06al-caret11"></span></div>
+          <div data-hf-id="hf-65tb" class="ts-row"><span data-hf-id="hf-f6rc" class="ts-ln">12</span><span data-hf-id="hf-0t3f" class="ts-txt f06al-blk" id="f06al-line12"></span><span data-hf-id="hf-y07c" class="ts-caret" id="f06al-caret12"></span></div>
+          <div data-hf-id="hf-5ria" class="ts-row"><span data-hf-id="hf-esgb" class="ts-ln">13</span><span data-hf-id="hf-sytl" class="f06al-wash" id="f06al-w13" style="width:172px"></span><span data-hf-id="hf-wuze" class="ts-txt f06al-blk" id="f06al-line13"></span><span data-hf-id="hf-yrv5" class="ts-caret" id="f06al-caret13"></span></div>
+          <div data-hf-id="hf-5d79" class="ts-row"><span data-hf-id="hf-csx6" class="ts-ln">14</span><span data-hf-id="hf-ozd9" class="f06al-wash" id="f06al-w14" style="width:78px"></span><span data-hf-id="hf-e39p" class="ts-txt f06al-blk" id="f06al-line14"></span><span data-hf-id="hf-nwdi" class="ts-caret" id="f06al-caret14"></span></div>
+          <div data-hf-id="hf-c7bk" class="ts-row"><span data-hf-id="hf-cem5" class="ts-ln">15</span><span data-hf-id="hf-7amg" class="f06al-wash" id="f06al-w15" style="width:32px"></span><span data-hf-id="hf-dblw" class="ts-txt f06al-blk" id="f06al-line15"></span><span data-hf-id="hf-u23b" class="ts-caret" id="f06al-caret15"></span></div>
         </div>
-        <div data-hf-id="hf-x30n" class="f06al-status">Badge · component</div>
+        <div data-hf-id="hf-x30n" class="ts-code-status">Badge · component</div>
 
-        <!-- coral rough box + strike around lines 9-15 (rows y 384..650) -->
-        <svg data-hf-id="hf-haha" class="f06al-mark" viewBox="0 0 1060 720" width="1060" height="720">
-          <path data-hf-id="hf-frzz" id="f06al-box" fill="none" stroke="#CC785C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M74,378 C320,372 660,375 1012,380 C1018,470 1017,568 1011,660 C680,666 330,664 70,659 C66,566 67,470 72,377 C160,373 250,374 330,376" />
-          <path data-hf-id="hf-lg43" id="f06al-strike" fill="none" stroke="#CC785C" stroke-width="4" stroke-linecap="round" d="M98,642 C350,560 660,470 984,396" />
-        </svg>
+        <!-- red wrong mark + strike around lines 9-15 (rows y 384..650) -->
+        <div data-hf-id="hf-haha" class="ts-mark ts-mark--wrong" id="f06al-box"></div>
+        <div data-hf-id="hf-lg43" class="f06al-strike" id="f06al-strike"></div>
       </div>
 
       <!-- chip "klaar?" at the top of the right column -->
-      <div data-hf-id="hf-za2o" class="f06al-chip" id="f06al-chip">klaar?<span data-hf-id="hf-ucsn" class="f06al-chipstrike" id="f06al-chipstrike"></span></div>
+      <div data-hf-id="hf-za2o" class="ts-chip" id="f06al-chip">klaar?<span data-hf-id="hf-ucsn" class="f06al-chipstrike" id="f06al-chipstrike"></span></div>
 
       <!-- right column: scherm -->
       <div data-hf-id="hf-rpfq" class="f06al-col">
-        <div data-hf-id="hf-n7a2" class="f06al-label" id="f06al-lab-scr">scherm</div>
-        <div data-hf-id="hf-z39e" class="f06al-card" id="f06al-card">
+        <div data-hf-id="hf-n7a2" class="ts-label" id="f06al-lab-scr">scherm</div>
+        <div data-hf-id="hf-z39e" class="ts-card" id="f06al-card">
           <div data-hf-id="hf-bird" class="f06al-strip f06al-green">Nieuw</div>
           <div data-hf-id="hf-7u2g" class="f06al-strip f06al-dash" id="f06al-dash"><span data-hf-id="hf-ghgv" id="f06al-dashlab">Uitverkocht</span></div>
         </div>
@@ -299,14 +280,14 @@
           var host = line;
           if (seg.id) {
             host = document.createElement("span");
-            host.className = "f06al-hl";
+            host.className = "ts-hl";
             host.id = seg.id;
             line.appendChild(host);
           }
           (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
             for (var i = 0; i < p.t.length; i++) {
               var s = document.createElement("span");
-              s.className = "f06al-ch" + (p.c ? " " + p.c : "");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
               s.textContent = p.t[i];
               host.appendChild(s);
               chars.push(s);
@@ -327,7 +308,8 @@
       }
 
       // ---- Scene 1 (0.0-1.9): kicker, Badge on screen, "Klaar?" chip, "Nee." strike ----
-      tl.fromTo("#f06al-kicker", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      tl.fromTo("#f06al-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.05);
+      tl.fromTo("#f06al-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.15);
       tl.fromTo("#f06al-chip", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.05);
       tl.fromTo("#f06al-chipstrike", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power2.out" }, 0.96);
       tl.to("#f06al-chip", { opacity: 0.35, duration: 0.35, ease: "power2.out" }, 1.1);
@@ -341,37 +323,37 @@
       var per = 0.009;
       var gap = 0.03;
       var e = typeLine("#f06al-line9", "#f06al-caret9", [
-        { t: "const", c: "f06al-kw" },
+        { t: "const", c: "ts-kw" },
         { t: " " },
-        { t: "UitverkochtBadge", c: "f06al-fn" },
+        { t: "UitverkochtBadge", c: "ts-fn" },
         { t: " = () " },
-        { t: "=>", c: "f06al-kw" },
+        { t: "=>", c: "ts-kw" },
         { t: " {" }
       ], 7.92, per);
       e = typeLine("#f06al-line10", "#f06al-caret10", [
         { t: "  " },
-        { t: "return", c: "f06al-kw" },
+        { t: "return", c: "ts-kw" },
         { t: " (" }
       ], e + gap, per, 0.02);
       e = typeLine("#f06al-line11", "#f06al-caret11", [
         { t: "    " },
-        { t: "<div", c: "f06al-dim" },
+        { t: "<div", c: "ts-punct" },
         { t: " style={{ color: " },
-        { t: "'white'", c: "f06al-str" },
+        { t: "'white'", c: "ts-str" },
         { t: ", background: " },
-        { t: "'green'", c: "f06al-str" },
+        { t: "'green'", c: "ts-str" },
         { t: " }}" },
-        { t: ">", c: "f06al-dim" }
+        { t: ">", c: "ts-punct" }
       ], e + gap, per, 0.02);
       var s12 = e + gap;
       e = typeLine("#f06al-line12", "#f06al-caret12", [
         { t: "      " },
         { id: "f06al-hl12", parts: [{ t: "Uitverkocht" }] }
       ], s12, per, 0.02);
-      tl.to("#f06al-hl12", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.3, ease: "power1.out" }, s12 + 0.05);
+      tl.to("#f06al-hl12", { backgroundColor: "rgba(49, 120, 198, 0.12)", duration: 0.3, ease: "power1.out" }, s12 + 0.05);
       e = typeLine("#f06al-line13", "#f06al-caret13", [
         { t: "    " },
-        { t: "</div>", c: "f06al-dim" }
+        { t: "</div>", c: "ts-punct" }
       ], e + gap, per, 0.02);
       e = typeLine("#f06al-line14", "#f06al-caret14", [
         { t: "  );" }
@@ -380,24 +362,15 @@
         { t: "}" }
       ], e + gap, per, 0.02);
 
-      // ---- Scene 4 (9.2-13.34): "Liever niet." coral rough box + strike, block dims ----
-      var box = q("#f06al-box");
-      var blen = 2400;
-      try { blen = Math.ceil(box.getTotalLength()) || 2400; } catch (err) {}
-      tl.set(box, { strokeDasharray: blen, strokeDashoffset: blen }, 0);
-      tl.to(box, { strokeDashoffset: 0, duration: 0.5, ease: "power1.inOut" }, 9.3);
-
-      var strike = q("#f06al-strike");
-      var slen = 1000;
-      try { slen = Math.ceil(strike.getTotalLength()) || 1000; } catch (err) {}
-      tl.set(strike, { strokeDasharray: slen, strokeDashoffset: slen }, 0);
-      tl.to(strike, { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" }, 9.6);
+      // ---- Scene 4 (9.2-13.34): "Liever niet." red box + strike, block dims ----
+      tl.fromTo("#f06al-box", { opacity: 0, clipPath: "inset(0% 100% 0% 0%)" }, { opacity: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: "power3.out" }, 9.3);
+      tl.fromTo("#f06al-strike", { rotation: -15.52, scaleX: 0 }, { rotation: -15.52, scaleX: 1, duration: 0.35, ease: "power2.out" }, 9.6);
 
       tl.to(root.querySelectorAll(".f06al-blk"), { opacity: 0.5, duration: 0.5, ease: "power2.out" }, 9.6);
 
       // "kopieer je opnieuw bijna alles": identical lines washed, copy then original
-      tl.to(["#f06al-w10", "#f06al-w11", "#f06al-w13", "#f06al-w14", "#f06al-w15"], { opacity: 0.7, duration: 0.45, ease: "power2.out", stagger: 0.06 }, 10.4);
-      tl.to(["#f06al-w2", "#f06al-w3", "#f06al-w5", "#f06al-w6", "#f06al-w7"], { opacity: 0.7, duration: 0.45, ease: "power2.out", stagger: 0.06 }, 10.8);
+      tl.to(["#f06al-w10", "#f06al-w11", "#f06al-w13", "#f06al-w14", "#f06al-w15"], { opacity: 1, duration: 0.45, ease: "power2.out", stagger: 0.06 }, 10.4);
+      tl.to(["#f06al-w2", "#f06al-w3", "#f06al-w5", "#f06al-w6", "#f06al-w7"], { opacity: 1, duration: 0.45, ease: "power2.out", stagger: 0.06 }, 10.8);
 
       tl.fromTo("#f06al-note", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 11.56);
 

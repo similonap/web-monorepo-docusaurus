@@ -1,328 +1,272 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
     @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
-    .p07-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .p07-stage { position: absolute; inset: 0; }
 
-    /* kicker */
-    .p07-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-    }
-    .p07-kicker .p07-spike { color: #CC785C; margin-right: 14px; }
-
-    /* code surface */
-    .p07-panel {
-      position: absolute;
-      left: 80px;
-      top: 190px;
-      width: 1100px;
-      height: 680px;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .p07-titlebar {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 56px;
-      background: #252320;
-      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(250, 249, 245, 0.62);
-      letter-spacing: 0.02em;
-    }
-    .p07-status {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 46px;
-      background: #252320;
-      border-top: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 19px;
-      color: rgba(250, 249, 245, 0.45);
-      letter-spacing: 0.04em;
-    }
+    /* ---- frame 07 ---- */
+    .p07-panel { left: 80px; top: 190px; width: 1100px; height: 680px; }
     .p07-code {
-      position: absolute;
-      left: 0; right: 0;
-      top: 80px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 30px;
-      line-height: 52px;
-      color: #FAF9F5;
-      font-variant-ligatures: none;
+      position: absolute; left: 0; right: 0; top: 80px;
+      font-family: var(--ts-mono); font-size: 30px; line-height: 52px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
     }
     .p07-row { position: relative; height: 52px; white-space: pre; }
-    .p07-ln {
-      position: absolute;
-      left: 0;
-      width: 50px;
-      text-align: right;
-      color: rgba(250, 249, 245, 0.32);
-      font-size: 22px;
-    }
+    .p07-ln { position: absolute; left: 0; width: 50px; text-align: right; color: var(--ts-code-ln); font-size: 22px; }
     .p07-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
     .p07-ch { display: inline; }
-    .p07-kw { color: #CC785C; }
-    .p07-fn { color: #E8A55A; }
-    .p07-num { color: #E8A55A; }
-    .p07-dim { color: rgba(250, 249, 245, 0.6); }
     .p07-wash {
-      position: absolute;
-      left: 142px;
-      top: 6px;
-      width: 354px;
-      height: 40px;
-      border-radius: 4px;
-      background: rgba(232, 165, 90, 0.24);
-      opacity: 0;
+      position: absolute; left: 142px; top: 6px; width: 354px; height: 40px; border-radius: 4px;
+      background: var(--ts-wash); opacity: 0;
     }
-    .p07-caret {
-      position: absolute;
-      top: 9px;
-      left: 0;
-      width: 3px;
-      height: 34px;
-      background: #FAF9F5;
-      opacity: 0;
-    }
+    .p07-caret { position: absolute; top: 9px; left: 0; width: 2px; height: 34px; background: var(--ts-blue); opacity: 0; }
 
     /* expectation chip (above the scherm card) */
-    .p07-expect {
-      position: absolute;
-      left: 1200px;
-      top: 104px;
-      height: 64px;
-      padding: 0 28px;
-      display: flex;
-      align-items: center;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      border-radius: 9999px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      color: #141413;
-      white-space: nowrap;
-      transform-origin: 0% 50%;
-    }
+    .p07-expect { left: 1200px; top: 104px; height: 64px; padding: 0 28px; font-size: 28px; transform-origin: 0% 50%; }
     .p07-expect-txt { position: relative; }
-    .p07-expect-lab { color: rgba(20, 20, 19, 0.55); }
+    .p07-expect-lab { color: var(--ts-label); }
     .p07-strike {
-      position: absolute;
-      left: 18px;
-      right: 18px;
-      top: 30px;
-      height: 4px;
-      border-radius: 2px;
-      background: #CC785C;
-      transform-origin: 0% 50%;
+      position: absolute; left: 18px; right: 18px; top: 30px; height: 3px; border-radius: 2px;
+      background: var(--ts-error); transform-origin: 0% 50%;
     }
 
     /* scherm card */
-    .p07-label {
-      position: absolute;
-      left: 1200px;
-      top: 196px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      letter-spacing: 0.02em;
-      color: rgba(20, 20, 19, 0.62);
-    }
-    .p07-card {
-      position: absolute;
-      left: 1200px;
-      top: 244px;
-      width: 640px;
-      height: 276px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
+    .p07-label { left: 1200px; top: 208px; }
+    .p07-card { left: 1200px; top: 244px; width: 640px; height: 276px; }
     .p07-btn {
-      position: absolute;
-      left: 64px;
-      top: 83px;
-      width: 150px;
-      height: 110px;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.32);
-      border-radius: 8px;
-      overflow: hidden;
-      font-family: "Inter", sans-serif;
-      font-weight: 500;
-      font-size: 52px;
-      color: #141413;
+      position: absolute; left: 64px; top: 83px; width: 150px; height: 110px;
+      display: block; padding: 0; overflow: hidden; font-size: 52px;
     }
-    .p07-num-v {
-      position: absolute;
-      left: 0; right: 0;
-      top: 0;
-      height: 108px;
-      line-height: 108px;
-      text-align: center;
-    }
+    .p07-num-v { position: absolute; left: 0; right: 0; top: 0; height: 108px; line-height: 108px; text-align: center; color: #FFFFFF; }
     .p07-ripple {
-      position: absolute;
-      left: 119px;
-      top: 118px;
-      width: 40px;
-      height: 40px;
-      border: 3px solid #141413;
-      border-radius: 9999px;
-      opacity: 0;
+      position: absolute; left: 119px; top: 118px; width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(49, 120, 198, 0.2); opacity: 0;
     }
     .p07-real {
-      position: absolute;
-      left: 262px;
-      top: 106px;
-      height: 64px;
-      padding: 0 28px;
-      display: flex;
-      align-items: center;
-      background: #CC785C;
-      border-radius: 8px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 700;
-      color: #FAF9F5;
-      white-space: nowrap;
-      transform-origin: 0% 50%;
+      left: 262px; top: 106px; height: 64px; padding: 0 28px; font-size: 28px;
+      background: var(--ts-ground); transform-origin: 0% 50%;
     }
-    .p07-render {
-      position: absolute;
-      right: 28px;
-      top: -19px;
-      height: 38px;
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      background: #FAF9F5;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      border-radius: 9999px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 20px;
-      color: rgba(20, 20, 19, 0.7);
-    }
+    .p07-render { right: 28px; top: -19px; height: 38px; padding: 0 16px; box-sizing: border-box; display: flex; align-items: center; }
 
     /* state chip (what React remembers) */
-    .p07-state {
-      position: absolute;
-      left: 1200px;
-      top: 572px;
-      height: 64px;
-      padding: 0 26px;
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      border-radius: 8px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      color: #141413;
-      white-space: nowrap;
-    }
-    .p07-state-lab { color: rgba(20, 20, 19, 0.55); }
+    .p07-state { left: 1200px; top: 572px; height: 64px; padding: 0 26px; gap: 18px; font-size: 26px; }
     .p07-state-val { position: relative; display: inline-block; width: 150px; height: 40px; overflow: hidden; }
     .p07-state-v { position: absolute; left: 0; top: 0; line-height: 40px; }
 
     /* cursor */
-    .p07-cursor {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 84px;
-      height: 112px;
-      z-index: 50;
-      pointer-events: none;
-      transform-origin: 0 0;
-    }
+    .p07-cursor { position: absolute; left: 0; top: 0; width: 84px; height: 112px; z-index: 50; pointer-events: none; transform-origin: 0 0; }
   </style>
 
   <div data-hf-id="hf-ka7i" id="root" data-composition-id="07-twee-keer" data-width="1920" data-height="1080" data-duration="11.34">
-    <div data-hf-id="hf-v1wk" class="p07-bg clip" id="p07-bg" data-start="0" data-duration="11.34" data-track-index="0"></div>
+    <div data-hf-id="hf-v1wk" class="ts-bg clip" id="p07-bg" data-start="0" data-duration="11.34" data-track-index="0"></div>
 
-    <div data-hf-id="hf-p9x5" class="p07-stage clip" id="p07-stage" data-start="0" data-duration="11.34" data-track-index="1">
-      <div data-hf-id="hf-2eeu" class="p07-kicker" id="p07-kicker"><span data-hf-id="hf-1sk8" class="p07-spike">✱</span>Opgelet</div>
+    <div data-hf-id="hf-p9x5" class="ts-stage clip" id="p07-stage" data-start="0" data-duration="11.34" data-track-index="1">
+      <div data-hf-id="hf-2eeu" class="ts-kicker" id="p07-kicker"><div data-hf-id="hf-1sk8" class="ts-kicker-bar" id="p07-kbar"></div><span data-hf-id="hf-p07k" class="ts-kicker-text" id="p07-ktext">Opgelet</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-6cbm" class="p07-panel" id="p07-panel">
-        <div data-hf-id="hf-82kq" class="p07-titlebar">Counter.tsx</div>
+      <div data-hf-id="hf-6cbm" class="ts-code-surface p07-panel" id="p07-panel">
+        <div data-hf-id="hf-82kq" class="ts-code-title">Counter.tsx</div>
         <div data-hf-id="hf-cvp3" class="p07-code">
-          <div data-hf-id="hf-unck" class="p07-row"><span data-hf-id="hf-yuoq" class="p07-ln">1</span><span data-hf-id="hf-90e1" class="p07-txt"><span data-hf-id="hf-1l26" class="p07-kw">const</span> <span data-hf-id="hf-drx7" class="p07-fn">Counter</span> = () =&gt; {</span></div>
-          <div data-hf-id="hf-t68c" class="p07-row"><span data-hf-id="hf-z8zr" class="p07-ln">2</span><span data-hf-id="hf-lm4k" class="p07-txt">  <span data-hf-id="hf-rs8y" class="p07-kw">const</span> [count, setCount] = <span data-hf-id="hf-olap" class="p07-fn">useState</span><span data-hf-id="hf-6qvw" class="p07-dim">&lt;number&gt;</span>(<span data-hf-id="hf-rwg5" class="p07-num">0</span>);</span></div>
+          <div data-hf-id="hf-unck" class="p07-row"><span data-hf-id="hf-yuoq" class="p07-ln">1</span><span data-hf-id="hf-90e1" class="p07-txt"><span data-hf-id="hf-1l26" class="ts-kw">const</span> <span data-hf-id="hf-drx7" class="ts-fn">Counter</span> = () <span data-hf-id="hf-drx8" class="ts-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-t68c" class="p07-row"><span data-hf-id="hf-z8zr" class="p07-ln">2</span><span data-hf-id="hf-lm4k" class="p07-txt">  <span data-hf-id="hf-rs8y" class="ts-kw">const</span> [count, setCount] = <span data-hf-id="hf-olap" class="ts-fn">useState</span><span data-hf-id="hf-6qvw" class="ts-punct">&lt;</span><span data-hf-id="hf-6qvt" class="ts-type">number</span><span data-hf-id="hf-6qvp" class="ts-punct">&gt;</span>(<span data-hf-id="hf-rwg5" class="ts-fn">0</span>);</span></div>
           <div data-hf-id="hf-rzb9" class="p07-row"><span data-hf-id="hf-znas" class="p07-ln">3</span></div>
-          <div data-hf-id="hf-sdma" class="p07-row"><span data-hf-id="hf-01lt" class="p07-ln">4</span><span data-hf-id="hf-jqx9" class="p07-txt">  <span data-hf-id="hf-s6jz" class="p07-kw">const</span> <span data-hf-id="hf-j2zh" class="p07-fn">handleClick</span> = () =&gt; {</span></div>
+          <div data-hf-id="hf-sdma" class="p07-row"><span data-hf-id="hf-01lt" class="p07-ln">4</span><span data-hf-id="hf-jqx9" class="p07-txt">  <span data-hf-id="hf-s6jz" class="ts-kw">const</span> <span data-hf-id="hf-j2zh" class="ts-fn">handleClick</span> = () <span data-hf-id="hf-j2zk" class="ts-kw">=&gt;</span> {</span></div>
           <div data-hf-id="hf-ud5f" class="p07-row"><span data-hf-id="hf-0fwu" class="p07-ln">5</span><span data-hf-id="hf-5ebc" class="p07-wash" id="p07-wash5"></span><span data-hf-id="hf-gnro" class="p07-txt" id="p07-line5"></span><span data-hf-id="hf-39mi" class="p07-caret" id="p07-caret5"></span></div>
           <div data-hf-id="hf-urgg" class="p07-row"><span data-hf-id="hf-0u7v" class="p07-ln">6</span><span data-hf-id="hf-e277" class="p07-wash" id="p07-wash6"></span><span data-hf-id="hf-pbnj" class="p07-txt" id="p07-line6"></span><span data-hf-id="hf-zbih" class="p07-caret" id="p07-caret6"></span></div>
           <div data-hf-id="hf-tkjd" class="p07-row"><span data-hf-id="hf-18iw" class="p07-ln">7</span><span data-hf-id="hf-ny5j" class="p07-txt">  };</span></div>
           <div data-hf-id="hf-tyue" class="p07-row"><span data-hf-id="hf-1mtx" class="p07-ln">8</span></div>
-          <div data-hf-id="hf-plh3" class="p07-row"><span data-hf-id="hf-214y" class="p07-ln">9</span><span data-hf-id="hf-5evq" class="p07-txt">  <span data-hf-id="hf-z1ox" class="p07-kw">return</span> &lt;button onClick={<span data-hf-id="hf-nsoh" class="p07-fn">handleClick</span>}&gt;{count}&lt;/button&gt;;</span></div>
+          <div data-hf-id="hf-plh3" class="p07-row"><span data-hf-id="hf-214y" class="p07-ln">9</span><span data-hf-id="hf-5evq" class="p07-txt">  <span data-hf-id="hf-z1ox" class="ts-kw">return</span> <span data-hf-id="hf-z1oa" class="ts-punct">&lt;button</span> onClick={<span data-hf-id="hf-nsoh" class="ts-fn">handleClick</span>}<span data-hf-id="hf-z1ob" class="ts-punct">&gt;</span>{count}<span data-hf-id="hf-z1oc" class="ts-punct">&lt;/button&gt;</span>;</span></div>
           <div data-hf-id="hf-pzs4" class="p07-row"><span data-hf-id="hf-kjmm" class="p07-ln">10</span><span data-hf-id="hf-gd9i" class="p07-txt">}</span></div>
         </div>
-        <div data-hf-id="hf-30s7" class="p07-status">handleClick · 2× setCount</div>
+        <div data-hf-id="hf-30s7" class="ts-code-status">handleClick · 2× setCount</div>
       </div>
 
       <!-- expectation chip -->
-      <div data-hf-id="hf-ri2y" class="p07-expect" id="p07-expect">
+      <div data-hf-id="hf-ri2y" class="ts-chip p07-expect" id="p07-expect">
         <span data-hf-id="hf-pcpr" class="p07-expect-txt" id="p07-expect-txt"><span data-hf-id="hf-25xg" class="p07-expect-lab">verwacht:</span> 2</span>
         <div data-hf-id="hf-glj6" class="p07-strike" id="p07-strike"></div>
       </div>
 
       <!-- scherm card -->
-      <div data-hf-id="hf-uzt2" class="p07-label" id="p07-label">scherm</div>
-      <div data-hf-id="hf-np36" class="p07-card" id="p07-card">
-        <div data-hf-id="hf-eylr" class="p07-render" id="p07-render">render #2</div>
-        <div data-hf-id="hf-6m3a" class="p07-btn" id="p07-btn">
+      <div data-hf-id="hf-uzt2" class="ts-label p07-label" id="p07-label">scherm</div>
+      <div data-hf-id="hf-np36" class="ts-card p07-card" id="p07-card">
+        <div data-hf-id="hf-eylr" class="ts-tag p07-render" id="p07-render">render #2</div>
+        <div data-hf-id="hf-6m3a" class="ts-btn p07-btn" id="p07-btn">
           <div data-hf-id="hf-iiur" class="p07-num-v" id="p07-n0">0</div>
           <div data-hf-id="hf-rykb" class="p07-num-v" id="p07-n1">1</div>
         </div>
         <div data-hf-id="hf-ze5u" class="p07-ripple" id="p07-ripple"></div>
-        <div data-hf-id="hf-0gcp" class="p07-real" id="p07-real">werkelijk: 1</div>
+        <div data-hf-id="hf-0gcp" class="ts-chip ts-chip--unwanted p07-real" id="p07-real">werkelijk: 1</div>
       </div>
 
       <!-- state chip -->
-      <div data-hf-id="hf-wsl8" class="p07-state" id="p07-state">
-        <span data-hf-id="hf-f8hj" class="p07-state-lab">state</span>
+      <div data-hf-id="hf-wsl8" class="ts-chip p07-state" id="p07-state">
+        <span data-hf-id="hf-f8hj" class="ts-chip-key">state</span>
         <span data-hf-id="hf-8ssi" class="p07-state-val"><span data-hf-id="hf-q5vd" class="p07-state-v" id="p07-s0">count: 0</span><span data-hf-id="hf-fj83" class="p07-state-v" id="p07-s1">count: 1</span></span>
       </div>
 
       <svg data-hf-id="hf-j4qw" class="p07-cursor" id="p07-cursor" viewBox="0 0 54 72">
-        <path data-hf-id="hf-9u2i" d="M2 2 L2 58 L16 45 L26 68 L36 63 L26 41 L45 41 Z" fill="#141413" stroke="#FAF9F5" stroke-width="3" stroke-linejoin="round" />
+        <path data-hf-id="hf-9u2i" d="M2 2 L2 58 L16 45 L26 68 L36 63 L26 41 L45 41 Z" fill="#1E293B" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" />
       </svg>
     </div>
   </div>
@@ -366,18 +310,19 @@
       }
       var SEG = [
         { t: "    " },
-        { t: "setCount", c: "p07-fn" },
+        { t: "setCount", c: "ts-fn" },
         { t: "(count + " },
-        { t: "1", c: "p07-num" },
+        { t: "1", c: "ts-fn" },
         { t: ");" }
       ]; // 24 chars
 
       // ---- Scene 1 (0.0–3.9): kicker + code; "twee keer setCount" types lines 5 and 6 ----
-      tl.fromTo("#p07-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      tl.fromTo("#p07-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.05);
+      tl.fromTo("#p07-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.15);
       tl.fromTo("#p07-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.08);
       typeLine("#p07-line5", "#p07-caret5", SEG, 0.53, 0.4 / 24);
       typeLine("#p07-line6", "#p07-caret6", SEG, 1.02, 0.4 / 24);
-      // "count plus één": amber wash on both calls
+      // "count plus één": blue wash on both calls
       tl.fromTo(["#p07-wash5", "#p07-wash6"], { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out", stagger: 0.08 }, 2.39);
 
       // ---- Scene 2 (3.9–6.4): scherm card (from 0.3s), expectation chip on "Je verwacht" ----
@@ -396,7 +341,7 @@
       // focus moves right: the code wash settles back
       tl.to(["#p07-wash5", "#p07-wash6"], { opacity: 0.45, duration: 0.6, ease: "power1.inOut" }, 5.6);
 
-      // ---- Scene 3 (6.4–9.88): click, 0 -> 1, coral verdict ----
+      // ---- Scene 3 (6.4–9.88): click, 0 -> 1, red verdict ----
       var cur = "#p07-cursor";
       var TIP_X = 1340, TIP_Y = 385; // button centre
       tl.fromTo(cur, { x: 1700, y: 760, opacity: 0, scale: 1 }, { x: TIP_X, y: TIP_Y, opacity: 1, duration: 0.55, ease: "power3.out" }, 6.38);
@@ -420,7 +365,7 @@
       tl.to("#p07-render", { opacity: 1, duration: 0.25, ease: "power1.out" }, FLIP);
       tl.fromTo("#p07-render", { scale: 1.12 }, { scale: 1, duration: 0.4, ease: "power3.out", immediateRender: false }, FLIP);
 
-      // "maar per één": coral strike over the expectation + coral result chip
+      // "maar per één": red strike over the expectation + red-bordered result chip
       tl.to("#p07-strike", { scaleX: 1, duration: 0.35, ease: "power2.inOut" }, 8.19);
       tl.to("#p07-expect-txt", { opacity: 0.45, duration: 0.35, ease: "power1.out" }, 8.25);
       tl.to("#p07-real", { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 8.3);

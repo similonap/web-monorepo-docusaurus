@@ -1,245 +1,222 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
     @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
-    .f03k-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f03k-stage { position: absolute; inset: 0; }
-
-    /* kicker */
-    .f03k-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-    }
-    .f03k-kicker .f03k-spike { color: #CC785C; margin-right: 14px; }
-
-    /* code surface (15 lines: 26px / 38px) */
-    .f03k-panel {
-      position: absolute;
-      left: 80px;
-      top: 170px;
-      width: 1060px;
-      height: 720px;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .f03k-titlebar {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 56px;
-      background: #252320;
-      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(250, 249, 245, 0.62);
-      letter-spacing: 0.02em;
-    }
-    .f03k-status {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 46px;
-      background: #252320;
-      border-top: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 19px;
-      color: rgba(250, 249, 245, 0.45);
-      letter-spacing: 0.04em;
-    }
-    .f03k-code {
-      position: absolute;
-      left: 0; right: 0;
-      top: 78px;
-      height: 580px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      line-height: 38px;
-      color: #FAF9F5;
-      font-variant-ligatures: none;
-    }
+    /* ---- frame 03 positions (line metrics kept: 26px / 38px rows, text at x 84) ---- */
+    #f03k-panel { left: 80px; top: 170px; width: 1060px; height: 720px; }
+    #f03k-code { top: 78px; height: 580px; }
+    #f03k-code .ts-ln { top: 0; width: 56px; height: 38px; }
+    #f03k-code .ts-ln span { position: absolute; right: 0; top: 0; }
+    #f03k-code .ts-txt { left: 84px; }
     .f03k-group { position: absolute; left: 0; right: 0; }
-    .f03k-row { position: relative; height: 38px; white-space: pre; }
-    .f03k-ln {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 56px;
-      height: 38px;
-      text-align: right;
-      color: rgba(250, 249, 245, 0.32);
-      font-size: 20px;
-    }
-    .f03k-ln span { position: absolute; right: 0; top: 0; }
-    .f03k-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
-    .f03k-kw { color: #CC785C; }
-    .f03k-fn { color: #E8A55A; }
-    .f03k-str { color: #5DB8A6; }
-    .f03k-dim { color: rgba(250, 249, 245, 0.6); }
 
-    /* selection wash (amber) behind lines 4-6 */
-    .f03k-sel {
-      position: absolute;
-      height: 38px;
-      background: rgba(232, 165, 90, 0.24);
-      border-radius: 3px;
-      transform-origin: 0% 50%;
-    }
-    /* coral left-edge bar beside a pasted block */
-    .f03k-bar {
-      position: absolute;
-      left: 68px;
-      width: 4px;
-      height: 106px;
-      border-radius: 2px;
-      background: #CC785C;
-      transform-origin: 50% 0%;
-    }
+    /* selection wash (blue) behind lines 4-6 */
+    .f03k-sel { position: absolute; height: 38px; background: var(--ts-wash); border-radius: 3px; transform-origin: 0% 50%; }
+    /* thin red left-edge bar beside a pasted (duplicated) block: what goes wrong */
+    .f03k-bar { position: absolute; left: 68px; width: 4px; height: 106px; border-radius: 2px; background: var(--ts-error); transform-origin: 50% 0%; }
 
     /* shortcut chip (near the cursor) */
-    .f03k-chip {
-      position: absolute;
-      left: 392px;
-      top: 0;
-      width: 74px;
-      height: 38px;
-      box-sizing: border-box;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-      overflow: hidden;
-      z-index: 15;
+    #f03k-chip {
+      position: absolute; left: 392px; top: 0; width: 74px; height: 38px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      box-shadow: var(--ts-shadow); overflow: hidden; z-index: 15;
     }
     .f03k-chip-lab {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      line-height: 1;
-      color: #141413;
+      position: absolute; left: 0; right: 0; top: 0; height: 36px; display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-mono); font-size: 22px; font-weight: 500; line-height: 1; color: var(--ts-ink);
     }
 
     /* right column: scherm */
-    .f03k-col {
-      position: absolute;
-      left: 1236px;
-      top: 180px;
-      width: 604px;
-      height: 400px;
-    }
-    .f03k-label {
-      position: absolute;
-      left: 0;
-      top: 0;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
-    }
-    .f03k-card {
-      position: absolute;
-      left: 0;
-      top: 52px;
-      width: 604px;
-      height: 308px;
-      box-sizing: border-box;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-      overflow: hidden;
-    }
-    .f03k-badge, .f03k-slot {
-      position: absolute;
-      left: 28px;
-      right: 28px;
-      height: 58px;
-      box-sizing: border-box;
-      border-radius: 0;
-    }
+    #f03k-col { position: absolute; left: 1236px; top: 180px; width: 604px; height: 400px; }
+    #f03k-lab-scr { left: 0; top: 6px; }
+    #f03k-card { left: 0; top: 52px; width: 604px; height: 308px; overflow: hidden; }
+    .f03k-badge, .f03k-slot { position: absolute; left: 28px; right: 28px; height: 58px; box-sizing: border-box; border-radius: 0; }
+    /* badge strip: lesson content, colour kept exactly */
     .f03k-badge {
-      padding-left: 10px;
-      display: flex;
-      align-items: center;
-      background: #3F7D4E;
-      font-family: "Inter", sans-serif;
-      font-weight: 500;
-      font-size: 30px;
-      line-height: 1;
-      color: #FFFFFF;
+      padding-left: 10px; display: flex; align-items: center; background: #3F7D4E;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 30px; line-height: 1; color: #FFFFFF;
     }
-    .f03k-slot {
-      border: 2px dashed rgba(20, 20, 19, 0.3);
-    }
+    .f03k-slot { border: 2px dashed var(--ts-muted); border-radius: 6px; }
 
-    /* oversized cursor (family arrow at 3.5x) */
-    .f03k-cursor {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 224px;
-      height: 224px;
-      pointer-events: none;
-      z-index: 20;
-      filter: drop-shadow(0 8px 12px rgba(20, 20, 19, 0.22));
-    }
+    /* oversized cursor: ink fill, white outline, no shadow */
+    .f03k-cursor { position: absolute; left: 0; top: 0; width: 224px; height: 224px; pointer-events: none; z-index: 20; }
     .f03k-cursor svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-      fill: #FAF9F5;
-      stroke: #141413;
-      stroke-width: 1.4;
-      stroke-linejoin: round;
-      stroke-linecap: round;
+      display: block; width: 100%; height: 100%; fill: var(--ts-ink); stroke: #FFFFFF;
+      stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round;
     }
   </style>
 
   <div data-hf-id="hf-4w26" id="root" data-composition-id="03-kopieren" data-width="1920" data-height="1080" data-duration="9.78">
-    <div data-hf-id="hf-sqrk" class="f03k-bg clip" id="f03k-bg" data-start="0" data-duration="9.78" data-track-index="0"></div>
+    <div data-hf-id="hf-sqrk" class="ts-bg clip" id="f03k-bg" data-start="0" data-duration="9.78" data-track-index="0"></div>
 
-    <div data-hf-id="hf-spc5" class="f03k-stage clip" id="f03k-stage" data-start="0" data-duration="9.78" data-track-index="1">
-      <div data-hf-id="hf-923b" class="f03k-kicker" id="f03k-kicker"><span data-hf-id="hf-d9cj" class="f03k-spike">✱</span>Nog eens</div>
+    <div data-hf-id="hf-spc5" class="ts-stage clip" id="f03k-stage" data-start="0" data-duration="9.78" data-track-index="1">
+      <div data-hf-id="hf-923b" class="ts-kicker" id="f03k-kicker"><div data-hf-id="hf-d9cj" class="ts-kicker-bar" id="f03k-kbar"></div><span data-hf-id="hf-f03t" class="ts-kicker-text" id="f03k-ktext">Nog eens</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-fwiq" class="f03k-panel" id="f03k-panel">
-        <div data-hf-id="hf-8yie" class="f03k-titlebar">App.tsx</div>
-        <div data-hf-id="hf-t2su" class="f03k-code">
+      <div data-hf-id="hf-fwiq" class="ts-code-surface" id="f03k-panel">
+        <div data-hf-id="hf-8yie" class="ts-code-title">App.tsx</div>
+        <div data-hf-id="hf-t2su" class="ts-code" id="f03k-code">
           <!-- selection wash, behind lines 4-6 (cols 6..59 / 0..13 / 0..12) -->
           <div data-hf-id="hf-20ap" class="f03k-sel" id="f03k-sel4" style="top:114px; left:174px; width:833px;"></div>
           <div data-hf-id="hf-lw1c" class="f03k-sel" id="f03k-sel5" style="top:152px; left:84px; width:206px;"></div>
@@ -247,50 +224,50 @@
 
           <!-- lines 1-6 (from frame 2, wrapped in a fragment) -->
           <div data-hf-id="hf-tpr4" class="f03k-group" style="top:0px;">
-            <div data-hf-id="hf-pfuz" class="f03k-row"><span data-hf-id="hf-fdwg" class="f03k-ln"><span data-hf-id="hf-ikog">1</span></span><span data-hf-id="hf-1hll" class="f03k-txt"><span data-hf-id="hf-qdcb" class="f03k-kw">const</span> <span data-hf-id="hf-ghth" class="f03k-fn">App</span> = () <span data-hf-id="hf-nt37" class="f03k-kw">=&gt;</span> {</span></div>
-            <div data-hf-id="hf-8wkr" class="f03k-row"><span data-hf-id="hf-79js" class="f03k-ln"><span data-hf-id="hf-hdrd">2</span></span><span data-hf-id="hf-q02y" class="f03k-txt">  <span data-hf-id="hf-ivvi" class="f03k-kw">return</span> (</span></div>
-            <div data-hf-id="hf-8i9q" class="f03k-row"><span data-hf-id="hf-62mp" class="f03k-ln"><span data-hf-id="hf-hs2e">3</span></span><span data-hf-id="hf-v81y" class="f03k-txt">    <span data-hf-id="hf-6zna" class="f03k-dim">&lt;&gt;</span></span></div>
-            <div data-hf-id="hf-83yp" class="f03k-row"><span data-hf-id="hf-6gxq" class="f03k-ln"><span data-hf-id="hf-gl5b">4</span></span><span data-hf-id="hf-07zn" class="f03k-txt">      <span data-hf-id="hf-2qcv" class="f03k-dim">&lt;div</span> style={{ color: <span data-hf-id="hf-zwoy" class="f03k-str">'white'</span>, background: <span data-hf-id="hf-6c7s" class="f03k-str">'green'</span> }}<span data-hf-id="hf-26eq" class="f03k-dim">&gt;</span></span></div>
-            <div data-hf-id="hf-7pno" class="f03k-row"><span data-hf-id="hf-5a0n" class="f03k-ln"><span data-hf-id="hf-gzgc">5</span></span><span data-hf-id="hf-t67q" class="f03k-txt">        Nieuw</span></div>
-            <div data-hf-id="hf-7bcn" class="f03k-row"><span data-hf-id="hf-5obo" class="f03k-ln"><span data-hf-id="hf-fsj9">6</span></span><span data-hf-id="hf-s7ey" class="f03k-txt">      <span data-hf-id="hf-kztq" class="f03k-dim">&lt;/div&gt;</span></span></div>
+            <div data-hf-id="hf-pfuz" class="ts-row"><span data-hf-id="hf-fdwg" class="ts-ln"><span data-hf-id="hf-ikog">1</span></span><span data-hf-id="hf-1hll" class="ts-txt"><span data-hf-id="hf-qdcb" class="ts-kw">const</span> <span data-hf-id="hf-ghth" class="ts-fn">App</span> = () <span data-hf-id="hf-nt37" class="ts-kw">=&gt;</span> {</span></div>
+            <div data-hf-id="hf-8wkr" class="ts-row"><span data-hf-id="hf-79js" class="ts-ln"><span data-hf-id="hf-hdrd">2</span></span><span data-hf-id="hf-q02y" class="ts-txt">  <span data-hf-id="hf-ivvi" class="ts-kw">return</span> (</span></div>
+            <div data-hf-id="hf-8i9q" class="ts-row"><span data-hf-id="hf-62mp" class="ts-ln"><span data-hf-id="hf-hs2e">3</span></span><span data-hf-id="hf-v81y" class="ts-txt">    <span data-hf-id="hf-6zna" class="ts-punct">&lt;&gt;</span></span></div>
+            <div data-hf-id="hf-83yp" class="ts-row"><span data-hf-id="hf-6gxq" class="ts-ln"><span data-hf-id="hf-gl5b">4</span></span><span data-hf-id="hf-07zn" class="ts-txt">      <span data-hf-id="hf-2qcv" class="ts-punct">&lt;div</span> style={{ color: <span data-hf-id="hf-zwoy" class="ts-str">'white'</span>, background: <span data-hf-id="hf-6c7s" class="ts-str">'green'</span> }}<span data-hf-id="hf-26eq" class="ts-punct">&gt;</span></span></div>
+            <div data-hf-id="hf-7pno" class="ts-row"><span data-hf-id="hf-5a0n" class="ts-ln"><span data-hf-id="hf-gzgc">5</span></span><span data-hf-id="hf-t67q" class="ts-txt">        Nieuw</span></div>
+            <div data-hf-id="hf-7bcn" class="ts-row"><span data-hf-id="hf-5obo" class="ts-ln"><span data-hf-id="hf-fsj9">6</span></span><span data-hf-id="hf-s7ey" class="ts-txt">      <span data-hf-id="hf-kztq" class="ts-punct">&lt;/div&gt;</span></span></div>
           </div>
 
           <!-- pasted copy #1: lines 7-9 -->
           <div data-hf-id="hf-jvvn" class="f03k-group" id="f03k-paste1" style="top:228px;">
-            <div data-hf-id="hf-6x1m" class="f03k-row"><span data-hf-id="hf-4hel" class="f03k-ln"><span data-hf-id="hf-g6ua">7</span></span><span data-hf-id="hf-2ker" class="f03k-txt">      <span data-hf-id="hf-mxvz" class="f03k-dim">&lt;div</span> style={{ color: <span data-hf-id="hf-n44m" class="f03k-str">'white'</span>, background: <span data-hf-id="hf-l6eo" class="f03k-str">'green'</span> }}<span data-hf-id="hf-30s6" class="f03k-dim">&gt;</span></span></div>
-            <div data-hf-id="hf-6iql" class="f03k-row"><span data-hf-id="hf-4vpm" class="f03k-ln"><span data-hf-id="hf-ezx7">8</span></span><span data-hf-id="hf-11cq" class="f03k-txt">        Nieuw</span></div>
-            <div data-hf-id="hf-chc0" class="f03k-row"><span data-hf-id="hf-a1oz" class="f03k-ln"><span data-hf-id="hf-fe88">9</span></span><span data-hf-id="hf-slpz" class="f03k-txt">      <span data-hf-id="hf-k4zm" class="f03k-dim">&lt;/div&gt;</span></span></div>
+            <div data-hf-id="hf-6x1m" class="ts-row"><span data-hf-id="hf-4hel" class="ts-ln"><span data-hf-id="hf-g6ua">7</span></span><span data-hf-id="hf-2ker" class="ts-txt">      <span data-hf-id="hf-mxvz" class="ts-punct">&lt;div</span> style={{ color: <span data-hf-id="hf-n44m" class="ts-str">'white'</span>, background: <span data-hf-id="hf-l6eo" class="ts-str">'green'</span> }}<span data-hf-id="hf-30s6" class="ts-punct">&gt;</span></span></div>
+            <div data-hf-id="hf-6iql" class="ts-row"><span data-hf-id="hf-4vpm" class="ts-ln"><span data-hf-id="hf-ezx7">8</span></span><span data-hf-id="hf-11cq" class="ts-txt">        Nieuw</span></div>
+            <div data-hf-id="hf-chc0" class="ts-row"><span data-hf-id="hf-a1oz" class="ts-ln"><span data-hf-id="hf-fe88">9</span></span><span data-hf-id="hf-slpz" class="ts-txt">      <span data-hf-id="hf-k4zm" class="ts-punct">&lt;/div&gt;</span></span></div>
           </div>
           <div data-hf-id="hf-sd84" class="f03k-bar" id="f03k-bar1" style="top:232px;"></div>
 
           <!-- pasted copy #2: lines 10-12 -->
           <div data-hf-id="hf-rq71" class="f03k-group" id="f03k-paste2" style="top:342px;">
-            <div data-hf-id="hf-c30z" class="f03k-row"><span data-hf-id="hf-ag00" class="f03k-ln"><span data-hf-id="hf-2xa8">10</span></span><span data-hf-id="hf-263q" class="f03k-txt">      <span data-hf-id="hf-mjky" class="f03k-dim">&lt;div</span> style={{ color: <span data-hf-id="hf-nifn" class="f03k-str">'white'</span>, background: <span data-hf-id="hf-jzhl" class="f03k-str">'green'</span> }}<span data-hf-id="hf-3f37" class="f03k-dim">&gt;</span></span></div>
-            <div data-hf-id="hf-kz41" class="f03k-row"><span data-hf-id="hf-lblk" class="f03k-ln"><span data-hf-id="hf-2iz7">11</span></span><span data-hf-id="hf-1fnr" class="f03k-txt">        Nieuw</span></div>
-            <div data-hf-id="hf-ldf2" class="f03k-row"><span data-hf-id="hf-kxaj" class="f03k-ln"><span data-hf-id="hf-24o6">12</span></span><span data-hf-id="hf-t010" class="f03k-txt">      <span data-hf-id="hf-kjan" class="f03k-dim">&lt;/div&gt;</span></span></div>
+            <div data-hf-id="hf-c30z" class="ts-row"><span data-hf-id="hf-ag00" class="ts-ln"><span data-hf-id="hf-2xa8">10</span></span><span data-hf-id="hf-263q" class="ts-txt">      <span data-hf-id="hf-mjky" class="ts-punct">&lt;div</span> style={{ color: <span data-hf-id="hf-nifn" class="ts-str">'white'</span>, background: <span data-hf-id="hf-jzhl" class="ts-str">'green'</span> }}<span data-hf-id="hf-3f37" class="ts-punct">&gt;</span></span></div>
+            <div data-hf-id="hf-kz41" class="ts-row"><span data-hf-id="hf-lblk" class="ts-ln"><span data-hf-id="hf-2iz7">11</span></span><span data-hf-id="hf-1fnr" class="ts-txt">        Nieuw</span></div>
+            <div data-hf-id="hf-ldf2" class="ts-row"><span data-hf-id="hf-kxaj" class="ts-ln"><span data-hf-id="hf-24o6">12</span></span><span data-hf-id="hf-t010" class="ts-txt">      <span data-hf-id="hf-kjan" class="ts-punct">&lt;/div&gt;</span></span></div>
           </div>
           <div data-hf-id="hf-llmd" class="f03k-bar" id="f03k-bar2" style="top:346px;"></div>
 
           <!-- closing lines, shift down on every paste (numbers 7-9 → 10-12 → 13-15) -->
           <div data-hf-id="hf-6ysv" class="f03k-group" id="f03k-tail" style="top:228px;">
-            <div data-hf-id="hf-lrq3" class="f03k-row"><span data-hf-id="hf-kizi" class="f03k-ln"><span data-hf-id="hf-sopx" class="f03k-n0">7</span><span data-hf-id="hf-dhy0" class="f03k-n1">10</span><span data-hf-id="hf-wqja" class="f03k-n2">13</span></span><span data-hf-id="hf-tec1" class="f03k-txt">    <span data-hf-id="hf-gvmt" class="f03k-dim">&lt;/&gt;</span></span></div>
-            <div data-hf-id="hf-m614" class="f03k-row"><span data-hf-id="hf-k4oh" class="f03k-ln"><span data-hf-id="hf-saew" class="f03k-n0">8</span><span data-hf-id="hf-d3mz" class="f03k-n1">11</span><span data-hf-id="hf-vjm7" class="f03k-n2">14</span></span><span data-hf-id="hf-f1v6" class="f03k-txt">  );</span></div>
-            <div data-hf-id="hf-jdvx" class="f03k-row"><span data-hf-id="hf-jqdg" class="f03k-ln"><span data-hf-id="hf-rw3v" class="f03k-n0">9</span><span data-hf-id="hf-cpby" class="f03k-n1">12</span><span data-hf-id="hf-vxx8" class="f03k-n2">15</span></span><span data-hf-id="hf-veht" class="f03k-txt">}</span></div>
+            <div data-hf-id="hf-lrq3" class="ts-row"><span data-hf-id="hf-kizi" class="ts-ln"><span data-hf-id="hf-sopx" class="f03k-n0">7</span><span data-hf-id="hf-dhy0" class="f03k-n1">10</span><span data-hf-id="hf-wqja" class="f03k-n2">13</span></span><span data-hf-id="hf-tec1" class="ts-txt">    <span data-hf-id="hf-gvmt" class="ts-punct">&lt;/&gt;</span></span></div>
+            <div data-hf-id="hf-m614" class="ts-row"><span data-hf-id="hf-k4oh" class="ts-ln"><span data-hf-id="hf-saew" class="f03k-n0">8</span><span data-hf-id="hf-d3mz" class="f03k-n1">11</span><span data-hf-id="hf-vjm7" class="f03k-n2">14</span></span><span data-hf-id="hf-f1v6" class="ts-txt">  );</span></div>
+            <div data-hf-id="hf-jdvx" class="ts-row"><span data-hf-id="hf-jqdg" class="ts-ln"><span data-hf-id="hf-rw3v" class="f03k-n0">9</span><span data-hf-id="hf-cpby" class="f03k-n1">12</span><span data-hf-id="hf-vxx8" class="f03k-n2">15</span></span><span data-hf-id="hf-veht" class="ts-txt">}</span></div>
           </div>
         </div>
-        <div data-hf-id="hf-u6n8" class="f03k-status">App · component</div>
+        <div data-hf-id="hf-u6n8" class="ts-code-status">App · component</div>
       </div>
 
       <!-- shortcut chip -->
-      <div data-hf-id="hf-habw" class="f03k-chip" id="f03k-chip">
+      <div data-hf-id="hf-habw" id="f03k-chip">
         <div data-hf-id="hf-o3rv" class="f03k-chip-lab" id="f03k-chip-c">⌘C</div>
         <div data-hf-id="hf-u15h" class="f03k-chip-lab" id="f03k-chip-v">⌘V</div>
       </div>
 
       <!-- right column -->
-      <div data-hf-id="hf-qzk9" class="f03k-col">
-        <div data-hf-id="hf-sz3t" class="f03k-label">scherm</div>
-        <div data-hf-id="hf-nyk8" class="f03k-card" id="f03k-card">
+      <div data-hf-id="hf-qzk9" id="f03k-col">
+        <div data-hf-id="hf-sz3t" class="ts-label" id="f03k-lab-scr">scherm</div>
+        <div data-hf-id="hf-nyk8" class="ts-card" id="f03k-card">
           <div data-hf-id="hf-yu3r" class="f03k-badge" id="f03k-badge1" style="top:28px;">Nieuw</div>
           <div data-hf-id="hf-x9hz" class="f03k-slot" id="f03k-slot2" style="top:100px;"></div>
           <div data-hf-id="hf-yhph" class="f03k-slot" id="f03k-slot3" style="top:172px;"></div>
@@ -333,7 +310,8 @@
       tl.set(q("#f03k-cursor"), { xPercent: -20.83, yPercent: -12.5, x: 2080, y: 720, scale: 1 }, 0);
 
       // ---- Scene 1 (0.0–3.0): kicker; frame-2 code + one strip already on screen ----
-      tl.fromTo("#f03k-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f03k-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f03k-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
       // "ergens anders" (1.68) → dashed empty slot for badge 2
       tl.fromTo("#f03k-slot2", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 1.68);
 

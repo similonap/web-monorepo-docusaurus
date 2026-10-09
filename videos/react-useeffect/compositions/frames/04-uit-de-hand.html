@@ -1,222 +1,231 @@
 <template id="04-uit-de-hand-template">
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
-    .f04-bg { position: absolute; inset: 0; background: #FAF9F5; }
-    .f04-stage { position: absolute; inset: 0; }
-    .f04-world { position: absolute; inset: 0; }
 
-    /* kicker */
-    .f04-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-    }
-    .f04-kicker .f04-spike { color: #CC785C; margin-right: 14px; }
+
+    /* ---- frame 04 positions ---- */
+    .f04-world { position: absolute; inset: 0; }
 
     /* loop glyph */
     .f04-loop {
-      position: absolute;
-      left: 80px;
-      top: 170px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 32px;
-      color: #141413;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
+      position: absolute; left: 80px; top: 170px; display: flex; align-items: center; white-space: nowrap;
+      font-family: var(--ts-mono); font-size: 32px; color: var(--ts-ink);
     }
     .f04-tok {
-      display: inline-block;
-      padding: 6px 16px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 6px;
+      display: inline-block; padding: 6px 16px; background: var(--ts-panel);
+      border: 1px solid var(--ts-hairline); border-radius: 8px;
     }
-    .f04-arr {
-      display: inline-block;
-      margin: 0 16px;
-      color: rgba(20, 20, 19, 0.45);
-    }
-    .f04-cyc {
-      display: inline-block;
-      margin-left: 20px;
-      font-size: 36px;
-      color: rgba(20, 20, 19, 0.55);
-    }
+    .f04-arr { display: inline-block; margin: 0 16px; color: var(--ts-muted); }
+    .f04-cyc { display: inline-block; margin-left: 20px; font-size: 36px; color: var(--ts-ink-soft); }
 
-    /* left column — number lockup */
-    .f04-label {
-      position: absolute;
-      left: 80px;
-      top: 318px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
-    }
-    .f04-chip {
-      position: absolute;
-      left: 560px;
-      top: 310px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      padding: 6px 14px;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      border-radius: 6px;
-      background: #EFE9DE;
-      color: #141413;
-    }
-    .f04-lockup {
-      position: absolute;
-      left: 72px;
-      top: 352px;
-      display: flex;
-      align-items: baseline;
-      white-space: nowrap;
-    }
+    /* left column: number lockup */
+    #f04-label { left: 80px; top: 322px; }
+    #f04-chip { left: 560px; top: 304px; }
+    .f04-lockup { position: absolute; left: 72px; top: 368px; display: flex; align-items: baseline; white-space: nowrap; }
     .f04-num {
-      display: inline-block;
-      font-family: "EB Garamond", serif;
-      font-size: 300px;
-      font-weight: 400;
-      line-height: 0.95;
-      letter-spacing: -0.025em;
-      color: #141413;
-      transform-origin: 0% 85%;
-      font-variant-numeric: lining-nums;
+      display: inline-block; font-family: var(--ts-sans); font-weight: 700; font-size: 260px;
+      line-height: 0.95; letter-spacing: -0.035em; color: var(--ts-ink);
+      transform-origin: 0% 85%; font-variant-numeric: tabular-nums lining-nums;
     }
-    .f04-unit {
-      display: inline-block;
-      margin-left: 26px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 40px;
-      color: #141413;
-    }
+    .f04-unit { display: inline-block; margin-left: 26px; font-family: var(--ts-mono); font-size: 40px; color: var(--ts-ink-soft); }
     .f04-rule {
-      position: absolute;
-      left: 80px;
-      top: 676px;
-      width: 920px;
-      height: 1px;
-      background: rgba(20, 20, 19, 0.2);
-      transform-origin: left center;
+      position: absolute; left: 80px; top: 676px; width: 920px; height: 1px;
+      background: var(--ts-hairline); transform-origin: left center;
     }
-    .f04-teller {
-      position: absolute;
-      left: 80px;
-      top: 706px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 38px;
-      color: #141413;
-      white-space: nowrap;
-    }
-    .f04-teller .f04-tk { color: rgba(20, 20, 19, 0.55); margin-right: 18px; }
+    .f04-teller { position: absolute; left: 80px; top: 706px; font-family: var(--ts-mono); font-size: 38px; color: var(--ts-ink); white-space: nowrap; }
+    .f04-teller .f04-tk { color: var(--ts-muted); margin-right: 18px; }
     .f04-tval { display: inline-block; }
 
-    /* right — dot grid */
+    /* right: dot grid */
     .f04-gridlabel {
-      position: absolute;
-      left: 1144px;
-      top: 156px;
-      width: 672px;
-      display: flex;
-      justify-content: space-between;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 24px;
-      letter-spacing: 0.04em;
-      color: rgba(20, 20, 19, 0.62);
+      position: absolute; left: 1144px; top: 156px; width: 672px; display: flex; justify-content: space-between;
+      font-family: var(--ts-mono); font-size: 24px; color: var(--ts-label);
     }
     .f04-card {
-      position: absolute;
-      left: 1144px;
-      top: 200px;
-      width: 672px;
-      height: 672px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      position: absolute; left: 1144px; top: 200px; width: 672px; height: 672px; box-sizing: border-box;
+      background: var(--ts-ground-subtle); border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
     }
-    .f04-grid {
-      position: absolute;
-      left: 16px;
-      top: 16px;
-      width: 640px;
-      height: 640px;
-    }
-    .f04-dot {
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      border-radius: 3px;
-      background: rgba(20, 20, 19, 0.15);
-    }
+    .f04-grid { position: absolute; left: 16px; top: 16px; width: 640px; height: 640px; }
+    .f04-dot { position: absolute; width: 14px; height: 14px; border-radius: 3px; background: #E2E8F0; }
 
-    /* freeze veil + stamp (the one voltage) */
-    .f04-veil {
-      position: absolute;
-      inset: 0;
-      background: #FAF9F5;
-      opacity: 0;
-    }
-    .f04-stamp {
-      position: absolute;
-      left: 950px;
-      top: 450px;
-      width: 900px;
-      height: 180px;
-      background: #FAF9F5;
-      border-radius: 6px;
-    }
+    /* freeze veil + stamp (the one wrong mark) */
+    .f04-veil { position: absolute; inset: 0; background: var(--ts-ground); opacity: 0; }
+    .f04-stamp { position: absolute; left: 950px; top: 450px; width: 900px; height: 180px; background: var(--ts-ground); border-radius: 6px; }
     .f04-stamp svg { position: absolute; left: 0; top: 0; overflow: visible; }
     .f04-stamptxt {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 900px;
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "JetBrains Mono", monospace;
-      font-weight: 700;
-      font-size: 96px;
-      line-height: 1;
-      letter-spacing: 0.14em;
-      padding-left: 0.14em;
-      color: #CC785C;
+      position: absolute; left: 0; top: 0; width: 900px; height: 180px; display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 104px; line-height: 1; letter-spacing: -0.03em; color: var(--ts-ink);
     }
   </style>
 
   <div data-hf-id="hf-tscb" id="root" data-composition-id="04-uit-de-hand" data-width="1920" data-height="1080" data-duration="16.72">
-    <div data-hf-id="hf-m38x" class="f04-bg clip" id="f04-bg" data-start="0" data-duration="16.72" data-track-index="0"></div>
+    <div data-hf-id="hf-m38x" class="ts-bg clip" id="f04-bg" data-start="0" data-duration="16.72" data-track-index="0"></div>
 
-    <div data-hf-id="hf-vy00" class="f04-stage clip" id="f04-stage" data-start="0" data-duration="16.72" data-track-index="1">
+    <div data-hf-id="hf-vy00" class="ts-stage clip" id="f04-stage" data-start="0" data-duration="16.72" data-track-index="1">
       <div data-hf-id="hf-9ems" class="f04-world" id="f04-world">
-        <div data-hf-id="hf-6pn0" class="f04-kicker" id="f04-kicker"><span data-hf-id="hf-jd9n" class="f04-spike">✱</span>Uit de hand</div>
+        <div data-hf-id="hf-6pn0" class="ts-kicker" id="f04-kicker"><div data-hf-id="hf-jd9n" class="ts-kicker-bar" id="f04-kbar"></div><span data-hf-id="hf-f4kt" class="ts-kicker-text" id="f04-ktext">Uit de hand</span></div>
 
         <div data-hf-id="hf-l1tm" class="f04-loop" id="f04-loop">
           <span data-hf-id="hf-dbmj" class="f04-tok" id="f04-tok1">timer</span>
@@ -227,8 +236,8 @@
           <span data-hf-id="hf-6quk" class="f04-cyc" id="f04-cyc">↻</span>
         </div>
 
-        <div data-hf-id="hf-6z73" class="f04-label" id="f04-label">actieve timers</div>
-        <div data-hf-id="hf-69q7" class="f04-chip" id="f04-chip">t = 10 s</div>
+        <div data-hf-id="hf-6z73" class="ts-label" id="f04-label">actieve timers</div>
+        <div data-hf-id="hf-69q7" class="ts-chip" id="f04-chip">t = 10 s</div>
         <div data-hf-id="hf-98ru" class="f04-lockup" id="f04-lockup">
           <span data-hf-id="hf-937p" class="f04-num" id="f04-num">2</span><span data-hf-id="hf-h7t9" class="f04-unit" id="f04-unit">timers</span>
         </div>
@@ -245,10 +254,9 @@
 
       <div data-hf-id="hf-2naa" class="f04-stamp" id="f04-stamp">
         <svg data-hf-id="hf-5yu2" width="900" height="180" viewBox="0 0 900 180">
-          <path data-hf-id="hf-0wbe" id="f04-rough1" fill="none" stroke="#CC785C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" d="M8,10 C220,5 520,12 893,7 C896,60 891,120 894,173 C600,177 300,170 6,175 C3,120 9,62 8,10 Z" />
-          <path data-hf-id="hf-9izj" id="f04-rough2" fill="none" stroke="#CC785C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" d="M20,20 C300,17 610,23 881,18 C884,70 879,112 882,162 C560,166 280,159 19,163 C16,110 22,64 20,20 Z" />
+          <rect data-hf-id="hf-0wbe" id="f04-rough1" x="1.5" y="1.5" width="897" height="177" rx="6" ry="6" fill="none" stroke="#D14343" stroke-width="3" />
         </svg>
-        <div data-hf-id="hf-fkte" class="f04-stamptxt">VASTGELOPEN</div>
+        <div data-hf-id="hf-fkte" class="f04-stamptxt">Vastgelopen</div>
       </div>
     </div>
   </div>
@@ -286,8 +294,8 @@
         }
         byOrder[k] = dots[rr * 32 + cc];
       }
-      var INK = "#141413";
-      var OFF = "rgba(20, 20, 19, 0.15)";
+      var INK = "#1E293B";
+      var OFF = "#E2E8F0";
 
       // dots [from, to) light as one batch
       function lightBatch(from, to, at) {
@@ -318,7 +326,8 @@
       }
 
       // ---- Scene 1 (0.0–5.8): kicker, lockup, grid, loop line builds ----
-      tl.fromTo("#f04-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f04-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f04-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
       tl.fromTo("#f04-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.15);
       tl.fromTo("#f04-lockup", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.18);
       tl.fromTo("#f04-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, 0.3);
@@ -361,10 +370,10 @@
       // ---- Scene 5 (15.9–18.56): freeze + VASTGELOPEN ----
       tl.to("#f04-veil", { opacity: 0.4, duration: 0.25, ease: "power2.out" }, 15.96);
       tl.to("#f04-grid", { opacity: 0.7, duration: 0.25, ease: "power2.out" }, 15.96);
-      var r1 = q("#f04-rough1"), r2 = q("#f04-rough2");
-      var L = 2400;
-      tl.fromTo("#f04-stamp", { opacity: 0, scale: 1.25, rotation: -4 }, { opacity: 1, scale: 1, rotation: -4, duration: 0.3, ease: "power3.out" }, 16.9);
-      tl.fromTo([r1, r2], { strokeDasharray: L, strokeDashoffset: L }, { strokeDasharray: L, strokeDashoffset: 0, duration: 0.45, ease: "power1.inOut" }, 16.9);
+      var r1 = q("#f04-rough1");
+      var L = 2160;
+      tl.fromTo("#f04-stamp", { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 16.9);
+      tl.fromTo(r1, { strokeDasharray: L, strokeDashoffset: L }, { strokeDasharray: L, strokeDashoffset: 0, duration: 0.45, ease: "power1.inOut" }, 16.9);
 
       // hold still to full duration
       tl.set({}, {}, DUR);

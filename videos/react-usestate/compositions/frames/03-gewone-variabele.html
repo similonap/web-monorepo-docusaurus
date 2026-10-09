@@ -1,360 +1,269 @@
 <template>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <style>
-    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
     @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
-    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
 
     #root {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      container-type: size;
-      font-family: "Inter", sans-serif;
-      color: #141413;
-    }
-    .f03gv-bg {
-      position: absolute;
-      inset: 0;
-      background: #FAF9F5;
-    }
-    .f03gv-stage {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
 
-    /* kicker */
-    .f03gv-kicker {
-      position: absolute;
-      left: 80px;
-      top: 92px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #141413;
-    }
-    .f03gv-kicker .f03gv-spike { color: #CC785C; margin-right: 14px; }
 
-    /* code surface */
-    .f03gv-panel {
-      position: absolute;
-      left: 80px;
-      top: 190px;
-      width: 1060px;
-      height: 700px;
-      background: #181715;
-      border: 1px solid rgba(250, 249, 245, 0.14);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .f03gv-titlebar {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 56px;
-      background: #252320;
-      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      color: rgba(250, 249, 245, 0.62);
-      letter-spacing: 0.02em;
-    }
-    .f03gv-status {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 46px;
-      background: #252320;
-      border-top: 1px solid rgba(250, 249, 245, 0.14);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 19px;
-      color: rgba(250, 249, 245, 0.45);
-      letter-spacing: 0.04em;
-    }
+
+    /* ---- frame 03 positions ---- */
+    #f03gv-panel { left: 80px; top: 190px; width: 1060px; height: 700px; }
     .f03gv-code {
-      position: absolute;
-      left: 0; right: 0;
-      top: 80px;
-      height: 572px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 32px;
-      line-height: 52px;
-      color: #FAF9F5;
-      font-variant-ligatures: none;
+      position: absolute; left: 0; right: 0; top: 80px; height: 572px;
+      font-family: var(--ts-mono); font-size: 32px; line-height: 52px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
     }
-    .f03gv-row {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 52px;
-      white-space: pre;
-    }
-    .f03gv-ln {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 64px;
-      height: 52px;
-      color: rgba(250, 249, 245, 0.32);
-      font-size: 24px;
-    }
-    .f03gv-ln span {
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
-    .f03gv-txt {
-      position: absolute;
-      left: 92px;
-      top: 0;
-      white-space: pre;
-    }
+    .f03gv-row { position: absolute; left: 0; right: 0; height: 52px; white-space: pre; }
+    .f03gv-ln { position: absolute; left: 0; top: 0; width: 64px; height: 52px; color: var(--ts-code-ln); font-size: 24px; }
+    .f03gv-ln span { position: absolute; right: 0; top: 0; }
+    .f03gv-txt { position: absolute; left: 92px; top: 0; white-space: pre; }
     .f03gv-ch { display: inline; }
-    .f03gv-kw { color: #CC785C; }
-    .f03gv-fn { color: #E8A55A; }
-    .f03gv-num { color: #E8A55A; }
-    .f03gv-dim { color: rgba(250, 249, 245, 0.6); }
-    .f03gv-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
-    .f03gv-caret {
-      position: absolute;
-      top: 9px;
-      left: 0;
-      width: 3px;
-      height: 34px;
-      background: #FAF9F5;
-      opacity: 0;
-    }
+    .f03gv-hl { border-radius: 4px; background: rgba(49, 120, 198, 0); }
+    .f03gv-caret { position: absolute; top: 9px; left: 0; width: 2px; height: 34px; background: var(--ts-blue); opacity: 0; }
     .f03gv-tag {
-      position: absolute;
-      left: 440px;
-      top: 8px;
-      padding: 4px 14px 3px;
-      border: 1px solid rgba(232, 165, 90, 0.6);
-      border-radius: 6px;
-      background: #1F1E1B;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 22px;
-      line-height: 1.3;
-      letter-spacing: 0.02em;
-      color: #E8A55A;
+      position: absolute; left: 440px; top: 8px; padding: 4px 14px 3px;
+      border: 1px solid var(--ts-hairline); border-radius: 6px; background: var(--ts-panel);
+      font-family: var(--ts-sans); font-weight: 500; font-size: 22px; line-height: 1.3; color: var(--ts-ink-soft);
     }
 
-    /* right column: scherm + variabele */
-    .f03gv-col {
-      position: absolute;
-      left: 1236px;
-      top: 190px;
-      width: 604px;
-      height: 640px;
-    }
-    .f03gv-label {
-      position: absolute;
-      left: 0;
-      top: 0;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(20, 20, 19, 0.62);
-    }
-    .f03gv-card {
-      position: absolute;
-      left: 0;
-      top: 52px;
-      width: 604px;
-      height: 240px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.12);
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
-    }
-    .f03gv-btag {
-      position: absolute;
-      left: 22px;
-      top: 16px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 20px;
-      color: rgba(20, 20, 19, 0.45);
-    }
-    .f03gv-btn {
-      position: absolute;
-      left: 202px;
-      top: 66px;
-      width: 200px;
-      height: 108px;
-      box-sizing: border-box;
-      border: 1px solid rgba(20, 20, 19, 0.45);
-      border-radius: 8px;
-      background: #FAF9F5;
-      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "Inter", sans-serif;
-      font-weight: 500;
-      font-size: 48px;
-      line-height: 1;
-      color: #141413;
+    .f03gv-col { position: absolute; left: 1236px; top: 190px; width: 604px; height: 640px; }
+    #f03gv-lab-scr { left: 0; top: 6px; }
+    #f03gv-card { left: 0; top: 52px; width: 604px; height: 240px; }
+    .f03gv-btag { position: absolute; left: 22px; top: 16px; font-family: var(--ts-mono); font-size: 20px; color: var(--ts-muted); }
+    #f03gv-btn {
+      position: absolute; left: 202px; top: 66px; width: 200px; height: 108px; padding: 0;
+      justify-content: center; font-size: 48px; line-height: 1;
     }
     .f03gv-ripple {
-      position: absolute;
-      left: 252px;
-      top: 122px;
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 2px solid rgba(20, 20, 19, 0.35);
-      opacity: 0;
-      pointer-events: none;
+      position: absolute; left: 252px; top: 122px; width: 100px; height: 100px; border-radius: 50%;
+      border: 2px solid rgba(49, 120, 198, 0.2); opacity: 0; pointer-events: none;
     }
-    .f03gv-mark {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 604px;
-      height: 640px;
-      overflow: visible;
-      pointer-events: none;
-    }
+    .f03gv-mark { position: absolute; left: 0; top: 0; width: 604px; height: 640px; overflow: visible; pointer-events: none; }
     .f03gv-neq {
-      position: absolute;
-      left: 0;
-      top: 300px;
-      width: 604px;
-      text-align: center;
-      font-family: "EB Garamond", serif;
-      font-weight: 400;
-      font-size: 88px;
-      line-height: 96px;
-      color: #CC785C;
+      position: absolute; left: 0; top: 300px; width: 604px; text-align: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 88px; line-height: 96px; color: var(--ts-ink);
     }
-    .f03gv-chipwrap {
-      position: absolute;
-      left: 0;
-      top: 410px;
-      width: 604px;
-      height: 64px;
-      display: flex;
-      justify-content: center;
-    }
-    .f03gv-chip {
-      height: 64px;
-      box-sizing: border-box;
-      padding: 0 28px 0 24px;
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      background: #EFE9DE;
-      border: 1px solid rgba(20, 20, 19, 0.2);
-      border-radius: 9999px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      color: #141413;
-      white-space: nowrap;
-    }
-    .f03gv-chiplab {
-      font-size: 20px;
-      letter-spacing: 0.06em;
-      color: rgba(20, 20, 19, 0.55);
-    }
-    .f03gv-val {
-      position: relative;
-      display: inline-block;
-      width: 200px;
-      height: 36px;
-      overflow: hidden;
-    }
-    .f03gv-val span {
-      position: absolute;
-      left: 0;
-      top: 0;
-      line-height: 36px;
-    }
+    .f03gv-chipwrap { position: absolute; left: 0; top: 410px; width: 604px; height: 64px; display: flex; justify-content: center; }
+    #f03gv-chip { position: relative; height: 64px; gap: 22px; padding: 0 28px 0 24px; font-size: 26px; }
+    .f03gv-val { position: relative; display: inline-block; width: 200px; height: 36px; overflow: hidden; }
+    .f03gv-val span { position: absolute; left: 0; top: 0; line-height: 36px; }
     .f03gv-note {
-      position: absolute;
-      left: 0;
-      top: 500px;
-      width: 604px;
-      text-align: center;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 26px;
-      letter-spacing: 0.02em;
-      color: #141413;
+      position: absolute; left: 0; top: 500px; width: 604px; text-align: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 28px; color: var(--ts-ink);
     }
-
-    /* cursor */
     .f03gv-cursor {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 81px;
-      height: 108px;
-      z-index: 50;
-      pointer-events: none;
-      transform-origin: 0 0;
-      opacity: 0;
+      position: absolute; left: 0; top: 0; width: 81px; height: 108px; z-index: 50;
+      pointer-events: none; transform-origin: 0 0; opacity: 0;
     }
   </style>
 
   <div data-hf-id="hf-ecia" id="root" data-composition-id="03-gewone-variabele" data-width="1920" data-height="1080" data-duration="13.12">
-    <div data-hf-id="hf-49ne" class="f03gv-bg clip" id="f03gv-bg" data-start="0" data-duration="13.12" data-track-index="0"></div>
+    <div data-hf-id="hf-49ne" class="ts-bg clip" id="f03gv-bg" data-start="0" data-duration="13.12" data-track-index="0"></div>
 
-    <div data-hf-id="hf-d81x" class="f03gv-stage clip" id="f03gv-stage" data-start="0" data-duration="13.12" data-track-index="1">
-      <div data-hf-id="hf-h1pf" class="f03gv-kicker" id="f03gv-kicker"><span data-hf-id="hf-mzqr" class="f03gv-spike">✱</span>Zo niet</div>
+    <div data-hf-id="hf-d81x" class="ts-stage clip" id="f03gv-stage" data-start="0" data-duration="13.12" data-track-index="1">
+      <div data-hf-id="hf-h1pf" class="ts-kicker" id="f03gv-kicker"><div data-hf-id="hf-mzqr" class="ts-kicker-bar" id="f03gv-kbar"></div><span data-hf-id="hf-f03gkt" class="ts-kicker-text" id="f03gv-ktext">Zo niet</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-sck0" class="f03gv-panel" id="f03gv-panel">
-        <div data-hf-id="hf-hry3" class="f03gv-titlebar">Counter.tsx</div>
+      <div data-hf-id="hf-sck0" class="ts-code-surface" id="f03gv-panel">
+        <div data-hf-id="hf-hry3" class="ts-code-title">Counter.tsx</div>
         <div data-hf-id="hf-m5yk" class="f03gv-code">
           <!-- final index 0 -->
-          <div data-hf-id="hf-8fn5" class="f03gv-row" id="f03gv-r0" style="top:0px"><span data-hf-id="hf-oveo" class="f03gv-ln"><span data-hf-id="hf-ikog">1</span></span><span data-hf-id="hf-tah2" class="f03gv-txt"><span data-hf-id="hf-g86j" class="f03gv-kw">const</span> <span data-hf-id="hf-8lke" class="f03gv-fn">Counter</span> = () =&gt; {</span></div>
+          <div data-hf-id="hf-8fn5" class="f03gv-row" id="f03gv-r0" style="top:0px"><span data-hf-id="hf-oveo" class="f03gv-ln"><span data-hf-id="hf-ikog">1</span></span><span data-hf-id="hf-tah2" class="f03gv-txt"><span data-hf-id="hf-g86j" class="ts-kw">const</span> <span data-hf-id="hf-8lke" class="ts-fn">Counter</span> = () <span data-hf-id="hf-f03ar1" class="ts-kw">=&gt;</span> {</span></div>
           <!-- final index 1 (new: let count = 0;) -->
           <div data-hf-id="hf-pfjx" class="f03gv-row" id="f03gv-r1" style="top:52px"><span data-hf-id="hf-rsoo" class="f03gv-ln"><span data-hf-id="hf-fasg" class="f03gv-lnnew">2</span></span><span data-hf-id="hf-4iqp" class="f03gv-txt" id="f03gv-line2">  <span data-hf-id="hf-iegf" class="f03gv-hl" id="f03gv-hl-let"></span></span><span data-hf-id="hf-lvnn" class="f03gv-caret" id="f03gv-caret2"></span><span data-hf-id="hf-t8qv" class="f03gv-tag" id="f03gv-tag">gewone variabele</span></div>
           <!-- final index 2 (new blank) -->
           <div data-hf-id="hf-g7ry" class="f03gv-row" id="f03gv-r2" style="top:104px"><span data-hf-id="hf-qlrl" class="f03gv-ln"><span data-hf-id="hf-ewhf" class="f03gv-lnnew">3</span></span></div>
           <!-- shifting block: final indices 3..10 -->
-          <div data-hf-id="hf-zjvj" class="f03gv-row f03gv-shift" style="top:156px"><span data-hf-id="hf-r02m" class="f03gv-ln"><span data-hf-id="hf-l9fz" class="f03gv-lnold">2</span><span data-hf-id="hf-cwya" class="f03gv-lnnew">4</span></span><span data-hf-id="hf-j51m" class="f03gv-txt">  <span data-hf-id="hf-dq2z" class="f03gv-kw">const</span> <span data-hf-id="hf-ko68" class="f03gv-fn">handleClick</span> = () =&gt; {</span></div>
-          <div data-hf-id="hf-0j89" class="f03gv-row f03gv-shift" style="top:208px"><span data-hf-id="hf-pt5j" class="f03gv-ln"><span data-hf-id="hf-lnr0" class="f03gv-lnold">3</span><span data-hf-id="hf-cin9" class="f03gv-lnnew">5</span></span><span data-hf-id="hf-a79t" class="f03gv-txt f03gv-dim" id="f03gv-comment">    // teller + 1 ... maar hoe?</span><span data-hf-id="hf-vuuu" class="f03gv-txt" id="f03gv-line5"></span><span data-hf-id="hf-ye64" class="f03gv-caret" id="f03gv-caret5"></span></div>
+          <div data-hf-id="hf-zjvj" class="f03gv-row f03gv-shift" style="top:156px"><span data-hf-id="hf-r02m" class="f03gv-ln"><span data-hf-id="hf-l9fz" class="f03gv-lnold">2</span><span data-hf-id="hf-cwya" class="f03gv-lnnew">4</span></span><span data-hf-id="hf-j51m" class="f03gv-txt">  <span data-hf-id="hf-dq2z" class="ts-kw">const</span> <span data-hf-id="hf-ko68" class="ts-fn">handleClick</span> = () <span data-hf-id="hf-f03ar2" class="ts-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-0j89" class="f03gv-row f03gv-shift" style="top:208px"><span data-hf-id="hf-pt5j" class="f03gv-ln"><span data-hf-id="hf-lnr0" class="f03gv-lnold">3</span><span data-hf-id="hf-cin9" class="f03gv-lnnew">5</span></span><span data-hf-id="hf-a79t" class="f03gv-txt ts-fold" id="f03gv-comment">    // teller + 1 ... maar hoe?</span><span data-hf-id="hf-vuuu" class="f03gv-txt" id="f03gv-line5"></span><span data-hf-id="hf-ye64" class="f03gv-caret" id="f03gv-caret5"></span></div>
           <div data-hf-id="hf-zep3" class="f03gv-row f03gv-shift" style="top:260px"><span data-hf-id="hf-q7gk" class="f03gv-ln"><span data-hf-id="hf-m221" class="f03gv-lnold">4</span><span data-hf-id="hf-dpkc" class="f03gv-lnnew">6</span></span><span data-hf-id="hf-8ocu" class="f03gv-txt">  };</span></div>
           <div data-hf-id="hf-hh0p" class="f03gv-row f03gv-shift" style="top:312px"><span data-hf-id="hf-p0jh" class="f03gv-ln"><span data-hf-id="hf-mgd2" class="f03gv-lnold">5</span><span data-hf-id="hf-db9b" class="f03gv-lnnew">7</span></span></div>
-          <div data-hf-id="hf-99ji" class="f03gv-row f03gv-shift" style="top:364px"><span data-hf-id="hf-peui" class="f03gv-ln"><span data-hf-id="hf-muo3" class="f03gv-lnold">6</span><span data-hf-id="hf-bbq6" class="f03gv-lnnew">8</span></span><span data-hf-id="hf-o4ei" class="f03gv-txt">  <span data-hf-id="hf-h8zi" class="f03gv-kw">return</span> (</span></div>
-          <div data-hf-id="hf-fg6y" class="f03gv-row f03gv-shift" style="top:416px"><span data-hf-id="hf-uktv" class="f03gv-ln"><span data-hf-id="hf-n8z4" class="f03gv-lnold">7</span><span data-hf-id="hf-axf5" class="f03gv-lnnew">9</span></span><span data-hf-id="hf-i9b2" class="f03gv-txt">    &lt;button onClick={<span data-hf-id="hf-gdaw" class="f03gv-fn">handleClick</span>}&gt;{count}&lt;/button&gt;</span></div>
+          <div data-hf-id="hf-99ji" class="f03gv-row f03gv-shift" style="top:364px"><span data-hf-id="hf-peui" class="f03gv-ln"><span data-hf-id="hf-muo3" class="f03gv-lnold">6</span><span data-hf-id="hf-bbq6" class="f03gv-lnnew">8</span></span><span data-hf-id="hf-o4ei" class="f03gv-txt">  <span data-hf-id="hf-h8zi" class="ts-kw">return</span> (</span></div>
+          <div data-hf-id="hf-fg6y" class="f03gv-row f03gv-shift" style="top:416px"><span data-hf-id="hf-uktv" class="f03gv-ln"><span data-hf-id="hf-n8z4" class="f03gv-lnold">7</span><span data-hf-id="hf-axf5" class="f03gv-lnnew">9</span></span><span data-hf-id="hf-i9b2" class="f03gv-txt">    <span data-hf-id="hf-f03p1" class="ts-punct">&lt;button</span> onClick={<span data-hf-id="hf-gdaw" class="ts-fn">handleClick</span>}<span data-hf-id="hf-f03p2" class="ts-punct">&gt;</span>{count}<span data-hf-id="hf-f03p3" class="ts-punct">&lt;/button&gt;</span></span></div>
           <div data-hf-id="hf-uptl" class="f03gv-row f03gv-shift" style="top:468px"><span data-hf-id="hf-uz4w" class="f03gv-ln"><span data-hf-id="hf-hadp" class="f03gv-lnold">8</span><span data-hf-id="hf-cz9n" class="f03gv-lnnew">10</span></span><span data-hf-id="hf-q1w2" class="f03gv-txt">  );</span></div>
           <div data-hf-id="hf-tz80" class="f03gv-row f03gv-shift" style="top:520px"><span data-hf-id="hf-vtg8" class="f03gv-ln"><span data-hf-id="hf-hooq" class="f03gv-lnold">9</span><span data-hf-id="hf-ddko" class="f03gv-lnnew">11</span></span><span data-hf-id="hf-8e0x" class="f03gv-txt">}</span></div>
         </div>
-        <div data-hf-id="hf-nroz" class="f03gv-status">handleClick · onClick</div>
+        <div data-hf-id="hf-nroz" class="ts-code-status">handleClick · onClick</div>
       </div>
 
       <!-- right column: what the user sees vs the variable -->
       <div data-hf-id="hf-do78" class="f03gv-col" id="f03gv-col">
-        <div data-hf-id="hf-byqo" class="f03gv-label" id="f03gv-lab-scr">scherm</div>
-        <div data-hf-id="hf-11jq" class="f03gv-card" id="f03gv-card">
+        <div data-hf-id="hf-byqo" class="ts-label" id="f03gv-lab-scr">scherm</div>
+        <div data-hf-id="hf-11jq" class="ts-card" id="f03gv-card">
           <div data-hf-id="hf-0a0j" class="f03gv-btag">&lt;button&gt;</div>
-          <div data-hf-id="hf-4z30" class="f03gv-btn" id="f03gv-btn">0</div>
+          <div data-hf-id="hf-4z30" class="ts-btn" id="f03gv-btn">0</div>
         </div>
         <div data-hf-id="hf-zd1u" class="f03gv-ripple" id="f03gv-ripple"></div>
 
         <svg data-hf-id="hf-rofp" class="f03gv-mark" viewBox="0 0 604 640" width="604" height="640">
-          <path data-hf-id="hf-9uuh" id="f03gv-box" fill="none" stroke="#CC785C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M196,99 C270,94 352,96 424,100 C428,148 427,200 423,246 C342,250 262,249 180,245 C176,198 177,150 182,98 C228,95 262,96 296,98" />
+          <rect data-hf-id="hf-9uuh" id="f03gv-box" x="186" y="102" width="232" height="140" rx="6" ry="6" fill="none" stroke="#D14343" stroke-width="2" />
         </svg>
 
         <div data-hf-id="hf-pptc" class="f03gv-neq" id="f03gv-neq">≠</div>
 
         <div data-hf-id="hf-8a6t" class="f03gv-chipwrap">
-          <div data-hf-id="hf-6c7u" class="f03gv-chip" id="f03gv-chip">
-            <span data-hf-id="hf-k65q" class="f03gv-chiplab">variabele</span>
+          <div data-hf-id="hf-6c7u" class="ts-chip" id="f03gv-chip">
+            <span data-hf-id="hf-k65q" class="ts-chip-key">variabele</span>
             <span data-hf-id="hf-f4dj" class="f03gv-val"><span data-hf-id="hf-4ww9" id="f03gv-v0">count = 0</span><span data-hf-id="hf-cq7p" id="f03gv-v1">count = 1</span></span>
           </div>
         </div>
@@ -363,7 +272,7 @@
       </div>
 
       <svg data-hf-id="hf-83ko" class="f03gv-cursor" id="f03gv-cursor" viewBox="0 0 54 72">
-        <path data-hf-id="hf-9u2i" d="M2 2 L2 58 L16 45 L26 68 L36 63 L26 41 L45 41 Z" fill="#141413" stroke="#FAF9F5" stroke-width="3" stroke-linejoin="round" />
+        <path data-hf-id="hf-9u2i" d="M2 2 L2 58 L16 45 L26 68 L36 63 L26 41 L45 41 Z" fill="#1E293B" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" />
       </svg>
     </div>
   </div>
@@ -406,7 +315,8 @@
       }
 
       // ---- Scene 1 (0.0–3.3): kicker; frame-2 code + scherm carried over; lines type on ----
-      tl.fromTo("#f03gv-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f03gv-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f03gv-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
       tl.fromTo("#f03gv-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.05);
       tl.fromTo("#f03gv-lab-scr", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.15);
       tl.fromTo("#f03gv-card", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.2);
@@ -419,9 +329,9 @@
       tl.to(qa(".f03gv-lnold"), { opacity: 0, duration: 0.2, ease: "power1.out" }, 1.32);
       tl.to(qa(".f03gv-lnnew"), { opacity: 1, duration: 0.3, ease: "power1.out" }, 1.4);
       typeInto(q("#f03gv-hl-let"), q("#f03gv-caret2"), [
-        { t: "let", c: "f03gv-kw" },
+        { t: "let", c: "ts-kw" },
         { t: " count = " },
-        { t: "0", c: "f03gv-num" },
+        { t: "0", c: "ts-fn" },
         { t: ";" }
       ], 1.5, 0.035, 2);
 
@@ -429,14 +339,14 @@
       tl.to("#f03gv-comment", { opacity: 0, duration: 0.15, ease: "power1.in" }, 2.5);
       typeInto(q("#f03gv-line5"), q("#f03gv-caret5"), [
         { t: "    count = count + " },
-        { t: "1", c: "f03gv-num" },
+        { t: "1", c: "ts-fn" },
         { t: ";" }
       ], 2.66, 0.03, 0);
 
-      // ---- Scene 2 (3.3–6.0): "gewone variabele" (3.98) → amber wash + tag ----
-      tl.to("#f03gv-hl-let", { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.4, ease: "power1.out" }, 3.98);
+      // ---- Scene 2 (3.3–6.0): "gewone variabele" (3.98) → blue wash + tag ----
+      tl.to("#f03gv-hl-let", { backgroundColor: "rgba(49, 120, 198, 0.12)", duration: 0.4, ease: "power1.out" }, 3.98);
       tl.fromTo("#f03gv-tag", { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 4.08);
-      tl.to("#f03gv-hl-let", { backgroundColor: "rgba(232, 165, 90, 0.12)", duration: 0.6, ease: "power1.inOut" }, 6.2);
+      tl.to("#f03gv-hl-let", { backgroundColor: "rgba(49, 120, 198, 0.07)", duration: 0.6, ease: "power1.inOut" }, 6.2);
 
       // ---- Scene 3 (6.0–8.8): "klikt" (6.36) → cursor clicks the scherm button ----
       // button centre (abs) = 1538, 362; cursor tip sits at (3,3) of its box
@@ -459,7 +369,7 @@
       tl.to("#f03gv-v0", { y: -36, opacity: 0, duration: 0.25, ease: "power2.in" }, 8.0);
       tl.to("#f03gv-v1", { y: 0, duration: 0.25, ease: "power3.out" }, 8.0);
 
-      // ---- Scene 4 (8.8–12.12): "maar op je scherm" (8.83) → coral rough box; "nul staan" (10.72) → ≠ + note ----
+      // ---- Scene 4 (8.8–12.12): "maar op je scherm" (8.83) → red wrong-mark box; "nul staan" (10.72) → ≠ + note ----
       var box = q("#f03gv-box");
       var len = 900;
       try { len = Math.ceil(box.getTotalLength()) || 900; } catch (e) {}
