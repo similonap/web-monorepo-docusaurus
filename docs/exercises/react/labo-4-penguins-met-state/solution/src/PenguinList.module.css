@@ -28,7 +28,7 @@
   margin-bottom: 0.75rem;
 }
 
-h1 {
+.title {
   text-align: center;
   font-size: 2rem;
   font-weight: 700;
@@ -36,19 +36,19 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
-h2 {
+.penguinCard h2 {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0.5rem 0;
 }
 
-p {
+.penguinCard p {
   font-size: 0.95rem;
   margin: 0.25rem 0;
   color: #444;
 }
 
-p strong {
+.penguinCard p strong {
   color: #222;
 }
 

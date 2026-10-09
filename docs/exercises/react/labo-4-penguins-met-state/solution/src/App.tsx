@@ -42,7 +42,7 @@ const PenguinList = () => {
     const penguins: Penguin[] = penguinsJson.filter(penguin => penguin.gender === "Female");
     return (
         <div>
-            <h1>Female Penguins</h1>
+            <h1 className={styles.title}>Female Penguins</h1>
             <div className={styles.penguinGrid}>
                 {penguins.map((penguin: Penguin) => <PenguinCard key={penguin.id} penguin={penguin}/>)}
             </div>
