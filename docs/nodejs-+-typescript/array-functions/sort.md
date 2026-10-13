@@ -96,9 +96,46 @@ students.sort((a, b) => {
 });
 ```
 
-:::warning
-`sort` past de originele array aan. Wil je de originele volgorde behouden, sorteer dan een kopie: `let sorted = numbers.slice().sort((a, b) => a - b);`
-:::
+## Sorteren zonder de originele array aan te passen
+
+Zoals bovenaan vermeld: `sort` **muteert** de originele array. De elementen worden in de array zelf van plaats verwisseld. Daardoor ben je de oorspronkelijke volgorde kwijt:
+
+```typescript
+let numbers : number[] = [10, 1, 5, 100, 25, 2];
+
+let sorted : number[] = numbers.sort((a, b) => a - b);
+
+console.log(sorted);  // [ 1, 2, 5, 10, 25, 100 ]
+console.log(numbers); // [ 1, 2, 5, 10, 25, 100 ] -> ook aangepast!
+```
+
+`sorted` is hier geen nieuwe array: `sort` geeft gewoon dezelfde array terug die het net heeft aangepast. `sorted` en `numbers` verwijzen dus naar dezelfde array.
+
+Wil je de originele volgorde behouden, dan maak je eerst een **kopie** en sorteer je die kopie. Dat kan op twee manieren.
+
+Met `slice()`: zonder argumenten geeft `slice` een kopie van de volledige array terug.
+
+```typescript
+let numbers : number[] = [10, 1, 5, 100, 25, 2];
+
+let sorted : number[] = numbers.slice().sort((a, b) => a - b);
+
+console.log(sorted);  // [ 1, 2, 5, 10, 25, 100 ]
+console.log(numbers); // [ 10, 1, 5, 100, 25, 2 ] -> ongewijzigd
+```
+
+Met de spread operator: `[...numbers]` maakt een nieuwe array met dezelfde elementen.
+
+```typescript
+let numbers : number[] = [10, 1, 5, 100, 25, 2];
+
+let sorted : number[] = [...numbers].sort((a, b) => a - b);
+
+console.log(sorted);  // [ 1, 2, 5, 10, 25, 100 ]
+console.log(numbers); // [ 10, 1, 5, 100, 25, 2 ] -> ongewijzigd
+```
+
+Beide manieren geven hetzelfde resultaat. Kies de schrijfwijze die je het duidelijkst vindt.
 
 ## Test je kennis
 
