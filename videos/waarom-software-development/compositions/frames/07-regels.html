@@ -1,0 +1,225 @@
+<template id="07-regels-template">
+  <div data-hf-id="hf-cm6i" id="root" data-composition-id="07-regels" data-width="1920" data-height="1080" data-duration="18.66">
+    <style>
+      @font-face { font-family: "Archivo Black"; src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+      :root {
+        --cm-cream: #EFE9D9; --cm-cream-2: #E4DCC4;
+        --cm-ink: #0F0F0F; --cm-ink-2: #2A2A2A;
+        --cm-green: #1F8A4C; --cm-green-dark: #136636;
+        --cm-pink: #F06CA8; --cm-pink-dark: #D14E8B;
+        --cm-orange: #E85A1F; --cm-yellow: #F5C518;
+        --cm-border: 8px;            /* 0.4cqw @1920 = 7.7px */
+        --cm-rule: 6px;
+        --cm-shadow: 24px 24px 0 var(--cm-orange), 24px 24px 0 4px var(--cm-ink);  /* ONE per frame */
+        --cm-display: "Archivo Black", "Arial Black", sans-serif;
+        --cm-body: "Space Grotesk", Arial, sans-serif;
+        --cm-mono: "JetBrains Mono", monospace;
+      }
+      /* ground: a full-duration class="clip" layer, never on #root */
+      .cm-bg { position: absolute; inset: 0; background: var(--cm-cream); }
+      /* Archivo Black: always uppercase, lh 0.92 */
+      .cm-display { font-family: var(--cm-display); font-weight: 400; text-transform: uppercase; line-height: 0.92; letter-spacing: -0.01em; color: var(--cm-ink); }
+      .cm-mono { font-family: var(--cm-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+      /* display ramp in px @1920 */
+      .cm-hero { font-size: 298px; }   /* display-hero 15.5cqw, ≤3 short words */
+      .cm-xl   { font-size: 211px; }   /* display-xl 11cqw */
+      .cm-lg   { font-size: 154px; }   /* display-lg 8cqw */
+      .cm-head { font-size: 81px; }    /* display-head 4.2cqw */
+      .cm-step { font-size: 46px; }    /* marker / step-title */
+
+      /* topbar: kicker-block left, pill right, inset 64px */
+      .cm-topbar { position: absolute; left: 64px; right: 64px; top: 48px; height: 52px; display: flex; justify-content: space-between; align-items: center; }
+      .cm-kicker { background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 18px; }
+      .cm-pill { background: var(--cm-cream); border: 4px solid var(--cm-ink); border-radius: 999px; color: var(--cm-ink); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 22px; }
+
+      /* reason number tile (frames 3-9), top-left under topbar */
+      .cm-num { position: absolute; left: 96px; top: 140px; width: 150px; height: 150px; border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; font-family: var(--cm-display); font-size: 92px; line-height: 1; color: var(--cm-ink); }
+
+      /* generic blocks */
+      .cm-card { background: var(--cm-cream); border: var(--cm-border) solid var(--cm-ink); }
+      .cm-card-2 { background: var(--cm-cream-2); border: var(--cm-border) solid var(--cm-ink); }
+      .cm-marker { background: var(--cm-pink); border: var(--cm-border) solid var(--cm-ink); box-shadow: var(--cm-shadow); padding: 18px 32px; }
+      .cm-badge { background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; font-size: 40px; line-height: 1; padding: 14px 22px; color: var(--cm-ink); }  /* rotate(-4deg) via GSAP rotation, not CSS transform */
+      .cm-stamp { border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; line-height: 0.92; color: var(--cm-ink); padding: 18px 30px; outline: 5px solid var(--cm-cream); outline-offset: -18px; } /* rotate(-6deg) via GSAP */
+      .cm-chip { background: var(--cm-cream); border: 5px solid var(--cm-ink); font-family: var(--cm-mono); font-size: 28px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 18px; color: var(--cm-ink); }
+
+      /* ---- frame 07 specifics ---- */
+      #root { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; container-type: size; }
+      #f07-num { background: var(--cm-green); color: var(--cm-cream); }
+
+      /* Scene 1: sector tiles */
+      .f07-tile { position: absolute; top: 150px; width: 440px; height: 200px; box-sizing: border-box; }
+      #f07-tile-bank { left: 320px; }
+      #f07-tile-zh { left: 800px; }
+      #f07-tile-auto { left: 1280px; }
+      .f07-ico { position: absolute; left: 50%; top: 20px; width: 132px; height: 96px; margin-left: -66px; overflow: visible; }
+      .f07-ico .f07-s { fill: none; stroke: var(--cm-ink); stroke-width: 8; stroke-linejoin: miter; stroke-linecap: square; }
+      .f07-tlabel { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font-size: 40px; white-space: nowrap; }
+
+      #f07-strip { position: absolute; left: 320px; top: 370px; width: 1400px; height: 52px; background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-weight: 700; font-size: 28px; letter-spacing: 0.14em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+
+      /* Scene 2: EU stamps */
+      #f07-eu { position: absolute; left: 96px; top: 450px; font-size: 26px; }
+      #f07-stamps { position: absolute; left: 96px; top: 520px; height: 162px; display: flex; align-items: center; gap: 30px; }
+      .f07-stamp { box-sizing: border-box; font-size: 40px; text-align: center; white-space: nowrap; padding: 18px 28px; }
+      .f07-pink { background: var(--cm-pink); }
+      .f07-yellow { background: var(--cm-yellow); }
+      #f07-st-gdpr { min-width: 200px; }
+      #f07-st-nis2 { min-width: 200px; }
+      #f07-st-cra { min-width: 380px; }
+      #f07-st-ai { min-width: 240px; }
+
+      /* Scene 3: arrow + builder tag */
+      #f07-arrow { position: absolute; left: 1232px; top: 561px; width: 230px; height: 80px; }
+      #f07-arrowlbl { position: absolute; left: 1216px; top: 520px; width: 262px; text-align: center; font-family: var(--cm-mono); font-weight: 700; font-size: 24px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cm-ink); white-space: nowrap; }
+      #f07-tag { position: absolute; left: 1480px; top: 527px; width: 360px; box-sizing: border-box; padding: 20px 20px; text-align: center; font-size: 50px; }
+
+      /* Scene 4: chatbot bubble + NEE */
+      #f07-bubble { position: absolute; left: 1110px; top: 712px; width: 540px; height: 148px; box-sizing: border-box; padding: 22px 30px; }
+      #f07-bubtext { font-family: var(--cm-mono); font-weight: 500; font-size: 32px; line-height: 1.3; color: var(--cm-ink); white-space: nowrap; }
+      #f07-tail { position: absolute; left: 1062px; top: 808px; width: 64px; height: 56px; }
+      #f07-neewrap { position: absolute; left: 1560px; top: 630px; }
+      #f07-nee { background: var(--cm-pink); box-shadow: var(--cm-shadow); font-size: 96px; padding: 16px 30px; }
+    </style>
+
+    <div data-hf-id="hf-7wvw" id="f07-bg" class="clip cm-bg" data-start="0" data-duration="18.66" data-track-index="0"></div>
+
+    <div data-hf-id="hf-bd31" id="f07-topbar" class="cm-topbar">
+      <div data-hf-id="hf-35qf" class="cm-kicker">WAAROM SOFTWARE DEVELOPMENT</div>
+      <div data-hf-id="hf-3p0r" class="cm-pill">REDEN 05 / 07</div>
+    </div>
+
+    <div data-hf-id="hf-gx7m" id="f07-num" class="cm-num">05</div>
+
+    <!-- Scene 1: three sectors -->
+    <div data-hf-id="hf-saq8" id="f07-tile-bank" class="f07-tile cm-card">
+      <svg data-hf-id="hf-cq2a" class="f07-ico" viewBox="0 0 132 96">
+        <polygon data-hf-id="hf-0gzl" class="f07-s" pathLength="1" points="10,30 66,6 122,30" />
+        <line data-hf-id="hf-yeuw" class="f07-s" pathLength="1" x1="28" y1="40" x2="28" y2="78" />
+        <line data-hf-id="hf-6t2w" class="f07-s" pathLength="1" x1="54" y1="40" x2="54" y2="78" />
+        <line data-hf-id="hf-vhdc" class="f07-s" pathLength="1" x1="78" y1="40" x2="78" y2="78" />
+        <line data-hf-id="hf-qado" class="f07-s" pathLength="1" x1="104" y1="40" x2="104" y2="78" />
+        <line data-hf-id="hf-dt2x" class="f07-s" pathLength="1" x1="10" y1="90" x2="122" y2="90" />
+      </svg>
+      <div data-hf-id="hf-51ar" class="f07-tlabel cm-display">BANK</div>
+    </div>
+    <div data-hf-id="hf-z2yk" id="f07-tile-zh" class="f07-tile cm-card">
+      <svg data-hf-id="hf-jmwm" class="f07-ico" viewBox="0 0 132 96">
+        <polygon data-hf-id="hf-3zsd" class="f07-s" pathLength="1" points="52,6 80,6 80,34 108,34 108,62 80,62 80,90 52,90 52,62 24,62 24,34 52,34" />
+      </svg>
+      <div data-hf-id="hf-y7fs" class="f07-tlabel cm-display">ZIEKENHUIS</div>
+    </div>
+    <div data-hf-id="hf-iunv" id="f07-tile-auto" class="f07-tile cm-card">
+      <svg data-hf-id="hf-k17n" class="f07-ico" viewBox="0 0 132 96">
+        <polyline data-hf-id="hf-cr2l" class="f07-s" pathLength="1" points="20,72 6,72 6,48 30,44 46,20 92,20 108,44 126,50 126,72 112,72" />
+        <line data-hf-id="hf-f61s" class="f07-s" pathLength="1" x1="52" y1="72" x2="80" y2="72" />
+        <circle data-hf-id="hf-xytw" class="f07-s" pathLength="1" cx="36" cy="74" r="14" />
+        <circle data-hf-id="hf-pmii" class="f07-s" pathLength="1" cx="96" cy="74" r="14" />
+      </svg>
+      <div data-hf-id="hf-r4j6" class="f07-tlabel cm-display">AUTO</div>
+    </div>
+
+    <div data-hf-id="hf-beju" id="f07-strip">DRAAIT OP SOFTWARE</div>
+
+    <!-- Scene 2: EU rules -->
+    <div data-hf-id="hf-zf79" id="f07-eu" class="cm-kicker">EU-REGELS</div>
+    <div data-hf-id="hf-4x7z" id="f07-stamps">
+      <div data-hf-id="hf-7l8l" id="f07-st-gdpr" class="f07-stamp cm-stamp f07-pink">GDPR</div>
+      <div data-hf-id="hf-op77" id="f07-st-nis2" class="f07-stamp cm-stamp f07-yellow">NIS2</div>
+      <div data-hf-id="hf-fxt9" id="f07-st-cra" class="f07-stamp cm-stamp f07-pink">CYBER<br data-hf-id="hf-x5px">RESILIENCE<br data-hf-id="hf-rsrt">ACT</div>
+      <div data-hf-id="hf-wlh7" id="f07-st-ai" class="f07-stamp cm-stamp f07-yellow">AI ACT</div>
+    </div>
+
+    <!-- Scene 3: responsibility arrow -->
+    <div data-hf-id="hf-pgv6" id="f07-arrowlbl">VERANTWOORDELIJK</div>
+    <svg data-hf-id="hf-4y0n" id="f07-arrow" viewBox="0 0 230 80">
+      <rect data-hf-id="hf-a5ni" x="0" y="26" width="168" height="28" fill="#0F0F0F" />
+      <polygon data-hf-id="hf-50gz" points="160,4 230,40 160,76" fill="#0F0F0F" />
+    </svg>
+    <div data-hf-id="hf-6u1b" id="f07-tag" class="cm-card cm-display">WIE HET<br data-hf-id="hf-szow">BOUWT</div>
+
+    <!-- Scene 4: chatbot joke -->
+    <svg data-hf-id="hf-adqk" id="f07-tail" viewBox="0 0 64 56">
+      <polygon data-hf-id="hf-zi7w" points="64,0 0,56 64,40" fill="#0F0F0F" />
+      <polygon data-hf-id="hf-ja8x" points="56,0 18,40 56,28" fill="#E4DCC4" />
+    </svg>
+    <div data-hf-id="hf-49kk" id="f07-bubble" class="cm-card-2">
+      <div data-hf-id="hf-e5jb" id="f07-bubtext"><div data-hf-id="hf-y4ua" id="f07-l1"></div><div data-hf-id="hf-u6q9" id="f07-l2"></div></div>
+    </div>
+    <div data-hf-id="hf-6cht" id="f07-neewrap">
+      <div data-hf-id="hf-zjdw" id="f07-nee" data-layout-allow-overlap="" class="cm-stamp">NEE</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var DURATION = 18.16;
+        var ROOT = '[data-composition-id="07-regels"] ';
+        var q = function (s) { return document.querySelector(ROOT + s); };
+        var qa = function (s) { return document.querySelectorAll(ROOT + s); };
+        var tl = gsap.timeline({ paused: true });
+
+        // build chatbot text as per-character spans (deterministic typing)
+        var chars = [];
+        function fill(id, text) {
+          var el = q(id);
+          for (var i = 0; i < text.length; i++) {
+            var sp = document.createElement("span");
+            sp.textContent = text[i] === " " ? " " : text[i];
+            el.appendChild(sp);
+            chars.push(sp);
+          }
+        }
+        fill("#f07-l1", "sorry, ik ben maar");
+        fill("#f07-l2", "een chatbot");
+
+        // ---- Scene 1 (0.0-5.1): chrome, tile 05, sectors
+        tl.fromTo(q("#f07-topbar"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0);
+        tl.fromTo(q("#f07-num"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 0.05);
+
+        function tile(id, at) {
+          tl.fromTo(q(id), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, at);
+          tl.fromTo(qa(id + " .f07-s"), { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDasharray: 1, strokeDashoffset: 0, duration: 0.55, ease: "power3.out", stagger: 0.05 }, at + 0.1);
+          tl.fromTo(q(id + " .f07-tlabel"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, at + 0.12);
+        }
+        tile("#f07-tile-bank", 0.64);
+        tile("#f07-tile-zh", 1.84);
+        tile("#f07-tile-auto", 2.96);
+
+        tl.fromTo(q("#f07-strip"), { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power3.out" }, 4.08);
+
+        // ---- Scene 2 (5.1-12.4): EU stamps
+        tl.fromTo(q("#f07-eu"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 5.20);
+        function stamp(id, rot, at) {
+          tl.fromTo(q(id), { scale: 1.35, rotation: rot - 6, opacity: 0 }, { scale: 1, rotation: rot, opacity: 1, duration: 0.42, ease: "back.out(1.6)" }, at);
+        }
+        stamp("#f07-st-gdpr", -6, 7.04);
+        stamp("#f07-st-nis2", 3, 8.16);
+        stamp("#f07-st-cra", -3, 9.52);
+        stamp("#f07-st-ai", 5, 11.36);
+
+        // ---- Scene 3 (12.4-15.3): arrow to the builder
+        tl.fromTo(q("#f07-arrow"), { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: "power3.out" }, 12.84);
+        tl.fromTo(q("#f07-tag"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 13.06);
+        tl.fromTo(q("#f07-arrowlbl"), { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 13.14);
+
+        // ---- Scene 4 (15.3-end): chatbot bubble, then NEE
+        tl.fromTo([q("#f07-bubble"), q("#f07-tail")], { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 15.36);
+        tl.fromTo(chars, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none", stagger: 0.03 }, 15.56);
+
+        tl.fromTo(q("#f07-nee"), { scale: 1.35, rotation: -12, opacity: 0 }, { scale: 1, rotation: -6, opacity: 1, duration: 0.42, ease: "back.out(1.6)" }, 17.56);
+
+        tl.set({}, {}, DURATION);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["07-regels"] = tl;
+      })();
+    </script>
+  </div>
+</template>

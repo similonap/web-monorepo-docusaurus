@@ -1,0 +1,159 @@
+<template id="10-diep-template">
+  <div data-hf-id="hf-9g76" id="root" data-composition-id="10-diep" data-start="0" data-duration="12.2" data-width="1920" data-height="1080">
+    <style>
+      @font-face { font-family: "Archivo Black"; src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+      :root {
+        --cm-cream: #EFE9D9; --cm-cream-2: #E4DCC4;
+        --cm-ink: #0F0F0F; --cm-ink-2: #2A2A2A;
+        --cm-green: #1F8A4C; --cm-green-dark: #136636;
+        --cm-pink: #F06CA8; --cm-pink-dark: #D14E8B;
+        --cm-orange: #E85A1F; --cm-yellow: #F5C518;
+        --cm-border: 8px;            /* 0.4cqw @1920 = 7.7px */
+        --cm-rule: 6px;
+        --cm-shadow: 24px 24px 0 var(--cm-orange), 24px 24px 0 4px var(--cm-ink);  /* ONE per frame */
+        --cm-display: "Archivo Black", "Arial Black", sans-serif;
+        --cm-body: "Space Grotesk", Arial, sans-serif;
+        --cm-mono: "JetBrains Mono", monospace;
+      }
+      /* ground: a full-duration class="clip" layer, never on #root */
+      .cm-bg { position: absolute; inset: 0; background: var(--cm-cream); }
+      /* Archivo Black: always uppercase, lh 0.92 */
+      .cm-display { font-family: var(--cm-display); font-weight: 400; text-transform: uppercase; line-height: 0.92; letter-spacing: -0.01em; color: var(--cm-ink); }
+      .cm-mono { font-family: var(--cm-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+      /* display ramp in px @1920 */
+      .cm-hero { font-size: 298px; }   /* display-hero 15.5cqw, ≤3 short words */
+      .cm-xl   { font-size: 211px; }   /* display-xl 11cqw */
+      .cm-lg   { font-size: 154px; }   /* display-lg 8cqw */
+      .cm-head { font-size: 81px; }    /* display-head 4.2cqw */
+      .cm-step { font-size: 46px; }    /* marker / step-title */
+
+      /* topbar: kicker-block left, pill right, inset 64px */
+      .cm-topbar { position: absolute; left: 64px; right: 64px; top: 48px; height: 52px; display: flex; justify-content: space-between; align-items: center; }
+      .cm-kicker { background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 18px; }
+      .cm-pill { background: var(--cm-cream); border: 4px solid var(--cm-ink); border-radius: 999px; color: var(--cm-ink); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 22px; }
+
+      /* reason number tile (frames 3-9), top-left under topbar */
+      .cm-num { position: absolute; left: 96px; top: 140px; width: 150px; height: 150px; border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; font-family: var(--cm-display); font-size: 92px; line-height: 1; color: var(--cm-ink); }
+
+      /* generic blocks */
+      .cm-card { background: var(--cm-cream); border: var(--cm-border) solid var(--cm-ink); }
+      .cm-card-2 { background: var(--cm-cream-2); border: var(--cm-border) solid var(--cm-ink); }
+      .cm-marker { background: var(--cm-pink); border: var(--cm-border) solid var(--cm-ink); box-shadow: var(--cm-shadow); padding: 18px 32px; }
+      .cm-badge { background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; font-size: 40px; line-height: 1; padding: 14px 22px; color: var(--cm-ink); }  /* rotate(-4deg) via GSAP rotation, not CSS transform */
+      .cm-stamp { border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; line-height: 0.92; color: var(--cm-ink); padding: 18px 30px; outline: 5px solid var(--cm-cream); outline-offset: -18px; } /* rotate(-6deg) via GSAP */
+      .cm-chip { background: var(--cm-cream); border: 5px solid var(--cm-ink); font-family: var(--cm-mono); font-size: 28px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 18px; color: var(--cm-ink); }
+
+      /* ---- frame 10 specifics ---- */
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; container-type: size; }
+      .f10-layer { position: absolute; inset: 0; }
+      .f10-panel { position: absolute; top: 170px; width: 876px; height: 690px; box-sizing: border-box; }
+      #f10-left { left: 64px; }
+      #f10-right { left: 980px; background: var(--cm-green); border: var(--cm-border) solid var(--cm-ink); box-shadow: 0px 0px 0 #E85A1F, 0px 0px 0 0px #0F0F0F; }
+      .f10-title { position: absolute; left: 56px; top: 56px; }
+      .f10-word { display: block; font-size: 140px; white-space: nowrap; transform-origin: 0 50%; }
+      #f10-right .f10-word { color: var(--cm-cream); }
+      #f10-copy { position: absolute; left: 56px; top: 372px; font-family: var(--cm-mono); font-weight: 700; font-size: 44px; letter-spacing: 0.06em; color: var(--cm-ink); white-space: pre; }
+      #f10-copy span { opacity: 0; }
+      #f10-how { position: absolute; left: 56px; top: 360px; font-family: var(--cm-mono); font-weight: 700; font-size: 38px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cm-cream); white-space: nowrap; }
+      #f10-arrow { position: absolute; left: 56px; top: 432px; width: 140px; height: 210px; transform-origin: 50% 100%; }
+      #f10-arrow svg { display: block; }
+      #f10-amp { position: absolute; left: 236px; top: 470px; }
+      .f10-amp-line { display: block; font-size: 64px; color: var(--cm-cream); white-space: nowrap; }
+      #f10-stampwrap { position: absolute; left: 64px; top: 600px; width: 876px; height: 180px; display: flex; align-items: center; justify-content: center; }
+      #f10-stamp { background: var(--cm-pink); font-size: 76px; white-space: nowrap; transform-origin: 50% 50%; }
+    </style>
+
+    <!-- full-bleed cream ground -->
+    <div data-hf-id="hf-9cgw" class="clip f10-layer cm-bg" data-start="0" data-duration="12.2" data-track-index="0"></div>
+
+    <!-- content -->
+    <div data-hf-id="hf-eec1" class="clip f10-layer" data-start="0" data-duration="12.2" data-track-index="1">
+      <div data-hf-id="hf-ffr5" class="cm-topbar" id="f10-topbar">
+        <div data-hf-id="hf-lih3" class="cm-kicker">Waarom software development</div>
+        <div data-hf-id="hf-mocp" class="cm-pill">Conclusie</div>
+      </div>
+
+      <!-- left: shallow -->
+      <div data-hf-id="hf-wkat" class="cm-card-2 f10-panel" id="f10-left">
+        <div data-hf-id="hf-9kvw" class="f10-title">
+          <span data-hf-id="hf-k24k" class="cm-display f10-word" id="f10-l1">12</span>
+          <span data-hf-id="hf-axli" class="cm-display f10-word" id="f10-l2">Weken</span>
+        </div>
+        <div data-hf-id="hf-wofo" id="f10-copy"><span data-hf-id="hf-lzk6">C</span><span data-hf-id="hf-efqn">T</span><span data-hf-id="hf-f8cp">R</span><span data-hf-id="hf-hm6v">L</span><span data-hf-id="hf-kyim">+</span><span data-hf-id="hf-bioa">C</span><span data-hf-id="hf-uckh"> </span><span data-hf-id="hf-jdai">/</span><span data-hf-id="hf-l73p"> </span><span data-hf-id="hf-bwzb">C</span><span data-hf-id="hf-5mxb">T</span><span data-hf-id="hf-i48t">R</span><span data-hf-id="hf-cs5z">L</span><span data-hf-id="hf-3k4i">+</span><span data-hf-id="hf-dn4l">V</span></div>
+      </div>
+
+      <div data-hf-id="hf-hxxk" id="f10-stampwrap">
+        <div data-hf-id="hf-l2g8" class="cm-stamp" id="f10-stamp">Vervangbaar</div>
+      </div>
+
+      <!-- right: deep -->
+      <div data-hf-id="hf-h1mu" class="f10-panel" id="f10-right">
+        <div data-hf-id="hf-6k50" class="f10-title">
+          <span data-hf-id="hf-klzt" class="cm-display f10-word" id="f10-r1">Echt</span>
+          <span data-hf-id="hf-4b9z" class="cm-display f10-word" id="f10-r2">Begrip</span>
+        </div>
+        <div data-hf-id="hf-agw7" id="f10-how">Hoe software werkt</div>
+        <div data-hf-id="hf-ddiy" id="f10-arrow">
+          <svg data-hf-id="hf-w5xt" width="140" height="210" viewBox="0 0 140 210" aria-hidden="true">
+            <polygon data-hf-id="hf-x20n" points="70,6 134,82 98,82 98,204 42,204 42,82 6,82" fill="#F5C518" stroke="#0F0F0F" stroke-width="8" stroke-linejoin="miter" />
+          </svg>
+        </div>
+        <div data-hf-id="hf-5mvn" id="f10-amp">
+          <span data-hf-id="hf-o846" class="cm-display f10-amp-line">AI =</span>
+          <span data-hf-id="hf-n436" class="cm-display f10-amp-line">Versterker</span>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var DURATION = 11.6;
+        var q = function (s) { return document.querySelector('[data-composition-id="10-diep"] ' + s); };
+        var qa = function (s) { return document.querySelectorAll('[data-composition-id="10-diep"] ' + s); };
+        var tl = gsap.timeline({ paused: true });
+
+        // chrome
+        tl.fromTo(q('#f10-topbar'), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power2.out' }, 0);
+
+        // Scene 1: left panel, shallow skills
+        tl.fromTo(q('#f10-left'), { x: -140, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: 'expo.out' }, 0.96);
+        tl.fromTo(q('#f10-l1'), { scale: 1.25, opacity: 0, rotation: -1.5 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.4, ease: 'power4.out' }, 1.32);
+        tl.fromTo(q('#f10-l2'), { scale: 1.25, opacity: 0, rotation: -1.5 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.4, ease: 'power4.out' }, 1.44);
+        var chars = qa('#f10-copy span');
+        for (var i = 0; i < chars.length; i++) {
+          tl.set(chars[i], { opacity: 1 }, 2.56 + i * 0.045);
+        }
+        // VERVANGBAAR stamp slams across, panel dims
+        tl.fromTo(q('#f10-stamp'), { scale: 1.35, rotation: -12, opacity: 0 }, { scale: 1, rotation: -6, opacity: 1, duration: 0.42, ease: 'back.out(1.6)' }, 5.28);
+        tl.fromTo(q('#f10-left'), { opacity: 1 }, { opacity: 0.6, duration: 0.35, ease: 'power2.out' }, 5.36);
+
+        // Scene 2: right panel, deep understanding
+        tl.fromTo(q('#f10-right'), { x: 140, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: 'expo.out' }, 6.76);
+        tl.fromTo(q('#f10-r1'), { scale: 1.25, opacity: 0, rotation: -1.5 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.4, ease: 'power4.out' }, 7.12);
+        tl.fromTo(q('#f10-r2'), { scale: 1.25, opacity: 0, rotation: -1.5 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.4, ease: 'power4.out' }, 7.24);
+        tl.fromTo(q('#f10-how'), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' }, 8.0);
+
+        // AI = amplifier: arrow grows up, label lands
+        tl.fromTo(q('#f10-arrow'), { scaleY: 0, opacity: 1 }, { scaleY: 1, opacity: 1, duration: 0.5, ease: 'power4.out' }, 9.52);
+        tl.fromTo(q('#f10-amp'), { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: 'power3.out' }, 9.7);
+
+        // the right panel wins: the frame's one hard offset shadow
+        tl.fromTo(q('#f10-right'),
+          { boxShadow: '0px 0px 0 #E85A1F, 0px 0px 0 0px #0F0F0F' },
+          { boxShadow: '24px 24px 0 #E85A1F, 24px 24px 0 4px #0F0F0F', duration: 0.4, ease: 'power4.out' }, 10.96);
+
+        tl.set({}, {}, DURATION);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["10-diep"] = tl;
+      })();
+    </script>
+  </div>
+</template>

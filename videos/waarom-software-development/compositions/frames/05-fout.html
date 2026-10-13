@@ -1,0 +1,263 @@
+<template>
+  <div data-hf-id="hf-hn1f" id="root" data-composition-id="05-fout" data-width="1920" data-height="1080" data-start="0" data-duration="18.58">
+    <style>
+      @font-face { font-family: "Archivo Black"; src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+      :root {
+        --cm-cream: #EFE9D9; --cm-cream-2: #E4DCC4;
+        --cm-ink: #0F0F0F; --cm-ink-2: #2A2A2A;
+        --cm-green: #1F8A4C; --cm-green-dark: #136636;
+        --cm-pink: #F06CA8; --cm-pink-dark: #D14E8B;
+        --cm-orange: #E85A1F; --cm-yellow: #F5C518;
+        --cm-border: 8px;            /* 0.4cqw @1920 = 7.7px */
+        --cm-rule: 6px;
+        --cm-shadow: 24px 24px 0 var(--cm-orange), 24px 24px 0 4px var(--cm-ink);  /* ONE per frame */
+        --cm-display: "Archivo Black", "Arial Black", sans-serif;
+        --cm-body: "Space Grotesk", Arial, sans-serif;
+        --cm-mono: "JetBrains Mono", monospace;
+      }
+      /* ground: a full-duration class="clip" layer, never on #root */
+      .cm-bg { position: absolute; inset: 0; background: var(--cm-cream); }
+      /* Archivo Black: always uppercase, lh 0.92 */
+      .cm-display { font-family: var(--cm-display); font-weight: 400; text-transform: uppercase; line-height: 0.92; letter-spacing: -0.01em; color: var(--cm-ink); }
+      .cm-mono { font-family: var(--cm-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+      /* display ramp in px @1920 */
+      .cm-hero { font-size: 298px; }   /* display-hero 15.5cqw, ≤3 short words */
+      .cm-xl   { font-size: 211px; }   /* display-xl 11cqw */
+      .cm-lg   { font-size: 154px; }   /* display-lg 8cqw */
+      .cm-head { font-size: 81px; }    /* display-head 4.2cqw */
+      .cm-step { font-size: 46px; }    /* marker / step-title */
+
+      /* topbar: kicker-block left, pill right, inset 64px */
+      .cm-topbar { position: absolute; left: 64px; right: 64px; top: 48px; height: 52px; display: flex; justify-content: space-between; align-items: center; }
+      .cm-kicker { background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 18px; }
+      .cm-pill { background: var(--cm-cream); border: 4px solid var(--cm-ink); border-radius: 999px; color: var(--cm-ink); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 22px; }
+
+      /* reason number tile (frames 3-9), top-left under topbar */
+      .cm-num { position: absolute; left: 96px; top: 140px; width: 150px; height: 150px; border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; font-family: var(--cm-display); font-size: 92px; line-height: 1; color: var(--cm-ink); }
+
+      /* generic blocks */
+      .cm-card { background: var(--cm-cream); border: var(--cm-border) solid var(--cm-ink); }
+      .cm-card-2 { background: var(--cm-cream-2); border: var(--cm-border) solid var(--cm-ink); }
+      .cm-marker { background: var(--cm-pink); border: var(--cm-border) solid var(--cm-ink); box-shadow: var(--cm-shadow); padding: 18px 32px; }
+      .cm-badge { background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; font-size: 40px; line-height: 1; padding: 14px 22px; color: var(--cm-ink); }  /* rotate(-4deg) via GSAP rotation, not CSS transform */
+      .cm-stamp { border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; line-height: 0.92; color: var(--cm-ink); padding: 18px 30px; outline: 5px solid var(--cm-cream); outline-offset: -18px; } /* rotate(-6deg) via GSAP */
+      .cm-chip { background: var(--cm-cream); border: 5px solid var(--cm-ink); font-family: var(--cm-mono); font-size: 28px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 18px; color: var(--cm-ink); }
+
+      /* ---------- frame 05 specifics ---------- */
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; container-type: size; }
+
+      .f05-num { background: var(--cm-orange); }
+
+      /* code card */
+      .f05-card { position: absolute; left: 96px; top: 340px; width: 1044px; box-sizing: border-box; }
+      .f05-titlebar { height: 56px; background: var(--cm-ink); display: flex; align-items: center; gap: 14px; padding: 0 22px; }
+      .f05-titlebar i { display: block; width: 14px; height: 14px; background: var(--cm-orange); }
+      .f05-titlebar span { font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.04em; color: var(--cm-cream); }
+      .f05-body { position: relative; padding: 24px 28px; }
+      .f05-line { position: relative; height: 50px; display: flex; align-items: center; font-family: var(--cm-mono); font-size: 26px; color: var(--cm-ink-2); white-space: pre; }
+      .f05-ln { width: 40px; flex: none; text-align: right; font-size: 22px; color: var(--cm-ink-2); opacity: 0.45; margin-right: 24px; }
+      .f05-txt { position: relative; display: inline-block; }
+      .f05-ch { display: none; }
+      .f05-kw { font-weight: 700; color: var(--cm-ink); }
+      .f05-str { color: var(--cm-green-dark); }
+      .f05-fn { font-weight: 700; color: var(--cm-orange); }
+      .f05-caret { display: none; width: 14px; height: 30px; background: var(--cm-ink); vertical-align: middle; margin-left: 2px; }
+      .f05-ul { position: absolute; left: 0; right: 0; bottom: -6px; height: 4px; background: var(--cm-pink); transform-origin: 0 50%; }
+
+      /* issue tags */
+      .f05-tag { position: absolute; right: 20px; height: 44px; box-sizing: border-box; display: flex; align-items: stretch; background: var(--cm-cream); border: 4px solid var(--cm-ink); font-family: var(--cm-mono); font-weight: 700; font-size: 24px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cm-ink); }
+      .f05-tag i { display: block; width: 12px; background: var(--cm-pink); border-right: 4px solid var(--cm-ink); }
+      .f05-tag span { display: flex; align-items: center; padding: 0 14px; }
+      .f05-tag-3 { top: 127px; }
+      .f05-tag-5 { top: 227px; }
+      .f05-tag-6 { top: 277px; }
+
+      /* stamps */
+      .f05-stampwrap { position: absolute; left: 720px; top: 340px; width: 440px; height: 150px; display: grid; }
+      .f05-stamp { grid-area: 1 / 1; place-self: center; box-sizing: border-box; }
+      .f05-stamp-ok { background: var(--cm-green); font-size: 34px; display: flex; align-items: flex-end; gap: 14px; }
+      .f05-stamp-ok svg { width: 40px; height: 34px; flex: none; margin-bottom: 2px; }
+      .f05-stamp-bad { background: var(--cm-pink); font-size: 96px; padding: 20px 40px; }
+
+      /* bars */
+      .f05-bar { position: absolute; top: 400px; width: 200px; height: 320px; box-sizing: border-box; border: var(--cm-border) solid var(--cm-ink); transform-origin: 50% 100%; }
+      .f05-bar-ai { left: 1290px; background: var(--cm-ink); }
+      .f05-bar-hu { left: 1560px; background: var(--cm-green); }
+      .f05-base { position: absolute; left: 1250px; width: 550px; top: 716px; height: 6px; background: var(--cm-ink); transform-origin: 0 50%; }
+      .f05-blabel { position: absolute; top: 738px; width: 280px; text-align: center; font-family: var(--cm-mono); font-weight: 700; font-size: 24px; line-height: 1.25; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cm-ink); }
+      .f05-blabel-ai { left: 1250px; }
+      .f05-blabel-hu { left: 1520px; }
+      .f05-nodig { position: absolute; left: 1606px; top: 816px; width: 108px; height: 42px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; }
+
+      /* closing headline */
+      .f05-head { position: absolute; left: 300px; top: 112px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+      .f05-h1 { font-size: 72px; }
+      .f05-h2 { font-size: 72px; background: var(--cm-orange); border: var(--cm-border) solid var(--cm-ink); box-shadow: var(--cm-shadow); padding: 10px 24px 8px; }
+    </style>
+
+    <div data-hf-id="hf-kpu6" class="cm-bg clip" data-start="0" data-duration="18.58" data-track-index="0"></div>
+
+    <div data-hf-id="hf-5s6n" class="cm-topbar" id="f05-topbar">
+      <div data-hf-id="hf-lih3" class="cm-kicker">Waarom software development</div>
+      <div data-hf-id="hf-irqh" class="cm-pill">Reden 03 / 07</div>
+    </div>
+
+    <div data-hf-id="hf-bszu" class="cm-num f05-num" id="f05-num">03</div>
+
+    <div data-hf-id="hf-j0uw" class="cm-card-2 f05-card" id="f05-card">
+      <div data-hf-id="hf-7t61" class="f05-titlebar"><i data-hf-id="hf-wt6k"></i><span data-hf-id="hf-8u6j">ai-suggestie.js</span></div>
+      <div data-hf-id="hf-baii" class="f05-body" id="f05-body">
+        <div data-hf-id="hf-frde" class="f05-tag f05-tag-3" id="f05-tag-3"><i data-hf-id="hf-zeb8"></i><span data-hf-id="hf-0voo">Onveilig</span></div>
+        <div data-hf-id="hf-k18e" class="f05-tag f05-tag-5" id="f05-tag-5"><i data-hf-id="hf-y7e5"></i><span data-hf-id="hf-8xhm">Traag</span></div>
+        <div data-hf-id="hf-4yuo" class="f05-tag f05-tag-6" id="f05-tag-6"><i data-hf-id="hf-ylp6"></i><span data-hf-id="hf-j66t">Randgeval</span></div>
+      </div>
+    </div>
+
+    <div data-hf-id="hf-fa89" class="f05-stampwrap">
+      <div data-hf-id="hf-30hj" class="cm-stamp f05-stamp f05-stamp-ok" id="f05-stamp-ok">
+        <span data-hf-id="hf-vw5h">Ziet er perfect<br data-hf-id="hf-x5px">uit</span>
+        <svg data-hf-id="hf-gxl1" viewBox="0 0 40 34" aria-hidden="true"><polyline data-hf-id="hf-b7kz" points="4,18 15,29 36,5" fill="none" stroke="#0F0F0F" stroke-width="7" stroke-linecap="square" stroke-linejoin="miter" /></svg>
+      </div>
+      <div data-hf-id="hf-cy7v" class="cm-stamp f05-stamp f05-stamp-bad" id="f05-stamp-bad">Fout</div>
+    </div>
+
+    <div data-hf-id="hf-thsq" class="f05-base" id="f05-base"></div>
+    <div data-hf-id="hf-6pz3" class="f05-bar f05-bar-ai" id="f05-bar-ai"></div>
+    <div data-hf-id="hf-gcej" class="f05-bar f05-bar-hu" id="f05-bar-hu"></div>
+    <div data-hf-id="hf-wm08" class="f05-blabel f05-blabel-ai" id="f05-blabel-ai">AI-code</div>
+    <div data-hf-id="hf-w2q3" class="f05-blabel f05-blabel-hu" id="f05-blabel-hu">Mensen die<br data-hf-id="hf-rsrt">het zien</div>
+    <div data-hf-id="hf-tb8d" class="f05-nodig" id="f05-nodig">Nodig</div>
+
+    <div data-hf-id="hf-6ti2" class="f05-head">
+      <div data-hf-id="hf-hzgd" class="cm-display f05-h1" id="f05-h1">Je kan niet reviewen</div>
+      <div data-hf-id="hf-g5sn" class="cm-display f05-h2" id="f05-h2">Wat je niet begrijpt</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var DURATION = 18.08;
+        var root = document.querySelector('[data-composition-id="05-fout"]');
+        var q = function (sel) { return root.querySelector(sel); };
+
+        /* ---- build code lines (tokens: [text, class]) ---- */
+        var LINES = [
+          [["async", "kw"], [" "], ["function", "kw"], [" "], ["getUser", "fn"], ["(id) {"]],
+          [["  "], ["const", "kw"], [" rows = "], ["await", "kw"], [" db."], ["query", "fn"], ["("]],
+          [["    "], ["\"SELECT * FROM users WHERE id=\"", "str"], [" + id);"]],
+          [["  "], ["for", "kw"], [" ("], ["const", "kw"], [" u "], ["of", "kw"], [" rows)"]],
+          [["    "], ["for", "kw"], [" ("], ["const", "kw"], [" o "], ["of", "kw"], [" allOrders) "], ["match", "fn"], ["(u, o);"]],
+          [["  "], ["return", "kw"], [" rows[0].name;"]],
+          [["}"]]
+        ];
+        var body = q("#f05-body");
+        var firstTag = q("#f05-tag-3");
+        var lineChars = [];
+        var carets = [];
+        var underlines = {};
+        LINES.forEach(function (tokens, li) {
+          var line = document.createElement("div");
+          line.className = "f05-line";
+          var ln = document.createElement("span");
+          ln.className = "f05-ln";
+          ln.textContent = String(li + 1);
+          line.appendChild(ln);
+          var txt = document.createElement("span");
+          txt.className = "f05-txt";
+          var chars = [];
+          tokens.forEach(function (tok) {
+            var cls = tok[1] ? "f05-" + tok[1] : "";
+            for (var i = 0; i < tok[0].length; i++) {
+              var c = document.createElement("span");
+              c.className = "f05-ch" + (cls ? " " + cls : "");
+              c.textContent = tok[0].charAt(i);
+              txt.appendChild(c);
+              chars.push(c);
+            }
+          });
+          var caret = document.createElement("span");
+          caret.className = "f05-caret";
+          txt.appendChild(caret);
+          if (li === 2 || li === 4 || li === 5) {
+            var ul = document.createElement("i");
+            ul.className = "f05-ul";
+            txt.appendChild(ul);
+            underlines[li + 1] = ul;
+          }
+          line.appendChild(txt);
+          body.insertBefore(line, firstTag);
+          lineChars.push(chars);
+          carets.push(caret);
+        });
+
+        var tl = gsap.timeline({ paused: true });
+
+        /* ---- Scene 1 (0.0-4.0) ---- */
+        tl.fromTo("#f05-topbar", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0);
+        tl.fromTo("#f05-num", { scale: 1.25, opacity: 0, rotation: -3 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.4, ease: "power4.out" }, 0.05);
+        tl.fromTo("#f05-card", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 0.3);
+        gsap.set(Object.values(underlines), { scaleX: 0 });
+
+        /* type-on @1.28, ~1.4s total, line by line */
+        var total = 0;
+        lineChars.forEach(function (c) { total += c.length; });
+        var step = 1.4 / total;
+        var t = 1.28;
+        lineChars.forEach(function (chars, li) {
+          tl.set(carets[li], { display: "inline-block" }, t);
+          chars.forEach(function (c) {
+            tl.set(c, { display: "inline" }, t);
+            t += step;
+          });
+          if (li < lineChars.length - 1) tl.set(carets[li], { display: "none" }, t);
+        });
+        tl.set(carets[carets.length - 1], { display: "none" }, 2.84);
+
+        /* green stamp drops @2.84 */
+        tl.fromTo("#f05-stamp-ok",
+          { scale: 1.35, rotation: -12, rotationY: 0, opacity: 0, transformPerspective: 900 },
+          { scale: 1, rotation: -6, opacity: 1, duration: 0.42, ease: "back.out(1.6)" }, 2.84);
+
+        /* ---- Scene 2 (4.0-10.7) ---- */
+        /* flip @4.48: green stamp turns away, pink FOUT turns in */
+        tl.fromTo("#f05-stamp-ok", { rotationY: 0 }, { rotationY: 90, duration: 0.16, ease: "power2.in", immediateRender: false }, 4.48);
+        tl.set("#f05-stamp-ok", { opacity: 0 }, 4.64);
+        tl.fromTo("#f05-stamp-bad",
+          { rotationY: -90, rotation: -6, opacity: 0, transformPerspective: 900 },
+          { rotationY: 0, opacity: 1, duration: 0.26, ease: "power3.out" }, 4.64);
+
+        function issue(tagSel, ul, at) {
+          tl.fromTo(tagSel, { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, at);
+          tl.fromTo(ul, { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out", immediateRender: false }, at);
+        }
+        issue("#f05-tag-3", underlines[3], 5.96);
+        issue("#f05-tag-5", underlines[5], 7.28);
+        issue("#f05-tag-6", underlines[6], 9.60);
+
+        /* ---- Scene 3 (10.7-15.4) ---- */
+        tl.fromTo("#f05-base", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power3.out" }, 10.77);
+        tl.fromTo("#f05-bar-ai", { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: "power3.out" }, 11.20);
+        tl.fromTo("#f05-blabel-ai", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 11.25);
+        tl.fromTo("#f05-bar-hu", { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: "power3.out" }, 13.36);
+        tl.fromTo("#f05-blabel-hu", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 13.41);
+        tl.fromTo("#f05-nodig", { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 13.80);
+
+        /* ---- Scene 4 (15.4-end) ---- */
+        tl.fromTo("#f05-h1", { scale: 1.25, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 15.48);
+        tl.fromTo("#f05-h2", { scale: 1.25, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 16.96);
+
+        tl.set({}, {}, DURATION);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["05-fout"] = tl;
+      })();
+    </script>
+  </div>
+</template>

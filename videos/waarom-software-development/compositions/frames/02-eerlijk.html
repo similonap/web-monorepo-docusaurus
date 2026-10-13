@@ -1,0 +1,157 @@
+<template id="02-eerlijk-template">
+  <div data-hf-id="hf-j932" id="root" data-composition-id="02-eerlijk" data-start="0" data-duration="13.62" data-width="1920" data-height="1080">
+    <style>
+      @font-face { font-family: "Archivo Black"; src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+      :root {
+        --cm-cream: #EFE9D9; --cm-cream-2: #E4DCC4;
+        --cm-ink: #0F0F0F; --cm-ink-2: #2A2A2A;
+        --cm-green: #1F8A4C; --cm-green-dark: #136636;
+        --cm-pink: #F06CA8; --cm-pink-dark: #D14E8B;
+        --cm-orange: #E85A1F; --cm-yellow: #F5C518;
+        --cm-border: 8px;            /* 0.4cqw @1920 = 7.7px */
+        --cm-rule: 6px;
+        --cm-shadow: 24px 24px 0 var(--cm-orange), 24px 24px 0 4px var(--cm-ink);  /* ONE per frame */
+        --cm-display: "Archivo Black", "Arial Black", sans-serif;
+        --cm-body: "Space Grotesk", Arial, sans-serif;
+        --cm-mono: "JetBrains Mono", monospace;
+      }
+      /* ground: a full-duration class="clip" layer, never on #root */
+      .cm-bg { position: absolute; inset: 0; background: var(--cm-cream); }
+      /* Archivo Black: always uppercase, lh 0.92 */
+      .cm-display { font-family: var(--cm-display); font-weight: 400; text-transform: uppercase; line-height: 0.92; letter-spacing: -0.01em; color: var(--cm-ink); }
+      .cm-mono { font-family: var(--cm-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+      /* display ramp in px @1920 */
+      .cm-hero { font-size: 298px; }   /* display-hero 15.5cqw, ≤3 short words */
+      .cm-xl   { font-size: 211px; }   /* display-xl 11cqw */
+      .cm-lg   { font-size: 154px; }   /* display-lg 8cqw */
+      .cm-head { font-size: 81px; }    /* display-head 4.2cqw */
+      .cm-step { font-size: 46px; }    /* marker / step-title */
+
+      /* topbar: kicker-block left, pill right, inset 64px */
+      .cm-topbar { position: absolute; left: 64px; right: 64px; top: 48px; height: 52px; display: flex; justify-content: space-between; align-items: center; }
+      .cm-kicker { background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 18px; }
+      .cm-pill { background: var(--cm-cream); border: 4px solid var(--cm-ink); border-radius: 999px; color: var(--cm-ink); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 22px; }
+
+      /* reason number tile (frames 3-9), top-left under topbar */
+      .cm-num { position: absolute; left: 96px; top: 140px; width: 150px; height: 150px; border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; font-family: var(--cm-display); font-size: 92px; line-height: 1; color: var(--cm-ink); }
+
+      /* generic blocks */
+      .cm-card { background: var(--cm-cream); border: var(--cm-border) solid var(--cm-ink); }
+      .cm-card-2 { background: var(--cm-cream-2); border: var(--cm-border) solid var(--cm-ink); }
+      .cm-marker { background: var(--cm-pink); border: var(--cm-border) solid var(--cm-ink); box-shadow: var(--cm-shadow); padding: 18px 32px; }
+      .cm-badge { background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; font-size: 40px; line-height: 1; padding: 14px 22px; color: var(--cm-ink); }  /* rotate(-4deg) via GSAP rotation, not CSS transform */
+      .cm-stamp { border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; line-height: 0.92; color: var(--cm-ink); padding: 18px 30px; outline: 5px solid var(--cm-cream); outline-offset: -18px; } /* rotate(-6deg) via GSAP */
+      .cm-chip { background: var(--cm-cream); border: 5px solid var(--cm-ink); font-family: var(--cm-mono); font-size: 28px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 18px; color: var(--cm-ink); }
+
+      /* ---- frame 02 specifics ---- */
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; container-type: size; }
+      .f02-layer { position: absolute; inset: 0; }
+      .f02-bg { background: var(--cm-orange); }
+
+      /* honesty group (kicker + rows + note), shrinks to top-left at the turn */
+      #f02-honest { position: absolute; left: 96px; top: 176px; width: 1320px; transform-origin: 0 0; }
+      #f02-kick { display: inline-block; font-size: 26px; padding: 12px 20px; }
+      .f02-row { position: relative; margin-top: 26px; height: 124px; box-sizing: border-box; padding: 0 30px 0 36px; display: flex; align-items: center; justify-content: space-between; }
+      .f02-row-label { font-size: 72px; white-space: nowrap; }
+      .f02-tag { display: flex; align-items: center; gap: 12px; background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-weight: 700; font-size: 30px; letter-spacing: 0.08em; text-transform: uppercase; padding: 12px 20px; white-space: nowrap; }
+      .f02-tag svg { display: block; }
+      #f02-note { margin-top: 18px; margin-left: 4px; font-family: var(--cm-mono); font-weight: 500; font-size: 30px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cm-ink); white-space: pre; }
+      #f02-note span { opacity: 0; }
+
+      /* the turn */
+      #f02-maar { position: absolute; left: 90px; top: 440px; transform-origin: 0 0; white-space: nowrap; }
+      #f02-claim { position: absolute; left: 96px; top: 530px; }
+      .f02-line { display: block; font-size: 118px; line-height: 0.92; white-space: nowrap; transform-origin: 0 50%; }
+      #f02-badge { position: absolute; left: 1170px; top: 684px; font-size: 76px; padding: 20px 34px; box-shadow: var(--cm-shadow); white-space: nowrap; transform-origin: 50% 50%; }
+    </style>
+
+    <!-- full-bleed orange ground -->
+    <div data-hf-id="hf-xgzc" class="clip f02-layer f02-bg" data-start="0" data-duration="13.62" data-track-index="0"></div>
+
+    <!-- content -->
+    <div data-hf-id="hf-cjjt" class="clip f02-layer" data-start="0" data-duration="13.62" data-track-index="1">
+      <div data-hf-id="hf-sqle" class="cm-topbar" id="f02-topbar">
+        <div data-hf-id="hf-lih3" class="cm-kicker">Waarom software development</div>
+        <div data-hf-id="hf-3u8i" class="cm-pill">Intro</div>
+      </div>
+
+      <div data-hf-id="hf-r31x" id="f02-honest">
+        <div data-hf-id="hf-yjkc" class="cm-kicker" id="f02-kick">Eerst het eerlijke deel</div>
+
+        <div data-hf-id="hf-hc8y" class="cm-card f02-row" id="f02-row1">
+          <div data-hf-id="hf-mdhx" class="cm-display f02-row-label">Routine-code</div>
+          <div data-hf-id="hf-kb0r" class="f02-tag">
+            <svg data-hf-id="hf-imct" width="26" height="30" viewBox="0 0 26 30" aria-hidden="true"><path data-hf-id="hf-ok2o" d="M13 2 V25 M3 16 L13 27 L23 16" fill="none" stroke="#EFE9D9" stroke-width="5" stroke-linecap="square" /></svg>
+            <span data-hf-id="hf-bnem">Minder</span>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-b6j5" class="cm-card f02-row" id="f02-row2">
+          <div data-hf-id="hf-64ke" class="cm-display f02-row-label">Eerste job vinden</div>
+          <div data-hf-id="hf-rh2j" class="f02-tag"><span data-hf-id="hf-wj6c">Moeilijker</span></div>
+        </div>
+
+        <div data-hf-id="hf-i634" id="f02-note"><span data-hf-id="hf-ksn3">D</span><span data-hf-id="hf-ms68">A</span><span data-hf-id="hf-gtkt">N</span><span data-hf-id="hf-uckh"> </span><span data-hf-id="hf-gzgc">5</span><span data-hf-id="hf-l73p"> </span><span data-hf-id="hf-iesx">J</span><span data-hf-id="hf-r7dk">A</span><span data-hf-id="hf-q0gh">A</span><span data-hf-id="hf-f8cp">R</span><span data-hf-id="hf-me0s"> </span><span data-hf-id="hf-kec2">G</span><span data-hf-id="hf-l6y4">E</span><span data-hf-id="hf-hm6v">L</span><span data-hf-id="hf-16v8">E</span><span data-hf-id="hf-f0u7">D</span><span data-hf-id="hf-zzy5">E</span><span data-hf-id="hf-hbkh">N</span></div>
+      </div>
+
+      <div data-hf-id="hf-so8l" class="cm-display cm-xl" id="f02-maar">Maar</div>
+
+      <div data-hf-id="hf-m8hc" id="f02-claim">
+        <span data-hf-id="hf-bm4b" class="cm-display f02-line" id="f02-l1">Echte opleiding</span>
+        <span data-hf-id="hf-4noy" class="cm-display f02-line" id="f02-l2">Meer waard</span>
+        <span data-hf-id="hf-05bp" class="cm-display f02-line" id="f02-l3">dan ooit</span>
+      </div>
+
+      <div data-hf-id="hf-h3ps" class="cm-badge" id="f02-badge">7 redenen</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var DURATION = 13.12;
+        var q = function (s) { return document.querySelector('[data-composition-id="02-eerlijk"] ' + s); };
+        var qa = function (s) { return document.querySelectorAll('[data-composition-id="02-eerlijk"] ' + s); };
+        var tl = gsap.timeline({ paused: true });
+
+        // Scene 1: chrome + kicker
+        tl.fromTo(q('#f02-topbar'), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power2.out' }, 0);
+        tl.fromTo(q('#f02-kick'), { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: 'power4.out' }, 0.0);
+
+        // Scene 2: honesty rows
+        tl.fromTo(q('#f02-row1'), { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.42, ease: 'expo.out' }, 1.88);
+        tl.fromTo(q('#f02-row1 .f02-tag'), { scale: 1.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'power4.out' }, 2.06);
+        tl.fromTo(q('#f02-row2'), { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.42, ease: 'expo.out' }, 3.96);
+        tl.fromTo(q('#f02-row2 .f02-tag'), { scale: 1.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'power4.out' }, 4.14);
+
+        // note types on char by char
+        var chars = qa('#f02-note span');
+        for (var i = 0; i < chars.length; i++) {
+          tl.set(chars[i], { opacity: 1 }, 6.44 + i * 0.035);
+        }
+
+        // Scene 3: the turn
+        tl.fromTo(q('#f02-honest'), { scale: 1, y: 0, opacity: 1 }, { scale: 0.55, y: -36, opacity: 0.35, duration: 0.38, ease: 'expo.out' }, 7.79);
+        tl.fromTo(q('#f02-maar'), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: 'power4.out' }, 7.82);
+        // MAAR shrinks into a small kicker above the claim
+        tl.to(q('#f02-maar'), { scale: 0.26, y: -6, duration: 0.32, ease: 'power3.out' }, 9.12);
+        tl.fromTo(q('#f02-l1'), { scale: 1.25, opacity: 0, rotation: -1.5 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.4, ease: 'power4.out' }, 9.20);
+        tl.fromTo(q('#f02-l2'), { scale: 1.25, opacity: 0, rotation: -1.5 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.4, ease: 'power4.out' }, 10.32);
+        tl.fromTo(q('#f02-l3'), { scale: 1.25, opacity: 0, rotation: -1.5 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.4, ease: 'power4.out' }, 11.08);
+
+        // Scene 4: payoff badge, then hold
+        tl.fromTo(q('#f02-badge'), { scale: 1.35, rotation: -10, opacity: 0 }, { scale: 1, rotation: -4, opacity: 1, duration: 0.42, ease: 'back.out(1.6)' }, 12.16);
+
+        tl.set({}, {}, DURATION);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["02-eerlijk"] = tl;
+      })();
+    </script>
+  </div>
+</template>

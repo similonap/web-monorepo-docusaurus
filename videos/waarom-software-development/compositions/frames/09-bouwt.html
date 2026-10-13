@@ -1,0 +1,146 @@
+<template>
+  <div data-hf-id="hf-t1on" id="root" data-composition-id="09-bouwt" data-width="1920" data-height="1080" data-duration="12.42">
+    <style>
+@font-face { font-family: "Archivo Black"; src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+:root {
+  --cm-cream: #EFE9D9; --cm-cream-2: #E4DCC4;
+  --cm-ink: #0F0F0F; --cm-ink-2: #2A2A2A;
+  --cm-green: #1F8A4C; --cm-green-dark: #136636;
+  --cm-pink: #F06CA8; --cm-pink-dark: #D14E8B;
+  --cm-orange: #E85A1F; --cm-yellow: #F5C518;
+  --cm-border: 8px;            /* 0.4cqw @1920 = 7.7px */
+  --cm-rule: 6px;
+  --cm-shadow: 24px 24px 0 var(--cm-orange), 24px 24px 0 4px var(--cm-ink);  /* ONE per frame */
+  --cm-display: "Archivo Black", "Arial Black", sans-serif;
+  --cm-body: "Space Grotesk", Arial, sans-serif;
+  --cm-mono: "JetBrains Mono", monospace;
+}
+/* ground: a full-duration class="clip" layer, never on #root */
+.cm-bg { position: absolute; inset: 0; background: var(--cm-cream); }
+/* Archivo Black: always uppercase, lh 0.92 */
+.cm-display { font-family: var(--cm-display); font-weight: 400; text-transform: uppercase; line-height: 0.92; letter-spacing: -0.01em; color: var(--cm-ink); }
+.cm-mono { font-family: var(--cm-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+/* display ramp in px @1920 */
+.cm-hero { font-size: 298px; }   /* display-hero 15.5cqw, ≤3 short words */
+.cm-xl   { font-size: 211px; }   /* display-xl 11cqw */
+.cm-lg   { font-size: 154px; }   /* display-lg 8cqw */
+.cm-head { font-size: 81px; }    /* display-head 4.2cqw */
+.cm-step { font-size: 46px; }    /* marker / step-title */
+
+/* topbar: kicker-block left, pill right, inset 64px */
+.cm-topbar { position: absolute; left: 64px; right: 64px; top: 48px; height: 52px; display: flex; justify-content: space-between; align-items: center; }
+.cm-kicker { background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 18px; }
+.cm-pill { background: var(--cm-cream); border: 4px solid var(--cm-ink); border-radius: 999px; color: var(--cm-ink); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 22px; }
+
+/* reason number tile (frames 3-9), top-left under topbar */
+.cm-num { position: absolute; left: 96px; top: 140px; width: 150px; height: 150px; border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; font-family: var(--cm-display); font-size: 92px; line-height: 1; color: var(--cm-ink); }
+
+/* generic blocks */
+.cm-card { background: var(--cm-cream); border: var(--cm-border) solid var(--cm-ink); }
+.cm-card-2 { background: var(--cm-cream-2); border: var(--cm-border) solid var(--cm-ink); }
+.cm-marker { background: var(--cm-pink); border: var(--cm-border) solid var(--cm-ink); box-shadow: var(--cm-shadow); padding: 18px 32px; }
+.cm-badge { background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; font-size: 40px; line-height: 1; padding: 14px 22px; color: var(--cm-ink); }  /* rotate(-4deg) via GSAP rotation, not CSS transform */
+.cm-stamp { border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; line-height: 0.92; color: var(--cm-ink); padding: 18px 30px; outline: 5px solid var(--cm-cream); outline-offset: -18px; } /* rotate(-6deg) via GSAP */
+.cm-chip { background: var(--cm-cream); border: 5px solid var(--cm-ink); font-family: var(--cm-mono); font-size: 28px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 18px; color: var(--cm-ink); }
+
+            #root { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; }
+      .f09-num-orange { background: var(--cm-orange); }
+      #f09-top { position: absolute; left: 300px; top: 160px; width: 1500px; transform-origin: 0 0; }
+      #f09-claim { font-size: 150px; white-space: nowrap; }
+      .f09-line { display: block; }
+      .f09-w { display: inline-block; }
+      #f09-bouwt { background: var(--cm-orange); border: var(--cm-border) solid var(--cm-ink); padding: 14px 22px 0; margin-left: 20px; }
+      #f09-chainwrap { display: inline-flex; flex-direction: column; align-items: stretch; margin-top: 70px; }
+      #f09-chain { display: flex; align-items: center; gap: 18px; }
+      .f09-chip { font-size: 34px; font-weight: 700; padding: 14px 24px; }
+      .f09-arrow { width: 90px; height: 40px; overflow: visible; }
+      .f09-arrow path { stroke: var(--cm-ink); stroke-width: 6; fill: none; stroke-linecap: square; }
+      #f09-tag { margin-top: 22px; background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-weight: 700; font-size: 30px; letter-spacing: 0.14em; text-transform: uppercase; padding: 14px 24px; text-align: center; transform-origin: 0 50%; }
+      #f09-end { position: absolute; left: 96px; top: 480px; width: 1760px; }
+      .f09-sub { font-size: 112px; white-space: nowrap; display: block; }
+      #f09-row { display: flex; align-items: center; margin-top: 18px; }
+      #f09-verdwijnt { font-size: 154px; white-space: nowrap; }
+      #f09-badge { margin-left: 44px; font-size: 56px; padding: 20px 30px 14px; box-shadow: var(--cm-shadow); white-space: nowrap; }
+    </style>
+
+    <div data-hf-id="hf-f3xt" class="clip cm-bg" data-start="0" data-duration="12.42" data-track-index="0"></div>
+
+    <div data-hf-id="hf-lz5n" class="clip" id="f09-stage" data-start="0" data-duration="12.42" data-track-index="1" style="position:absolute; inset:0;">
+      <div data-hf-id="hf-j4p7" class="cm-topbar" id="f09-topbar">
+        <div data-hf-id="hf-lih3" class="cm-kicker">Waarom software development</div>
+        <div data-hf-id="hf-d2gt" class="cm-pill">Reden 07 / 07</div>
+      </div>
+      <div data-hf-id="hf-e3np" class="cm-num f09-num-orange" id="f09-num">07</div>
+
+      <div data-hf-id="hf-beki" id="f09-top">
+        <div data-hf-id="hf-kgwt" class="cm-display" id="f09-claim">
+          <span data-hf-id="hf-zhuf" class="f09-line"><span data-hf-id="hf-zclq" class="f09-w" id="f09-iemand">Iemand</span><span data-hf-id="hf-vd4y" class="f09-w" id="f09-bouwt">Bouwt</span></span>
+          <span data-hf-id="hf-bpxz" class="f09-line"><span data-hf-id="hf-b1q2" class="f09-w" id="f09-deai">De AI.</span></span>
+        </div>
+        <div data-hf-id="hf-b53k" id="f09-chainwrap">
+          <div data-hf-id="hf-ej8s" id="f09-chain">
+            <div data-hf-id="hf-qmio" class="cm-chip f09-chip" id="f09-c1">AI-tool</div>
+            <svg data-hf-id="hf-l0vw" class="f09-arrow" id="f09-a1" viewBox="0 0 90 40"><path data-hf-id="hf-ubtj" class="f09-ap" d="M4 20 H80 M64 6 L82 20 L64 34" /></svg>
+            <div data-hf-id="hf-2ewb" class="cm-chip f09-chip" id="f09-c2">Gebouwd</div>
+            <svg data-hf-id="hf-whsf" class="f09-arrow" id="f09-a2" viewBox="0 0 90 40"><path data-hf-id="hf-4p5j" class="f09-ap" d="M4 20 H80 M64 6 L82 20 L64 34" /></svg>
+            <div data-hf-id="hf-2je6" class="cm-chip f09-chip" id="f09-c3">Onderhouden</div>
+          </div>
+          <div data-hf-id="hf-3ax6" id="f09-tag">Door software engineers</div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-sswk" id="f09-end">
+        <span data-hf-id="hf-9ezi" class="cm-display f09-sub" id="f09-s1">Het vak dat</span>
+        <span data-hf-id="hf-7n7v" class="cm-display f09-sub" id="f09-s2">het verandert</span>
+        <div data-hf-id="hf-0edb" id="f09-row">
+          <div data-hf-id="hf-y38r" class="cm-display" id="f09-verdwijnt">Verdwijnt</div>
+          <div data-hf-id="hf-5d0h" class="cm-badge" id="f09-badge">Als laatste</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var DURATION = 11.92;
+        var root = document.querySelector('[data-composition-id="09-bouwt"]');
+        var q = function (s) { return root.querySelector(s); };
+        var tl = gsap.timeline({ paused: true });
+
+        // Scene 1: chrome, tile, claim builds per word
+        tl.fromTo(q("#f09-topbar"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0);
+        tl.fromTo(q("#f09-num"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 0.05);
+        tl.fromTo(q("#f09-iemand"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 1.04);
+        tl.fromTo(q("#f09-bouwt"), { scale: 1.25, rotation: -3, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.4, ease: "power4.out" }, 1.52);
+        tl.fromTo(q("#f09-deai"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 2.08);
+
+        // Scene 2: lifecycle chain + engineer tag
+        tl.fromTo(q("#f09-c1"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 3.52);
+        [["#f09-a1", "#f09-c2", 5.32], ["#f09-a2", "#f09-c3", 6.08]].forEach(function (s) {
+          var arrow = q(s[0]);
+          tl.fromTo(arrow, { x: -24, opacity: 0 }, { x: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, s[2] - 0.12);
+          tl.fromTo(q(s[1]), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, s[2]);
+        });
+        tl.fromTo(q("#f09-tag"), { scaleX: 0, opacity: 1 }, { scaleX: 1, opacity: 1, duration: 0.45, ease: "expo.out" }, 7.36);
+
+        // Scene 3: dim + shift up, payoff headline, held badge
+        tl.fromTo(q("#f09-top"), { opacity: 1, scale: 1, y: 0 }, { opacity: 0.3, scale: 0.5, y: -20, duration: 0.5, ease: "power3.inOut" }, 8.48);
+        tl.fromTo(q("#f09-s1"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 8.76);
+        tl.fromTo(q("#f09-s2"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 9.06);
+        tl.fromTo(q("#f09-verdwijnt"), { scale: 1.25, rotation: -2, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.45, ease: "power4.out" }, 10.56);
+        tl.fromTo(q("#f09-badge"), { scale: 1.35, rotation: -10, opacity: 0 }, { scale: 1, rotation: -4, opacity: 1, duration: 0.42, ease: "back.out(1.6)" }, 11.28);
+
+        tl.set({}, {}, DURATION);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["09-bouwt"] = tl;
+      })();
+    </script>
+  </div>
+</template>

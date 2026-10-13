@@ -1,0 +1,165 @@
+<template>
+  <div data-hf-id="hf-de3p" id="root" data-composition-id="06-tien" data-width="1920" data-height="1080" data-duration="13.54">
+    <style>
+@font-face { font-family: "Archivo Black"; src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+:root {
+  --cm-cream: #EFE9D9; --cm-cream-2: #E4DCC4;
+  --cm-ink: #0F0F0F; --cm-ink-2: #2A2A2A;
+  --cm-green: #1F8A4C; --cm-green-dark: #136636;
+  --cm-pink: #F06CA8; --cm-pink-dark: #D14E8B;
+  --cm-orange: #E85A1F; --cm-yellow: #F5C518;
+  --cm-border: 8px;            /* 0.4cqw @1920 = 7.7px */
+  --cm-rule: 6px;
+  --cm-shadow: 24px 24px 0 var(--cm-orange), 24px 24px 0 4px var(--cm-ink);  /* ONE per frame */
+  --cm-display: "Archivo Black", "Arial Black", sans-serif;
+  --cm-body: "Space Grotesk", Arial, sans-serif;
+  --cm-mono: "JetBrains Mono", monospace;
+}
+/* ground: a full-duration class="clip" layer, never on #root */
+.cm-bg { position: absolute; inset: 0; background: var(--cm-cream); }
+/* Archivo Black: always uppercase, lh 0.92 */
+.cm-display { font-family: var(--cm-display); font-weight: 400; text-transform: uppercase; line-height: 0.92; letter-spacing: -0.01em; color: var(--cm-ink); }
+.cm-mono { font-family: var(--cm-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+/* display ramp in px @1920 */
+.cm-hero { font-size: 298px; }   /* display-hero 15.5cqw, ≤3 short words */
+.cm-xl   { font-size: 211px; }   /* display-xl 11cqw */
+.cm-lg   { font-size: 154px; }   /* display-lg 8cqw */
+.cm-head { font-size: 81px; }    /* display-head 4.2cqw */
+.cm-step { font-size: 46px; }    /* marker / step-title */
+
+/* topbar: kicker-block left, pill right, inset 64px */
+.cm-topbar { position: absolute; left: 64px; right: 64px; top: 48px; height: 52px; display: flex; justify-content: space-between; align-items: center; }
+.cm-kicker { background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 18px; }
+.cm-pill { background: var(--cm-cream); border: 4px solid var(--cm-ink); border-radius: 999px; color: var(--cm-ink); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 22px; }
+
+/* reason number tile (frames 3-9), top-left under topbar */
+.cm-num { position: absolute; left: 96px; top: 140px; width: 150px; height: 150px; border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; font-family: var(--cm-display); font-size: 92px; line-height: 1; color: var(--cm-ink); }
+
+/* generic blocks */
+.cm-card { background: var(--cm-cream); border: var(--cm-border) solid var(--cm-ink); }
+.cm-card-2 { background: var(--cm-cream-2); border: var(--cm-border) solid var(--cm-ink); }
+.cm-marker { background: var(--cm-pink); border: var(--cm-border) solid var(--cm-ink); box-shadow: var(--cm-shadow); padding: 18px 32px; }
+.cm-badge { background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; font-size: 40px; line-height: 1; padding: 14px 22px; color: var(--cm-ink); }  /* rotate(-4deg) via GSAP rotation, not CSS transform */
+.cm-stamp { border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; line-height: 0.92; color: var(--cm-ink); padding: 18px 30px; outline: 5px solid var(--cm-cream); outline-offset: -18px; } /* rotate(-6deg) via GSAP */
+.cm-chip { background: var(--cm-cream); border: 5px solid var(--cm-ink); font-family: var(--cm-mono); font-size: 28px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 18px; color: var(--cm-ink); }
+
+      #root { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; }
+      .f06-num-yellow { background: var(--cm-yellow); }
+      #f06-ring { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 490px; }
+      #f06-lines { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+      .f06-line { stroke: var(--cm-ink); stroke-width: 4; fill: none; }
+      .f06-chip { position: absolute; width: 140px; height: 58px; box-sizing: border-box; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 500; }
+      #f06-hub { position: absolute; left: 740px; top: 360px; width: 440px; height: 260px; box-sizing: border-box; background: var(--cm-ink); border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; }
+      #f06-hub .cm-display { color: var(--cm-cream); padding-top: 14px; }
+      #f06-vs { position: absolute; left: 870px; top: 640px; width: 180px; height: 52px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 0; }
+      #f06-strike { position: absolute; left: -14px; right: -14px; top: 20px; height: 6px; background: var(--cm-ink); transform-origin: 0 50%; }
+      #f06-juniors { position: absolute; left: 660px; top: 808px; width: 600px; height: 56px; box-sizing: border-box; background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 28px; letter-spacing: 0.12em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+      #f06-koffie { position: absolute; left: 1500px; top: 138px; width: 340px; box-sizing: border-box; font-size: 36px; line-height: 1.0; text-align: center; }
+      .f06-eq { position: absolute; left: 1010px; }
+      #f06-eq1 { top: 250px; }
+      #f06-eq2 { top: 358px; }
+      #f06-eq3 { top: 466px; }
+      #f06-eq4 { top: 570px; background: var(--cm-green); color: var(--cm-ink); padding: 22px 34px 14px; }
+    </style>
+
+    <div data-hf-id="hf-ytiv" class="clip cm-bg" data-start="0" data-duration="13.54" data-track-index="0"></div>
+
+    <div data-hf-id="hf-alhy" class="clip" id="f06-stage" data-start="0" data-duration="13.54" data-track-index="1" style="position:absolute; inset:0;">
+      <div data-hf-id="hf-q68u" class="cm-topbar" id="f06-topbar">
+        <div data-hf-id="hf-lih3" class="cm-kicker">Waarom software development</div>
+        <div data-hf-id="hf-79vm" class="cm-pill">Reden 04 / 07</div>
+      </div>
+      <div data-hf-id="hf-cgzi" class="cm-num f06-num-yellow" id="f06-num">04</div>
+
+      <div data-hf-id="hf-d88m" id="f06-ring">
+        <svg data-hf-id="hf-2gje" id="f06-lines" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+          <line data-hf-id="hf-i6qv" class="f06-line" x1="960" y1="490" x2="1158" y2="237" />
+          <line data-hf-id="hf-g892" class="f06-line" x1="960" y1="490" x2="1478" y2="334" />
+          <line data-hf-id="hf-qs6c" class="f06-line" x1="960" y1="490" x2="1600" y2="490" />
+          <line data-hf-id="hf-ysq8" class="f06-line" x1="960" y1="490" x2="1478" y2="646" />
+          <line data-hf-id="hf-g9zf" class="f06-line" x1="960" y1="490" x2="1158" y2="743" />
+          <line data-hf-id="hf-agl5" class="f06-line" x1="960" y1="490" x2="762" y2="743" />
+          <line data-hf-id="hf-03sg" class="f06-line" x1="960" y1="490" x2="442" y2="646" />
+          <line data-hf-id="hf-7f3s" class="f06-line" x1="960" y1="490" x2="320" y2="490" />
+          <line data-hf-id="hf-llae" class="f06-line" x1="960" y1="490" x2="442" y2="334" />
+          <line data-hf-id="hf-9i5l" class="f06-line" x1="960" y1="490" x2="762" y2="237" />
+        </svg>
+        <div data-hf-id="hf-kqgy" class="cm-chip f06-chip" style="left:1088px; top:208px;" data-dx="-198" data-dy="253">AI 01</div>
+        <div data-hf-id="hf-rf0p" class="cm-chip f06-chip" style="left:1408px; top:305px;" data-dx="-518" data-dy="156">AI 02</div>
+        <div data-hf-id="hf-5ekv" class="cm-chip f06-chip" style="left:1530px; top:461px;" data-dx="-640" data-dy="0">AI 03</div>
+        <div data-hf-id="hf-c2va" class="cm-chip f06-chip" style="left:1408px; top:617px;" data-dx="-518" data-dy="-156">AI 04</div>
+        <div data-hf-id="hf-yzh9" class="cm-chip f06-chip" style="left:1088px; top:714px;" data-dx="-198" data-dy="-253">AI 05</div>
+        <div data-hf-id="hf-i9cl" class="cm-chip f06-chip" style="left:692px; top:714px;" data-dx="198" data-dy="-253">AI 06</div>
+        <div data-hf-id="hf-lx8z" class="cm-chip f06-chip" style="left:372px; top:617px;" data-dx="518" data-dy="-156">AI 07</div>
+        <div data-hf-id="hf-filx" class="cm-chip f06-chip" style="left:250px; top:461px;" data-dx="640" data-dy="0">AI 08</div>
+        <div data-hf-id="hf-bqak" class="cm-chip f06-chip" style="left:372px; top:305px;" data-dx="518" data-dy="156">AI 09</div>
+        <div data-hf-id="hf-1aw1" class="cm-chip f06-chip" style="left:692px; top:208px;" data-dx="198" data-dy="253">AI 10</div>
+        <div data-hf-id="hf-6hfx" id="f06-hub"><div data-hf-id="hf-06h1" class="cm-display cm-xl">Jij</div></div>
+        <div data-hf-id="hf-ceys" class="cm-chip" id="f06-vs">VS AI<div data-hf-id="hf-mj5y" id="f06-strike"></div></div>
+        <div data-hf-id="hf-y7u4" id="f06-juniors">Supersnelle junioren</div>
+        <div data-hf-id="hf-3835" class="cm-badge" id="f06-koffie">Koffie halen?<br data-hf-id="hf-x5px">Nooit.</div>
+      </div>
+
+      <div data-hf-id="hf-bvol" class="cm-display cm-head f06-eq" id="f06-eq1">1 Engineer</div>
+      <div data-hf-id="hf-nq3f" class="cm-display cm-head f06-eq" id="f06-eq2">+ AI</div>
+      <div data-hf-id="hf-3qdm" class="cm-display cm-head f06-eq" id="f06-eq3">=</div>
+      <div data-hf-id="hf-eipd" class="cm-display cm-head cm-marker f06-eq" id="f06-eq4">1 heel team</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var DURATION = 13.04;
+        var root = document.querySelector('[data-composition-id="06-tien"]');
+        var q = function (s) { return root.querySelector(s); };
+        var qa = function (s) { return Array.prototype.slice.call(root.querySelectorAll(s)); };
+        var tl = gsap.timeline({ paused: true });
+
+        // Scene 1: chrome, tile, hub, VS AI strike
+        tl.fromTo(q("#f06-topbar"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0);
+        tl.fromTo(q("#f06-num"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 0.05);
+        tl.fromTo(q("#f06-hub"), { scale: 1.25, rotation: -2, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.4, ease: "power4.out" }, 1.12);
+        tl.fromTo(q("#f06-vs"), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" }, 1.40);
+        tl.fromTo(q("#f06-strike"), { scaleX: 0 }, { scaleX: 1, duration: 0.25, ease: "power3.out" }, 1.84);
+        tl.to(q("#f06-vs"), { opacity: 0.45, duration: 0.25, ease: "power2.out" }, 2.0);
+
+        // Scene 2: ten AI chips burst outward + connector lines draw
+        var lines = qa(".f06-line");
+        lines.forEach(function (ln, i) {
+          var dx = ln.x2.baseVal.value - ln.x1.baseVal.value;
+          var dy = ln.y2.baseVal.value - ln.y1.baseVal.value;
+          var len = Math.ceil(Math.sqrt(dx * dx + dy * dy));
+          ln.setAttribute("stroke-dasharray", len + " " + len);
+          tl.fromTo(ln, { strokeDashoffset: len }, { strokeDashoffset: 0, duration: 0.45, ease: "power3.out" }, 3.80 + i * 0.04);
+        });
+        qa(".f06-chip").forEach(function (chip, i) {
+          var dx = parseFloat(chip.getAttribute("data-dx"));
+          var dy = parseFloat(chip.getAttribute("data-dy"));
+          tl.fromTo(chip, { x: dx, y: dy, scale: 0.3, opacity: 0 }, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.55, ease: "expo.out" }, 3.80 + i * 0.04);
+        });
+
+        // Scene 3: juniors label, coffee joke badge
+        tl.fromTo(q("#f06-juniors"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 5.92);
+        tl.fromTo(q("#f06-koffie"), { scale: 1.35, rotation: -10, opacity: 0 }, { scale: 1, rotation: -4, opacity: 1, duration: 0.42, ease: "back.out(1.6)" }, 7.84);
+
+        // Scene 4: ring compresses left, equation builds
+        tl.fromTo(q("#f06-ring"), { scale: 1, x: 0 }, { scale: 0.5, x: -440, duration: 0.7, ease: "power3.inOut" }, 9.04);
+        tl.fromTo(q("#f06-eq1"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 9.28);
+        tl.fromTo(q("#f06-eq2"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 9.92);
+        tl.fromTo(q("#f06-eq3"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 10.80);
+        tl.fromTo(q("#f06-eq4"), { scale: 1.25, rotation: -2, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.45, ease: "power4.out" }, 11.76);
+
+        tl.set({}, {}, DURATION);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["06-tien"] = tl;
+      })();
+    </script>
+  </div>
+</template>

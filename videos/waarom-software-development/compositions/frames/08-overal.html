@@ -1,0 +1,227 @@
+<template>
+  <div data-hf-id="hf-j4wh" id="root" data-composition-id="08-overal" data-width="1920" data-height="1080" data-duration="16.32">
+    <style>
+@font-face { font-family: "Archivo Black"; src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+:root {
+  --cm-cream: #EFE9D9; --cm-cream-2: #E4DCC4;
+  --cm-ink: #0F0F0F; --cm-ink-2: #2A2A2A;
+  --cm-green: #1F8A4C; --cm-green-dark: #136636;
+  --cm-pink: #F06CA8; --cm-pink-dark: #D14E8B;
+  --cm-orange: #E85A1F; --cm-yellow: #F5C518;
+  --cm-border: 8px;            /* 0.4cqw @1920 = 7.7px */
+  --cm-rule: 6px;
+  --cm-shadow: 24px 24px 0 var(--cm-orange), 24px 24px 0 4px var(--cm-ink);  /* ONE per frame */
+  --cm-display: "Archivo Black", "Arial Black", sans-serif;
+  --cm-body: "Space Grotesk", Arial, sans-serif;
+  --cm-mono: "JetBrains Mono", monospace;
+}
+/* ground: a full-duration class="clip" layer, never on #root */
+.cm-bg { position: absolute; inset: 0; background: var(--cm-cream); }
+/* Archivo Black: always uppercase, lh 0.92 */
+.cm-display { font-family: var(--cm-display); font-weight: 400; text-transform: uppercase; line-height: 0.92; letter-spacing: -0.01em; color: var(--cm-ink); }
+.cm-mono { font-family: var(--cm-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+/* display ramp in px @1920 */
+.cm-hero { font-size: 298px; }   /* display-hero 15.5cqw, ≤3 short words */
+.cm-xl   { font-size: 211px; }   /* display-xl 11cqw */
+.cm-lg   { font-size: 154px; }   /* display-lg 8cqw */
+.cm-head { font-size: 81px; }    /* display-head 4.2cqw */
+.cm-step { font-size: 46px; }    /* marker / step-title */
+
+/* topbar: kicker-block left, pill right, inset 64px */
+.cm-topbar { position: absolute; left: 64px; right: 64px; top: 48px; height: 52px; display: flex; justify-content: space-between; align-items: center; }
+.cm-kicker { background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 18px; }
+.cm-pill { background: var(--cm-cream); border: 4px solid var(--cm-ink); border-radius: 999px; color: var(--cm-ink); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 22px; }
+
+/* reason number tile (frames 3-9), top-left under topbar */
+.cm-num { position: absolute; left: 96px; top: 140px; width: 150px; height: 150px; border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; font-family: var(--cm-display); font-size: 92px; line-height: 1; color: var(--cm-ink); }
+
+/* generic blocks */
+.cm-card { background: var(--cm-cream); border: var(--cm-border) solid var(--cm-ink); }
+.cm-card-2 { background: var(--cm-cream-2); border: var(--cm-border) solid var(--cm-ink); }
+.cm-marker { background: var(--cm-pink); border: var(--cm-border) solid var(--cm-ink); box-shadow: var(--cm-shadow); padding: 18px 32px; }
+.cm-badge { background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; font-size: 40px; line-height: 1; padding: 14px 22px; color: var(--cm-ink); }  /* rotate(-4deg) via GSAP rotation, not CSS transform */
+.cm-stamp { border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; line-height: 0.92; color: var(--cm-ink); padding: 18px 30px; outline: 5px solid var(--cm-cream); outline-offset: -18px; } /* rotate(-6deg) via GSAP */
+.cm-chip { background: var(--cm-cream); border: 5px solid var(--cm-ink); font-family: var(--cm-mono); font-size: 28px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 18px; color: var(--cm-ink); }
+
+      #root { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; }
+      .f08-num-pink { background: var(--cm-pink); }
+
+      /* Scene 1: problem -> 2x2 -> system */
+      #f08-diag { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 760px 520px; }
+      #f08-lines { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+      .f08-line { stroke: var(--cm-ink); stroke-width: 6; fill: none; }
+      #f08-prob { position: absolute; left: 560px; top: 320px; width: 400px; height: 400px; box-sizing: border-box; background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; }
+      #f08-prob .cm-display { font-size: 58px; padding-top: 8px; }
+      .f08-sq { position: absolute; width: 200px; height: 200px; box-sizing: border-box; background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); }
+      #f08-sys { position: absolute; left: 1080px; top: 496px; font-size: 26px; }
+      #f08-sys-rule { position: absolute; left: 1020px; top: 517px; width: 60px; height: 6px; background: var(--cm-ink); transform-origin: 0 50%; }
+      #f08-check { position: absolute; left: 538px; top: 808px; width: 444px; height: 64px; box-sizing: border-box; padding: 0 18px; display: flex; align-items: center; justify-content: center; gap: 16px; }
+      #f08-box { width: 36px; height: 36px; box-sizing: border-box; border: 5px solid var(--cm-ink); background: var(--cm-cream); position: relative; flex: 0 0 auto; }
+      #f08-tick { position: absolute; left: -2px; top: -8px; width: 44px; height: 44px; overflow: visible; }
+      #f08-tick path { stroke: var(--cm-ink); stroke-width: 7; fill: none; stroke-linecap: square; }
+
+      /* Scene 2: traveler + stations */
+      .f08-station { position: absolute; top: 360px; width: 435px; height: 200px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; text-align: center; }
+      .f08-station .cm-display { font-size: 54px; padding-top: 6px; }
+      #f08-st1 { left: 420px; }
+      #f08-st2 { left: 905px; }
+      #f08-st3 { left: 1390px; }
+      #f08-trav { position: absolute; left: 96px; top: 390px; width: 300px; height: 170px; box-sizing: border-box; background: var(--cm-ink); border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; }
+      #f08-trav-txt { font-family: var(--cm-display); text-transform: uppercase; line-height: 0.92; font-size: 40px; color: var(--cm-cream); text-align: center; padding-top: 6px; }
+      #f08-badge { position: absolute; left: -110px; top: 150px; font-size: 54px; padding: 16px 26px 12px; white-space: nowrap; box-shadow: var(--cm-shadow); }
+
+      /* Scene 3: job title strip */
+      #f08-strip { position: absolute; left: 420px; top: 210px; width: 1405px; height: 112px; box-sizing: border-box; background: var(--cm-cream-2); border: var(--cm-border) solid var(--cm-ink); }
+      #f08-strip-label { position: absolute; left: 32px; top: 34px; font-size: 30px; color: var(--cm-ink); }
+      .f08-tok { position: absolute; left: 260px; top: 20px; font-size: 72px; white-space: nowrap; }
+    </style>
+
+    <div data-hf-id="hf-lfos" class="clip cm-bg" data-start="0" data-duration="16.32" data-track-index="0"></div>
+
+    <div data-hf-id="hf-9wtt" class="clip" id="f08-stage" data-start="0" data-duration="16.32" data-track-index="1" style="position:absolute; inset:0;">
+      <div data-hf-id="hf-6rf8" class="cm-topbar" id="f08-topbar">
+        <div data-hf-id="hf-lih3" class="cm-kicker">Waarom software development</div>
+        <div data-hf-id="hf-zohw" class="cm-pill">Reden 06 / 07</div>
+      </div>
+      <div data-hf-id="hf-axx0" class="cm-num f08-num-pink" id="f08-num">06</div>
+
+      <!-- Scene 1 diagram group -->
+      <div data-hf-id="hf-04fz" id="f08-diag">
+        <svg data-hf-id="hf-2h0o" id="f08-lines" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+          <line data-hf-id="hf-5spv" class="f08-line" x1="600" y1="360" x2="920" y2="360" />
+          <line data-hf-id="hf-jvi7" class="f08-line" x1="920" y1="360" x2="920" y2="680" />
+          <line data-hf-id="hf-nbmv" class="f08-line" x1="920" y1="680" x2="600" y2="680" />
+          <line data-hf-id="hf-3whb" class="f08-line" x1="600" y1="680" x2="600" y2="360" />
+          <line data-hf-id="hf-x7a0" class="f08-line" x1="600" y1="360" x2="920" y2="680" />
+        </svg>
+        <div data-hf-id="hf-qr6y" class="f08-sq" id="f08-sq1" style="left:500px; top:260px;"></div>
+        <div data-hf-id="hf-9ak0" class="f08-sq" id="f08-sq2" style="left:820px; top:260px;"></div>
+        <div data-hf-id="hf-h637" class="f08-sq" id="f08-sq3" style="left:500px; top:580px;"></div>
+        <div data-hf-id="hf-ix1p" class="f08-sq" id="f08-sq4" style="left:820px; top:580px;"></div>
+        <div data-hf-id="hf-3pj7" id="f08-prob"><div data-hf-id="hf-cf2f" class="cm-display">Probleem</div></div>
+        <div data-hf-id="hf-dmy8" id="f08-sys-rule"></div>
+        <div data-hf-id="hf-d7oe" class="cm-kicker" id="f08-sys">Systeem</div>
+        <div data-hf-id="hf-su12" class="cm-chip" id="f08-check">
+          <span data-hf-id="hf-sttw">Aanname</span>
+          <span data-hf-id="hf-e1ak" id="f08-box">
+            <svg data-hf-id="hf-2f7d" id="f08-tick" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg"><path data-hf-id="hf-9z4w" d="M8 22 L18 32 L38 6" /></svg>
+          </span>
+          <span data-hf-id="hf-mgr9">Getest</span>
+        </div>
+      </div>
+
+      <!-- Scene 3 title strip -->
+      <div data-hf-id="hf-tkt0" id="f08-strip">
+        <div data-hf-id="hf-r60d" class="cm-mono" id="f08-strip-label">Jobtitel:</div>
+        <div data-hf-id="hf-xuvy" class="cm-display f08-tok" id="f08-tok1">Developer</div>
+        <div data-hf-id="hf-67s6" class="cm-display f08-tok" id="f08-tok2">Architect</div>
+        <div data-hf-id="hf-y3cq" class="cm-display f08-tok" id="f08-tok3">CTO</div>
+        <div data-hf-id="hf-a68o" class="cm-display f08-tok" id="f08-tok4">Founder</div>
+      </div>
+
+      <!-- Scene 2 stations -->
+      <div data-hf-id="hf-f6qz" class="cm-card f08-station" id="f08-st1"><div data-hf-id="hf-d44g" class="cm-display">AI-bedrijf</div></div>
+      <div data-hf-id="hf-4b9c" class="cm-card f08-station" id="f08-st2"><div data-hf-id="hf-v4rc" class="cm-display">Ziekenhuis</div></div>
+      <div data-hf-id="hf-7aix" class="cm-card f08-station" id="f08-st3"><div data-hf-id="hf-ewsk" class="cm-display">Eigen<br data-hf-id="hf-x5px">startup</div></div>
+
+      <!-- traveler -->
+      <div data-hf-id="hf-ykst" id="f08-trav">
+        <div data-hf-id="hf-iqb8" id="f08-trav-txt">Jouw<br data-hf-id="hf-rsrt">denkwijze</div>
+        <div data-hf-id="hf-e7ta" class="cm-badge" id="f08-badge">Goud waard</div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var DURATION = 15.92;
+        var root = document.querySelector('[data-composition-id="08-overal"]');
+        var q = function (s) { return root.querySelector(s); };
+        var qa = function (s) { return Array.prototype.slice.call(root.querySelectorAll(s)); };
+        var tl = gsap.timeline({ paused: true });
+
+        // Initial hidden states for later-scene elements (set at t=0, seek-safe)
+        tl.set([q("#f08-prob"), q("#f08-sys"), q("#f08-check")], { opacity: 0 }, 0);
+        tl.set(qa(".f08-sq"), { opacity: 0 }, 0);
+        tl.set([q("#f08-trav"), q("#f08-badge"), q("#f08-strip")], { opacity: 0 }, 0);
+        tl.set(qa(".f08-station"), { opacity: 0 }, 0);
+        tl.set(qa(".f08-tok"), { opacity: 0 }, 0);
+        tl.set(q("#f08-sys-rule"), { scaleX: 0 }, 0);
+
+        // ---- Scene 1 (0.0-6.3): chrome, tile, problem block, split, system, check
+        tl.fromTo(q("#f08-topbar"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0);
+        tl.fromTo(q("#f08-num"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 0.05);
+
+        tl.fromTo(q("#f08-prob"), { scale: 1.25, rotation: -2, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.4, ease: "power4.out" }, 1.36);
+
+        // split @2.36: swap the block for four merged squares, then open the gap
+        tl.set(q("#f08-prob"), { opacity: 0 }, 2.36);
+        var offs = [[60, 60], [-60, 60], [60, -60], [-60, -60]];
+        qa(".f08-sq").forEach(function (sq, i) {
+          tl.set(sq, { opacity: 1 }, 2.36);
+          tl.fromTo(sq, { x: offs[i][0], y: offs[i][1] }, { x: 0, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, 2.36);
+        });
+
+        // connect @3.28
+        qa(".f08-line").forEach(function (ln, i) {
+          var dx = ln.x2.baseVal.value - ln.x1.baseVal.value;
+          var dy = ln.y2.baseVal.value - ln.y1.baseVal.value;
+          var len = Math.ceil(Math.sqrt(dx * dx + dy * dy));
+          ln.setAttribute("stroke-dasharray", len + " " + len);
+          tl.fromTo(ln, { strokeDashoffset: len }, { strokeDashoffset: 0, duration: 0.4, ease: "power3.out" }, 3.28 + i * 0.07);
+        });
+        tl.to(q("#f08-sys-rule"), { scaleX: 1, duration: 0.3, ease: "power3.out" }, 3.5);
+        tl.fromTo(q("#f08-sys"), { x: -20, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 3.6);
+
+        // assumption tested @5.04
+        tl.fromTo(q("#f08-check"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 5.04);
+        var tick = q("#f08-tick path");
+        tick.setAttribute("stroke-dasharray", "60 60");
+        tl.fromTo(tick, { strokeDashoffset: 60 }, { strokeDashoffset: 0, duration: 0.3, ease: "power3.out" }, 5.32);
+
+        // ---- Scene 2 (6.3-11.7): compress into traveler, stations, traveler moves
+        tl.to(q("#f08-diag"), { scale: 0.3, x: -514, y: -45, opacity: 0, duration: 0.45, ease: "power3.inOut" }, 7.41);
+        tl.fromTo(q("#f08-trav"), { scale: 1.25, rotation: -2, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.4, ease: "power4.out" }, 7.62);
+
+        var stations = [
+          { el: q("#f08-st1"), t: 8.24, x: 391.5 },
+          { el: q("#f08-st2"), t: 9.40, x: 876.5 },
+          { el: q("#f08-st3"), t: 10.80, x: 1361.5 }
+        ];
+        stations.forEach(function (s, i) {
+          tl.fromTo(s.el, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, s.t);
+          tl.to(q("#f08-trav"), { x: s.x, y: 210, duration: 0.5, ease: "power3.inOut" }, s.t + 0.05);
+          tl.to(s.el, { backgroundColor: "#F06CA8", duration: 0.2, ease: "power2.out" }, s.t + 0.4);
+          if (i > 0) {
+            tl.to(stations[i - 1].el, { backgroundColor: "#EFE9D9", duration: 0.2, ease: "power2.out" }, s.t + 0.4);
+          }
+        });
+
+        // ---- Scene 3 (11.7-14.9): job title token cycle, hard cuts
+        tl.fromTo(q("#f08-strip"), { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 11.96);
+        var toks = qa(".f08-tok");
+        var tt = [11.96, 12.64, 13.10, 13.50];
+        toks.forEach(function (tok, i) {
+          tl.set(tok, { opacity: 1 }, tt[i]);
+          if (i > 0) { tl.set(toks[i - 1], { opacity: 0 }, tt[i]); }
+        });
+
+        // ---- Scene 4 (14.9-end): traveler goes gold + badge
+        tl.to(q("#f08-trav"), { backgroundColor: "#F5C518", duration: 0.25, ease: "power2.out" }, 15.08);
+        tl.to(q("#f08-trav-txt"), { color: "#0F0F0F", duration: 0.25, ease: "power2.out" }, 15.08);
+        tl.fromTo(q("#f08-badge"), { scale: 1.35, rotation: -10, opacity: 0 }, { scale: 1, rotation: -4, opacity: 1, duration: 0.42, ease: "back.out(1.6)" }, 15.08);
+
+        tl.set({}, {}, DURATION);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["08-overal"] = tl;
+      })();
+    </script>
+  </div>
+</template>

@@ -1,0 +1,9 @@
+@font-face { font-family: "Archivo Black"; src: url("../assets/fonts/archivo-black-latin-400-normal.woff2"); }
+@font-face { font-family: "JetBrains Mono"; src: url("../assets/fonts/jetbrains-mono-latin-700-normal.woff2"); font-weight: 700; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1280px; height: 720px; overflow: hidden; }
+body { background: #EFE9D9; position: relative; font-family: "Archivo Black", sans-serif; color: #0F0F0F; text-transform: uppercase; }
+.d { line-height: 0.9; letter-spacing: -0.01em; }
+.box { border: 8px solid #0F0F0F; }
+.shadow { box-shadow: 18px 18px 0 #E85A1F, 18px 18px 0 4px #0F0F0F; }
+.mono { font-family: "JetBrains Mono", monospace; font-weight: 700; letter-spacing: 0.1em; }

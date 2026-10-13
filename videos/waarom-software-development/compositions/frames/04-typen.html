@@ -1,0 +1,173 @@
+<template id="04-typen-template">
+  <div data-hf-id="hf-10bc" id="root" data-composition-id="04-typen" data-width="1920" data-height="1080" data-duration="14.92">
+    <style>
+      @font-face { font-family: "Archivo Black"; src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+      :root {
+        --cm-cream: #EFE9D9; --cm-cream-2: #E4DCC4;
+        --cm-ink: #0F0F0F; --cm-ink-2: #2A2A2A;
+        --cm-green: #1F8A4C; --cm-green-dark: #136636;
+        --cm-pink: #F06CA8; --cm-pink-dark: #D14E8B;
+        --cm-orange: #E85A1F; --cm-yellow: #F5C518;
+        --cm-border: 8px;            /* 0.4cqw @1920 = 7.7px */
+        --cm-rule: 6px;
+        --cm-shadow: 24px 24px 0 var(--cm-orange), 24px 24px 0 4px var(--cm-ink);  /* ONE per frame */
+        --cm-display: "Archivo Black", "Arial Black", sans-serif;
+        --cm-body: "Space Grotesk", Arial, sans-serif;
+        --cm-mono: "JetBrains Mono", monospace;
+      }
+      /* ground: a full-duration class="clip" layer, never on #root */
+      .cm-bg { position: absolute; inset: 0; background: var(--cm-cream); }
+      /* Archivo Black: always uppercase, lh 0.92 */
+      .cm-display { font-family: var(--cm-display); font-weight: 400; text-transform: uppercase; line-height: 0.92; letter-spacing: -0.01em; color: var(--cm-ink); }
+      .cm-mono { font-family: var(--cm-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+      /* display ramp in px @1920 */
+      .cm-hero { font-size: 298px; }   /* display-hero 15.5cqw, ≤3 short words */
+      .cm-xl   { font-size: 211px; }   /* display-xl 11cqw */
+      .cm-lg   { font-size: 154px; }   /* display-lg 8cqw */
+      .cm-head { font-size: 81px; }    /* display-head 4.2cqw */
+      .cm-step { font-size: 46px; }    /* marker / step-title */
+
+      /* topbar: kicker-block left, pill right, inset 64px */
+      .cm-topbar { position: absolute; left: 64px; right: 64px; top: 48px; height: 52px; display: flex; justify-content: space-between; align-items: center; }
+      .cm-kicker { background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 18px; }
+      .cm-pill { background: var(--cm-cream); border: 4px solid var(--cm-ink); border-radius: 999px; color: var(--cm-ink); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 22px; }
+
+      /* reason number tile (frames 3-9), top-left under topbar */
+      .cm-num { position: absolute; left: 96px; top: 140px; width: 150px; height: 150px; border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; font-family: var(--cm-display); font-size: 92px; line-height: 1; color: var(--cm-ink); }
+
+      /* generic blocks */
+      .cm-card { background: var(--cm-cream); border: var(--cm-border) solid var(--cm-ink); }
+      .cm-card-2 { background: var(--cm-cream-2); border: var(--cm-border) solid var(--cm-ink); }
+      .cm-marker { background: var(--cm-pink); border: var(--cm-border) solid var(--cm-ink); box-shadow: var(--cm-shadow); padding: 18px 32px; }
+      .cm-badge { background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; font-size: 40px; line-height: 1; padding: 14px 22px; color: var(--cm-ink); }  /* rotate(-4deg) via GSAP rotation, not CSS transform */
+      .cm-stamp { border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; line-height: 0.92; color: var(--cm-ink); padding: 18px 30px; outline: 5px solid var(--cm-cream); outline-offset: -18px; } /* rotate(-6deg) via GSAP */
+      .cm-chip { background: var(--cm-cream); border: 5px solid var(--cm-ink); font-family: var(--cm-mono); font-size: 28px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 18px; color: var(--cm-ink); }
+
+      /* ---- frame 04 specifics ---- */
+      #root { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; container-type: size; }
+      #f04-num { background: var(--cm-pink); }
+      #f04-daylabel { position: absolute; left: 290px; top: 196px; font-size: 30px; letter-spacing: 0.14em; color: var(--cm-ink); }
+      #f04-bar { position: absolute; left: 96px; top: 400px; width: 1728px; height: 150px; box-sizing: border-box; overflow: hidden; }
+      .f04-seg { position: absolute; top: 0; height: 134px; }
+      .f04-fill { position: absolute; inset: 0; transform-origin: 0% 50%; }
+      .f04-rule { position: absolute; top: 0; right: 0; width: var(--cm-rule); height: 134px; background: var(--cm-ink); }
+      .f04-lbl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; }
+      #f04-seg-code { left: 0; width: 206px; }
+      #f04-seg-code .f04-fill { background: var(--cm-cream-2); }
+      #f04-seg-prob { left: 206px; width: 616px; }
+      #f04-seg-prob .f04-fill { background: var(--cm-yellow); }
+      #f04-seg-keus { left: 822px; width: 445px; }
+      #f04-seg-keus .f04-fill { background: var(--cm-green); }
+      #f04-seg-keus .f04-lbl { color: var(--cm-cream); }
+      #f04-seg-prod { left: 1267px; width: 445px; }
+      #f04-seg-prod .f04-fill { background: var(--cm-pink); }
+      #f04-caret { position: absolute; left: 40px; top: 35px; width: 8px; height: 64px; background: var(--cm-ink); }
+      #f04-codelbl { position: absolute; left: 104px; top: 570px; font-size: 28px; letter-spacing: 0.08em; color: var(--cm-ink); display: flex; align-items: center; gap: 12px; }
+      #f04-codelbl-tick { width: 6px; height: 30px; background: var(--cm-ink); }
+      #f04-badge { position: absolute; left: 1494px; top: 318px; font-family: var(--cm-mono); font-weight: 700; font-size: 44px; letter-spacing: 0.04em; padding: 12px 24px; }
+      #f04-ai { position: absolute; left: 70px; top: 366px; background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-weight: 700; font-size: 26px; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 18px; white-space: nowrap; }
+      #f04-markerwrap { position: absolute; left: 0; right: 0; top: 640px; display: flex; justify-content: center; }
+      #f04-marker { white-space: nowrap; padding: 18px 40px; }
+    </style>
+
+    <div data-hf-id="hf-44no" id="f04-bg" class="clip cm-bg" data-start="0" data-duration="14.92" data-track-index="0"></div>
+
+    <div data-hf-id="hf-yg2w" id="f04-topbar" class="cm-topbar">
+      <div data-hf-id="hf-35qf" class="cm-kicker">WAAROM SOFTWARE DEVELOPMENT</div>
+      <div data-hf-id="hf-12pc" class="cm-pill">REDEN 02 / 07</div>
+    </div>
+
+    <div data-hf-id="hf-pjfg" id="f04-num" class="cm-num">02</div>
+    <div data-hf-id="hf-k6l6" id="f04-daylabel" class="cm-mono">EEN WERKDAG</div>
+
+    <div data-hf-id="hf-w75d" id="f04-bar" class="cm-card">
+      <div data-hf-id="hf-pnd4" id="f04-seg-code" class="f04-seg">
+        <div data-hf-id="hf-khak" class="f04-fill"></div>
+        <div data-hf-id="hf-armb" id="f04-caret"></div>
+        <div data-hf-id="hf-qmgd" class="f04-rule"></div>
+      </div>
+      <div data-hf-id="hf-lpra" id="f04-seg-prob" class="f04-seg">
+        <div data-hf-id="hf-e6qs" class="f04-fill"></div>
+        <div data-hf-id="hf-3axl" class="f04-lbl cm-display cm-step">PROBLEEM<br data-hf-id="hf-x5px">UITZOEKEN</div>
+        <div data-hf-id="hf-x0bl" class="f04-rule"></div>
+      </div>
+      <div data-hf-id="hf-l6fb" id="f04-seg-keus" class="f04-seg">
+        <div data-hf-id="hf-cztp" class="f04-fill"></div>
+        <div data-hf-id="hf-b36o" class="f04-lbl cm-display cm-step">KEUZES<br data-hf-id="hf-rsrt">MAKEN</div>
+        <div data-hf-id="hf-y78o" class="f04-rule"></div>
+      </div>
+      <div data-hf-id="hf-vtl4" id="f04-seg-prod" class="f04-seg">
+        <div data-hf-id="hf-de4q" class="f04-fill"></div>
+        <div data-hf-id="hf-fkf5" class="f04-lbl cm-display cm-step">PRODUCTIE<br data-hf-id="hf-szow">PLAT</div>
+      </div>
+    </div>
+
+    <div data-hf-id="hf-cmd3" id="f04-codelbl" class="cm-mono"><span data-hf-id="hf-pi1e" id="f04-codelbl-tick"></span>CODE TYPEN</div>
+    <div data-hf-id="hf-f6s9" id="f04-badge" class="cm-badge">03:00</div>
+    <div data-hf-id="hf-khg7" id="f04-ai">AI: SNELLER</div>
+
+    <div data-hf-id="hf-pbuo" id="f04-markerwrap">
+      <div data-hf-id="hf-03j0" id="f04-marker" class="cm-marker cm-display cm-lg">DENKEN = JIJ</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var DURATION = 14.32;
+        var q = function (s) { return document.querySelector('[data-composition-id="04-typen"] ' + s); };
+        var tl = gsap.timeline({ paused: true });
+
+        // Scene 1: chrome, tile, empty bar
+        tl.fromTo(q("#f04-topbar"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0);
+        tl.fromTo(q("#f04-num"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 0.05);
+        tl.fromTo(q("#f04-bar"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 0.15);
+        tl.fromTo(q("#f04-daylabel"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 0.25);
+
+        // 0.88 CODE TYPEN segment (small) + caret
+        tl.fromTo(q("#f04-seg-code .f04-fill"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power3.out" }, 0.88);
+        tl.fromTo(q("#f04-seg-code .f04-rule"), { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "none" }, 1.1);
+        tl.fromTo(q("#f04-codelbl"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 0.95);
+        tl.fromTo(q("#f04-caret"), { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 1.0);
+        // discrete caret blink, deterministic
+        for (var t = 1.5, on = false; t < DURATION - 0.01; t += 0.5, on = !on) {
+          tl.set(q("#f04-caret"), { opacity: on ? 1 : 0 }, t);
+        }
+
+        // Scene 2: segments fill on spoken words
+        function seg(id, at) {
+          tl.fromTo(q(id + " .f04-fill"), { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, at);
+          tl.fromTo(q(id + " .f04-lbl"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, at + 0.12);
+          var rule = q(id + " .f04-rule");
+          if (rule) tl.fromTo(rule, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "none" }, at + 0.3);
+        }
+        seg("#f04-seg-prob", 4.68);
+        seg("#f04-seg-keus", 6.40);
+        seg("#f04-seg-prod", 7.81);
+
+        // 8.00 the 03:00 joke badge pins above PRODUCTIE PLAT
+        tl.fromTo(q("#f04-badge"), { scale: 1.35, rotation: -10, opacity: 0 }, { scale: 1, rotation: -4, opacity: 1, duration: 0.42, ease: "back.out(1.6)" }, 8.00);
+
+        // Scene 3: AI: SNELLER drops on CODE TYPEN, segment squeezes to half
+        tl.fromTo(q("#f04-ai"), { y: -60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power4.out" }, 11.16);
+        tl.fromTo(q("#f04-seg-code .f04-fill"), { scaleX: 1 }, { scaleX: 0.5, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 11.4);
+        tl.fromTo(q("#f04-seg-code .f04-rule"), { x: 0 }, { x: -103, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 11.4);
+        tl.fromTo([q("#f04-seg-prob"), q("#f04-seg-keus"), q("#f04-seg-prod")], { x: 0 }, { x: -103, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 11.4);
+        tl.fromTo(q("#f04-badge"), { x: 0 }, { x: -103, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 11.4);
+
+        // Scene 4: payoff marker
+        tl.fromTo(q("#f04-marker"), { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 12.80);
+
+        tl.set({}, {}, DURATION);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["04-typen"] = tl;
+      })();
+    </script>
+  </div>
+</template>

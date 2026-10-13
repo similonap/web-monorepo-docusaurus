@@ -1,0 +1,196 @@
+<template>
+<div data-hf-id="hf-cd94" id="root" data-composition-id="03-taart" data-start="0" data-duration="19.78" data-width="1920" data-height="1080">
+<style>
+@font-face { font-family: "Archivo Black"; src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+:root {
+  --cm-cream: #EFE9D9; --cm-cream-2: #E4DCC4;
+  --cm-ink: #0F0F0F; --cm-ink-2: #2A2A2A;
+  --cm-green: #1F8A4C; --cm-green-dark: #136636;
+  --cm-pink: #F06CA8; --cm-pink-dark: #D14E8B;
+  --cm-orange: #E85A1F; --cm-yellow: #F5C518;
+  --cm-border: 8px;            /* 0.4cqw @1920 = 7.7px */
+  --cm-rule: 6px;
+  --cm-shadow: 24px 24px 0 var(--cm-orange), 24px 24px 0 4px var(--cm-ink);  /* ONE per frame */
+  --cm-display: "Archivo Black", "Arial Black", sans-serif;
+  --cm-body: "Space Grotesk", Arial, sans-serif;
+  --cm-mono: "JetBrains Mono", monospace;
+}
+/* ground: a full-duration class="clip" layer, never on #root */
+.cm-bg { position: absolute; inset: 0; background: var(--cm-cream); }
+/* Archivo Black: always uppercase, lh 0.92 */
+.cm-display { font-family: var(--cm-display); font-weight: 400; text-transform: uppercase; line-height: 0.92; letter-spacing: -0.01em; color: var(--cm-ink); }
+.cm-mono { font-family: var(--cm-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+/* display ramp in px @1920 */
+.cm-hero { font-size: 298px; }   /* display-hero 15.5cqw, ≤3 short words */
+.cm-xl   { font-size: 211px; }   /* display-xl 11cqw */
+.cm-lg   { font-size: 154px; }   /* display-lg 8cqw */
+.cm-head { font-size: 81px; }    /* display-head 4.2cqw */
+.cm-step { font-size: 46px; }    /* marker / step-title */
+
+/* topbar: kicker-block left, pill right, inset 64px */
+.cm-topbar { position: absolute; left: 64px; right: 64px; top: 48px; height: 52px; display: flex; justify-content: space-between; align-items: center; }
+.cm-kicker { background: var(--cm-ink); color: var(--cm-cream); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 18px; }
+.cm-pill { background: var(--cm-cream); border: 4px solid var(--cm-ink); border-radius: 999px; color: var(--cm-ink); font-family: var(--cm-mono); font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 22px; }
+
+/* reason number tile (frames 3-9), top-left under topbar */
+.cm-num { position: absolute; left: 96px; top: 140px; width: 150px; height: 150px; border: var(--cm-border) solid var(--cm-ink); display: flex; align-items: center; justify-content: center; font-family: var(--cm-display); font-size: 92px; line-height: 1; color: var(--cm-ink); }
+
+/* generic blocks */
+.cm-card { background: var(--cm-cream); border: var(--cm-border) solid var(--cm-ink); }
+.cm-card-2 { background: var(--cm-cream-2); border: var(--cm-border) solid var(--cm-ink); }
+.cm-marker { background: var(--cm-pink); border: var(--cm-border) solid var(--cm-ink); box-shadow: var(--cm-shadow); padding: 18px 32px; }
+.cm-badge { background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; font-size: 40px; line-height: 1; padding: 14px 22px; color: var(--cm-ink); }  /* rotate(-4deg) via GSAP rotation, not CSS transform */
+.cm-stamp { border: var(--cm-border) solid var(--cm-ink); font-family: var(--cm-display); text-transform: uppercase; line-height: 0.92; color: var(--cm-ink); padding: 18px 30px; outline: 5px solid var(--cm-cream); outline-offset: -18px; } /* rotate(-6deg) via GSAP */
+.cm-chip { background: var(--cm-cream); border: 5px solid var(--cm-ink); font-family: var(--cm-mono); font-size: 28px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 18px; color: var(--cm-ink); }
+
+/* ---- frame 03 specifics ---- */
+#root { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+.f03-tile { background: var(--cm-green); color: var(--cm-cream); }
+
+.f03-card { position: absolute; left: 96px; width: 764px; height: 240px; box-sizing: border-box; }
+#f03-card-a { top: 330px; }
+#f03-card-b { top: 600px; }
+.f03-card-title { position: absolute; left: 32px; top: 26px; }
+.f03-row { position: absolute; left: 32px; right: 24px; bottom: 26px; display: flex; align-items: flex-end; gap: 14px; }
+.f03-row .cm-chip { white-space: nowrap; line-height: 1; }
+.f03-arrow-r { width: 40px; height: 24px; margin-bottom: 18px; flex: none; }
+.f03-arrow-up { width: 44px; height: 100px; flex: none; }
+.f03-meer { font-size: 36px; margin-bottom: 6px; white-space: nowrap; }
+
+.f03-strike-wrap { position: relative; }
+.f03-strike { position: absolute; left: -8px; right: -8px; top: 50%; height: 6px; margin-top: -3px; background: var(--cm-ink); }
+.f03-overbodig { color: var(--cm-ink-2); }
+.f03-sterker { background: var(--cm-green); color: var(--cm-cream); }
+
+/* pie: center (1370, 575), base 330px */
+#f03-pie { position: absolute; left: 1205px; top: 410px; width: 330px; height: 330px; display: flex; align-items: center; justify-content: center; }
+.f03-disc { position: absolute; inset: 0; box-sizing: border-box; background: var(--cm-yellow); border: var(--cm-border) solid var(--cm-ink); border-radius: 50%; }
+.f03-dividers { position: absolute; inset: 0; width: 330px; height: 330px; overflow: visible; }
+.f03-dividers line { stroke: var(--cm-ink); stroke-width: 8; stroke-dasharray: 161; }
+.f03-hub { position: relative; z-index: 2; background: var(--cm-cream); border: 6px solid var(--cm-ink); padding: 10px 14px; font-size: 36px; white-space: nowrap; }
+
+.f03-goedkoper { position: absolute; left: 892px; top: 690px; font-size: 26px; padding: 10px 22px; white-space: nowrap; }
+.f03-overal { position: absolute; left: 1612px; top: 690px; font-size: 26px; white-space: nowrap; }
+
+.f03-label { white-space: nowrap; line-height: 1; }
+#f03-l-ontwerpen { position: absolute; right: 805px; top: 420px; }
+#f03-l-beveiligen { position: absolute; left: 1625px; top: 420px; }
+.f03-l-bottom-wrap { position: absolute; left: 970px; width: 800px; top: 826px; display: flex; justify-content: center; }
+
+#f03-marker { position: absolute; right: 96px; top: 112px; white-space: nowrap; }
+</style>
+
+<div data-hf-id="hf-tx9f" class="clip cm-bg" data-start="0" data-duration="19.78" data-track-index="0"></div>
+
+<div data-hf-id="hf-6ioh" class="cm-topbar" id="f03-topbar">
+  <div data-hf-id="hf-35qf" class="cm-kicker">WAAROM SOFTWARE DEVELOPMENT</div>
+  <div data-hf-id="hf-xhdz" class="cm-pill">REDEN 01 / 07</div>
+</div>
+
+<div data-hf-id="hf-y4q4" class="cm-num f03-tile" id="f03-tile">01</div>
+
+<!-- precedent A -->
+<div data-hf-id="hf-36yi" class="cm-card-2 f03-card" id="f03-card-a">
+  <div data-hf-id="hf-230a" class="cm-display cm-step f03-card-title">STOOMMACHINE</div>
+  <div data-hf-id="hf-893q" class="f03-row">
+    <div data-hf-id="hf-ybn1" class="cm-chip" id="f03-zuiniger">ZUINIGER</div>
+    <svg data-hf-id="hf-1s1g" class="f03-arrow-r" id="f03-arrow-r" viewBox="0 0 40 24"><polygon data-hf-id="hf-7rn4" points="0,8 26,8 26,0 40,12 26,24 26,16 0,16" fill="#0F0F0F" /></svg>
+    <div data-hf-id="hf-g4uj" class="cm-chip" id="f03-steenkool">STEENKOOL</div>
+    <svg data-hf-id="hf-rz5j" class="f03-arrow-up" id="f03-arrow-up" viewBox="0 0 44 100"><polygon data-hf-id="hf-733r" points="13,100 31,100 31,40 44,40 22,0 0,40 13,40" fill="#0F0F0F" /></svg>
+    <div data-hf-id="hf-2big" class="cm-display f03-meer" id="f03-meer">MEER</div>
+  </div>
+</div>
+
+<!-- precedent B -->
+<div data-hf-id="hf-z8uh" class="cm-card-2 f03-card" id="f03-card-b">
+  <div data-hf-id="hf-u1n7" class="cm-display cm-step f03-card-title">SPREADSHEET</div>
+  <div data-hf-id="hf-4f0a" class="f03-row">
+    <div data-hf-id="hf-1pin" class="cm-chip" id="f03-boekhouder">BOEKHOUDER</div>
+    <div data-hf-id="hf-g6eh" class="cm-chip f03-strike-wrap f03-overbodig" id="f03-overbodig">OVERBODIG<div data-hf-id="hf-atyy" class="f03-strike" id="f03-strike"></div></div>
+    <div data-hf-id="hf-0l0b" class="cm-chip f03-sterker" id="f03-sterker">STERKER</div>
+  </div>
+</div>
+
+<!-- the software pie -->
+<div data-hf-id="hf-00tn" id="f03-pie">
+  <div data-hf-id="hf-nxux" class="f03-disc"></div>
+  <svg data-hf-id="hf-f5dw" class="f03-dividers" viewBox="0 0 330 330">
+    <line data-hf-id="hf-m6wd" id="f03-div-top" x1="165" y1="165" x2="165" y2="4" />
+    <line data-hf-id="hf-0oby" id="f03-div-left" x1="165" y1="165" x2="25.6" y2="245.5" />
+    <line data-hf-id="hf-fxpt" id="f03-div-right" x1="165" y1="165" x2="304.4" y2="245.5" />
+  </svg>
+  <div data-hf-id="hf-k0pj" class="cm-display f03-hub">SOFTWARE</div>
+</div>
+
+<div data-hf-id="hf-4xwq" class="cm-pill f03-goedkoper" id="f03-goedkoper">GOEDKOPER</div>
+<div data-hf-id="hf-v39c" class="cm-kicker f03-overal" id="f03-overal">OVERAL MEER</div>
+
+<div data-hf-id="hf-krzy" class="cm-chip f03-label" id="f03-l-ontwerpen">ONTWERPEN</div>
+<div data-hf-id="hf-6uw6" class="cm-chip f03-label" id="f03-l-beveiligen">BEVEILIGEN</div>
+<div data-hf-id="hf-od23" class="f03-l-bottom-wrap"><div data-hf-id="hf-ws4d" class="cm-chip f03-label" id="f03-l-draaiende">DRAAIENDE HOUDEN</div></div>
+
+<div data-hf-id="hf-kvuz" class="cm-marker cm-display cm-head" id="f03-marker">DE TAART<br data-hf-id="hf-x5px">WORDT GROTER</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script>
+(function () {
+  var DURATION = 19.28;
+  var tl = gsap.timeline({ paused: true });
+  var q = function (s) { return document.querySelector('[data-composition-id="03-taart"] ' + s); };
+  var slideUp = function (el, t) {
+    tl.fromTo(el, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, t);
+  };
+  var slam = function (el, t) {
+    tl.fromTo(el, { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, t);
+  };
+
+  // Scene 1: chrome, tile, precedent A
+  tl.fromTo(q("#f03-topbar"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0);
+  tl.fromTo(q("#f03-tile"), { scale: 1.25, rotation: -3, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.4, ease: "power4.out" }, 0.05);
+  slideUp(q("#f03-card-a"), 1.12);
+  slam(q("#f03-zuiniger"), 1.92);
+  tl.fromTo(q("#f03-arrow-r"), { x: -16, opacity: 0 }, { x: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, 2.9);
+  slam(q("#f03-steenkool"), 3.0);
+  tl.fromTo(q("#f03-arrow-up"), { scaleY: 0, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 0.45, ease: "expo.out" }, 3.08);
+  tl.fromTo(q("#f03-meer"), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 3.3);
+
+  // Scene 2: precedent B
+  slideUp(q("#f03-card-b"), 4.96);
+  slam(q("#f03-boekhouder"), 6.0);
+  slam(q("#f03-overbodig"), 6.88);
+  tl.fromTo(q("#f03-strike"), { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 7.12);
+  tl.fromTo(q("#f03-overbodig"), { opacity: 1 }, { opacity: 0.55, duration: 0.3, ease: "power2.out", immediateRender: false }, 7.4);
+  tl.fromTo(q("#f03-sterker"), { scale: 1.35, rotation: 2, opacity: 0 }, { scale: 1, rotation: -4, opacity: 1, duration: 0.42, ease: "back.out(1.6)" }, 8.0);
+
+  // Scene 3: the pie
+  tl.fromTo(q("#f03-pie"), { scale: 0.55, opacity: 0, transformOrigin: "50% 50%" }, { scale: 1, opacity: 1, duration: 0.5, ease: "expo.out" }, 9.12);
+  tl.fromTo(q("#f03-goedkoper"), { x: 30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 10.32);
+  tl.to(q("#f03-pie"), { scale: 1.35, duration: 0.6, ease: "power3.out" }, 12.08);
+  tl.fromTo(q("#f03-overal"), { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 12.16);
+
+  // Scene 4: slices + tasks
+  tl.fromTo(q("#f03-div-top"), { strokeDashoffset: 161 }, { strokeDashoffset: 0, duration: 0.35, ease: "power3.out" }, 14.6);
+  tl.fromTo(q("#f03-div-left"), { strokeDashoffset: 161 }, { strokeDashoffset: 0, duration: 0.35, ease: "power3.out" }, 14.66);
+  slam(q("#f03-l-ontwerpen"), 14.76);
+  tl.fromTo(q("#f03-div-right"), { strokeDashoffset: 161 }, { strokeDashoffset: 0, duration: 0.35, ease: "power3.out" }, 15.4);
+  slam(q("#f03-l-beveiligen"), 15.52);
+  slam(q("#f03-l-draaiende"), 16.56);
+
+  // Scene 5: payoff
+  tl.fromTo(q("#f03-marker"), { scale: 1.25, opacity: 0, transformOrigin: "50% 50%" }, { scale: 1, opacity: 1, duration: 0.4, ease: "power4.out" }, 17.76);
+  tl.to(q("#f03-pie"), { scale: 1.45, duration: 0.5, ease: "power3.out" }, 18.56);
+
+  tl.set({}, {}, DURATION);
+  window.__timelines = window.__timelines || {};
+  window.__timelines["03-taart"] = tl;
+})();
+</script>
+</div>
+</template>
