@@ -1,0 +1,436 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 05 positions ---- */
+    #f05x-label { left: 1236px; top: 186px; }
+    #f05x-card { left: 1236px; top: 232px; width: 604px; height: 308px; }
+
+    #f05x-s1 { position: absolute; left: 80px; top: 300px; font-family: var(--ts-sans); font-weight: 700; font-size: 72px; line-height: 1.1; letter-spacing: -0.025em; color: var(--ts-ink); white-space: nowrap; }
+    .f05x-een { position: relative; display: inline-block; }
+    #f05x-under { left: 0; right: 0; bottom: -4px; }
+    #f05x-s2 { position: absolute; left: 80px; top: 420px; font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); white-space: nowrap; }
+    #f05x-s3 { position: absolute; left: 80px; top: 500px; font-family: var(--ts-sans); font-weight: 500; font-size: 40px; line-height: 1.2; letter-spacing: -0.01em; color: var(--ts-ink); white-space: nowrap; }
+    #f05x-s4 { position: absolute; left: 80px; top: 580px; font-family: var(--ts-sans); font-weight: 400; font-size: 30px; line-height: 1.45; color: var(--ts-ink-soft); white-space: nowrap; }
+
+    /* squares: 132x132, gap 44, row left 60, top 48 (card-local) */
+    .f05x-sq {
+      position: absolute; top: 48px; width: 132px; height: 132px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+    }
+    .f05x-sel {
+      position: absolute; inset: -1px; border-radius: 8px;
+      box-shadow: inset 0 0 0 5px #3178C6; opacity: 0;
+    }
+    #f05x-sq0 { left: 60px; }
+    #f05x-sq1 { left: 236px; }
+    #f05x-sq2 { left: 412px; }
+
+    /* red ring around square 0: 6px outside, radius 10 */
+    #f05x-ring { left: 54px; top: 42px; width: 144px; height: 144px; border-radius: 10px; opacity: 0; }
+
+    /* per-square chips */
+    #f05x-key { position: absolute; left: 60px; top: 192px; line-height: 1; }
+    .f05x-col { position: absolute; top: 226px; width: 132px; height: 44px; }
+    .f05x-col .ts-chip {
+      left: 50%; top: 0; transform: translateX(-50%);
+      height: 44px; padding: 0 16px; font-size: 22px; width: 104px; justify-content: center;
+    }
+    #f05x-col0 { left: 60px; }
+    #f05x-col1 { left: 236px; }
+    #f05x-col2 { left: 412px; }
+    .f05x-valbox { position: relative; display: inline-block; width: 66px; height: 40px; overflow: hidden; vertical-align: middle; }
+    .f05x-val { position: absolute; left: 0; right: 0; top: 0; line-height: 40px; text-align: center; }
+
+    /* connectors above the squares */
+    #f05x-links { position: absolute; left: 0; top: 0; width: 604px; height: 60px; overflow: visible; pointer-events: none; }
+
+    #f05x-ripple {
+      position: absolute; left: 1498px; top: 306px; width: 80px; height: 80px;
+      border-radius: 50%; background: rgba(49, 120, 198, 0.2);
+      box-sizing: border-box; opacity: 0; pointer-events: none;
+    }
+    #f05x-cursor { position: absolute; left: 0; top: 0; width: 224px; height: 224px; pointer-events: none; z-index: 20; }
+    #f05x-cursor svg {
+      display: block; width: 100%; height: 100%;
+      fill: #1E293B; stroke: #FFFFFF; stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round;
+    }
+  </style>
+
+  <div data-hf-id="hf-f15g" id="root" data-composition-id="05-een-tegelijk" data-width="1920" data-height="1080" data-duration="16.95">
+    <div data-hf-id="hf-62lr" class="ts-bg clip" id="f05x-bg" data-start="0" data-duration="16.95" data-track-index="0"></div>
+
+    <div data-hf-id="hf-8uds" class="ts-stage clip" id="f05x-stage" data-start="0" data-duration="16.95" data-track-index="1">
+      <div data-hf-id="hf-fs0e" class="ts-kicker" id="f05x-kicker"><div data-hf-id="hf-x84v" class="ts-kicker-bar" id="f05x-kbar"></div><span data-hf-id="hf-0s96" class="ts-kicker-text" id="f05x-ktext">Nieuwe regel</span></div>
+
+      <!-- left column: the requirement -->
+      <div data-hf-id="hf-58hj" id="f05x-s1">Maar <span data-hf-id="hf-z8fl" class="f05x-een">één<span data-hf-id="hf-kxxz" class="ts-underline" id="f05x-under"></span></span> tegelijk.</div>
+      <div data-hf-id="hf-dhqe" id="f05x-s2">Het vorige vierkant moet zijn rand verliezen.</div>
+      <div data-hf-id="hf-4xkd" id="f05x-s3">De squares beïnvloeden elkaar.</div>
+      <div data-hf-id="hf-3ip1" id="f05x-s4">Geen enkel vierkant kent de state van een ander.</div>
+
+      <!-- right column: scherm -->
+      <div data-hf-id="hf-1lz4" class="ts-label" id="f05x-label">scherm</div>
+      <div data-hf-id="hf-4pl4" class="ts-card" id="f05x-card">
+        <div data-hf-id="hf-95py" class="f05x-sq" id="f05x-sq0"><div data-hf-id="hf-x4vi" class="f05x-sel" id="f05x-sel0"></div></div>
+        <div data-hf-id="hf-d3tz" class="f05x-sq" id="f05x-sq1"><div data-hf-id="hf-12zj" class="f05x-sel" id="f05x-sel1"></div></div>
+        <div data-hf-id="hf-4fy4" class="f05x-sq" id="f05x-sq2"><div data-hf-id="hf-sf3o" class="f05x-sel" id="f05x-sel2"></div></div>
+        <div data-hf-id="hf-ynw9" class="ts-mark ts-mark--wrong" id="f05x-ring"></div>
+
+        <svg data-hf-id="hf-q15q" id="f05x-links" viewBox="0 0 604 60" />
+
+        <span data-hf-id="hf-ia93" class="ts-chip-key" id="f05x-key">selected</span>
+        <div data-hf-id="hf-4f66" class="f05x-col" id="f05x-col0"><div data-hf-id="hf-2wek" class="ts-chip" id="f05x-chip0"><span data-hf-id="hf-444d" class="f05x-valbox"><span data-hf-id="hf-srpp" class="f05x-val" id="f05x-v0f">false</span><span data-hf-id="hf-9kcc" class="f05x-val" id="f05x-v0t">true</span></span></div></div>
+        <div data-hf-id="hf-8da7" class="f05x-col" id="f05x-col1"><div data-hf-id="hf-3o2d" class="ts-chip" id="f05x-chip1"><span data-hf-id="hf-dn1t" class="f05x-valbox"><span data-hf-id="hf-4x08" class="f05x-val" id="f05x-v1f">false</span><span data-hf-id="hf-3297" class="f05x-val" id="f05x-v1t">true</span></span></div></div>
+        <div data-hf-id="hf-zpec" class="f05x-col" id="f05x-col2"><div data-hf-id="hf-7m6e" class="ts-chip" id="f05x-chip2"><span data-hf-id="hf-etyw" class="f05x-valbox"><span data-hf-id="hf-xdjn" class="f05x-val" id="f05x-v2f">false</span></span></div></div>
+      </div>
+
+      <div data-hf-id="hf-6sqr" id="f05x-ripple"></div>
+
+      <div data-hf-id="hf-tyyp" id="f05x-cursor" aria-hidden="true" data-layout-allow-overflow="">
+        <svg data-hf-id="hf-ulu9" viewBox="0 0 24 24"><path data-hf-id="hf-fueh" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 16.95;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var BLUE = "#3178C6";
+      var TINT = "#EAF2FB";
+      var PANEL = "#F1F5F9";
+      var HAIR = "#E2E8F0";
+      var MUTED = "#94A3B8";
+      var RED = "#D14343";
+      var SVGNS = "http://www.w3.org/2000/svg";
+      var root = document.querySelector('[data-composition-id="05-een-tegelijk"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (shared with siblings; no code surface in this frame) ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // ---- build the two double-headed connectors (card-local coords) ----
+      var svg = q("#f05x-links");
+      function el(tag, attrs) {
+        var n = document.createElementNS(SVGNS, tag);
+        for (var k in attrs) n.setAttribute(k, attrs[k]);
+        svg.appendChild(n);
+        return n;
+      }
+      function head(px, py, cx, cy) {
+        // solid arrowhead with tip at (px,py), pointing away from control point (cx,cy)
+        var dx = px - cx, dy = py - cy, len = Math.sqrt(dx * dx + dy * dy);
+        var ux = dx / len, uy = dy / len, L = 12, W = 6;
+        var bx = px - ux * L, by = py - uy * L;
+        var pts = [px, py, bx - uy * W, by + ux * W, bx + uy * W, by - ux * W];
+        return el("polygon", { points: pts.join(" "), fill: MUTED });
+      }
+      var links = [];
+      [[150, 278], [326, 454]].forEach(function (pr) {
+        var x1 = pr[0], x2 = pr[1], y = 42, cx = (x1 + x2) / 2, cy = -10;
+        var path = el("path", {
+          d: "M" + x1 + " " + y + " Q" + cx + " " + cy + " " + x2 + " " + y,
+          fill: "none", stroke: MUTED, "stroke-width": 2, "stroke-linecap": "round",
+          pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1
+        });
+        var h1 = head(x1, y, cx, cy);
+        var h2 = head(x2, y, cx, cy);
+        // red cross at the arc's middle (quadratic midpoint), two 2px strokes, 20px
+        var mx = cx, my = 0.25 * y + 0.5 * cy + 0.25 * y;
+        var g = el("g", { opacity: 0 });
+        [[-7, -7, 7, 7], [-7, 7, 7, -7]].forEach(function (c) {
+          var ln = document.createElementNS(SVGNS, "line");
+          ln.setAttribute("x1", mx + c[0]); ln.setAttribute("y1", my + c[1]);
+          ln.setAttribute("x2", mx + c[2]); ln.setAttribute("y2", my + c[3]);
+          ln.setAttribute("stroke", RED); ln.setAttribute("stroke-width", 2); ln.setAttribute("stroke-linecap", "round");
+          g.appendChild(ln);
+        });
+        links.push({ path: path, heads: [h1, h2], cross: g, mx: mx, my: my });
+      });
+
+      // ---- initial state: square 0 selected (chip true, blue), squares 1 and 2 not ----
+      tl.set("#f05x-sel0", { opacity: 1 }, 0);
+      tl.set("#f05x-chip0", { backgroundColor: TINT, borderColor: BLUE }, 0);
+      tl.set("#f05x-v0f", { yPercent: 100, opacity: 0 }, 0);
+      tl.set("#f05x-v0t", { yPercent: 0, opacity: 1 }, 0);
+      tl.set("#f05x-v1t", { yPercent: 100, opacity: 0 }, 0);
+      tl.set(["#f05x-s2", "#f05x-s3", "#f05x-s4"], { opacity: 0 }, 0);
+      tl.set("#f05x-ring", { opacity: 0 }, 0);
+      links.forEach(function (lk) {
+        tl.set(lk.heads, { opacity: 0 }, 0);
+        tl.set(lk.cross, { opacity: 0 }, 0);
+      });
+
+      // ---- 0.0-4.5: kicker, card present at 0.3, statement on "één" (1.76), underline at 2.0 ----
+      tl.fromTo("#f05x-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f05x-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f05x-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.3);
+      tl.fromTo("#f05x-card", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.3);
+
+      tl.fromTo("#f05x-s1", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 1.76);
+      tl.fromTo("#f05x-under", { scaleX: 0, backgroundColor: BLUE }, { scaleX: 1, duration: 0.4, ease: "power3.out" }, 2.0);
+
+      // ---- 4.5-8.6: cursor clicks square 1 at 5.6 ----
+      var cursor = q("#f05x-cursor");
+      var TIP_X = 1548;
+      var TIP_Y = 356;
+      var CLICK_AT = 5.6;
+      var PRESS = 0.1;
+      var TIP_ORIGIN = "20.83% 12.5%";
+      tl.fromTo(cursor,
+        { xPercent: -20.83, yPercent: -12.5, x: 2060, y: 760, scale: 1 },
+        { xPercent: -20.83, yPercent: -12.5, x: TIP_X, y: TIP_Y, duration: 0.55, ease: "power3.out" },
+        4.94);
+      tl.to(cursor, { scale: 0.86, duration: PRESS, ease: "power2.in", transformOrigin: TIP_ORIGIN }, CLICK_AT);
+      tl.to(cursor, { scale: 1, duration: 0.22, ease: "power2.out", transformOrigin: TIP_ORIGIN }, CLICK_AT + PRESS);
+      tl.to("#f05x-sq1", { scale: 0.96, duration: PRESS, ease: "power1.in" }, CLICK_AT);
+      tl.to("#f05x-sq1", { scale: 1, duration: 0.4, ease: "power3.out" }, CLICK_AT + PRESS);
+      tl.fromTo("#f05x-ripple", { scale: 0.5, opacity: 0.9 }, { scale: 3, opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, CLICK_AT + 0.02);
+      tl.fromTo("#f05x-sel1", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, CLICK_AT + 0.02);
+      // chip 1: false -> true (blue)
+      tl.to("#f05x-v1f", { yPercent: -100, opacity: 0, duration: 0.25, ease: "power2.inOut" }, CLICK_AT + 0.1);
+      tl.to("#f05x-v1t", { yPercent: 0, opacity: 1, duration: 0.25, ease: "power2.out" }, CLICK_AT + 0.22);
+      tl.to("#f05x-chip1", { backgroundColor: TINT, borderColor: BLUE, duration: 0.3, ease: "power2.out" }, CLICK_AT + 0.1);
+      // cursor leaves so the squares stay readable
+      tl.to(cursor, { x: 2060, y: 760, duration: 0.6, ease: "power2.inOut" }, 6.2);
+
+      // "vorige" (6.88): line 2
+      tl.fromTo("#f05x-s2", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 6.88);
+      // underline dims to hairline before the red moment (7.7)
+      tl.to("#f05x-under", { backgroundColor: HAIR, duration: 0.3, ease: "power2.inOut" }, 7.7);
+      // "verliezen" (7.80): square 0 still has its border -> red ring + chip 0 unwanted
+      tl.fromTo("#f05x-ring", { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out", immediateRender: false }, 7.8);
+      tl.to("#f05x-chip0", { backgroundColor: PANEL, borderColor: RED, borderWidth: 2, duration: 0.3, ease: "power2.out" }, 7.8);
+
+      // ---- 8.6-11.6: "squares" (9.44) line 3; "invloed" (10.44) connectors draw on ----
+      tl.fromTo("#f05x-s3", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 9.44);
+      links.forEach(function (lk, i) {
+        var at = 10.44 + i * 0.08;
+        tl.fromTo(lk.path, { attr: { "stroke-dashoffset": 1 } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.6, ease: "power2.inOut", immediateRender: false }, at);
+        tl.to(lk.heads, { opacity: 1, duration: 0.2, ease: "power1.out" }, at + 0.45);
+      });
+
+      // ---- 11.6-end: "lukt" (12.00) connectors turn red; crosses at 12.28; line 4 at 13.68 ----
+      links.forEach(function (lk) {
+        tl.to(lk.path, { attr: { stroke: RED }, duration: 0.3, ease: "power2.out" }, 12.0);
+        tl.to(lk.heads, { attr: { fill: RED }, duration: 0.3, ease: "power2.out" }, 12.0);
+        tl.fromTo(lk.cross, { opacity: 0, scale: 0.6, svgOrigin: lk.mx + " " + lk.my },
+          { opacity: 1, scale: 1, svgOrigin: lk.mx + " " + lk.my, duration: 0.3, ease: "power3.out", immediateRender: false }, 12.28);
+      });
+      tl.fromTo("#f05x-s4", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 13.68);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["05-een-tegelijk"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,367 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+
+    /* ---- frame 06 positions ---- */
+    #f06t-panel { left: 80px; top: 170px; width: 1060px; height: 460px; }
+    .f06t-new { height: 0; overflow: hidden; }
+    .f06t-lnB { opacity: 0; }
+    #f06t-label { left: 1236px; top: 186px; }
+    #f06t-chip1 { left: 1236px; top: 232px; }
+    .f06t-u { position: relative; display: inline-block; }
+    #f06t-uline { position: absolute; left: 0; right: 0; bottom: -5px; height: 4px; border-radius: 2px; background: var(--ts-blue); transform-origin: left center; }
+    #f06t-prevlabel {
+      position: absolute; left: 1236px; top: 316px; font-family: var(--ts-sans); font-weight: 600; font-size: 18px;
+      line-height: 1; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted);
+    }
+    #f06t-chip2 { left: 1236px; top: 340px; background: var(--ts-ground); color: var(--ts-muted); }
+    #f06t-say {
+      position: absolute; left: 1236px; top: 440px; width: 604px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 30px; line-height: 1.3; color: var(--ts-ink);
+    }
+  </style>
+
+  <div data-hf-id="hf-5cm3" id="root" data-composition-id="06-onaddtodo" data-width="1920" data-height="1080" data-duration="13.67">
+    <div data-hf-id="hf-bego" class="ts-bg clip" id="f06t-bg" data-start="0" data-duration="13.67" data-track-index="0"></div>
+
+    <div data-hf-id="hf-fmzl" class="ts-stage clip" id="f06t-stage" data-start="0" data-duration="13.67" data-track-index="1">
+      <div data-hf-id="hf-k7up" class="ts-kicker" id="f06t-kicker"><div data-hf-id="hf-vwz8" class="ts-kicker-bar" id="f06t-kbar"></div><span data-hf-id="hf-07tz" class="ts-kicker-text" id="f06t-ktext">Een callback als prop</span></div>
+
+      <!-- code surface: InputView.tsx -->
+      <div data-hf-id="hf-jhs2" class="ts-code-surface" id="f06t-panel">
+        <div data-hf-id="hf-5tny" class="ts-code-title">InputView.tsx</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-s0wb" class="ts-row f06t-new" id="f06t-r1"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-6o4d" class="ts-txt" id="f06t-l1"></span><span data-hf-id="hf-xewb" class="ts-caret" id="f06t-c1"></span></div>
+          <div data-hf-id="hf-jd0g" class="ts-row f06t-new" id="f06t-r2"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-ctu6" class="ts-txt" id="f06t-l2"></span><span data-hf-id="hf-or0g" class="ts-caret" id="f06t-c2"></span></div>
+          <div data-hf-id="hf-k4o9" class="ts-row f06t-new" id="f06t-r3"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-gry7" class="ts-txt" id="f06t-l3"></span><span data-hf-id="hf-pio9" class="ts-caret" id="f06t-c3"></span></div>
+          <div data-hf-id="hf-996m" class="ts-row f06t-new" id="f06t-r4"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-joe1" class="ts-txt"></span></div>
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-0oh6" class="ts-ln f06t-lnA">1</span><span data-hf-id="hf-v5zn" class="ts-ln f06t-lnB">5</span><span data-hf-id="hf-rl30" class="ts-txt"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> <span data-hf-id="hf-3u8k" class="ts-fn">InputView</span> = (<span data-hf-id="hf-hz5a" id="f06t-ins5"></span>) <span data-hf-id="hf-kpf2" class="ts-kw">=&gt;</span> {</span><span data-hf-id="hf-kswf" class="ts-caret" id="f06t-c5"></span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-12s7" class="ts-ln f06t-lnA">2</span><span data-hf-id="hf-urom" class="ts-ln f06t-lnB">6</span><span data-hf-id="hf-8lls" class="ts-txt">  <span data-hf-id="hf-stvc" class="ts-kw">const</span> [inputValue, setInputValue] = <span data-hf-id="hf-md7z" class="ts-fn">useState</span><span data-hf-id="hf-4csn" class="ts-punct">&lt;</span><span data-hf-id="hf-sj5i" class="ts-type">string</span><span data-hf-id="hf-3k6l" class="ts-punct">&gt;</span>(<span data-hf-id="hf-49sw" class="ts-str">""</span>);</span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-1h38" class="ts-ln f06t-lnA">3</span><span data-hf-id="hf-uddl" class="ts-ln f06t-lnB">7</span><span data-hf-id="hf-5edp" class="ts-txt">  <span data-hf-id="hf-49xj" class="ts-fold">⋯</span></span></div>
+          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-1ve9" class="ts-ln f06t-lnA">4</span><span data-hf-id="hf-qsmc" class="ts-ln f06t-lnB">8</span><span data-hf-id="hf-s4ut" class="ts-txt">};</span></div>
+        </div>
+        <div data-hf-id="hf-ks9w" class="ts-code-status">InputView · props</div>
+      </div>
+
+      <!-- right column: props -->
+      <div data-hf-id="hf-lr4t" class="ts-label" id="f06t-label">props</div>
+      <div data-hf-id="hf-pq7i" class="ts-chip ts-chip--new" id="f06t-chip1"><span data-hf-id="hf-mkwh">onAddTodo: (<span data-hf-id="hf-h60o" class="f06t-u">todo: string<span data-hf-id="hf-ye1u" id="f06t-uline"></span></span>) =&gt; void</span></div>
+      <div data-hf-id="hf-jro9" id="f06t-prevlabel">vorige video: Square</div>
+      <div data-hf-id="hf-v0z8" class="ts-chip" id="f06t-chip2">onSelect: () =&gt; void</div>
+      <div data-hf-id="hf-ri88" id="f06t-say">Deze callback krijgt een waarde mee.</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 13.67;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="06-onaddtodo"]');
+      var q = function (s) { return root.querySelector(s); };
+      var qa = function (s) { return root.querySelectorAll(s); };
+      var chPx = FS * CW;
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      // builds char spans into `host`; returns the array of spans
+      function buildChars(host, segments) {
+        var chars = [];
+        segments.forEach(function (p) {
+          for (var i = 0; i < p.t.length; i++) {
+            var s = document.createElement("span");
+            s.className = "ts-ch" + (p.c ? " " + p.c : "");
+            s.textContent = p.t[i];
+            host.appendChild(s);
+            chars.push(s);
+          }
+        });
+        return chars;
+      }
+
+      // insert-type in the middle of a line: chars take no space until typed (display none -> inline)
+      function typeInsert(hostSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.08;
+        var chars = buildChars(q(hostSel), segments);
+        var caret = q(caretSel);
+        tl.set(chars, { display: "none" }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.set(el, { display: "inline" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return end;
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // ---- Shot 1 (0.0-3.2): kicker; panel with START; "callback als prop" (1.76/2.56) ----
+      tl.fromTo("#f06t-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f06t-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f06t-panel", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.2);
+
+      // 4 new rows grow at the top, existing line numbers shift 1-4 -> 5-8
+      tl.fromTo(qa(".f06t-new"), { height: 0 }, { height: 38, duration: 0.4, ease: "power2.inOut" }, 2.6);
+      tl.to(qa(".f06t-lnA"), { opacity: 0, duration: 0.3, ease: "power1.inOut" }, 2.6);
+      tl.to(qa(".f06t-lnB"), { opacity: 1, duration: 0.3, ease: "power1.inOut" }, 2.6);
+      tl.fromTo("#f06t-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 2.56);
+
+      // ---- Shot 2 (3.2-5.5): "on add todo" (3.32) lines 1-3 type; 3.92 wash + insert + chip ----
+      var PER = 0.009;
+      var l1 = typeLine("#f06t-l1", "#f06t-c1", [
+        { t: "interface", c: "ts-kw" },
+        { t: " " },
+        { t: "InputViewProps", c: "ts-type" },
+        { t: " {" }
+      ], 0, 3.32, PER, 0.08);
+      var l2 = typeLine("#f06t-l2", "#f06t-c2", [
+        { t: "  " },
+        { id: "f06t-hl-on", parts: [{ t: "onAddTodo" }] },
+        { t: ": " },
+        { id: "f06t-hl-param", parts: [{ t: "(todo: " }, { t: "string", c: "ts-type" }, { t: ")" }] },
+        { t: " " },
+        { t: "=>", c: "ts-kw" },
+        { t: " " },
+        { id: "f06t-hl-void", parts: [{ t: "void", c: "ts-type" }] },
+        { t: ";" }
+      ], 0, l1.end + 0.005, PER, 0.005);
+      typeLine("#f06t-l3", "#f06t-c3", [{ t: "}" }], 0, l2.end + 0.005, PER, 0.005);
+
+      washOn("#f06t-hl-on", 3.92);
+      // `{ onAddTodo }: InputViewProps` types between the parens of line 5 (col 19)
+      typeInsert("#f06t-ins5", "#f06t-c5", [
+        { t: "{ onAddTodo }: " },
+        { t: "InputViewProps", c: "ts-type" }
+      ], 19, 3.94, 0.02, 0.02);
+      tl.fromTo("#f06t-chip1", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 3.92);
+
+      // ---- Shot 3 (5.5-9.8): "(todo: string)" wash at 6.40; "void" at 9.04 ----
+      washOff("#f06t-hl-on", 6.40);
+      washOn("#f06t-hl-param", 6.40);
+      washOff("#f06t-hl-param", 9.04);
+      washOn("#f06t-hl-void", 9.04);
+
+      // ---- Shot 4 (9.8-end): comparison 10.56; "parameter" (12.08) underline + statement ----
+      tl.fromTo("#f06t-prevlabel", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 10.56);
+      tl.fromTo("#f06t-chip2", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 10.56);
+
+      tl.fromTo("#f06t-uline", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 12.08);
+      washOff("#f06t-hl-void", 12.08);
+      washOn("#f06t-hl-param", 12.08);
+      tl.fromTo("#f06t-say", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 12.08);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["06-onaddtodo"] = tl;
+    })();
+  </script>
+</template>

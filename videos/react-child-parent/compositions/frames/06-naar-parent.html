@@ -1,0 +1,361 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 06 positions: component tree ---- */
+    .f06x-node {
+      position: absolute; box-sizing: border-box; background: var(--ts-panel);
+      border: 2px solid var(--ts-hairline); border-radius: 12px;
+    }
+    .f06x-name {
+      position: absolute; left: 0; right: 0; text-align: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 26px; line-height: 32px; color: var(--ts-ink);
+    }
+    #f06x-app { left: 660px; top: 180px; width: 600px; height: 150px; }
+    #f06x-app .f06x-name { top: 18px; }
+    #f06x-sq0 { left: 300px; top: 520px; width: 300px; height: 230px; }
+    #f06x-sq1 { left: 810px; top: 520px; width: 300px; height: 230px; }
+    #f06x-sq2 { left: 1320px; top: 520px; width: 300px; height: 230px; }
+    .f06x-node .f06x-sqname { top: 16px; }
+    .f06x-tile {
+      position: absolute; left: 106px; top: 58px; width: 88px; height: 88px; box-sizing: border-box;
+      background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 8px;
+    }
+    .f06x-sel {
+      position: absolute; inset: -1px; border-radius: 8px; box-shadow: inset 0 0 0 5px #3178C6; opacity: 0;
+    }
+    .f06x-chiprow { position: absolute; left: 0; right: 0; top: 166px; height: 44px; display: flex; justify-content: center; }
+    .f06x-chiprow .ts-chip {
+      position: relative; height: 44px; padding: 0 14px; font-size: 20px; background: var(--ts-ground);
+    }
+    .f06x-strike {
+      position: absolute; left: 10px; right: 10px; top: 21px; height: 2px; background: var(--ts-ink-soft);
+      transform-origin: left center; transform: scaleX(0);
+    }
+    .f06x-idx {
+      position: absolute; top: 766px; width: 300px; text-align: center;
+      font-family: var(--ts-mono); font-size: 20px; line-height: 24px; color: var(--ts-muted);
+    }
+
+    #f06x-wires { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    .f06x-wire { fill: none; stroke: #94A3B8; stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: 1; }
+    .f06x-head { fill: #94A3B8; opacity: 0; }
+
+    /* travelling state chip: ends centred inside App */
+    #f06x-statewrap { position: absolute; left: 660px; top: 250px; width: 600px; height: 52px; display: flex; justify-content: center; }
+    #f06x-state { position: relative; opacity: 0; }
+    .f06x-sname { display: inline-flex; align-items: center; height: 32px; }
+    .f06x-valwrap { display: inline-block; width: 0; height: 32px; overflow: hidden; position: relative; }
+    .f06x-val { position: absolute; left: 0; top: 0; line-height: 32px; white-space: pre; }
+  </style>
+
+  <div data-hf-id="hf-43xq" id="root" data-composition-id="06-naar-parent" data-width="1920" data-height="1080" data-duration="10.79">
+    <div data-hf-id="hf-zjhg" class="ts-bg clip" id="f06x-bg" data-start="0" data-duration="10.79" data-track-index="0"></div>
+
+    <div data-hf-id="hf-anm9" class="ts-stage clip" id="f06x-stage" data-start="0" data-duration="10.79" data-track-index="1">
+      <div data-hf-id="hf-7bat" class="ts-kicker" id="f06x-kicker"><div data-hf-id="hf-6ieo" class="ts-kicker-bar" id="f06x-kbar"></div><span data-hf-id="hf-av1g" class="ts-kicker-text" id="f06x-ktext">Lifting state up</span></div>
+
+      <!-- connectors App -> Squares (elbow), drawn via dashoffset -->
+      <svg data-hf-id="hf-i4xr" id="f06x-wires" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+        <path data-hf-id="hf-4fsa" class="f06x-wire" id="f06x-w0" pathLength="1" d="M960 331 V425 H450 V508" />
+        <path data-hf-id="hf-92ex" class="f06x-wire" id="f06x-w1" pathLength="1" d="M960 331 V508" />
+        <path data-hf-id="hf-owjx" class="f06x-wire" id="f06x-w2" pathLength="1" d="M960 331 V425 H1470 V508" />
+        <polygon data-hf-id="hf-a92a" class="f06x-head" id="f06x-h0" points="443,507 457,507 450,519" />
+        <polygon data-hf-id="hf-duv7" class="f06x-head" id="f06x-h1" points="953,507 967,507 960,519" />
+        <polygon data-hf-id="hf-p0k5" class="f06x-head" id="f06x-h2" points="1463,507 1477,507 1470,519" />
+      </svg>
+
+      <!-- parent -->
+      <div data-hf-id="hf-c0kh" class="f06x-node" id="f06x-app"><div data-hf-id="hf-vck7" class="f06x-name">App</div></div>
+
+      <!-- children -->
+      <div data-hf-id="hf-kjew" class="f06x-node" id="f06x-sq0">
+        <div data-hf-id="hf-hpgv" class="f06x-name f06x-sqname">Square</div>
+        <div data-hf-id="hf-xnq1" class="f06x-tile"></div>
+        <div data-hf-id="hf-d72h" class="f06x-chiprow"><div data-hf-id="hf-3k9d" class="ts-chip" id="f06x-c0">selected<span data-hf-id="hf-0jwm" class="f06x-strike" id="f06x-s0"></span></div></div>
+      </div>
+      <div data-hf-id="hf-lb2p" class="f06x-node" id="f06x-sq1">
+        <div data-hf-id="hf-n7f3" class="f06x-name f06x-sqname">Square</div>
+        <div data-hf-id="hf-hoa5" class="f06x-tile"><div data-hf-id="hf-g31n" class="f06x-sel" id="f06x-sel1"></div></div>
+        <div data-hf-id="hf-y325" class="f06x-chiprow"><div data-hf-id="hf-e5iq" class="ts-chip" id="f06x-c1" data-layout-allow-overlap="">selected<span data-hf-id="hf-4i0n" class="f06x-strike" id="f06x-s1"></span></div></div>
+      </div>
+      <div data-hf-id="hf-rgsi" class="f06x-node" id="f06x-sq2">
+        <div data-hf-id="hf-mt42" class="f06x-name f06x-sqname">Square</div>
+        <div data-hf-id="hf-iv78" class="f06x-tile"></div>
+        <div data-hf-id="hf-z9z8" class="f06x-chiprow"><div data-hf-id="hf-95gb" class="ts-chip" id="f06x-c2">selected<span data-hf-id="hf-tmj0" class="f06x-strike" id="f06x-s2"></span></div></div>
+      </div>
+
+      <!-- index tags under the squares -->
+      <div data-hf-id="hf-ytcj" class="f06x-idx" id="f06x-i0" style="left: 300px;">0</div>
+      <div data-hf-id="hf-7zs5" class="f06x-idx" id="f06x-i1" style="left: 810px;">1</div>
+      <div data-hf-id="hf-2yag" class="f06x-idx" id="f06x-i2" style="left: 1320px;">2</div>
+
+      <!-- the state chip that moves up into App -->
+      <div data-hf-id="hf-navt" id="f06x-statewrap">
+        <div data-hf-id="hf-qd1c" class="ts-chip ts-chip--new" id="f06x-state" data-layout-allow-overlap=""><span data-hf-id="hf-h79w" class="ts-chip-key">state</span><span data-hf-id="hf-9q8x" class="f06x-sname" data-layout-allow-overlap="">selectedIndex<span data-hf-id="hf-ca2r" class="f06x-valwrap" id="f06x-valwrap"><span data-hf-id="hf-7fp7" class="f06x-val" id="f06x-val"><span data-hf-id="hf-55ep" class="ts-punct">: </span><span data-hf-id="hf-ll7i" class="ts-fn">1</span></span></span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 10.79;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="06-naar-parent"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- shared helpers (kept for parity with sibling frames; no code panel here) ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // ---- 0.0-2.0: kicker; "Wie kent ze" (0.0-0.4): three Square nodes with their `selected` chips ----
+      tl.fromTo("#f06x-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f06x-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo(["#f06x-sq0", "#f06x-sq1", "#f06x-sq2"],
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.08 }, 0.05);
+
+      // ---- 2.0-3.6: "parent" (2.16) App node; "App" (2.96) connectors draw down ----
+      tl.fromTo("#f06x-app", { opacity: 0, y: -16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 2.16);
+      tl.fromTo(["#f06x-w0", "#f06x-w1", "#f06x-w2"],
+        { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut" }, 2.96);
+      tl.fromTo(["#f06x-h0", "#f06x-h1", "#f06x-h2"],
+        { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power1.out" }, 3.38);
+
+      // ---- 3.6-6.6: "verhuist" (4.08) local chips struck; "state" (4.8) chip rises; lands on "App" (6.08) ----
+      tl.fromTo(["#f06x-c0", "#f06x-c1", "#f06x-c2"],
+        { opacity: 1 }, { opacity: 0.35, duration: 0.4, ease: "power2.out" }, 4.08);
+      tl.fromTo(["#f06x-s0", "#f06x-s1", "#f06x-s2"],
+        { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out", stagger: 0.05 }, 4.08);
+
+      // chip starts over the middle square's chip (centre y 706) and travels up the middle connector
+      tl.fromTo("#f06x-state", { opacity: 0, y: 430, scale: 0.85 },
+        { opacity: 1, y: 430, scale: 0.85, duration: 0.25, ease: "power2.out" }, 4.56);
+      tl.fromTo("#f06x-w1", { stroke: "#94A3B8" }, { stroke: "#3178C6", duration: 0.3, ease: "power1.out" }, 5.0);
+      tl.fromTo("#f06x-h1", { fill: "#94A3B8" }, { fill: "#3178C6", duration: 0.3, ease: "power1.out" }, 5.0);
+      tl.fromTo("#f06x-state", { y: 430, scale: 0.85 },
+        { y: 0, scale: 1, duration: 0.9, ease: "power3.inOut", immediateRender: false }, 5.18);
+      tl.to("#f06x-w1", { stroke: "#94A3B8", duration: 0.4, ease: "power1.inOut" }, 6.2);
+      tl.to("#f06x-h1", { fill: "#94A3B8", duration: 0.4, ease: "power1.inOut" }, 6.2);
+
+      // ---- 6.6-end: "welk" (7.84) index tags; "geselecteerd" (8.6) value 1 + middle square selected ----
+      tl.fromTo(["#f06x-i0", "#f06x-i1", "#f06x-i2"],
+        { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", stagger: 0.06 }, 7.84);
+      tl.fromTo("#f06x-valwrap", { width: 0 }, { width: 44, duration: 0.25, ease: "power3.out" }, 8.6);
+      tl.fromTo("#f06x-val", { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.25, ease: "power3.out" }, 8.6);
+      tl.fromTo("#f06x-sel1", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power3.out" }, 8.6);
+      tl.fromTo("#f06x-sq1", { borderColor: "#E2E8F0" }, { borderColor: "#3178C6", duration: 0.3, ease: "power3.out" }, 8.6);
+      tl.fromTo("#f06x-i1", { color: "#94A3B8" }, { color: "#3178C6", duration: 0.3, ease: "power3.out", immediateRender: false }, 8.6);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["06-naar-parent"] = tl;
+    })();
+  </script>
+</template>

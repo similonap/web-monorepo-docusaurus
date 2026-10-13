@@ -1,0 +1,382 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 11 positions ---- */
+    #f11t-panel { left: 80px; top: 170px; width: 1060px; height: 560px; }
+    .f11t-grow { height: 0; overflow: hidden; }
+    .f11t-lnB { opacity: 0; }
+    /* `todos.filter((_, i) => i !== index)`: row 7 (index 6), cols 13-48 */
+    #f11t-mark { left: 276px; top: 230px; width: 552px; height: 34px; opacity: 0; }
+    #f11t-label { left: 1236px; top: 186px; }
+    #f11t-tag { right: 80px; top: 180px; }
+    .f11t-item { position: absolute; left: 1236px; height: 52px; width: 604px; }
+    .f11t-idx {
+      position: absolute; left: 0; top: 0; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; color: var(--ts-muted);
+    }
+    .f11t-item .ts-chip { left: 40px; top: 0; }
+    .f11t-res {
+      position: absolute; left: 364px; top: 0; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; color: var(--ts-ink-soft);
+      white-space: pre; font-variant-ligatures: none;
+    }
+    .f11t-ok { color: var(--ts-blue); }
+    .f11t-no { color: var(--ts-ink-soft); }
+    #f11t-i0 { top: 232px; }
+    #f11t-i1 { top: 300px; }
+    #f11t-i2 { top: 368px; }
+    #f11t-label2 { left: 1236px; top: 470px; }
+    #f11t-n0 { left: 1236px; top: 510px; }
+    #f11t-n1 { left: 1236px; top: 578px; }
+  </style>
+
+  <div data-hf-id="hf-1sl8" id="root" data-composition-id="11-deletetodo" data-width="1920" data-height="1080" data-duration="15.43">
+    <div data-hf-id="hf-azfs" class="ts-bg clip" id="f11t-bg" data-start="0" data-duration="15.43" data-track-index="0"></div>
+
+    <div data-hf-id="hf-ja41" class="ts-stage clip" id="f11t-stage" data-start="0" data-duration="15.43" data-track-index="1">
+      <div data-hf-id="hf-7vch" class="ts-kicker" id="f11t-kicker"><div data-hf-id="hf-k3z8" class="ts-kicker-bar" id="f11t-kbar"></div><span data-hf-id="hf-g36s" class="ts-kicker-text" id="f11t-ktext">deleteTodo in App</span></div>
+
+      <!-- code surface: App.tsx -->
+      <div data-hf-id="hf-9v7a" class="ts-code-surface" id="f11t-panel">
+        <div data-hf-id="hf-x5y0" class="ts-code-title">App.tsx</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-rl30" class="ts-txt"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> <span data-hf-id="hf-fbcu" class="ts-fn">App</span> = () <span data-hf-id="hf-kpf2" class="ts-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-3dos" class="ts-txt">  <span data-hf-id="hf-stvc" class="ts-kw">const</span> [todos, setTodos] = <span data-hf-id="hf-md7z" class="ts-fn">useState</span>&lt;<span data-hf-id="hf-sj5i" class="ts-type">string</span>[]&gt;([]);</span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-joe1" class="ts-txt"></span></div>
+          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-722y" class="ts-txt">  <span data-hf-id="hf-rmy9" class="ts-kw">const</span> <span data-hf-id="hf-v68e" class="ts-fn">addTodo</span> = (todo: <span data-hf-id="hf-b61m" class="ts-type">string</span>) <span data-hf-id="hf-hprm" class="ts-kw">=&gt;</span> { <span data-hf-id="hf-49xj" class="ts-fold">⋯</span> };</span></div>
+          <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-5edp" class="ts-txt"></span></div>
+          <div data-hf-id="hf-jwpb" class="ts-row f11t-grow" id="f11t-r6"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-3f5a" class="ts-txt" id="f11t-l6"></span><span data-hf-id="hf-6io8" class="ts-caret" id="f11t-c6"></span></div>
+          <div data-hf-id="hf-fyla" class="ts-row f11t-grow" id="f11t-r7"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><span data-hf-id="hf-7d9b" class="ts-txt" id="f11t-l7"></span><span data-hf-id="hf-7ac1" class="ts-caret" id="f11t-c7"></span></div>
+          <div data-hf-id="hf-g22p" class="ts-row f11t-grow" id="f11t-r8"><span data-hf-id="hf-hcwz" class="ts-ln">8</span><span data-hf-id="hf-4yko" class="ts-txt" id="f11t-l8"></span><span data-hf-id="hf-4z8u" class="ts-caret" id="f11t-c8"></span></div>
+          <div data-hf-id="hf-faew" class="ts-row f11t-grow" id="f11t-r9"><span data-hf-id="hf-hr80" class="ts-ln">9</span><span data-hf-id="hf-6las" class="ts-txt"></span></div>
+          <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-aktj" class="ts-ln f11t-lnA">6</span><span data-hf-id="hf-xasp" class="ts-ln f11t-lnB">10</span><span data-hf-id="hf-kclz" class="ts-txt">  <span data-hf-id="hf-kmyz" class="ts-kw">return</span> ( <span data-hf-id="hf-vzvr" class="ts-fold">⋯</span> );</span></div>
+          <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-az4k" class="ts-ln f11t-lnA">7</span><span data-hf-id="hf-xp3q" class="ts-ln f11t-lnB">11</span><span data-hf-id="hf-s4ut" class="ts-txt">};</span></div>
+          <div data-hf-id="hf-dnvt" class="ts-mark" id="f11t-mark"></div>
+        </div>
+        <div data-hf-id="hf-0fi3" class="ts-code-status">App · deleteTodo</div>
+      </div>
+
+      <!-- right column: the filter over todos -->
+      <div data-hf-id="hf-7sb2" class="ts-label" id="f11t-label">todos</div>
+      <div data-hf-id="hf-mqf7" class="ts-tag" id="f11t-tag">index = 1</div>
+
+      <div data-hf-id="hf-jf68" class="f11t-item" id="f11t-i0">
+        <span data-hf-id="hf-l0f9" class="f11t-idx">0</span>
+        <div data-hf-id="hf-li20" class="ts-chip" id="f11t-chip0">"Was ophangen"</div>
+        <span data-hf-id="hf-ux2d" class="f11t-res" id="f11t-res0">0 !== 1 <span data-hf-id="hf-9fwd" class="f11t-ok">✓</span></span>
+      </div>
+      <div data-hf-id="hf-k6u1" class="f11t-item" id="f11t-i1">
+        <span data-hf-id="hf-leqa" class="f11t-idx">1</span>
+        <div data-hf-id="hf-iqfj" class="ts-chip" id="f11t-chip1">"Hond uitlaten"</div>
+        <span data-hf-id="hf-bxjh" class="f11t-res" id="f11t-res1">1 !== 1 <span data-hf-id="hf-n1xo" class="f11t-no">✗</span></span>
+      </div>
+      <div data-hf-id="hf-o4y2" class="f11t-item" id="f11t-i2">
+        <span data-hf-id="hf-lt1b" class="f11t-idx">2</span>
+        <div data-hf-id="hf-gq2h" class="ts-chip" id="f11t-chip2">"Melk kopen"</div>
+        <span data-hf-id="hf-dttx" class="f11t-res" id="f11t-res2">2 !== 1 <span data-hf-id="hf-7mq9" class="f11t-ok">✓</span></span>
+      </div>
+
+      <div data-hf-id="hf-um1n" class="ts-label" id="f11t-label2">nieuwe array</div>
+      <div data-hf-id="hf-avu8" class="ts-chip ts-chip--new" id="f11t-n0">"Was ophangen"</div>
+      <div data-hf-id="hf-6nmi" class="ts-chip ts-chip--new" id="f11t-n1">"Melk kopen"</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 15.43;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="11-deletetodo"]');
+      var q = function (s) { return root.querySelector(s); };
+      var qa = function (s) { return root.querySelectorAll(s); };
+      var chPx = FS * CW;
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+      function fadeUp(sel, at, dy) {
+        tl.fromTo(sel, { opacity: 0, y: dy || 12 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, at);
+      }
+
+      // ---- Shot 1 (0.0-3.4): kicker; "delete todo" (1.52 / 2.00) ----
+      tl.fromTo("#f11t-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f11t-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f11t-panel", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.2);
+
+      // rows 6-9 grow at 1.4, return / }; renumber to 10 / 11
+      tl.fromTo(qa(".f11t-grow"), { height: 0 }, { height: 38, duration: 0.4, ease: "power2.inOut" }, 1.1);
+      tl.to(qa(".f11t-lnA"), { opacity: 0, duration: 0.3, ease: "power1.inOut" }, 1.1);
+      tl.to(qa(".f11t-lnB"), { opacity: 1, duration: 0.3, ease: "power1.inOut" }, 1.1);
+
+      var l6 = typeLine("#f11t-l6", "#f11t-c6", [
+        { t: "  " },
+        { t: "const", c: "ts-kw" },
+        { t: " " },
+        { id: "f11t-hl-name", parts: [{ t: "deleteTodo", c: "ts-fn" }] },
+        { t: " = (" },
+        { id: "f11t-hl-index", parts: [{ t: "index: " }, { t: "number", c: "ts-type" }] },
+        { t: ") " },
+        { t: "=>", c: "ts-kw" },
+        { t: " {" }
+      ], 0, 1.52, 0.016, 0.1);
+      typeLine("#f11t-l8", "#f11t-c8", [{ t: "  };" }], 0, l6.end + 0.06, 0.03, 0.04);
+      washOn("#f11t-hl-name", 2.00);
+
+      // ---- Shot 2 (3.4-5.5): "een index" (3.52); "filtert de array" (4.32 / 5.00) ----
+      washOff("#f11t-hl-name", 3.52);
+      washOn("#f11t-hl-index", 3.52);
+      fadeUp("#f11t-tag", 3.52, 10);
+
+      typeLine("#f11t-l7", "#f11t-c7", [
+        { t: "    " },
+        { t: "setTodos", c: "ts-fn" },
+        { t: "(todos." },
+        { id: "f11t-hl-filter", parts: [{ t: "filter", c: "ts-fn" }] },
+        { t: "((_, i) " },
+        { t: "=>", c: "ts-kw" },
+        { t: " " },
+        { id: "f11t-hl-cmp", parts: [{ t: "i !== index" }] },
+        { t: "));" }
+      ], 0, 4.32, 0.018, 0.1);
+
+      fadeUp("#f11t-label", 4.32, 10);
+      fadeUp("#f11t-i0", 4.32);
+      fadeUp("#f11t-i1", 4.44);
+      fadeUp("#f11t-i2", 4.56);
+
+      washOff("#f11t-hl-index", 5.00);
+      washOn("#f11t-hl-filter", 5.00);
+
+      // ---- Shot 3 (5.5-10.8): "niet gelijk" (7.92); checks 7.92 / 8.20 / 8.48 ----
+      washOff("#f11t-hl-filter", 7.92);
+      washOn("#f11t-hl-cmp", 7.92);
+      tl.fromTo("#f11t-res0", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 7.92);
+      tl.fromTo("#f11t-res1", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 8.20);
+      tl.fromTo("#f11t-res2", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 8.48);
+      // "Hond uitlaten" struck: dim to 35% + line-through (ts-chip--struck)
+      tl.set("#f11t-chip1", { textDecoration: "none" }, 0);
+      tl.set("#f11t-chip1", { textDecoration: "line-through" }, 8.48);
+      tl.fromTo("#f11t-chip1", { opacity: 1 }, { opacity: 0.35, duration: 0.4, ease: "power2.inOut", immediateRender: false }, 8.48);
+
+      // ---- Shot 4 (10.8-end): "nieuwe array" (12.04) ----
+      washOff("#f11t-hl-cmp", 12.04);
+      tl.fromTo("#f11t-mark",
+        { opacity: 0, clipPath: "inset(0% 100% 0% 0%)" },
+        { opacity: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: "power3.out" }, 12.04);
+      fadeUp("#f11t-label2", 12.04, 10);
+      tl.fromTo("#f11t-n0", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 12.04);
+      tl.fromTo("#f11t-n1", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 12.16);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["11-deletetodo"] = tl;
+    })();
+  </script>
+</template>

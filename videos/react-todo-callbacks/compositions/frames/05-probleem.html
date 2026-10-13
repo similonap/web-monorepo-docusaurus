@@ -1,0 +1,281 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 05 positions ---- */
+    .f05t-node {
+      position: absolute; box-sizing: border-box; background: var(--ts-panel);
+      border: 2px solid var(--ts-hairline); border-radius: 12px;
+    }
+    .f05t-name {
+      position: absolute; left: 0; right: 0; text-align: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 26px; line-height: 32px; color: var(--ts-ink);
+    }
+    #f05t-app { left: 610px; top: 180px; width: 700px; height: 170px; }
+    #f05t-app .f05t-name { top: 18px; }
+    #f05t-chipwrap { position: absolute; left: 0; right: 0; top: 86px; height: 44px; display: flex; justify-content: center; }
+    #f05t-chip { position: relative; height: 44px; padding: 0 16px; font-size: 22px; background: var(--ts-ground); }
+
+    #f05t-iv { left: 610px; top: 560px; width: 700px; height: 220px; }
+    #f05t-iv .f05t-name { top: 18px; }
+    #f05t-form { position: absolute; left: 0; right: 0; top: 96px; height: 52px; display: flex; justify-content: center; gap: 16px; }
+    #f05t-input {
+      position: relative; width: 380px; height: 52px; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 6px; padding: 0 18px;
+      display: flex; align-items: center; font-family: var(--ts-sans); font-size: 24px; color: var(--ts-ink);
+    }
+    #f05t-btn { height: 52px; }
+
+    #f05t-wires { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    .f05t-wire { fill: none; stroke: #94A3B8; stroke-width: 2; }
+    .f05t-head { fill: #94A3B8; }
+    #f05t-wup { stroke-dasharray: 1; stroke-dashoffset: 1; }
+    #f05t-hup { opacity: 0; }
+
+    #f05t-cross { position: absolute; left: 1028px; top: 360px; width: 24px; height: 24px; opacity: 0; }
+    .f05t-bar { position: absolute; left: -2px; top: 10.5px; width: 28px; height: 3px; border-radius: 1.5px; background: var(--ts-error); }
+    .f05t-bar--a { transform: rotate(45deg); }
+    .f05t-bar--b { transform: rotate(-45deg); }
+
+    #f05t-tag { left: 1340px; top: 560px; opacity: 0; }
+  </style>
+
+  <div data-hf-id="hf-o40m" id="root" data-composition-id="05-probleem" data-width="1920" data-height="1080" data-duration="12.15">
+    <div data-hf-id="hf-iohb" class="ts-bg clip" id="f05t-bg" data-start="0" data-duration="12.15" data-track-index="0"></div>
+
+    <div data-hf-id="hf-jbjk" class="ts-stage clip" id="f05t-stage" data-start="0" data-duration="12.15" data-track-index="1">
+      <div data-hf-id="hf-cn9m" class="ts-kicker" id="f05t-kicker"><div data-hf-id="hf-d5zn" class="ts-kicker-bar" id="f05t-kbar"></div><span data-hf-id="hf-2d7j" class="ts-kicker-text" id="f05t-ktext">Het probleem</span></div>
+
+      <div data-hf-id="hf-70ho" id="f05t-diagram">
+        <svg data-hf-id="hf-ll2k" id="f05t-wires" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+          <path data-hf-id="hf-1nyw" class="f05t-wire" id="f05t-wdown" d="M960 352 V546" />
+          <polygon data-hf-id="hf-idyx" class="f05t-head" id="f05t-hdown" points="953,546 967,546 960,558" />
+          <path data-hf-id="hf-ch6d" class="f05t-wire" id="f05t-wup" pathLength="1" d="M1040 558 V402" />
+          <polygon data-hf-id="hf-pdzy" class="f05t-head" id="f05t-hup" points="1033,402 1047,402 1040,390" />
+        </svg>
+
+        <div data-hf-id="hf-r403" class="f05t-node" id="f05t-app">
+          <div data-hf-id="hf-7eu2" class="f05t-name">App</div>
+          <div data-hf-id="hf-hjgf" id="f05t-chipwrap"><div data-hf-id="hf-zjsg" class="ts-chip" id="f05t-chip"><span data-hf-id="hf-ujq6">todos<span data-hf-id="hf-55ep" class="ts-punct">:</span> <span data-hf-id="hf-sj5i" class="ts-type">string</span><span data-hf-id="hf-raa1" class="ts-punct">[]</span></span></div></div>
+        </div>
+
+        <div data-hf-id="hf-e42f" class="f05t-node" id="f05t-iv">
+          <div data-hf-id="hf-0rds" class="f05t-name">InputView</div>
+          <div data-hf-id="hf-igu7" id="f05t-form">
+            <div data-hf-id="hf-woz5" id="f05t-input">Melk kopen</div>
+            <div data-hf-id="hf-y0ft" class="ts-btn" id="f05t-btn">Add Todo</div>
+          </div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-9zof" id="f05t-cross"><div data-hf-id="hf-osf5" class="f05t-bar f05t-bar--a"></div><div data-hf-id="hf-sqj6" class="f05t-bar f05t-bar--b"></div></div>
+
+      <div data-hf-id="hf-0w7x" class="ts-tag" id="f05t-tag">hier is een nieuwe todo: "Melk kopen"</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 12.15;
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- 0.0-2.2: kicker; diagram fades in at 0.2 ----
+      tl.fromTo("#f05t-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f05t-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f05t-diagram", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.2);
+
+      // hidden-until-cued elements
+      tl.set(["#f05t-tag", "#f05t-cross", "#f05t-hup"], { opacity: 0 }, 0);
+      tl.set("#f05t-wup", { strokeDashoffset: 1, stroke: "#94A3B8", opacity: 1 }, 0);
+      tl.set("#f05t-hup", { fill: "#94A3B8" }, 0);
+
+      // ---- 2.2-4.6: "lijst" (2.32) blue wash on the chip; "App" (4.00) node border blue ----
+      tl.fromTo("#f05t-chip",
+        { backgroundColor: "#FFFFFF", borderColor: "#E2E8F0" },
+        { backgroundColor: "#EAF2FB", borderColor: "#3178C6", duration: 0.3, ease: "power3.out" }, 2.32);
+      tl.fromTo("#f05t-app", { borderColor: "#E2E8F0" }, { borderColor: "#3178C6", duration: 0.3, ease: "power3.out" }, 4.0);
+
+      // ---- 4.6-7.4: "InputView" (4.72) blue back to neutral, up arrow draws; "niet" (6.24) red + cross ----
+      tl.to("#f05t-chip", { backgroundColor: "#FFFFFF", borderColor: "#E2E8F0", duration: 0.4, ease: "power1.inOut" }, 4.72);
+      tl.to("#f05t-app", { borderColor: "#E2E8F0", duration: 0.4, ease: "power1.inOut" }, 4.72);
+      tl.to("#f05t-wup", { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 4.72);
+      tl.to("#f05t-hup", { opacity: 1, duration: 0.2, ease: "power1.out" }, 5.24);
+
+      tl.to("#f05t-wup", { stroke: "#D14343", duration: 0.25, ease: "power1.out" }, 6.24);
+      tl.to("#f05t-hup", { fill: "#D14343", duration: 0.25, ease: "power1.out" }, 6.24);
+      tl.fromTo("#f05t-cross", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, 6.24);
+
+      // ---- 7.4-end: arrow fades at 8.6; "hier" (9.64) tag ----
+      tl.to(["#f05t-wup", "#f05t-hup", "#f05t-cross"], { opacity: 0, duration: 0.4, ease: "power1.inOut" }, 8.6);
+      tl.fromTo("#f05t-tag", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 9.64);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["05-probleem"] = tl;
+    })();
+  </script>
+</template>

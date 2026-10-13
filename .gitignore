@@ -32,3 +32,11 @@ yarn-error.log*
 # Gerenderde video's (staan op YouTube; broncode in videos/ blijft versiebeheerd)
 /static/videos/
 /videos/*/renders/
+
+# HyperFrames caches en lokale state (worden opnieuw aangemaakt)
+/videos/*/.thumbnails/
+/videos/*/.waveform-cache/
+/videos/*/.hyperframes/
+/videos/*/.media/
+/videos/*/snapshots/
+.DS_Store

@@ -1,0 +1,447 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+
+    /* ---- frame 12 positions: round trip in the component tree ---- */
+    .f12x-node {
+      position: absolute; box-sizing: border-box; background: var(--ts-panel);
+      border: 2px solid var(--ts-hairline); border-radius: 12px;
+    }
+    .f12x-name {
+      position: absolute; font-family: var(--ts-mono); font-weight: 500; font-size: 26px; line-height: 32px; color: var(--ts-ink);
+    }
+    #f12x-app { left: 560px; top: 170px; width: 800px; height: 190px; }
+    #f12x-app .f12x-name { left: 24px; top: 18px; }
+    #f12x-sq0 { left: 300px; top: 540px; width: 300px; height: 240px; }
+    #f12x-sq1 { left: 810px; top: 540px; width: 300px; height: 240px; }
+    #f12x-sq2 { left: 1320px; top: 540px; width: 300px; height: 240px; }
+    .f12x-node .f12x-sqname { left: 0; right: 0; top: 16px; text-align: center; }
+    .f12x-tile {
+      position: absolute; left: 100px; top: 60px; width: 100px; height: 100px; box-sizing: border-box;
+      background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 8px;
+    }
+    .f12x-sel {
+      position: absolute; inset: -1px; border-radius: 8px; box-shadow: inset 0 0 0 5px #3178C6; opacity: 0;
+    }
+    /* `selected: true|false` under the tile */
+    .f12x-prop {
+      position: absolute; left: 60px; top: 182px; width: 180px; height: 28px;
+      font-family: var(--ts-mono); font-size: 20px; line-height: 28px; color: var(--ts-muted); white-space: pre;
+    }
+    .f12x-pvbox { position: absolute; left: 120px; top: 0; width: 60px; height: 28px; overflow: hidden; }
+    .f12x-pv { position: absolute; left: 0; top: 0; line-height: 28px; color: var(--ts-code-fn); }
+    .f12x-idx {
+      position: absolute; top: 796px; width: 300px; text-align: center;
+      font-family: var(--ts-mono); font-size: 20px; line-height: 24px; color: var(--ts-muted);
+    }
+
+    /* state chip inside App */
+    #f12x-chip { left: 24px; top: 92px; }
+    .f12x-cname { display: inline-flex; align-items: center; height: 32px; }
+    .f12x-cvbox { position: relative; display: inline-block; width: 15px; height: 32px; overflow: hidden; }
+    .f12x-cv { position: absolute; left: 0; top: 0; line-height: 32px; color: var(--ts-code-fn); }
+    /* callback line inside App, right of the chip */
+    #f12x-cb {
+      position: absolute; left: 412px; top: 99px; height: 38px; padding: 0 8px; border-radius: 4px;
+      font-family: var(--ts-mono); font-size: 22px; line-height: 38px; color: var(--ts-code-text);
+      white-space: pre; background: var(--ts-wash); font-variant-ligatures: none; opacity: 0;
+    }
+    #f12x-rtag { left: 1196px; top: 152px; opacity: 0; }
+    #f12x-pill { left: 1490px; top: 490px; opacity: 0; }
+
+    #f12x-wires, #f12x-dots { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .f12x-wire { fill: none; stroke: #94A3B8; stroke-width: 2; }
+    .f12x-head { fill: #94A3B8; }
+    .f12x-dot {
+      position: absolute; left: 0; top: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--ts-blue);
+      offset-anchor: 50% 50%; offset-rotate: 0deg; offset-distance: 0%; opacity: 0;
+    }
+    #f12x-dup { offset-path: path("M1470 528 V450 H960 V361"); }
+    #f12x-d0 { offset-path: path("M960 361 V450 H450 V528"); }
+    #f12x-d1 { offset-path: path("M960 361 V528"); }
+    #f12x-d2 { offset-path: path("M960 361 V450 H1470 V528"); }
+
+    #f12x-ripple {
+      position: absolute; left: 1430px; top: 610px; width: 80px; height: 80px;
+      border-radius: 50%; background: rgba(49, 120, 198, 0.2);
+      box-sizing: border-box; opacity: 0; pointer-events: none;
+    }
+    #f12x-cursor { position: absolute; left: 0; top: 0; width: 224px; height: 224px; pointer-events: none; z-index: 20; opacity: 0; }
+    #f12x-cursor svg {
+      display: block; width: 100%; height: 100%;
+      fill: #1E293B; stroke: #FFFFFF; stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round;
+    }
+  </style>
+
+  <div data-hf-id="hf-hpqv" id="root" data-composition-id="12-de-klik" data-width="1920" data-height="1080" data-duration="18.79">
+    <div data-hf-id="hf-ei3n" class="ts-bg clip" id="f12x-bg" data-start="0" data-duration="18.79" data-track-index="0"></div>
+
+    <div data-hf-id="hf-c918" class="ts-stage clip" id="f12x-stage" data-start="0" data-duration="18.79" data-track-index="1">
+      <div data-hf-id="hf-yu66" class="ts-kicker" id="f12x-kicker"><div data-hf-id="hf-b7hb" class="ts-kicker-bar" id="f12x-kbar"></div><span data-hf-id="hf-or44" class="ts-kicker-text" id="f12x-ktext">De klik</span></div>
+
+      <!-- connectors App -> Squares (already known from frame 6) -->
+      <svg data-hf-id="hf-7izw" id="f12x-wires" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+        <path data-hf-id="hf-rywe" class="f12x-wire" id="f12x-w0" d="M960 361 V450 H450 V528" />
+        <path data-hf-id="hf-l0ez" class="f12x-wire" id="f12x-w1" d="M960 361 V528" />
+        <path data-hf-id="hf-wsa3" class="f12x-wire" id="f12x-w2" d="M960 361 V450 H1470 V528" />
+        <polygon data-hf-id="hf-19s2" class="f12x-head" id="f12x-h0" points="443,527 457,527 450,539" />
+        <polygon data-hf-id="hf-rcaj" class="f12x-head" id="f12x-h1" points="953,527 967,527 960,539" />
+        <polygon data-hf-id="hf-y4bl" class="f12x-head" id="f12x-h2" points="1463,527 1477,527 1470,539" />
+      </svg>
+
+      <!-- parent -->
+      <div data-hf-id="hf-hrej" class="f12x-node" id="f12x-app">
+        <div data-hf-id="hf-ikz2" class="f12x-name">App</div>
+        <div data-hf-id="hf-9mlw" class="ts-chip" id="f12x-chip"><span data-hf-id="hf-h79w" class="ts-chip-key">state</span><span data-hf-id="hf-n7ic" class="f12x-cname">selectedIndex<span data-hf-id="hf-55ep" class="ts-punct">:&#160;</span><span data-hf-id="hf-ue71" class="f12x-cvbox"><span data-hf-id="hf-1qg9" class="f12x-cv" id="f12x-cv0">0</span><span data-hf-id="hf-64w9" class="f12x-cv" id="f12x-cv2">2</span></span></span></div>
+        <div data-hf-id="hf-r2oy" id="f12x-cb"><span data-hf-id="hf-9189" class="ts-punct">() =&gt; </span><span data-hf-id="hf-rfs4" class="ts-fn">setSelectedIndex</span><span data-hf-id="hf-cax7" class="ts-punct">(</span><span data-hf-id="hf-lzij" class="ts-fn">2</span><span data-hf-id="hf-cp88" class="ts-punct">)</span></div>
+      </div>
+      <div data-hf-id="hf-pp8r" class="ts-tag" id="f12x-rtag">render #2</div>
+
+      <!-- children -->
+      <div data-hf-id="hf-kn5q" class="f12x-node" id="f12x-sq0">
+        <div data-hf-id="hf-mvn7" class="f12x-name f12x-sqname">Square</div>
+        <div data-hf-id="hf-h6te" class="f12x-tile" id="f12x-t0"><div data-hf-id="hf-5e6u" class="f12x-sel" id="f12x-sel0"></div></div>
+        <div data-hf-id="hf-oqge" class="f12x-prop">selected: <span data-hf-id="hf-f56u" class="f12x-pvbox"><span data-hf-id="hf-aaju" class="f12x-pv" id="f12x-p0a">true</span><span data-hf-id="hf-120o" class="f12x-pv" id="f12x-p0b">false</span></span></div>
+      </div>
+      <div data-hf-id="hf-qsvj" class="f12x-node" id="f12x-sq1">
+        <div data-hf-id="hf-zb4j" class="f12x-name f12x-sqname">Square</div>
+        <div data-hf-id="hf-l4xf" class="f12x-tile" id="f12x-t1"><div data-hf-id="hf-9cav" class="f12x-sel" id="f12x-sel1"></div></div>
+        <div data-hf-id="hf-jdo2" class="f12x-prop">selected: <span data-hf-id="hf-1hxm" class="f12x-pvbox"><span data-hf-id="hf-h7yg" class="f12x-pv" id="f12x-p1a">false</span></span></div>
+      </div>
+      <div data-hf-id="hf-fxdw" class="f12x-node" id="f12x-sq2">
+        <div data-hf-id="hf-ywti" class="f12x-name f12x-sqname">Square</div>
+        <div data-hf-id="hf-ebew" class="f12x-tile" id="f12x-t2"><div data-hf-id="hf-0of0" class="f12x-sel" id="f12x-sel2"></div></div>
+        <div data-hf-id="hf-jrz3" class="f12x-prop">selected: <span data-hf-id="hf-1w8n" class="f12x-pvbox"><span data-hf-id="hf-o8nb" class="f12x-pv" id="f12x-p2a">false</span><span data-hf-id="hf-qw7n" class="f12x-pv" id="f12x-p2b">true</span></span></div>
+      </div>
+      <div data-hf-id="hf-bldj" class="ts-tag" id="f12x-pill">onSelect()</div>
+
+      <!-- index tags under the squares -->
+      <div data-hf-id="hf-t3eb" class="f12x-idx" id="f12x-i0" style="left: 300px;">0</div>
+      <div data-hf-id="hf-ebt1" class="f12x-idx" id="f12x-i1" style="left: 810px;">1</div>
+      <div data-hf-id="hf-vuns" class="f12x-idx" id="f12x-i2" style="left: 1320px;">2</div>
+
+      <!-- travelling event / data dots -->
+      <div data-hf-id="hf-3qct" id="f12x-dots">
+        <div data-hf-id="hf-wldk" class="f12x-dot" id="f12x-dup"></div>
+        <div data-hf-id="hf-yaal" class="f12x-dot" id="f12x-d0"></div>
+        <div data-hf-id="hf-xims" class="f12x-dot" id="f12x-d1"></div>
+        <div data-hf-id="hf-8e4f" class="f12x-dot" id="f12x-d2"></div>
+      </div>
+
+      <div data-hf-id="hf-8in2" class="f12x-ripple" id="f12x-ripple"></div>
+
+      <div data-hf-id="hf-43n8" class="f12x-cursor" id="f12x-cursor" aria-hidden="true" data-layout-allow-overflow="">
+        <svg data-hf-id="hf-ulu9" viewBox="0 0 24 24"><path data-hf-id="hf-fueh" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 18.79;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="12-de-klik"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- shared helpers (kept for parity with sibling frames; no code panel here) ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+      var $ = function (id) { return root.querySelector("#f12x-" + id); };
+      var GREY = "#94A3B8";
+      var BLUE = "#3178C6";
+
+      // value swap helper: old value slides up and out, new one slides in from below
+      function swap(oldEl, newEl, at) {
+        tl.to(oldEl, { yPercent: -100, opacity: 0, duration: 0.25, ease: "power2.inOut" }, at);
+        tl.fromTo(newEl, { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.25, ease: "power3.out", immediateRender: false }, at + 0.05);
+      }
+      // travelling dot along its CSS offset-path
+      function travel(dot, at, dur) {
+        tl.fromTo(dot, { offsetDistance: "0%" }, { offsetDistance: "100%", duration: dur, ease: "power2.inOut" }, at);
+        tl.fromTo(dot, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "power1.out" }, at);
+        tl.to(dot, { opacity: 0, duration: 0.15, ease: "power1.in" }, at + dur - 0.05);
+      }
+
+      // initial hidden values (seek-safe)
+      tl.set([$("cv2"), $("p0b"), $("p2b")], { yPercent: 100, opacity: 0 }, 0);
+      tl.set($("sel0"), { opacity: 1 }, 0);
+
+      // ---- 0.0-1.9: kicker; diagram fades in at 0.2; cursor enters 0.9, clicks square 2 at 1.6 ----
+      tl.fromTo($("kbar"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo($("ktext"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo($("app"), { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.2);
+      tl.fromTo($("wires"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 0.3);
+      tl.fromTo([$("sq0"), $("sq1"), $("sq2")], { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.08 }, 0.26);
+      tl.fromTo([$("i0"), $("i1"), $("i2")], { opacity: 0 },
+        { opacity: 1, duration: 0.4, ease: "power1.out", stagger: 0.08 }, 0.4);
+
+      var cursor = $("cursor");
+      var CLICK_AT = 1.6;
+      var PRESS = 0.1;
+      var TIP_ORIGIN = "20.83% 12.5%";
+      tl.fromTo(cursor,
+        { xPercent: -20.83, yPercent: -12.5, x: 1980, y: 960, scale: 1, opacity: 0 },
+        { xPercent: -20.83, yPercent: -12.5, x: 1478, y: 658, opacity: 1, duration: 0.55, ease: "power3.out" },
+        0.9);
+      tl.to(cursor, { scale: 0.86, duration: PRESS, ease: "power2.in", transformOrigin: TIP_ORIGIN }, CLICK_AT);
+      tl.to(cursor, { scale: 1, duration: 0.22, ease: "power2.out", transformOrigin: TIP_ORIGIN }, CLICK_AT + PRESS);
+      tl.to($("t2"), { scale: 0.96, duration: PRESS, ease: "power1.in" }, CLICK_AT);
+      tl.to($("t2"), { scale: 1, duration: 0.4, ease: "power3.out" }, CLICK_AT + PRESS);
+      tl.fromTo($("ripple"), { scale: 0.5, opacity: 0.9 },
+        { scale: 2, opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, CLICK_AT + 0.02);
+      // cursor leaves so the event path stays readable
+      tl.to(cursor, { x: 1620, y: 760, opacity: 0, duration: 0.45, ease: "power2.inOut" }, 2.2);
+
+      // ---- 1.9-4.1: "on select" (2.80) pill; "select" (3.04) dot travels up Square 2 -> App ----
+      tl.fromTo($("pill"), { opacity: 0, scale: 0.96, y: 6 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "power3.out" }, 2.8);
+      travel($("dup"), 3.04, 0.7);
+
+      // ---- 4.1-6.8: "van App" (5.12) connector App -> Square 2 turns blue, back at 6.6 ----
+      tl.fromTo($("w2"), { stroke: GREY }, { stroke: BLUE, duration: 0.3, ease: "power1.out" }, 5.12);
+      tl.fromTo($("h2"), { fill: GREY }, { fill: BLUE, duration: 0.3, ease: "power1.out" }, 5.12);
+      tl.to($("w2"), { stroke: GREY, duration: 0.3, ease: "power1.inOut" }, 6.6);
+      tl.to($("h2"), { fill: GREY, duration: 0.3, ease: "power1.inOut" }, 6.6);
+
+      // ---- 6.8-10.5: "callback" (6.84) line in App; "index" (9.92) chip 0 -> 2 ----
+      tl.fromTo($("cb"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 6.84);
+      tl.fromTo($("pill"), { opacity: 1 }, { opacity: 0.35, duration: 0.4, ease: "power1.inOut", immediateRender: false }, 6.84);
+      swap($("cv0"), $("cv2"), 9.92);
+      tl.fromTo($("chip"), { backgroundColor: "#F1F5F9", borderColor: "#E2E8F0" },
+        { backgroundColor: "#EAF2FB", borderColor: BLUE, duration: 0.3, ease: "power3.out" }, 9.92);
+
+      // ---- 10.5-15.0: "rendert" (10.92) render #2; "elk" (12.24) dots travel down ----
+      tl.fromTo($("rtag"), { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 10.92);
+      tl.to($("pill"), { opacity: 0, duration: 0.4, ease: "power1.inOut" }, 12.0);
+      var DOWN = 12.24;
+      var DD = 0.7;
+      travel($("d0"), DOWN, DD);
+      travel($("d1"), DOWN + 0.1, DD);
+      travel($("d2"), DOWN + 0.2, DD);
+      // square 0: true -> false, border off
+      swap($("p0a"), $("p0b"), DOWN + DD);
+      tl.fromTo($("sel0"), { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power3.out", immediateRender: false }, DOWN + DD);
+      // square 1: stays false (tiny acknowledgement pulse on its value)
+      tl.fromTo($("p1a"), { opacity: 1 }, { opacity: 0.4, duration: 0.15, ease: "power1.out", immediateRender: false }, DOWN + 0.1 + DD);
+      tl.to($("p1a"), { opacity: 1, duration: 0.25, ease: "power1.out" }, DOWN + 0.1 + DD + 0.15);
+      // square 2: false -> true, border on
+      swap($("p2a"), $("p2b"), DOWN + 0.2 + DD);
+      tl.fromTo($("sel2"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, DOWN + 0.2 + DD);
+
+      // ---- 15.0-end: "één" (16.40) square 2's node border turns blue ----
+      tl.fromTo($("sq2"), { borderColor: "#E2E8F0" }, { borderColor: BLUE, duration: 0.3, ease: "power3.out", immediateRender: false }, 16.4);
+      tl.fromTo($("i2"), { color: GREY }, { color: BLUE, duration: 0.3, ease: "power3.out", immediateRender: false }, 16.4);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["12-de-klik"] = tl;
+    })();
+  </script>
+</template>
