@@ -1,6 +1,6 @@
 {
   "title": "Quiz: Array.sort()",
-  "description": "Test je kennis over sorteren met en zonder vergelijkingsfunctie.",
+  "description": "Test je kennis over sorteren met en zonder vergelijkingsfunctie, en over sorteren zonder de originele array aan te passen.",
   "questions": [
     {
       "type": "single",
@@ -48,7 +48,7 @@
         "Enkel als je een vergelijkingsfunctie meegeeft"
       ],
       "answer": 2,
-      "explanation": "`sort` sorteert de originele array. Wil je die behouden, sorteer dan een kopie met `slice()`."
+      "explanation": "`sort` sorteert de originele array. Wil je die behouden, sorteer dan een kopie met `slice()` of met de spread operator: `[...numbers].sort()`."
     },
     {
       "type": "single",
@@ -61,6 +61,33 @@
       ],
       "answer": 3,
       "explanation": "Strings kan je niet van elkaar aftrekken. `localeCompare` geeft zelf een negatief getal, een positief getal of `0` terug."
+    },
+    {
+      "type": "single",
+      "prompt": "Wat print deze code?\n```ts\nlet numbers: number[] = [3, 1, 2];\nlet sorted: number[] = [...numbers].sort((a, b) => a - b);\nconsole.log(numbers);\n```",
+      "options": [
+        "`[1, 2, 3]`",
+        "`[3, 1, 2]`",
+        "`[3, 2, 1]`",
+        "`undefined`"
+      ],
+      "answer": 1,
+      "explanation": "`[...numbers]` maakt een kopie, en enkel die kopie wordt gesorteerd. `sorted` is `[1, 2, 3]`, maar `numbers` blijft `[3, 1, 2]`."
+    },
+    {
+      "type": "multiple",
+      "prompt": "Na welke regels is `numbers` nog altijd **ongewijzigd** `[3, 1, 2]`?",
+      "options": [
+        "`let sorted = numbers.sort((a, b) => a - b);`",
+        "`let sorted = numbers.slice().sort((a, b) => a - b);`",
+        "`let sorted = [...numbers].sort((a, b) => a - b);`",
+        "`let copy = numbers; copy.sort((a, b) => a - b);`"
+      ],
+      "answers": [
+        1,
+        2
+      ],
+      "explanation": "`slice()` en `[...numbers]` maken een kopie, dus enkel de kopie wordt gesorteerd. `numbers.sort()` muteert de originele array, en `copy = numbers` is geen kopie: `copy` verwijst naar dezelfde array."
     }
   ]
 }
