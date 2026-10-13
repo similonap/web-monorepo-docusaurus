@@ -1,6 +1,6 @@
 {
   "title": "Quiz: Arrays",
-  "description": "Test je kennis over arrays in TypeScript: declaratie, indexen, `length`, loops, multi-dimensionale arrays en tuples.",
+  "description": "Test je kennis over arrays in TypeScript: declaratie, indexen, `length`, loops, de spread operator, multi-dimensionale arrays en tuples.",
   "questions": [
     {
       "type": "single",
@@ -62,6 +62,18 @@
       "explanation": "Een tuple heeft een vast aantal elementen met gekende types: `[number, number]`."
     },
     {
+      "type": "single",
+      "prompt": "Wat wordt er op het scherm getoond?\n\n```ts\nlet fruits : string[] = [\"Banana\", \"Apple\"];\nlet moreFruits : string[] = [\"Kiwi\", ...fruits, \"Pear\"];\n\nconsole.log(fruits);\n```",
+      "options": [
+        "`[ 'Kiwi', 'Banana', 'Apple', 'Pear' ]`",
+        "`[ 'Banana', 'Apple', 'Kiwi', 'Pear' ]`",
+        "`[ 'Banana', 'Apple' ]`",
+        "`[ 'Kiwi', [ 'Banana', 'Apple' ], 'Pear' ]`"
+      ],
+      "answer": 2,
+      "explanation": "De spread operator maakt een **nieuwe** array. `moreFruits` is `[ 'Kiwi', 'Banana', 'Apple', 'Pear' ]`, maar `fruits` zelf blijft ongewijzigd: `[ 'Banana', 'Apple' ]`."
+    },
+    {
       "type": "fill",
       "prompt": "Vul aan zodat `numbers` een array van getallen is met de waarden 1 tot en met 5.",
       "language": "typescript",
@@ -117,6 +129,22 @@
         { "expression": "totaal", "expected": 60, "description": "totaal === 60" }
       ],
       "explanation": "Een `for...of` loop schrijf je met `of`, en je telt elk getal op met `totaal += n;`."
+    },
+    {
+      "type": "fill",
+      "prompt": "Maak met de spread operator een nieuwe array `moreFruits` met `\"Kiwi\"` vooraan, daarna alle elementen van `fruits` en `\"Pear\"` achteraan. `fruits` zelf mag niet veranderen.",
+      "language": "typescript",
+      "template": "let fruits : string[] = [\"Banana\", \"Apple\", \"Orange\"];\nlet moreFruits : string[] = [{{0}}, {{1}}, {{2}}];",
+      "blanks": [
+        { "placeholder": "vooraan", "width": 8 },
+        { "placeholder": "spread", "width": 10 },
+        { "placeholder": "achteraan", "width": 8 }
+      ],
+      "tests": [
+        { "expression": "moreFruits", "expected": ["Kiwi", "Banana", "Apple", "Orange", "Pear"], "description": "moreFruits is [Kiwi, Banana, Apple, Orange, Pear]" },
+        { "expression": "fruits", "expected": ["Banana", "Apple", "Orange"], "description": "fruits is ongewijzigd" }
+      ],
+      "explanation": "Wat je vóór `...fruits` zet komt vooraan, wat je erna zet komt achteraan: `[\"Kiwi\", ...fruits, \"Pear\"]`."
     },
     {
       "type": "errors",
