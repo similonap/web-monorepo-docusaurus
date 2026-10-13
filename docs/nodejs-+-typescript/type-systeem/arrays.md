@@ -104,6 +104,74 @@ for (let fruit of fruits) {
 }
 ```
 
+### Spread operator
+
+Wil je een kopie maken van een array, dan lijkt het logisch om de array gewoon aan een nieuwe variabele toe te kennen:
+
+```typescript
+let fruits : string[] = ["Banana","Apple","Orange"];
+let copy : string[] = fruits;
+
+copy[0] = "Kiwi";
+
+console.log(fruits); // [ 'Kiwi', 'Apple', 'Orange' ]
+console.log(copy);   // [ 'Kiwi', 'Apple', 'Orange' ]
+```
+
+Dat werkt niet: `copy` en `fruits` verwijzen naar dezelfde array. Pas je de ene aan, dan verandert de andere mee.
+
+Een echte kopie maak je met de spread operator: drie puntjes (`...`) voor de naam van de array. De spread operator "pakt" als het ware alle elementen uit de array uit en zet ze in een nieuwe array.
+
+```typescript
+let fruits : string[] = ["Banana","Apple","Orange"];
+let copy : string[] = [...fruits];
+
+copy[0] = "Kiwi";
+
+console.log(fruits); // [ 'Banana', 'Apple', 'Orange' ]
+console.log(copy);   // [ 'Kiwi', 'Apple', 'Orange' ]
+```
+
+Omdat je zelf de nieuwe array opbouwt tussen de vierkante haakjes, kan je er meteen extra elementen bij zetten. Zet je een element **vóór** de spread, dan komt het vooraan:
+
+```typescript
+let fruits : string[] = ["Banana","Apple","Orange"];
+let moreFruits : string[] = ["Kiwi", ...fruits];
+
+console.log(moreFruits); // [ 'Kiwi', 'Banana', 'Apple', 'Orange' ]
+```
+
+Zet je het element **na** de spread, dan komt het achteraan:
+
+```typescript
+let fruits : string[] = ["Banana","Apple","Orange"];
+let moreFruits : string[] = [...fruits, "Pear"];
+
+console.log(moreFruits); // [ 'Banana', 'Apple', 'Orange', 'Pear' ]
+```
+
+En je kan ook beide tegelijk doen:
+
+```typescript
+let fruits : string[] = ["Banana","Apple","Orange"];
+let moreFruits : string[] = ["Kiwi", ...fruits, "Pear"];
+
+console.log(moreFruits); // [ 'Kiwi', 'Banana', 'Apple', 'Orange', 'Pear' ]
+console.log(fruits);     // [ 'Banana', 'Apple', 'Orange' ]
+```
+
+Merk op dat de originele array `fruits` telkens ongewijzigd blijft. Je maakt altijd een nieuwe array.
+
+Je kan ook twee (of meer) arrays samenvoegen door ze allebei te spreaden:
+
+```typescript
+let fruits : string[] = ["Banana","Apple","Orange"];
+let vegetables : string[] = ["Carrot","Leek"];
+let groceries : string[] = [...fruits, ...vegetables];
+
+console.log(groceries); // [ 'Banana', 'Apple', 'Orange', 'Carrot', 'Leek' ]
+```
+
 ### Multi-dimensionale arrays
 
 Een array kan ook een array bevatten. Dit noemen we een multi-dimensionale array. Je kan dit op de volgende manier doen:
