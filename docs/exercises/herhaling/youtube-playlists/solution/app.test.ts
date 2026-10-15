@@ -1,9 +1,10 @@
-import { userCollection, videoCollection } from "./database";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { userCollection, videoCollection } from "./database.ts";
 import request from "supertest";
-import app from "./app";
+import app from "./app.ts";
 import bcrypt from "bcrypt";
 import { parse } from "node-html-parser";
-import type { Video } from "./types";
+import type { Video } from "./types.ts";
 
 describe("loginRouter tests", () => {
     test("that a user can see the login page", async () => {
@@ -18,7 +19,7 @@ describe("loginRouter tests", () => {
     });
 
     test("that the user can login with username and password", async () => {
-        const findMock = jest.spyOn(userCollection, 'findOne').mockImplementation(() => ({
+        const findMock = vi.spyOn(userCollection, 'findOne').mockImplementation(() => ({
             username: "test",
             password: bcrypt.hashSync("test", 10),
             favorites: []
@@ -37,7 +38,7 @@ describe("loginRouter tests", () => {
     });
 
     test("that the user cannot login with a wrong password", async () => {
-        const findMock = jest.spyOn(userCollection, 'findOne').mockImplementation(() => ({
+        const findMock = vi.spyOn(userCollection, 'findOne').mockImplementation(() => ({
             username: "test",
             password: bcrypt.hashSync("test", 10),
             favorites: []
@@ -59,7 +60,7 @@ describe("loginRouter tests", () => {
     });
 
     test("that the user cannot login with a wrong username", async () => {
-        const findMock = jest.spyOn(userCollection, 'findOne').mockImplementation(() => null as any);
+        const findMock = vi.spyOn(userCollection, 'findOne').mockImplementation(() => null as any);
 
         const agent = request.agent(app);
 
@@ -93,7 +94,7 @@ describe("loginRouter tests", () => {
     });
 
     test("that the user can logout", async () => {
-        const findMock = jest.spyOn(userCollection, 'findOne').mockImplementation(() => ({
+        const findMock = vi.spyOn(userCollection, 'findOne').mockImplementation(() => ({
             username: "test",
             password: bcrypt.hashSync("test", 10),
             favorites: []
@@ -114,7 +115,7 @@ describe("loginRouter tests", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     })
 });
 
@@ -127,15 +128,15 @@ describe("rootRouter tests", () => {
     ];
 
     beforeEach(async () => {
-        jest.spyOn(userCollection, 'findOne').mockImplementation(() => ({
+        vi.spyOn(userCollection, 'findOne').mockImplementation(() => ({
             username: "test",
             password: bcrypt.hashSync("test", 10),
             favorites: []
         }) as any);
 
-        jest.spyOn(videoCollection, 'find',).mockImplementation(() => ({
-            sort: jest.fn().mockImplementation(() => ({
-                toArray: jest.fn().mockResolvedValue(mockVideos)
+        vi.spyOn(videoCollection, 'find',).mockImplementation(() => ({
+            sort: vi.fn().mockImplementation(() => ({
+                toArray: vi.fn().mockResolvedValue(mockVideos)
             }))
         }) as any);
 
@@ -161,9 +162,9 @@ describe("rootRouter tests", () => {
     });
 
     test("that an authenticated user can search for videos", async () => {
-        let findMock = jest.spyOn(videoCollection, 'find',).mockImplementation(() => ({
-            sort: jest.fn().mockImplementation(() => ({
-                toArray: jest.fn().mockResolvedValue(mockVideos.filter(video => video.title.includes("test2")))
+        let findMock = vi.spyOn(videoCollection, 'find',).mockImplementation(() => ({
+            sort: vi.fn().mockImplementation(() => ({
+                toArray: vi.fn().mockResolvedValue(mockVideos.filter(video => video.title.includes("test2")))
             }))
         }) as any);
         const response = await agent.get("/?q=test2");
@@ -177,10 +178,10 @@ describe("rootRouter tests", () => {
     for (let field of fields) {
         for (let direction of [1, -1]) {
             test(`that an authenticated user can sort videos on ${field} (${direction === 1 ? "ASC" : "DESC"})`, async () => {
-                let sortMock = jest.fn().mockImplementation(() => ({
-                    toArray: jest.fn().mockResolvedValue(mockVideos)
+                let sortMock = vi.fn().mockImplementation(() => ({
+                    toArray: vi.fn().mockResolvedValue(mockVideos)
                 }));
-                jest.spyOn(videoCollection, 'find',).mockImplementation(() => ({
+                vi.spyOn(videoCollection, 'find',).mockImplementation(() => ({
                     sort: sortMock
                 }) as any);
 
@@ -195,6 +196,6 @@ describe("rootRouter tests", () => {
     }
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 });

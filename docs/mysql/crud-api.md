@@ -87,8 +87,8 @@ Pas de imports bovenaan `routers/planetsRouter.ts` aan:
 
 ```typescript title="routers/planetsRouter.ts (imports)"
 import { Router } from "express";
-import type { Planet } from "../types";
-import { getPlanets, getPlanetById, createPlanet, updatePlanet, deletePlanet } from "../database";
+import type { Planet } from "../types.ts";
+import { getPlanets, getPlanetById, createPlanet, updatePlanet, deletePlanet } from "../database.ts";
 ```
 
 Plaats de volgende routes **in de functie `planetsRouter()`**, na de bestaande GET-route en vóór `return router;`. Omdat de router in `index.ts` al aan `/planets` gekoppeld is, gebruiken we hier alleen `/` en `/:id`.
@@ -187,11 +187,10 @@ We controleren eerst of de planeet bestaat. Na het verwijderen antwoorden we met
 
 ## De API testen
 
-Compileer en herstart de server na je wijzigingen:
+Start de server als die nog niet draait. Met `npm start` herstart `nodemon` de server automatisch na elke wijziging:
 
 ```bash
-npx tsc
-node dist/index.js
+npm start
 ```
 
 Voer de volgende requests uit in een tweede terminal. Met `-i` zie je ook de HTTP-status en headers. Op Windows kan je hiervoor Git Bash gebruiken.

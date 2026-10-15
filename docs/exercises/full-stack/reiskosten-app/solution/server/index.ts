@@ -1,6 +1,6 @@
 import express, { type Express } from "express";
-import { connect } from "./database";
-import { reizenRouter } from "./routers/reizen_api";
+import { connect } from "./database.ts";
+import { reizenRouter } from "./routers/reizen_api.ts";
 import cors, { type CorsOptions } from "cors";
 
 const app: Express = express();

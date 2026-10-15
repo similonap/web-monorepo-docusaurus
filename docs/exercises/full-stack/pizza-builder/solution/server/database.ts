@@ -6,8 +6,8 @@ import mysql, {
     type ResultSetHeader
 } from "mysql2/promise";
 import dotenv from "dotenv";
-import type { Ingredient, Pizza, PizzaRecord, PizzaIngredient } from "./types";
-import initialIngredients from "./ingredients.json";
+import type { Ingredient, Pizza, PizzaRecord, PizzaIngredient } from "./types.ts";
+import initialIngredients from "./ingredients.json" with { type: "json" };
 
 dotenv.config();
 const access: ConnectionOptions = {

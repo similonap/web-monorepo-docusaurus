@@ -1,7 +1,7 @@
-import { render } from "ejs";
+import ejs from "ejs";
 import express from "express";
-import { getBeerById, getBeers, getCheckinsByBeer } from "../database";
-import type { Beer } from "../types";
+import { getBeerById, getBeers, getCheckinsByBeer } from "../database.ts";
+import type { Beer } from "../types.ts";
 
 export function beersRouter() {
     const router = express.Router();

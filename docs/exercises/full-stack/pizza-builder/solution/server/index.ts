@@ -1,6 +1,6 @@
 import express, { type Express } from "express";
-import { connect } from "./database";
-import { pizzaRouter } from "./routers/pizzaRouter";
+import { connect } from "./database.ts";
+import { pizzaRouter } from "./routers/pizzaRouter.ts";
 import cors, { type CorsOptions } from "cors";
 
 const app: Express = express();

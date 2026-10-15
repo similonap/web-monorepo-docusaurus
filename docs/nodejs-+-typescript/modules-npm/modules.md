@@ -53,13 +53,19 @@ Zorg er wel voor dat je deze functies in een apart bestand zet met de extensie `
 Wil je deze functies gebruiken in een ander bestand? Dan moet je deze eerst importeren aan de hand van het volgende commando.
 
 ```typescript
-import { areaCircle, areaSquare, areaRectangle } from './area';
+import { areaCircle, areaSquare, areaRectangle } from './area.ts';
 ```
 
-De functies die je wil importeren zet je tussen de accolades. Het gedeelte achter `from` is het pad naar het bestand waar de module in staat. In dit geval is dat `./area` omdat het bestand `area.ts` in dezelfde map staat als het bestand waar je de functies wil gebruiken. Plaats je de module in een andere map, dan moet je het pad aanpassen. Staat je `area.ts` bestand in de directory `functions` dan moet je het volgende commando gebruiken.
+De functies die je wil importeren zet je tussen de accolades. Het gedeelte achter `from` is het pad naar het bestand waar de module in staat. In dit geval is dat `./area.ts` omdat het bestand `area.ts` in dezelfde map staat als het bestand waar je de functies wil gebruiken.
+
+:::warning
+Vergeet de extensie `.ts` niet. Node.js zoekt zelf geen extensie bij een import: schrijf je `./area` in plaats van `./area.ts`, dan krijg je bij het uitvoeren de fout `ERR_MODULE_NOT_FOUND`. Zorg er ook voor dat `allowImportingTsExtensions` aan staat in je `tsconfig.json`, anders klaagt TypeScript over de extensie.
+:::
+
+Plaats je de module in een andere map, dan moet je het pad aanpassen. Staat je `area.ts` bestand in de directory `functions` dan moet je het volgende commando gebruiken.
 
 ```typescript
-import { areaCircle, areaSquare, areaRectangle } from './functions/area';
+import { areaCircle, areaSquare, areaRectangle } from './functions/area.ts';
 ```
 
 nu kan je deze functies gebruiken in je code net zoals je dat zou doen alsof ze in hetzelfde bestand staan.
@@ -82,13 +88,13 @@ export default function(r: number): number {
 Je kan deze functie dan importeren zonder tussen de accolades te zetten.
 
 ```typescript
-import areaCircle from './area';
+import areaCircle from './area.ts';
 ```
 
 In principe maakt het niet uit welke naam je achter de import zet want er is maar één functie geëxporteerd.
 
 ```typescript
-import area from './area';
+import area from './area.ts';
 ```
 
 ### Interfaces exporteren

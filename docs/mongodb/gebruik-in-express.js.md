@@ -73,7 +73,7 @@ Vervolgens kunnen we deze module gebruiken in onze Express.js applicatie.
 ```typescript
 import express from "express";
 
-import { connect } from "./database";
+import { connect } from "./database.ts";
 
 const app = express();
 
@@ -137,7 +137,7 @@ export async function connect() {
 Nu we de connectie met de database hebben gemaakt en de database hebben gevuld met data, kunnen we deze data ophalen in onze Express.js applicatie. Het enige wat we nu moeten importeren is de collection die we willen gebruiken.
 
 ```typescript
-import { studentsCollection } from "./database";
+import { studentsCollection } from "./database.ts";
 ```
 
 en dan kunnen we deze collection gebruiken in onze Express.js routes.
@@ -186,7 +186,7 @@ Database module (`database.ts`):
 
 ```typescript
 import { type Collection, MongoClient } from "mongodb";
-import type { Student } from "./types";
+import type { Student } from "./types.ts";
 
 export const client = new MongoClient("mongodb://localhost:27017");
 export const studentsCollection: Collection<Student> = client.db("example").collection<Student>("student");
@@ -240,12 +240,12 @@ Je Express.js applicatie (`index.ts`):
 ```typescript
 import express, { type Express } from "express";
 import path from "path";
-import { connect, getStudents } from "./database";
+import { connect, getStudents } from "./database.ts";
 
 const app : Express = express();
 
 app.set("view engine", "ejs");
-app.set('views', path.join(__dirname, "views"));
+app.set('views', path.join(import.meta.dirname, "views"));
 
 app.set("port", 3000);
 

@@ -185,8 +185,7 @@ De API voegt de planeet toe aan MySQL en geeft het aangemaakte object terug, inc
 Start de Express-server vanuit je backendmap:
 
 ```bash
-npx tsc
-node dist/index.js
+npm start
 ```
 
 Start Vite in een tweede terminal vanuit `planeten-client`:

@@ -1,8 +1,8 @@
 import express from "express";
-import { login } from "../database";
-import { secureMiddleware } from "../middleware/secureMiddleware";
-import type { User } from "../types";
-import * as jwt from 'jsonwebtoken';
+import { login } from "../database.ts";
+import { secureMiddleware } from "../middleware/secureMiddleware.ts";
+import type { User } from "../types.ts";
+import jwt from 'jsonwebtoken';
 
 export function loginRouter() {
     const router = express.Router();

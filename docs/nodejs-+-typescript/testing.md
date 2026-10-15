@@ -68,7 +68,7 @@ Stel dat je de functie `areaRectangle` wil testen. Je kan dan een nieuw bestand 
 
 ```typescript
 import { expect, test } from 'vitest';
-import { areaRectangle } from './area';
+import { areaRectangle } from './area.ts';
 
 test('areaRectangle should return the correct area of a rectangle', () => {
     expect(areaRectangle(2, 3)).toBe(6);
@@ -86,7 +86,7 @@ De andere functies kan je op dezelfde manier testen.
 
 ```typescript
 import { expect, test } from 'vitest';
-import { areaCircle, areaSquare } from './area';
+import { areaCircle, areaSquare } from './area.ts';
 
 test('areaCircle should return the correct area of a circle', () => {
     expect(areaCircle(2)).toBeCloseTo(12.566370614359172);
@@ -107,7 +107,7 @@ Je kan ook gebruik maken van `describe` blocks om je tests te organiseren. Dit i
 
 ```typescript
 import { describe, expect, test } from 'vitest';
-import { areaRectangle } from './area';
+import { areaRectangle } from './area.ts';
 
 describe('areaRectangle', () => {
     test('should return the correct area of a rectangle', () => {
@@ -207,7 +207,7 @@ export function areaRectangle(l: number, w: number): number {
 
 ```typescript
 import { describe, expect, test } from 'vitest';
-import { areaRectangle } from './area';
+import { areaRectangle } from './area.ts';
 
 describe('areaRectangle', () => {
     test('should return the correct area of a rectangle', () => {

@@ -1,6 +1,6 @@
 import express from "express";
-import { getCheckinsByFullName } from "../database";
-import type { Checkin } from "../types";
+import { getCheckinsByFullName } from "../database.ts";
+import type { Checkin } from "../types.ts";
 
 export default function profileRouter() {
     const router = express.Router();

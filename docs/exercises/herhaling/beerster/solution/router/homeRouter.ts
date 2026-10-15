@@ -1,8 +1,8 @@
 import express from "express";
-import type { Bar, Beer, Checkin } from "../types";
-import app from "../app";
-import session from "../session";
-import { getCheckins, getBeers, getBars, getTopThreeBars, createCheckin } from "../database";
+import type { Bar, Beer, Checkin } from "../types.ts";
+import app from "../app.ts";
+import session from "../session.ts";
+import { getCheckins, getBeers, getBars, getTopThreeBars, createCheckin } from "../database.ts";
 
 interface BeerWithCount {
     beer: Beer;
@@ -50,7 +50,7 @@ export default function homeRouter() {
         await createCheckin(barId, beerId, comment, date, name);
 
         req.session.message = { message: "You have successfully checked in!", type: "success" };
-        res.redirect("back");
+        res.redirect(req.get("Referrer") || "/");
     });
 
     return router;

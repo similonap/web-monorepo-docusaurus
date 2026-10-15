@@ -1,7 +1,7 @@
 import express from "express";
-import { login } from "../database";
-import { secureMiddleware } from "../middleware/secureMiddleware";
-import type { User } from "../types";
+import { login } from "../database.ts";
+import { secureMiddleware } from "../middleware/secureMiddleware.ts";
+import type { User } from "../types.ts";
 
 export function loginRouter() {
     const router = express.Router();

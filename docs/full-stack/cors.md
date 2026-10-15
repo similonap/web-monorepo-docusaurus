@@ -52,11 +52,10 @@ app.use("/planets", planetsRouter());
 
 De rest van `index.ts`, met de async functie `main()`, blijft hetzelfde. De databaseverbinding en `exit()` blijven in `database.ts`.
 
-Compileer en herstart de backend na deze wijziging:
+Draait de backend nog met `npm start`, dan herstart `nodemon` hem automatisch na deze wijziging. Anders start je hem opnieuw:
 
 ```bash
-npx tsc
-node dist/index.js
+npm start
 ```
 
 `origin` is het adres van de **frontend**, niet dat van de API. Gebruik precies dezelfde origin als in de adresbalk van de browser. `http://127.0.0.1:5173` is bijvoorbeeld een andere origin dan `http://localhost:5173`. Ook een andere poort of `https` maakt een verschil.

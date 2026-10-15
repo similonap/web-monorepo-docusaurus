@@ -1,13 +1,12 @@
-import { MONGODB_URI } from "./database";
+import { MONGODB_URI } from "./database.ts";
 import session from "express-session";
-import mongoDbSession from "connect-mongodb-session";
-import type { FlashMessage } from "./types";
-const MongoDBStore = mongoDbSession(session);
+import type { FlashMessage } from "./types.ts";
+import MongoStore from "connect-mongo";
 
-const mongoStore = new MongoDBStore({
-    uri: MONGODB_URI,
-    collection: "sessions",
-    databaseName: "beerster",
+const mongoStore = MongoStore.create({
+    mongoUrl: MONGODB_URI,
+    collectionName: "sessions",
+    dbName: "beerster",
 });
 
 declare module "express-session" {

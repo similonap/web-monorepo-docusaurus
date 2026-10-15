@@ -1,8 +1,8 @@
 import express from "express";
-import { login } from "../database";
-import type { User } from "../types";
-import session from "../session";
-import * as jwt from "jsonwebtoken";
+import { login } from "../database.ts";
+import type { User } from "../types.ts";
+import session from "../session.ts";
+import jwt from "jsonwebtoken";
 
 export default function loginRouter() {
     const router = express.Router();

@@ -45,7 +45,7 @@ export default session({
 Vervolgens moeten we deze sessie middleware toevoegen aan onze Express applicatie. Eerst importeren we de sessie middleware in ons `app.ts` bestand:
 
 ```typescript
-import session from "./session";
+import session from "./session.ts";
 ```
 
 en dan voegen we onze eigen session middleware toe aan de Express applicatie:

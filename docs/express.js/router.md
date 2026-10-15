@@ -64,7 +64,7 @@ export default function postRouter(posts: Post[]) {
 In je hoofdbestand kan je dan deze functie importeren en gebruiken om de routes te definiëren.
 
 ```typescript
-import postRouter from "./routers/posts";
+import postRouter from "./routers/posts.ts";
 ```
 
 ```typescript

@@ -6,9 +6,9 @@ import mysql, {
     type ResultSetHeader
 } from "mysql2/promise";
 import dotenv from "dotenv";
-import type { ReisRecord, KostData } from "./types";
-import { Reis } from "./models/Reis";
-import { Kost } from "./models/Kost";
+import type { ReisRecord, KostData } from "./types.ts";
+import { Reis } from "./models/Reis.ts";
+import { Kost } from "./models/Kost.ts";
 
 dotenv.config();
 const access: ConnectionOptions = {

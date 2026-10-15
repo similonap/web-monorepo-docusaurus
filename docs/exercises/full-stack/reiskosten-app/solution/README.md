@@ -10,4 +10,4 @@ De oplossing bestaat uit een apart `server`- en `client`-project, zoals in **Van
 
 De tabellen worden bij de eerste start aangemaakt. Databasefuncties staan in `server/database.ts`, routes in `server/routers/`. Ctrl+C sluit via `exit()` de databaseverbinding af.
 
-De client gebruikt getypeerde DOM-selectors, fetch en async/await. Beide projecten hebben `npm run typecheck` en `npm run build`.
+De client gebruikt getypeerde DOM-selectors, fetch en async/await. Beide projecten hebben `npm run typecheck`. De client heeft ook `npm run build`; de server draait zonder buildstap rechtstreeks met `node index.ts` (Node.js 24.12.0 of nieuwer).

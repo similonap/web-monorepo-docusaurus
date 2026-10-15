@@ -1,6 +1,6 @@
 import { Router } from "express";
-import type { Pokemon } from "../types";
-import { getPokemon, getPokemonById, catchPokemon, releasePokemon } from "../database";
+import type { Pokemon } from "../types.ts";
+import { getPokemon, getPokemonById, catchPokemon, releasePokemon } from "../database.ts";
 
 export function pokemonRouter(): Router {
     const router: Router = Router();

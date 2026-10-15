@@ -1,12 +1,11 @@
-import mongoDbSession from "connect-mongodb-session";
+import MongoStore from "connect-mongo";
 import session from "express-session";
-import { MONGODB_URI } from "./database";
-const MongoDBStore = mongoDbSession(session);
+import { MONGODB_URI } from "./database.ts";
 
-const mongoStore = new MongoDBStore({
-    uri: MONGODB_URI,
-    collection: "sessions",
-    databaseName: "beerster",
+const mongoStore = MongoStore.create({
+    mongoUrl: MONGODB_URI,
+    collectionName: "sessions",
+    dbName: "beerster",
 });
 
 declare module "express-session" {

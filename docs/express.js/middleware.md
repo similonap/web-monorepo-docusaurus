@@ -103,7 +103,7 @@ export const verifyAuthToken = (req: Request, res: Response, next: NextFunction)
 en dan kunnen we deze middleware functie toevoegen aan de stack:
 
 ```typescript
-import { verifyAuthToken } from "./middleware/verifyAuthToken";
+import { verifyAuthToken } from "./middleware/verifyAuthToken.ts";
 
 app.use(verifyAuthToken);
 ```
@@ -132,7 +132,7 @@ export function ejsUtility(req: Request, res: Response, next: NextFunction) {
 en dan kan je deze middleware functie toevoegen aan de stack:
 
 ```typescript
-import { ejsUtility } from "./middleware/ejsUtility";
+import { ejsUtility } from "./middleware/ejsUtility.ts";
 
 app.use(ejsUtility);
 ```
@@ -176,7 +176,7 @@ export const handleError = (err: any, req: Request, res: Response, next: NextFun
 en dan kunnen we deze middleware functie toevoegen aan de stack:
 
 ```typescript
-import { handleError } from "./middleware/handleError";
+import { handleError } from "./middleware/handleError.ts";
 
 app.use(handleError);
 ```
@@ -240,7 +240,7 @@ export const errorHandler = (options: ErrorHandlerOptions) => {
 en dan kunnen we deze middleware functie toevoegen aan de stack:
 
 ```typescript
-import { errorHandler } from "./middleware/errorHandler";
+import { errorHandler } from "./middleware/errorHandler.ts";
 
 app.use(errorHandler({ statusCode: 500 }));
 ```
@@ -282,7 +282,7 @@ export function maxRequest(config : MaxRequestsConfig) {
 en dan kunnen we deze middleware functie toevoegen aan de stack:
 
 ```typescript
-import { maxRequest } from "./middleware/requestLimiter";
+import { maxRequest } from "./middleware/requestLimiter.ts";
 
 app.use(maxRequest({ maxRequests: 10 }));
 ```

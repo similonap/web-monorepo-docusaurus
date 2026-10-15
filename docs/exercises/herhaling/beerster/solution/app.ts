@@ -1,16 +1,16 @@
 import express, { type Express } from "express";
 import dotenv from "dotenv";
 import path from "path";
-import utilMiddleware from "./middleware/utilMiddleware";
-import session from "./session";
-import homeRouter from "./router/homeRouter";
-import loginRouter from "./router/loginRouter";
-import { loginMiddleware } from "./middleware/loginMiddleware";
+import utilMiddleware from "./middleware/utilMiddleware.ts";
+import session from "./session.ts";
+import homeRouter from "./router/homeRouter.ts";
+import loginRouter from "./router/loginRouter.ts";
+import { loginMiddleware } from "./middleware/loginMiddleware.ts";
 import cookieParser from "cookie-parser";
-import { beersRouter } from "./router/beersRouter";
-import { barsRouter } from "./router/barsRouter";
-import profileRouter from "./router/profileRouter";
-import { flashMiddleware } from "./middleware/flashMiddleware";
+import { beersRouter } from "./router/beersRouter.ts";
+import { barsRouter } from "./router/barsRouter.ts";
+import profileRouter from "./router/profileRouter.ts";
+import { flashMiddleware } from "./middleware/flashMiddleware.ts";
 
 dotenv.config();
 
@@ -23,8 +23,8 @@ app.use(cookieParser());
 app.use(utilMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
-app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(import.meta.dirname, "public")));
+app.set("views", path.join(import.meta.dirname, "views"));
 
 app.set("port", process.env.PORT ?? 3000);
 

@@ -1,4 +1,4 @@
-import session from "../session"
+import session from "../session.ts"
 import type { Request, Response, NextFunction } from "express";
 
 export function loginMiddleware(req: Request, res: Response, next: NextFunction) {

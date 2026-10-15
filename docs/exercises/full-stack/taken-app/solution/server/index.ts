@@ -1,6 +1,6 @@
 import express, { type Express } from "express";
-import { connect } from "./database";
-import { takenRouter } from "./routers/takenRouter";
+import { connect } from "./database.ts";
+import { takenRouter } from "./routers/takenRouter.ts";
 import cors, { type CorsOptions } from "cors";
 
 const app: Express = express();

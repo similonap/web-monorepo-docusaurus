@@ -11,8 +11,10 @@ Maak een nieuw project `mysql-express` aan:
 ```bash
 npm init -y
 npm install express@5 mysql2 dotenv
-npm install --save-dev typescript@5.6.3 @types/node @types/express@5
+npm install --save-dev typescript @types/node @types/express@5 nodemon
 ```
+
+Je kan het project ook aanmaken met `npx create-clean-node`, zoals in [Nieuw project](../nodejs-+-typescript/projectmaken.md). Installeer dan enkel nog `mysql2` en wat ontbreekt.
 
 De bestanden worden als volgt ingedeeld:
 
@@ -35,21 +37,25 @@ mysql-express/
 * `planets.json` bevat de startgegevens.
 * `routers/planetsRouter.ts` bevat de endpoints voor planeten.
 
-Gebruik deze TypeScript-configuratie. Met `resolveJsonModule` kunnen we de startgegevens importeren uit een JSON-bestand.
+Gebruik dezelfde `tsconfig.json` als in het [vorige hoofdstuk](./nodejs.md#voorbeeldproject) (`module` op `esnext`, `allowImportingTsExtensions`, `verbatimModuleSyntax`, `noEmit`, ...). Zorg dat ook `resolveJsonModule` aan staat: daarmee kunnen we de startgegevens importeren uit een JSON-bestand.
 
-```json title="tsconfig.json"
+```json title="tsconfig.json (fragment)"
 {
     "compilerOptions": {
-        "target": "ES2022",
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "esModuleInterop": true,
-        "resolveJsonModule": true,
-        "strict": true,
-        "noUncheckedIndexedAccess": true,
-        "outDir": "dist"
-    },
-    "include": ["*.ts", "routers/**/*.ts"]
+        "resolveJsonModule": true
+    }
+}
+```
+
+Zet in `package.json` `"type": "module"` en voeg deze scripts toe:
+
+```json title="package.json (fragment)"
+{
+    "type": "module",
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "start": "nodemon --ext ts,json --exec \"npm run typecheck && node index.ts\""
+    }
 }
 ```
 
@@ -89,7 +95,7 @@ DB_PASSWORD=jouwrootwachtwoord
 DB_NAME=webontwikkeling
 ```
 
-Voeg `.env`, `node_modules/` en `dist/` toe aan `.gitignore`. Meer uitleg vind je bij [omgevingsvariabelen](../security/environment-variables.md).
+Voeg `.env` en `node_modules/` toe aan `.gitignore`. Meer uitleg vind je bij [omgevingsvariabelen](../security/environment-variables.md).
 
 ## Database module
 
@@ -98,8 +104,8 @@ We bewaren één verbinding in `databaseConnection`. Alle databasefuncties gebru
 ```typescript title="database.ts"
 import mysql, { type Connection, type ConnectionOptions, type FieldPacket, type RowDataPacket } from "mysql2/promise";
 import dotenv from "dotenv";
-import initialPlanets from "./planets.json";
-import type { Planet } from "./types";
+import initialPlanets from "./planets.json" with { type: "json" };
+import type { Planet } from "./types.ts";
 
 dotenv.config();
 
@@ -178,8 +184,8 @@ Maak een map `routers` met daarin `planetsRouter.ts`. De functie `planetsRouter(
 
 ```typescript title="routers/planetsRouter.ts"
 import { Router } from "express";
-import { getPlanets } from "../database";
-import type { Planet } from "../types";
+import { getPlanets } from "../database.ts";
+import type { Planet } from "../types.ts";
 
 export function planetsRouter(): Router {
     const router: Router = Router();
@@ -201,8 +207,8 @@ In `index.ts` koppelen we de router aan `/planets`. De route `/` uit de router i
 
 ```typescript title="index.ts"
 import express, { type Express } from "express";
-import { connect } from "./database";
-import { planetsRouter } from "./routers/planetsRouter";
+import { connect } from "./database.ts";
+import { planetsRouter } from "./routers/planetsRouter.ts";
 
 const app: Express = express();
 
@@ -234,9 +240,10 @@ De database-module handelt `CTRL+C` af. We sluiten de verbinding niet na elke re
 ## Uitvoeren
 
 ```bash
-npx tsc
-node dist/index.js
+npm start
 ```
+
+Het `start`-script controleert eerst de types en start daarna de server met `node index.ts`. Dankzij `nodemon` herstart de server automatisch wanneer je een `.ts`- of `.json`-bestand opslaat.
 
 Open `http://localhost:3000/planets` in je browser of gebruik:
 

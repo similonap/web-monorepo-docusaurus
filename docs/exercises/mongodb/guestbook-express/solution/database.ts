@@ -1,6 +1,6 @@
 import { type Collection, MongoClient } from "mongodb";
 import dotenv from "dotenv";
-import type { GuestBookEntry } from "./types";
+import type { GuestBookEntry } from "./types.ts";
 dotenv.config();
 
 export const client = new MongoClient(process.env.MONGODB_URI || "mongodb://localhost:27017");

@@ -11,7 +11,7 @@ We gaan eerst de JSON data vanuit de API inladen in onze MongoDB database. We pl
 ```typescript
 import { type Collection, MongoClient } from "mongodb";
 import dotenv from "dotenv";
-import type { User } from "./types";
+import type { User } from "./types.ts";
 dotenv.config();
 
 export const client = new MongoClient(process.env.MONGODB_URI || "mongodb://localhost:27017");
@@ -61,7 +61,7 @@ De interfaces voor `User` kun je terugvinden op de volgende [Gist](https://gist.
 En we roepen de `connect` functie aan in ons `index.ts` bestand.
 
 ```typescript
-import { connect } from "./database";
+import { connect } from "./database.ts";
 
 app.listen(3000, async () => {
     await connect();
@@ -76,7 +76,7 @@ Bij het opstarten van de server gaan we de connectie maken met de database en de
 We gaan nu de data lezen vanuit de database en tonen op de webpagina. We gaan de volgende code toevoegen aan ons `index.ts` bestand. Eerst importeren we de `getUser` functie vanuit de `database.ts` bestand.
 
 ```typescript
-import { connect, getUsers } from "./database";
+import { connect, getUsers } from "./database.ts";
 ```
 
 ```typescript
@@ -225,7 +225,7 @@ export async function createUser(user: User) {
 We voorzien hier ook een `getNextId` functie die het volgende id ophaalt uit de database. We sorteren de gebruikers op id in aflopende volgorde en nemen de eerste gebruiker. Als er geen gebruikers zijn dan geven we 1 terug. We voegen dan 1 toe aan het id en geven dit terug. We gaan nu de gebruiker toevoegen aan de database. Vergeet de `createUser` functie niet te importeren in het `index.ts` bestand.
 
 ```typescript
-import { connect, getUsers, createUser } from "./database";
+import { connect, getUsers, createUser } from "./database.ts";
 ```
 
 ## Delete van data (DELETE)
@@ -265,7 +265,7 @@ export async function deleteUser(id: number) {
 We gaan nu de gebruiker verwijderen uit de database. Vergeet de `deleteUser` functie niet te importeren in het `index.ts` bestand.
 
 ```typescript
-import { connect, getUsers, createUser, deleteUser } from "./database";
+import { connect, getUsers, createUser, deleteUser } from "./database.ts";
 ```
 
 ## Updaten van data (UPDATE)
@@ -375,5 +375,5 @@ export async function updateUser(id: number, user: User) {
 Vergeet de `getUserById` en `updateUser` functies niet te importeren in het `index.ts` bestand.
 
 ```typescript
-import { connect, getUsers, createUser, deleteUser, getUserById, updateUser } from "./database";
+import { connect, getUsers, createUser, deleteUser, getUserById, updateUser } from "./database.ts";
 ```

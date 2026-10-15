@@ -18,8 +18,8 @@ const app : Express = express();
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
-app.set('views', path.join(__dirname, "views"));
+app.use(express.static(path.join(import.meta.dirname, "public")));
+app.set('views', path.join(import.meta.dirname, "views"));
 
 app.set("port", process.env.PORT || 3000);
 
@@ -71,7 +71,7 @@ Maak een nieuwe file aan in de root van je project en noem deze `database.ts`. V
 import dotenv from "dotenv";
 dotenv.config();
 import { MongoClient } from "mongodb";
-import type { User } from "./types";
+import type { User } from "./types.ts";
 
 export const MONGODB_URI = process.env.MONGODB_URI ?? "mongodb://localhost:27017";
 
@@ -105,7 +105,7 @@ MONGODB_URI=mongodb://localhost:27017
 en we zorgen dat we de connectie opzetten in onze `index.ts` file:
 
 ```typescript
-import { connect } from "./database";
+import { connect } from "./database.ts";
 ```
 
 ```typescript
@@ -246,9 +246,9 @@ npm install connect-mongo
 We gaan nu een nieuwe file aanmaken in de root van je project en noem deze `session.ts`. Voeg de volgende code toe aan deze file:
 
 ```typescript
-import { MONGODB_URI } from "./database";
+import { MONGODB_URI } from "./database.ts";
 import session, { MemoryStore } from "express-session";
-import type { User } from "./types";
+import type { User } from "./types.ts";
 import MongoStore from 'connect-mongo'
 
 const mongoStore = MongoStore.create({
@@ -281,7 +281,7 @@ export default session({
 In onze session data gaan we een `User` object bijhouden. We hebben een `user` property in onze `SessionData` interface. We hebben ook een cookie die 1 week geldig is. We gaan nu deze middleware toevoegen aan onze app. Voeg de volgende code toe aan je `index.ts` file:
 
 ```typescript
-import session from "./session";
+import session from "./session.ts";
 
 app.use(session);
 ```
@@ -359,7 +359,7 @@ Deze middleware controleert of de gebruiker ingelogd is. Als de gebruiker ingelo
 Nu moeten we deze middleware toevoegen aan onze app. We gaan deze niet toevoegen aan elke route maar aan de routes die beveiligd moeten worden. We gaan deze middleware toevoegen aan de home route. Voeg de volgende code toe aan je `index.ts` file:
 
 ```typescript
-import { secureMiddleware } from "./secureMiddleware";
+import { secureMiddleware } from "./secureMiddleware.ts";
 
 app.get("/", secureMiddleware, async(req, res) => {
     res.render("index", { user: req.session.user });
@@ -448,8 +448,8 @@ export function homeRouter() {
 We gaan nu deze routers toevoegen aan onze app. Voeg de volgende code toe aan je `index.ts` file:
 
 ```typescript
-import { loginRouter } from "./routes/loginRouter";
-import { homeRouter } from "./routes/homeRouter";
+import { loginRouter } from "./routes/loginRouter.ts";
+import { homeRouter } from "./routes/homeRouter.ts";
 
 app.use(loginRouter());
 app.use(homeRouter());
@@ -494,7 +494,7 @@ export function flashMiddleware(req: Request, res: Response, next: NextFunction)
 Hier gaan we dus kijken of er een message in de sessie zit. Als deze er is voegen we deze toe aan de `res.locals` en verwijderen we deze uit de sessie. We gaan deze middleware toevoegen aan onze app. Voeg de volgende code toe aan je `index.ts` file:
 
 ```typescript
-import { flashMiddleware } from "./flashMiddleware";
+import { flashMiddleware } from "./flashMiddleware.ts";
 
 app.use(flashMiddleware);
 ```

@@ -16,13 +16,17 @@ app.get("/redirect",(req,res)=>{
 })
 ```
 
-Soms is het interessant om een redirect te sturen naar de vorige pagina. Dit kan je doen met de method `res.redirect` en de waarde `back`:
+Soms is het interessant om een redirect te sturen naar de vorige pagina. De browser stuurt het adres van die pagina mee in de `Referrer` header. Die kan je opvragen met `req.get("Referrer")`. Is er geen vorige pagina, dan sturen we de gebruiker naar `/`:
 
 ```typescript
 app.get("/redirect",(req,res)=>{
-    res.redirect("back");
+    res.redirect(req.get("Referrer") || "/");
 })
 ```
+
+:::info
+In oudere versies van Express kon je hiervoor `res.redirect("back")` gebruiken. Dat werkt niet meer in Express 5.
+:::
 
 Dit kan je bijvoorbeeld gebruiken om een gebruiker door te sturen na het verzenden van een POST request.
 

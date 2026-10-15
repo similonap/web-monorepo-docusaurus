@@ -1,6 +1,6 @@
 import { Router } from "express";
-import type { Reis } from "../models/Reis";
-import { getReizen, getReisById, createReis, addKost } from "../database";
+import type { Reis } from "../models/Reis.ts";
+import { getReizen, getReisById, createReis, addKost } from "../database.ts";
 
 export function reizenRouter(): Router {
     const router: Router = Router();

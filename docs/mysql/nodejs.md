@@ -32,27 +32,45 @@ npm install -D @types/node
 
 ## Voorbeeldproject
 
-Maak een Node.js-project aan met de naam `mysql-planeten`. We werken eerst met scripts in de terminal. Gebruik de volgende configuratie voor `tsconfig.json`:
-
-```json title="tsconfig.json"
-{
-    "compilerOptions": {
-        "target": "ES2022",
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "esModuleInterop": true,
-        "strict": true,
-        "noUncheckedIndexedAccess": true,
-        "outDir": "dist"
-    },
-    "include": ["*.ts"]
-}
-```
+Maak een Node.js-project aan met de naam `mysql-planeten`, op dezelfde manier als in [Nieuw project](../nodejs-+-typescript/projectmaken.md) (of met `npx create-clean-node`). We werken eerst met scripts in de terminal die we rechtstreeks met `node` uitvoeren.
 
 ```bash
 npm init -y
-npm install --save-dev typescript@5.6.3 @types/node
+npm install mysql2
+npm install --save-dev typescript @types/node
 ```
+
+Zet in `package.json` ook `"type": "module"` en voeg het `typecheck`-script toe:
+
+```json title="package.json (fragment)"
+{
+    "type": "module",
+    "scripts": {
+        "typecheck": "tsc --noEmit"
+    }
+}
+```
+
+Gebruik in `tsconfig.json` dezelfde instellingen als in de rest van de cursus. De belangrijkste opties zijn:
+
+```json title="tsconfig.json (fragment)"
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "types": ["node"],
+        "allowImportingTsExtensions": true,
+        "erasableSyntaxOnly": true,
+        "noEmit": true,
+        "verbatimModuleSyntax": true,
+        "esModuleInterop": true,
+        "strict": true,
+        "skipLibCheck": true
+    }
+}
+```
+
+Met `allowImportingTsExtensions` mag je in een import de extensie `.ts` schrijven, en `verbatimModuleSyntax` vraagt om `import type` voor imports die enkel een type zijn. `noEmit` zorgt ervoor dat TypeScript geen JavaScript-bestanden genereert: Node.js voert de `.ts`-bestanden zelf uit.
 
 Maak in MySQL Workbench een schema en een tabel aan. Voer hiervoor dit SQL-script uit:
 
@@ -104,7 +122,7 @@ Bewaar de opties in `config.ts` en vul je eigen lokale aanmeldgegevens in. De vo
 
 ```typescript title="connectie.ts"
 import mysql, { type Connection } from "mysql2";
-import { access } from "./config";
+import { access } from "./config.ts";
 
 const conn: Connection = mysql.createConnection(access);
 conn.end();
@@ -133,8 +151,8 @@ Een select query met callback, wordt als volgt opgezet:
 
 ```typescript title="callback.ts"
 import mysql, { type Connection, type QueryError } from "mysql2";
-import { access } from "./config";
-import type { Planet } from "./types";
+import { access } from "./config.ts";
+import type { Planet } from "./types.ts";
 
 const conn: Connection = mysql.createConnection(access);
 
@@ -165,8 +183,8 @@ De select query schrijven we dan als volgt:
 
 ```typescript title="promise.ts"
 import mysql, { type Connection } from "mysql2/promise";
-import type { Planet } from "./types";
-import { access } from "./config";
+import type { Planet } from "./types.ts";
+import { access } from "./config.ts";
 
 async function run(): Promise<void> {
     let conn: Connection | undefined;
@@ -214,8 +232,8 @@ Dit voorbeeld toont waarom je string interpolatie voor SQL-waarden moet vermijde
 
 ```typescript title="select-interpolatie.ts"
 import mysql, { type Connection } from "mysql2/promise";
-import type { Planet } from "./types";
-import { access } from "./config";
+import type { Planet } from "./types.ts";
+import { access } from "./config.ts";
 
 async function run(myname: string): Promise<void> {
     let conn: Connection | undefined;
@@ -240,8 +258,8 @@ Door string interpolatie kunnen we de parameters van de clause makkelijk toevoeg
 
 ```typescript title="select.ts"
 import mysql, { type Connection } from "mysql2/promise";
-import type { Planet } from "./types";
-import { access } from "./config";
+import type { Planet } from "./types.ts";
+import { access } from "./config.ts";
 
 async function run(myname: string): Promise<void> {
     let conn: Connection | undefined;
@@ -273,7 +291,7 @@ Voorbeeld met string interpolatie, met hetzelfde risico op SQL-injectie als hier
 ```typescript title="insert-interpolatie.ts"
 import mysql, { type Connection } from "mysql2/promise";
 import type { ResultSetHeader } from "mysql2";
-import { access } from "./config";
+import { access } from "./config.ts";
 
 async function run(myname: string): Promise<void> {
     let conn: Connection | undefined;
@@ -297,7 +315,7 @@ Voorbeeld met prepared statement
 ```typescript title="insert.ts"
 import mysql, { type Connection } from "mysql2/promise";
 import type { ResultSetHeader } from "mysql2";
-import { access } from "./config";
+import { access } from "./config.ts";
 
 async function run(myname: string): Promise<void> {
     let conn: Connection | undefined;
@@ -318,12 +336,12 @@ run('Mars');
 
 Een INSERT geeft geen array van rijen terug. Daarom gebruiken we de generic `ResultSetHeader`. `result.insertId` bevat het automatisch gegenereerde id en `result.affectedRows` het aantal toegevoegde rijen. Door `(name)` expliciet op te geven, laten we MySQL het `id` invullen.
 
-Je kan elk voorbeeld apart compileren en uitvoeren. Bijvoorbeeld:
+Je kan elk voorbeeld apart uitvoeren met `node`. Controleer eventueel eerst de types met `npm run typecheck`. Bijvoorbeeld:
 
 ```bash
-npx tsc
-node dist/select.js
-node dist/insert.js
+npm run typecheck
+node select.ts
+node insert.ts
 ```
 
 ## Connectie Afsluiten
@@ -348,7 +366,7 @@ De functie `connect()` kan zo gebruikt worden om een connectie te hergebruiken b
 
 ```typescript title="dbconnect.ts"
 import mysql, { type Connection } from "mysql2/promise";
-import { access } from "./config";
+import { access } from "./config.ts";
 
 let connection: Connection | undefined;
 
@@ -384,8 +402,8 @@ Gebruik de module als volgt:
 
 ```typescript title="index.ts"
 import type { Connection } from "mysql2/promise";
-import { connect, close } from "./dbconnect";
-import type { Planet } from "./types";
+import { connect, close } from "./dbconnect.ts";
+import type { Planet } from "./types.ts";
 
 async function main(): Promise<void> {
     try {
@@ -407,8 +425,7 @@ main();
 ```
 
 ```bash
-npx tsc
-node dist/index.js
+node index.ts
 ```
 
 In het volgende hoofdstuk gebruiken we dezelfde tabel in [Express.js](./gebruik-in-express.md). Daar bewaren we de verbinding in een database-module en gebruiken we die vanuit onze routes.

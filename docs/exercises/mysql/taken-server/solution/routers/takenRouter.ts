@@ -1,6 +1,6 @@
 import { Router } from "express";
-import type { Taak } from "../types";
-import { getTaken, getEersteTaak, createTaak, deleteEersteTaak } from "../database";
+import type { Taak } from "../types.ts";
+import { getTaken, getEersteTaak, createTaak, deleteEersteTaak } from "../database.ts";
 
 export function takenRouter(): Router {
     const router: Router = Router();

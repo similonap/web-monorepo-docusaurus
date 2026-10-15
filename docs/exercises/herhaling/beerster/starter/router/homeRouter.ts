@@ -1,5 +1,5 @@
 import express from "express";
-import type { Beer, Checkin } from "../types";
+import type { Beer, Checkin } from "../types.ts";
 
 interface BeerWithCount {
     beer: Beer;

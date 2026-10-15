@@ -6,7 +6,7 @@ import mysql, {
     type ResultSetHeader
 } from "mysql2/promise";
 import dotenv from "dotenv";
-import type { Taak } from "./types";
+import type { Taak } from "./types.ts";
 
 dotenv.config();
 const access: ConnectionOptions = {

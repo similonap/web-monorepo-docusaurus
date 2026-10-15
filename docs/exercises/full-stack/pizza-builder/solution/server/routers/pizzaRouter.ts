@@ -1,6 +1,6 @@
 import { Router } from "express";
-import type { Ingredient, Pizza } from "../types";
-import { getIngredients, getPizzas, getPizzaById, createPizza, deletePizza } from "../database";
+import type { Ingredient, Pizza } from "../types.ts";
+import { getIngredients, getPizzas, getPizzaById, createPizza, deletePizza } from "../database.ts";
 
 export function pizzaRouter(): Router {
     const router: Router = Router();

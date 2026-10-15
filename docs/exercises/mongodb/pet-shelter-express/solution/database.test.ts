@@ -1,17 +1,18 @@
-import { collection, connect , client , exit} from "./database";
+import { afterEach, describe, expect, test, vi } from "vitest";
+import { collection, connect , client , exit} from "./database.ts";
 
 describe("database functions", () => {
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     test("seedDatabase performs correct operations", async () => {
-        jest.spyOn(client, "connect").mockResolvedValue({} as any);
-        jest.spyOn(collection, "deleteMany").mockResolvedValue({} as any);
-        jest.spyOn(collection, "dropIndex").mockResolvedValue({} as any);
-        jest.spyOn(collection, "createIndex").mockResolvedValue({} as any);
-        jest.spyOn(collection, "insertMany").mockResolvedValue({} as any);
+        vi.spyOn(client, "connect").mockResolvedValue({} as any);
+        vi.spyOn(collection, "deleteMany").mockResolvedValue({} as any);
+        vi.spyOn(collection, "dropIndex").mockResolvedValue({} as any);
+        vi.spyOn(collection, "createIndex").mockResolvedValue({} as any);
+        vi.spyOn(collection, "insertMany").mockResolvedValue({} as any);
         await connect(); 
 
         expect(client.connect).toHaveBeenCalled();
@@ -25,8 +26,8 @@ describe("database functions", () => {
 
 
     test("exit closes connection and exits the application", async() => {
-        jest.spyOn(process, "exit").mockImplementation((() => {}) as any);
-        jest.spyOn(client, "close").mockResolvedValue({} as any);
+        vi.spyOn(process, "exit").mockImplementation((() => {}) as any);
+        vi.spyOn(client, "close").mockResolvedValue({} as any);
 
         await exit();
 

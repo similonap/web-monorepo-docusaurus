@@ -1,6 +1,7 @@
-import { collection, getPets } from "./database";
+import { afterEach, describe, expect, test, vi } from "vitest";
+import { collection, getPets } from "./database.ts";
 import request from "supertest";
-import app from "./app";
+import app from "./app.ts";
 
 describe("Endpoint tests", () => {
 
@@ -13,8 +14,8 @@ describe("Endpoint tests", () => {
     ];
 
     test("that /pets calls the getPets function", async () => {
-        const toArrayMock = jest.fn().mockResolvedValue(mockPets);
-        const findMock = jest.spyOn(collection, 'find').mockImplementation(() => ({
+        const toArrayMock = vi.fn().mockResolvedValue(mockPets);
+        const findMock = vi.spyOn(collection, 'find').mockImplementation(() => ({
             toArray: toArrayMock
         }) as any);
         const response = await request(app).get("/pets");
@@ -25,11 +26,11 @@ describe("Endpoint tests", () => {
     test("that /pets/sort returns all pets", async () => {
         const fields: string[] = ["name", "age", "type", "breed"];
         for (let field of fields) {
-            const toArrayMock = jest.fn().mockResolvedValue(mockPets);
-            const sortMock = jest.fn().mockImplementation(() => ({
+            const toArrayMock = vi.fn().mockResolvedValue(mockPets);
+            const sortMock = vi.fn().mockImplementation(() => ({
                 toArray: toArrayMock
             }));
-            const findMock = jest.spyOn(collection, 'find').mockImplementation(() => ({
+            const findMock = vi.spyOn(collection, 'find').mockImplementation(() => ({
                 sort: sortMock
             }) as any);
             const response = await request(app).get("/pets/sort?field=" + field);
@@ -45,8 +46,8 @@ describe("Endpoint tests", () => {
     });
 
     test("that /pets/search calls the search function with search string", async () => {
-        const toArrayMock = jest.fn().mockResolvedValue(mockPets);
-        const findMock = jest.spyOn(collection, 'find').mockImplementation(() => ({
+        const toArrayMock = vi.fn().mockResolvedValue(mockPets);
+        const findMock = vi.spyOn(collection, 'find').mockImplementation(() => ({
             toArray: toArrayMock
         }) as any);
         const response = await request(app).get("/pets/search?q=Buddy");
@@ -55,11 +56,11 @@ describe("Endpoint tests", () => {
     });
 
     test("that /pets/ageBetween calls the getPetsWithAgeBetween function with min and max", async () => {
-        const toArrayMock = jest.fn().mockResolvedValue(mockPets);
-        const sortMock = jest.fn().mockImplementation(() => ({
+        const toArrayMock = vi.fn().mockResolvedValue(mockPets);
+        const sortMock = vi.fn().mockImplementation(() => ({
             toArray: toArrayMock
         }));
-        const findMock = jest.spyOn(collection, 'find').mockImplementation(() => ({
+        const findMock = vi.spyOn(collection, 'find').mockImplementation(() => ({
             sort: sortMock
         }) as any);
         const response = await request(app).get("/pets/ageBetween?min=5&max=10");
@@ -68,8 +69,8 @@ describe("Endpoint tests", () => {
     });
 
     test("that /pets/search without query parameter calls a regular find function", async () => {
-        const toArrayMock = jest.fn().mockResolvedValue(mockPets);
-        const findMock = jest.spyOn(collection, 'find').mockImplementation(() => ({
+        const toArrayMock = vi.fn().mockResolvedValue(mockPets);
+        const findMock = vi.spyOn(collection, 'find').mockImplementation(() => ({
             toArray: toArrayMock
         }) as any);
         const response = await request(app).get("/pets/search");
@@ -78,8 +79,8 @@ describe("Endpoint tests", () => {
     });
 
     test("that /pets/:type calls the getPetsByType function with type", async () => {
-        const toArrayMock = jest.fn().mockResolvedValue(mockPets);
-        const findMock = jest.spyOn(collection, 'find').mockImplementation(() => ({
+        const toArrayMock = vi.fn().mockResolvedValue(mockPets);
+        const findMock = vi.spyOn(collection, 'find').mockImplementation(() => ({
             toArray: toArrayMock
         }) as any);
         const response = await request(app).get("/pets/dog");
@@ -88,7 +89,7 @@ describe("Endpoint tests", () => {
     });
 
     afterEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
     });
 
 });

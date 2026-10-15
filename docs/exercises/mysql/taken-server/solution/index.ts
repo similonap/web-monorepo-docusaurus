@@ -1,6 +1,6 @@
 import express, { type Express } from "express";
-import { connect } from "./database";
-import { takenRouter } from "./routers/takenRouter";
+import { connect } from "./database.ts";
+import { takenRouter } from "./routers/takenRouter.ts";
 
 const app: Express = express();
 app.set("port", Number(process.env.PORT ?? 3000));

@@ -1,6 +1,6 @@
 import express from "express";
-import type { Bar } from "../types";
-import { getBarById, getBars } from "../database";
+import type { Bar } from "../types.ts";
+import { getBarById, getBars } from "../database.ts";
 
 export function barsRouter() {
     const router = express.Router();

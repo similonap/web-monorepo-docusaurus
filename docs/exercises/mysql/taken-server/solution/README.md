@@ -1,6 +1,6 @@
 # taken-server
 
-Gebruik Node.js 22.12 of nieuwer. Voer `schema.sql` één keer uit in MySQL Workbench. Kopieer `.env.example` naar `.env` en vul je eigen gegevens in.
+Gebruik Node.js 24.12.0 of nieuwer. Voer `schema.sql` één keer uit in MySQL Workbench. Kopieer `.env.example` naar `.env` en vul je eigen gegevens in.
 
 ```bash
 npm install

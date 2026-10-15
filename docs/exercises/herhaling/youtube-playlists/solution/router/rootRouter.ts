@@ -1,6 +1,6 @@
 import express from "express";
-import { getVideos, getUser, getVideoById, saveUser, createVideo } from "../database";
-import type { User, Video } from "../types";
+import { getVideos, getUser, getVideoById, saveUser, createVideo } from "../database.ts";
+import type { User, Video } from "../types.ts";
 
 export default function rootRouter() {
     const router = express.Router();
@@ -58,7 +58,7 @@ export default function rootRouter() {
             await saveUser(user);
         }
 
-        res.redirect("back");
+        res.redirect(req.get("Referrer") || "/");
     });
 
     router.post("/unfavorite/:id", async(req, res) => {
@@ -73,7 +73,7 @@ export default function rootRouter() {
             await saveUser(user);
         }
 
-        res.redirect("back");
+        res.redirect(req.get("Referrer") || "/");
     });
 
     return router;

@@ -1,6 +1,6 @@
 import express, { type Express } from "express";
-import { connect } from "./database";
-import { reizenRouter } from "./routers/reizen_api";
+import { connect } from "./database.ts";
+import { reizenRouter } from "./routers/reizen_api.ts";
 
 const app: Express = express();
 app.set("port", Number(process.env.PORT ?? 3000));

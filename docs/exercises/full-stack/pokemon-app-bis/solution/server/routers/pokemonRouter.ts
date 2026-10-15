@@ -6,7 +6,7 @@ import {
     releasePokemon,
     addToParty,
     removeFromParty
-} from "../database";
+} from "../database.ts";
 
 export function pokemonRouter(): Router {
     const router: Router = Router();

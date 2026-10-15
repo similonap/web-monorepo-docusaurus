@@ -1,6 +1,6 @@
 import { type Collection, MongoClient, type SortDirection } from "mongodb";
 import dotenv from "dotenv";
-import type { Spell } from "./types";
+import type { Spell } from "./types.ts";
 
 dotenv.config();
 
@@ -69,7 +69,11 @@ export async function connect() {
         await client.connect();
 
 
-        await spellsCollection.dropIndex("*");
+        try {
+            await spellsCollection.dropIndex("*");
+        } catch {
+            // De collectie bestaat nog niet bij een lege databank: er zijn dan ook geen indexen om te verwijderen.
+        }
         await spellsCollection.createIndex({name: "text", description: "text", type: "text"});
 
         console.log("Connected to the database");

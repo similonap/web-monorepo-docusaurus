@@ -1,5 +1,5 @@
-import app from "./app";
-import { connect } from "./database";
+import app from "./app.ts";
+import { connect } from "./database.ts";
 
 app.listen(app.get("port"), async() => {
     await connect();

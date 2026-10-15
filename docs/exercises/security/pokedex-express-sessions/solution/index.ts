@@ -1,10 +1,10 @@
 import express, { type Express } from "express";
 import dotenv from "dotenv";
 import path from "path";
-import { connect, createPlayer, getPlayer, getPlayers, getPokemon, getPokemonById, savePlayer } from "./database";
-import type { Player, Pokemon } from "./types";
-import session from "./session";
-import { secureMiddleware } from "./middleware/secureMiddleware";
+import { connect, createPlayer, getPlayer, getPlayers, getPokemon, getPokemonById, savePlayer } from "./database.ts";
+import type { Player, Pokemon } from "./types.ts";
+import session from "./session.ts";
+import { secureMiddleware } from "./middleware/secureMiddleware.ts";
 
 dotenv.config();
 
@@ -14,8 +14,8 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(session);
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
-app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(import.meta.dirname, "public")));
+app.set("views", path.join(import.meta.dirname, "views"));
 
 app.set("port", process.env.PORT || 3000);
 
@@ -89,7 +89,7 @@ app.post("/save", secureMiddleware, async(req, res) => {
 
 app.post("/add/:pokeId", secureMiddleware, async(req, res) => {
     let player : Player  = req.session.player!;
-    let pokemon : Pokemon | null = await getPokemonById(parseInt(req.params.pokeId));
+    let pokemon : Pokemon | null = await getPokemonById(parseInt(req.params.pokeId as string));
     if (!pokemon) return res.status(404).send("Pokemon not found");
 
     pokemon.currentHP = Math.floor(Math.random() * pokemon.maxHP);
@@ -101,7 +101,7 @@ app.post("/add/:pokeId", secureMiddleware, async(req, res) => {
 
 app.post("/delete/:pokeId", secureMiddleware,async (req, res) => {
     let player : Player = req.session.player!;
-    let pokemon : Pokemon | null = await getPokemonById(parseInt(req.params.pokeId));
+    let pokemon : Pokemon | null = await getPokemonById(parseInt(req.params.pokeId as string));
     if (!pokemon) return res.status(404).send("Pokemon not found");
     player.pokemon = player.pokemon.filter((poke) => poke.id !== pokemon.id);
     res.redirect("/pokemon");
