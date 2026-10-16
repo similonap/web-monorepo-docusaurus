@@ -6,9 +6,9 @@ Alle 79 bestaande `starter`- en `solution`-projecten onder `docs/exercises/node-
 
 De basis komt uit `create-clean-node/template_node` en `create-clean-node/template_express_ejs`: Node.js >=24.12.0, ES modules, native uitvoering van TypeScript, TypeScript ^7.0.2 en Vitest ^5.0.1. Express-projecten gebruiken Express ^5.2.1 en de bijbehorende template-afhankelijkheden. Oefeningsspecifieke dependencies zijn behouden. De bestaande lockfiles zijn vernieuwd.
 
-`npm start` controleert eerst de types; Express gebruikt daarbij nodemon zoals de template. `npm test` voert typechecking en Vitest uit. Projecten zonder testbestanden gebruiken `--passWithNoTests`. Lege testopgaven blijven expliciete `test.todo`-opgaven. Dat levert geen inhoudelijke testdekking op. Library-oefeningen starten hun bestaande module als er geen `index.ts` bestaat.
+`npm start` controleert eerst de types; Express gebruikt daarbij `node --watch` zoals de template. `npm test` voert typechecking en Vitest uit. Projecten zonder testbestanden gebruiken `--passWithNoTests`. Lege testopgaven blijven expliciete `test.todo`-opgaven. Dat levert geen inhoudelijke testdekking op. Library-oefeningen starten hun bestaande module als er geen `index.ts` bestaat.
 
-Imports, JSON-importattributen, type-imports, directorypaden en constructorvelden zijn aangepast voor native TypeScript en ES modules. Jest-configuratie en Jest/ts-node-afhankelijkheden zijn verwijderd.
+Imports, JSON-importattributen, type-imports, directorypaden en constructorvelden zijn aangepast voor native TypeScript en ES modules. Jest-configuratie en Jest-afhankelijkheden zijn verwijderd.
 
 ## Uitgevoerde controles
 

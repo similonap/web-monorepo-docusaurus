@@ -113,7 +113,7 @@ Om het compileren van TypeScript naar JavaScript gemakkelijker te maken, kunnen 
   "scripts": {
     "test": "jest",
     "build:client": "esbuild scripts/* --minify --bundle --outdir=public/js --platform=browser",
-    "start": "npm run build:client && nodemon index.ts",
+    "start": "npm run build:client && node --watch index.ts",
     "dev": "concurrently \"npm run start\" \"npm run build:client -- --watch\""
   },
 }

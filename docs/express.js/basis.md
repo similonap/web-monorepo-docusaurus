@@ -43,7 +43,7 @@ app.listen(app.get("port"), () =>
 );
 ```
 
-Sla dit bestand op als `server.ts` en start het op met `ts-node server.ts`. Je kan nu naar `http://localhost:3000` surfen en je ziet de tekst `Hello World` verschijnen.
+Sla dit bestand op als `server.ts` en start het op met `node server.ts`. Je kan nu naar `http://localhost:3000` surfen en je ziet de tekst `Hello World` verschijnen.
 
 Laten we elke lijn bekijken
 

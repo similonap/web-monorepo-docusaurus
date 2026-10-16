@@ -187,7 +187,7 @@ We controleren eerst of de planeet bestaat. Na het verwijderen antwoorden we met
 
 ## De API testen
 
-Start de server als die nog niet draait. Met `npm start` herstart `nodemon` de server automatisch na elke wijziging:
+Start de server als die nog niet draait. Met `npm start` herstart `node --watch` de server automatisch na elke wijziging:
 
 ```bash
 npm start

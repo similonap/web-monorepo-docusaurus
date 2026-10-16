@@ -11,7 +11,7 @@ Maak een nieuw project `mysql-express` aan:
 ```bash
 npm init -y
 npm install express@5 mysql2 dotenv
-npm install --save-dev typescript @types/node @types/express@5 nodemon
+npm install --save-dev typescript @types/node @types/express@5
 ```
 
 Je kan het project ook aanmaken met `npx create-clean-node`, zoals in [Nieuw project](../nodejs-+-typescript/projectmaken.md). Installeer dan enkel nog `mysql2` en wat ontbreekt.
@@ -54,7 +54,7 @@ Zet in `package.json` `"type": "module"` en voeg deze scripts toe:
     "type": "module",
     "scripts": {
         "typecheck": "tsc --noEmit",
-        "start": "nodemon --ext ts,json --exec \"npm run typecheck && node index.ts\""
+        "start": "npm run typecheck && node --watch index.ts"
     }
 }
 ```
@@ -243,7 +243,7 @@ De database-module handelt `CTRL+C` af. We sluiten de verbinding niet na elke re
 npm start
 ```
 
-Het `start`-script controleert eerst de types en start daarna de server met `node index.ts`. Dankzij `nodemon` herstart de server automatisch wanneer je een `.ts`- of `.json`-bestand opslaat.
+Het `start`-script controleert eerst de types en start daarna de server met `node --watch index.ts`. Dankzij `--watch` herstart de server automatisch wanneer je een `.ts`- of `.json`-bestand opslaat.
 
 Open `http://localhost:3000/planets` in je browser of gebruik:
 

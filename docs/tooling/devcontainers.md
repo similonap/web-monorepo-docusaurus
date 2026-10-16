@@ -51,7 +51,7 @@ We kunnen een Docker Container zo samenstellen dat alle tools en instellingen da
     <DiagramBox variant="middle" icon="🐳" title="Docker Desktop">
       <DiagramBox variant="inner" icon="📦" title="Devcontainer">
         <DiagramBox variant="item" title="Node.js + TypeScript" />
-        <DiagramBox variant="item" title="ts-node" />
+        <DiagramBox variant="item" title="node --watch" />
         <DiagramBox variant="item" title="Code van je labo-repo" />
       </DiagramBox>
     </DiagramBox>

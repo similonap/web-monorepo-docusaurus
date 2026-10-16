@@ -52,7 +52,7 @@ app.use("/planets", planetsRouter());
 
 De rest van `index.ts`, met de async functie `main()`, blijft hetzelfde. De databaseverbinding en `exit()` blijven in `database.ts`.
 
-Draait de backend nog met `npm start`, dan herstart `nodemon` hem automatisch na deze wijziging. Anders start je hem opnieuw:
+Draait de backend nog met `npm start`, dan herstart `node --watch` hem automatisch na deze wijziging. Anders start je hem opnieuw:
 
 ```bash
 npm start

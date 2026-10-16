@@ -90,7 +90,7 @@ Je app moet werken op een smartphone en voldoen aan de volgende vereisten.
 
 <AiBadge allowed={false} />
 
-- [ ] Je gebruikt 2 à 3 Expo-features die niet in de les behandeld zijn. Kies uit de [lijst hieronder](#expo-features) of stel zelf iets voor in je projectvoorstel.
+- [ ] Je gebruikt 2 à 3 Expo-features. Kies uit de [lijst hieronder](#expo-features) of stel zelf iets voor in je projectvoorstel.
 - [ ] Elke feature heeft een echte functie in je app. Een knop die enkel de feature uittest, telt niet.
 - [ ] Je vraagt de nodige permissies aan en vangt op wat er gebeurt als de gebruiker ze weigert.
 
@@ -122,10 +122,12 @@ Over deze code krijg je op de verdediging geen diepgaande vragen. Je moet wel de
 
 ## Expo-features
 
-De features in de tabel zijn groot genoeg om mee te tellen. Camera en Location zijn in de cursus behandeld en tellen niet mee, maar je mag ze wel gebruiken.
+De features in de tabel zijn groot genoeg om mee te tellen. Ook Camera en Location, die in de cursus behandeld zijn, tellen mee.
 
 | Feature | Package | Voorbeeld | Werkt in Expo Go |
 | --- | --- | --- | --- |
+| [Camera](https://docs.expo.dev/versions/latest/sdk/camera/) | `expo-camera` | Een foto nemen of een QR-code scannen | Ja |
+| [Location](https://docs.expo.dev/versions/latest/sdk/location/) | `expo-location` | Je huidige positie gebruiken, plaatsen in de buurt zoeken | Ja |
 | [Maps](https://docs.expo.dev/versions/latest/sdk/map-view/) | `react-native-maps` | Plaatsen tonen op een kaart met markers, een route tekenen | Ja |
 | [Pedometer](https://docs.expo.dev/versions/latest/sdk/pedometer/) | `expo-sensors` | Stappenteller met dagdoelen en historiek | Ja |
 | [Accelerometer](https://docs.expo.dev/versions/latest/sdk/accelerometer/), [Gyroscope](https://docs.expo.dev/versions/latest/sdk/gyroscope/) | `expo-sensors` | Schudden om te herladen, een spel dat je bestuurt door je gsm te kantelen | Ja |

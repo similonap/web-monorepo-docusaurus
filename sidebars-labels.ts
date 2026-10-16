@@ -100,7 +100,7 @@ const documents: Record<string, [label: string, position: number]> = {
   'nodejs-+-typescript/testing': ['Code testen', 9],
   'express.js/wat-is-een-backend-framework': ['Wat is een backendframework?', 1],
   'express.js/basis': ['Basis van Express.js', 2],
-  'express.js/nodemon': ['Automatisch herstarten met nodemon', 3],
+  'express.js/node-watch': ['Automatisch herstarten met node --watch', 3],
   'express.js/statische-bestanden': ['Statische bestanden', 4],
   'express.js/ejs': ['Templates met EJS', 5],
   'express.js/response': ['HTTP-responses', 7],
