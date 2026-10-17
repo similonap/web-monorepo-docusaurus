@@ -1,4 +1,8 @@
+import YouTubeVideo from '@site/src/components/YouTubeVideo';
+
 # Context
+
+<YouTubeVideo src="https://youtu.be/m7eBzfpWvoE" title="React - Context uitgelegd" />
 
 ## Delen van data via context
 

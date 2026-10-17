@@ -1,0 +1,386 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 09 positions ---- */
+    #f09c-panel { left: 80px; top: 170px; width: 1060px; height: 440px; }
+    /* 9 rows at 24px / 35px (line 7 is longer than 56 chars) */
+    #f09c-panel .ts-code { font-size: 24px; line-height: 35px; }
+    #f09c-panel .ts-row { height: 35px; }
+    #f09c-panel .ts-caret { top: 5px; height: 25px; }
+
+    /* type card */
+    #f09c-tcard { left: 1236px; top: 220px; width: 604px; height: 136px; }
+    .f09c-ctitle {
+      position: absolute; left: 28px; right: 28px; top: 0; height: 66px; display: flex; align-items: center;
+      font-family: var(--ts-mono); font-size: 22px; font-weight: 500; color: var(--ts-ink); white-space: pre;
+    }
+    .f09c-crule { position: absolute; left: 0; right: 0; top: 66px; height: 1px; background: var(--ts-hairline); }
+    #f09c-trow {
+      position: absolute; left: 28px; right: 28px; top: 66px; height: 68px; display: flex; align-items: center;
+      font-family: var(--ts-mono); font-size: 22px; font-weight: 400; color: var(--ts-ink); white-space: pre;
+    }
+
+    /* link type card -> context card */
+    #f09c-link { position: absolute; left: 1320px; top: 357px; width: 2px; height: 112px; background: var(--ts-muted); transform-origin: center top; }
+    #f09c-linklabel {
+      position: absolute; left: 1338px; top: 403px; height: 20px; line-height: 20px;
+      font-family: var(--ts-mono); font-size: 16px; color: var(--ts-muted); white-space: nowrap;
+    }
+
+    /* context card */
+    #f09c-ccard {
+      position: absolute; left: 1236px; top: 470px; width: 604px; height: 150px; box-sizing: border-box;
+      background: var(--ts-blue-tint); border: 1.5px solid var(--ts-blue); border-radius: 12px;
+    }
+    #f09c-ctitle { font-size: 24px; color: var(--ts-blue-dark); }
+    #f09c-crule2 { background: rgba(49, 120, 198, 0.3); }
+    #f09c-crow { position: absolute; left: 28px; right: 28px; top: 67px; height: 80px; display: flex; align-items: center; }
+    #f09c-dkey {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 16px; line-height: 1; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ts-muted); margin-right: 20px;
+    }
+    #f09c-dchip { position: relative; height: 44px; padding: 0 16px; font-size: 22px; background: #FFFFFF; }
+    #f09c-tcard, #f09c-trow, #f09c-linklabel, #f09c-ccard, #f09c-crow { opacity: 0; }
+  </style>
+
+  <div data-hf-id="hf-cbz2" id="root" data-composition-id="09-createcontext" data-width="1920" data-height="1080" data-duration="14.23">
+    <div data-hf-id="hf-1vsh" class="ts-bg clip" id="f09c-bg" data-start="0" data-duration="14.23" data-track-index="0"></div>
+
+    <div data-hf-id="hf-4e22" class="ts-stage clip" id="f09c-stage" data-start="0" data-duration="14.23" data-track-index="1">
+      <div data-hf-id="hf-q1pb" class="ts-kicker" id="f09c-kicker"><div data-hf-id="hf-76b2" class="ts-kicker-bar" id="f09c-kbar"></div><span data-hf-id="hf-zek0" class="ts-kicker-text" id="f09c-ktext">Context aanmaken</span></div>
+
+      <!-- code surface: ThemeContext.tsx -->
+      <div data-hf-id="hf-zhrs" class="ts-code-surface" id="f09c-panel">
+        <div data-hf-id="hf-4jar" class="ts-code-title">ThemeContext.tsx</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-v3mx" class="ts-txt"><span data-hf-id="hf-qaso" class="ts-kw">import</span> React <span data-hf-id="hf-e409" class="ts-kw">from</span> <span data-hf-id="hf-ijfh" class="ts-str">"react"</span>;</span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-joe1" class="ts-txt"></span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-eqox" class="ts-txt" id="f09c-l3"></span><span data-hf-id="hf-yjwv" class="ts-caret" id="f09c-c3"></span></div>
+          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-3v7a" class="ts-txt" id="f09c-l4"></span><span data-hf-id="hf-2i0w" class="ts-caret" id="f09c-c4"></span></div>
+          <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-7tbb" class="ts-txt" id="f09c-l5"></span><span data-hf-id="hf-39op" class="ts-caret" id="f09c-c5"></span></div>
+          <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-5edp" class="ts-txt"></span></div>
+          <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><span data-hf-id="hf-zx39" class="ts-txt" id="f09c-l7"></span><span data-hf-id="hf-b5wr" class="ts-caret" id="f09c-c7"></span></div>
+          <div data-hf-id="hf-du2u" class="ts-row"><span data-hf-id="hf-hcwz" class="ts-ln">8</span><span data-hf-id="hf-r97e" class="ts-txt" id="f09c-l8"></span><span data-hf-id="hf-hbmk" class="ts-caret" id="f09c-c8"></span></div>
+          <div data-hf-id="hf-9gpj" class="ts-row"><span data-hf-id="hf-hr80" class="ts-ln">9</span><span data-hf-id="hf-v7bf" class="ts-txt" id="f09c-l9"></span><span data-hf-id="hf-i3ad" class="ts-caret" id="f09c-c9"></span></div>
+        </div>
+        <div data-hf-id="hf-imjb" class="ts-code-status">ThemeContext.tsx</div>
+      </div>
+
+      <!-- right column: type card -->
+      <div data-hf-id="hf-5f5j" class="ts-card" id="f09c-tcard">
+        <div data-hf-id="hf-3ip8" class="f09c-ctitle"><span data-hf-id="hf-uckh"><span data-hf-id="hf-6hdo" class="ts-kw">interface</span> <span data-hf-id="hf-nv1a" class="ts-type">IThemeContext</span></span></div>
+        <div data-hf-id="hf-sk7w" class="f09c-crule"></div>
+        <div data-hf-id="hf-0r3w" id="f09c-trow"><span data-hf-id="hf-iuly">theme<span data-hf-id="hf-55ep" class="ts-punct">:</span> <span data-hf-id="hf-sj5i" class="ts-type">string</span></span></div>
+      </div>
+
+      <div data-hf-id="hf-vzp0" id="f09c-link"></div>
+      <div data-hf-id="hf-9b6h" id="f09c-linklabel">&lt;IThemeContext&gt;</div>
+
+      <!-- right column: context card -->
+      <div data-hf-id="hf-o5cl" id="f09c-ccard">
+        <div data-hf-id="hf-waoe" class="f09c-ctitle" id="f09c-ctitle">ThemeContext</div>
+        <div data-hf-id="hf-v4l4" class="f09c-crule" id="f09c-crule2"></div>
+        <div data-hf-id="hf-ra5d" id="f09c-crow"><span data-hf-id="hf-npux" id="f09c-dkey">default</span><span data-hf-id="hf-3kvx" class="ts-chip" id="f09c-dchip">{ theme: <span data-hf-id="hf-rq24" class="ts-str">"light"</span> }</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.23;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 24;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="09-createcontext"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // initial hidden state of the right column
+      gsap.set(["#f09c-tcard", "#f09c-trow", "#f09c-linklabel", "#f09c-ccard", "#f09c-crow"], { opacity: 0 });
+      gsap.set("#f09c-link", { scaleY: 0 });
+
+      // ---- Scene 1 (0.0-3.3): kicker; panel; "interface" (1.28) ----
+      tl.fromTo("#f09c-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f09c-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f09c-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.1);
+
+      var l3 = typeLine("#f09c-l3", "#f09c-c3", [
+        { id: "f09c-hl-iface", parts: [{ t: "interface", c: "ts-kw" }] },
+        { t: " " },
+        { id: "f09c-hl-itc", parts: [{ t: "IThemeContext", c: "ts-type" }] },
+        { t: " {" }
+      ], 0, 1.28, 0.014);
+      typeLine("#f09c-l5", "#f09c-c5", [{ t: "}" }], 0, l3.end + 0.03, 0.014, 0.03);
+      washOn("#f09c-hl-iface", 1.40);
+
+      // ---- Scene 2 (3.3-7.4): "I Theme Context" (3.36); "property theme" (4.96 / 5.60); "string" (6.64) ----
+      washOff("#f09c-hl-iface", 3.36);
+      washOn("#f09c-hl-itc", 3.36);
+      tl.fromTo("#f09c-tcard", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.36);
+
+      var l4 = typeLine("#f09c-l4", "#f09c-c4", [
+        { t: "  " },
+        { id: "f09c-hl-theme", parts: [{ t: "theme" }] },
+        { t: ": ", c: "ts-punct" },
+        { id: "f09c-hl-string", parts: [{ t: "string", c: "ts-type" }] },
+        { t: ";" }
+      ], 0, 4.96, 0.03);
+      washOff("#f09c-hl-itc", 5.60);
+      washOn("#f09c-hl-theme", 5.60);
+      tl.fromTo("#f09c-trow", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 5.60);
+      washOff("#f09c-hl-theme", 6.64);
+      washOn("#f09c-hl-string", 6.64);
+
+      // ---- Scene 3 (7.4-11.5): "React punt create context" (7.52 / 8.48); "Theme Context" (10.16) ----
+      washOff("#f09c-hl-string", 7.52);
+      var l7 = typeLine("#f09c-l7", "#f09c-c7", [
+        { t: "export", c: "ts-kw" },
+        { t: " " },
+        { t: "const", c: "ts-kw" },
+        { t: " " },
+        { id: "f09c-hl-tc", parts: [{ t: "ThemeContext" }] },
+        { t: " = " },
+        { id: "f09c-hl-cc", parts: [
+          { t: "React." },
+          { t: "createContext", c: "ts-fn" }
+        ] },
+        { t: "<", c: "ts-punct" },
+        { t: "IThemeContext", c: "ts-type" },
+        { t: ">", c: "ts-punct" },
+        { t: "({" }
+      ], 0, 7.52, 0.014);
+      typeLine("#f09c-l9", "#f09c-c9", [{ t: "});" }], 0, l7.end + 0.03, 0.014, 0.03);
+      washOn("#f09c-hl-cc", 8.48);
+
+      washOff("#f09c-hl-cc", 10.16);
+      washOn("#f09c-hl-tc", 10.16);
+      tl.fromTo("#f09c-ccard", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 10.16);
+      tl.fromTo("#f09c-link", { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: "power2.inOut" }, 10.16);
+      tl.fromTo("#f09c-linklabel", { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 10.36);
+
+      // ---- Scene 4 (11.5-end): "default waarde light" (11.60 / 12.64) ----
+      washOff("#f09c-hl-tc", 11.60);
+      typeLine("#f09c-l8", "#f09c-c8", [
+        { t: "  theme" },
+        { t: ": ", c: "ts-punct" },
+        { id: "f09c-hl-light", parts: [{ t: "\"light\"", c: "ts-str" }] },
+        { t: "," }
+      ], 0, 11.60, 0.02);
+      tl.fromTo("#f09c-crow", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 12.64);
+      washOn("#f09c-hl-light", 12.64);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["09-createcontext"] = tl;
+    })();
+  </script>
+</template>

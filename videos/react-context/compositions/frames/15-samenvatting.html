@@ -1,0 +1,364 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 15 positions: four summary rows (left) + mini tree (right) ---- */
+    .f15s-row { position: absolute; left: 80px; width: 1100px; height: 120px; opacity: 0; }
+    #f15s-r1 { top: 200px; }
+    #f15s-r2 { top: 360px; }
+    #f15s-r3 { top: 520px; }
+    #f15s-r4 { top: 680px; }
+    .f15s-num {
+      position: absolute; left: 0; top: 5px; width: 36px;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 26px; line-height: 36px; color: var(--ts-blue);
+    }
+    .f15s-stmt {
+      position: absolute; left: 56px; top: 0; white-space: nowrap;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 38px; line-height: 46px; letter-spacing: -0.01em; color: var(--ts-ink);
+    }
+    .f15s-code {
+      position: absolute; left: 56px; top: 62px; padding: 4px 10px; white-space: pre;
+      background: var(--ts-code-bg); border: 1px solid var(--ts-hairline); border-radius: 6px;
+      font-family: var(--ts-mono); font-weight: 400; font-size: 22px; line-height: 30px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+
+    /* mini Provider zone (behind the tree); starts tight around App, grows at 7.36 */
+    #f15s-zone { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; opacity: 0; }
+    #f15s-zrect { fill: rgba(234, 242, 251, 0.6); stroke: #3178C6; stroke-width: 1.5; }
+    #f15s-zlabel {
+      position: absolute; left: 1448px; top: 175px; opacity: 0; height: 22px; padding: 0 8px; background: var(--ts-ground);
+      font-family: var(--ts-mono); font-size: 18px; font-weight: 500; line-height: 22px; color: var(--ts-blue-dark);
+      white-space: nowrap;
+    }
+
+    /* mini component tree (right column) */
+    #f15s-tree { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; opacity: 0; }
+    #f15s-wires { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    .f15s-wire { fill: none; stroke: #94A3B8; stroke-width: 2; }
+    .f15s-mnode {
+      position: absolute; box-sizing: border-box; width: 200px; height: 60px; background: var(--ts-panel);
+      border: 1px solid var(--ts-hairline); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 20px; line-height: 1; color: var(--ts-ink);
+    }
+    #f15s-app { left: 1438px; top: 200px; }
+    #f15s-layout { left: 1438px; top: 300px; }
+    #f15s-header { left: 1288px; top: 400px; }
+    #f15s-main { left: 1588px; top: 400px; }
+    #f15s-toggle { left: 1288px; top: 500px; }
+    #f15s-article { left: 1588px; top: 500px; }
+
+    /* direct context arcs: App -> ThemeToggle (left), App -> Article (right) */
+    #f15s-arcs { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    .f15s-arc { fill: none; stroke: #3178C6; stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  </style>
+
+  <div data-hf-id="hf-k6vv" id="root" data-composition-id="15-samenvatting" data-width="1920" data-height="1080" data-duration="14.85">
+    <div data-hf-id="hf-dadu" class="ts-bg clip" id="f15s-bg" data-start="0" data-duration="14.85" data-track-index="0"></div>
+
+    <div data-hf-id="hf-dcln" class="ts-stage clip" id="f15s-stage" data-start="0" data-duration="14.85" data-track-index="1">
+      <div data-hf-id="hf-ltmg" class="ts-kicker" id="f15s-kicker"><div data-hf-id="hf-e03x" class="ts-kicker-bar" id="f15s-kbar"></div><span data-hf-id="hf-l94n" class="ts-kicker-text" id="f15s-ktext">Samenvatting</span></div>
+
+      <!-- left: four summary rows -->
+      <div data-hf-id="hf-ok09" class="f15s-row" id="f15s-r1">
+        <span data-hf-id="hf-mzdo" class="f15s-num">1</span><span data-hf-id="hf-7033" class="f15s-stmt">Een interface beschrijft wat je deelt.</span>
+        <div data-hf-id="hf-wv0e" class="f15s-code"><span data-hf-id="hf-6hdo" class="ts-kw">interface</span> <span data-hf-id="hf-nv1a" class="ts-type">IThemeContext</span> <span data-hf-id="hf-uzbi" class="ts-punct">{</span> theme; setTheme <span data-hf-id="hf-u6pg" class="ts-punct">}</span></div>
+      </div>
+      <div data-hf-id="hf-si4a" class="f15s-row" id="f15s-r2">
+        <span data-hf-id="hf-lsgl" class="f15s-num">2</span><span data-hf-id="hf-07hw" class="f15s-stmt">createContext maakt de context.</span>
+        <div data-hf-id="hf-6ukv" class="f15s-code">React.<span data-hf-id="hf-jenm" class="ts-fn">createContext</span><span data-hf-id="hf-4csn" class="ts-punct">&lt;</span><span data-hf-id="hf-ztmq" class="ts-type">IThemeContext</span><span data-hf-id="hf-3k6l" class="ts-punct">&gt;</span>(<span data-hf-id="hf-kmos" class="ts-fold">…</span>)</div>
+      </div>
+      <div data-hf-id="hf-wg8b" class="f15s-row" id="f15s-r3">
+        <span data-hf-id="hf-m6rm" class="f15s-num">3</span><span data-hf-id="hf-jhhi" class="f15s-stmt">De Provider bovenaan geeft de waarde mee.</span>
+        <div data-hf-id="hf-l28v" class="f15s-code"><span data-hf-id="hf-c0rr" class="ts-punct">&lt;</span><span data-hf-id="hf-ve8q" class="ts-fn">ThemeContext.Provider</span> value={<span data-hf-id="hf-57f8" class="ts-fold">…</span>}<span data-hf-id="hf-1oyp" class="ts-punct">&gt;</span></div>
+      </div>
+      <div data-hf-id="hf-8yqs" class="f15s-row" id="f15s-r4">
+        <span data-hf-id="hf-o6ar" class="f15s-num">4</span><span data-hf-id="hf-grgn" class="f15s-stmt">useContext haalt hem op, enkel waar nodig.</span>
+        <div data-hf-id="hf-drk9" class="f15s-code"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> { theme } = <span data-hf-id="hf-11b9" class="ts-fn">useContext</span>(ThemeContext);</div>
+      </div>
+
+      <!-- mini Provider zone (behind the tree) -->
+      <svg data-hf-id="hf-mc2y" id="f15s-zone" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+        <rect data-hf-id="hf-dgxp" id="f15s-zrect" x="1424" y="186" width="228" height="88" rx="20" ry="20" />
+      </svg>
+
+      <!-- mini component tree -->
+      <div data-hf-id="hf-obej" id="f15s-tree">
+        <svg data-hf-id="hf-d3vm" id="f15s-wires" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+          <path data-hf-id="hf-wvnp" class="f15s-wire" d="M1538 260 V300" />
+          <path data-hf-id="hf-u5eg" class="f15s-wire" d="M1538 360 V380 H1388 V400" />
+          <path data-hf-id="hf-fqc8" class="f15s-wire" d="M1538 380 H1688 V400" />
+          <path data-hf-id="hf-bz9s" class="f15s-wire" d="M1388 460 V500" />
+          <path data-hf-id="hf-02uf" class="f15s-wire" d="M1688 460 V500" />
+        </svg>
+        <div data-hf-id="hf-sf15" class="f15s-mnode" id="f15s-app">App</div>
+        <div data-hf-id="hf-qifd" class="f15s-mnode" id="f15s-layout">Layout</div>
+        <div data-hf-id="hf-j6hz" class="f15s-mnode" id="f15s-header">Header</div>
+        <div data-hf-id="hf-z5g7" class="f15s-mnode" id="f15s-main">Main</div>
+        <div data-hf-id="hf-smnu" class="f15s-mnode" id="f15s-toggle">ThemeToggle</div>
+        <div data-hf-id="hf-87it" class="f15s-mnode" id="f15s-article">Article</div>
+      </div>
+
+      <div data-hf-id="hf-eod6" id="f15s-zlabel">ThemeContext.Provider</div>
+
+      <!-- direct arcs from App to the two consumers -->
+      <svg data-hf-id="hf-n28x" id="f15s-arcs" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+        <path data-hf-id="hf-lity" class="f15s-arc" id="f15s-arc-l" pathLength="1" d="M1438 230 C1212 230, 1212 530, 1288 530" />
+        <path data-hf-id="hf-e93x" class="f15s-arc" id="f15s-arc-r" pathLength="1" d="M1638 230 C1869 230, 1869 530, 1788 530" />
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.85;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="15-samenvatting"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- shared helpers (kept for parity with sibling frames) ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      function rise(sel, at) {
+        tl.fromTo(sel, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, at);
+      }
+
+      var BLUE = "#3178C6";
+
+      // ---- 0.0-1.5: kicker; mini tree fades in at 0.2 (all nodes neutral) ----
+      tl.fromTo("#f15s-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f15s-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f15s-tree", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", immediateRender: false }, 0.2);
+
+      // ---- 1.5-3.8: "interface" (1.60): row 1 ----
+      rise("#f15s-r1", 1.6);
+
+      // ---- 3.8-6.5: "Create context" (3.92): row 2 ----
+      rise("#f15s-r2", 3.92);
+
+      // ---- 6.5-9.4: "De Provider bovenaan" (6.64): row 3; zone grows + App blue at 7.36 ----
+      rise("#f15s-r3", 6.64);
+      tl.fromTo(["#f15s-zone", "#f15s-zlabel"], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, 7.36);
+      tl.to("#f15s-zrect", { attr: { x: 1268, y: 180, width: 540, height: 400 }, duration: 0.6, ease: "power3.inOut" }, 7.36);
+      tl.to("#f15s-zlabel", { x: -156, y: -6, duration: 0.6, ease: "power3.inOut" }, 7.36);
+      tl.to("#f15s-app", { borderColor: BLUE, borderWidth: 2, duration: 0.3, ease: "power3.out" }, 7.36);
+
+      // ---- 9.4-end: "use context haalt hem op" (9.76): row 4; "enkel waar" (11.52) arcs; consumers blue at 11.9 ----
+      rise("#f15s-r4", 9.76);
+      tl.to(["#f15s-arc-l", "#f15s-arc-r"], { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 11.52);
+      tl.to(["#f15s-toggle", "#f15s-article"], { borderColor: BLUE, borderWidth: 2, duration: 0.3, ease: "power3.out" }, 11.9);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["15-samenvatting"] = tl;
+    })();
+  </script>
+</template>

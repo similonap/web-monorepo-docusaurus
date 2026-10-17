@@ -1,0 +1,365 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 13 positions ---- */
+    #f13s-panel { left: 80px; top: 170px; width: 1060px; height: 470px; }
+    /* 9 rows at 24px / 35px (line 6 is longer than 56 chars) */
+    #f13s-panel .ts-code { font-size: 24px; line-height: 35px; }
+    #f13s-panel .ts-row { height: 35px; }
+    #f13s-panel .ts-caret { top: 5px; height: 25px; }
+    /* key box around `{}` on line 8: row top 66 + 7*35, col 31-33 at 14.4px */
+    #f13s-mark { left: 518px; top: 309px; width: 37px; height: 39px; opacity: 0; }
+
+    /* type card (as in frame 09), grows a second row */
+    #f13s-tcard { left: 1236px; top: 220px; width: 604px; height: 136px; overflow: hidden; }
+    .f13s-ctitle {
+      position: absolute; left: 28px; right: 28px; top: 0; height: 66px; display: flex; align-items: center;
+      font-family: var(--ts-mono); font-size: 22px; font-weight: 500; color: var(--ts-ink); white-space: pre;
+    }
+    .f13s-crule { position: absolute; left: 0; right: 0; top: 66px; height: 1px; background: var(--ts-hairline); }
+    #f13s-trow {
+      position: absolute; left: 28px; right: 28px; top: 66px; height: 68px; display: flex; align-items: center;
+      font-family: var(--ts-mono); font-size: 22px; font-weight: 400; color: var(--ts-ink); white-space: pre;
+    }
+    #f13s-crule2 { top: 134px; opacity: 0; }
+    #f13s-trow2 {
+      position: absolute; left: 0; right: 0; top: 135px; height: 68px; box-sizing: border-box; padding: 0 28px;
+      display: flex; align-items: center; background: var(--ts-blue-tint);
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 400; color: var(--ts-ink); white-space: pre;
+      opacity: 0;
+    }
+
+    #f13s-tcard { font-variant-ligatures: none; }
+
+    /* child chip */
+    #f13s-child { left: 1236px; top: 560px; opacity: 0; }
+  </style>
+
+  <div data-hf-id="hf-aigk" id="root" data-composition-id="13-settheme-type" data-width="1920" data-height="1080" data-duration="16.52">
+    <div data-hf-id="hf-c3zm" class="ts-bg clip" id="f13s-bg" data-start="0" data-duration="16.52" data-track-index="0"></div>
+
+    <div data-hf-id="hf-1v3f" class="ts-stage clip" id="f13s-stage" data-start="0" data-duration="16.52" data-track-index="1">
+      <div data-hf-id="hf-ys0m" class="ts-kicker" id="f13s-kicker"><div data-hf-id="hf-wl6v" class="ts-kicker-bar" id="f13s-kbar"></div><span data-hf-id="hf-8wu5" class="ts-kicker-text" id="f13s-ktext">Functies in context</span></div>
+
+      <!-- code surface: ThemeContext.tsx -->
+      <div data-hf-id="hf-bvif" class="ts-code-surface" id="f13s-panel">
+        <div data-hf-id="hf-4jar" class="ts-code-title">ThemeContext.tsx</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-t04m" class="ts-txt"><span data-hf-id="hf-6hdo" class="ts-kw">interface</span> <span data-hf-id="hf-nv1a" class="ts-type">IThemeContext</span> {</span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-3o3j" class="ts-txt">  theme<span data-hf-id="hf-55ep" class="ts-punct">: </span><span data-hf-id="hf-sj5i" class="ts-type">string</span>;</span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-jf2o" class="ts-txt" id="f13s-l3"></span><span data-hf-id="hf-f95i" class="ts-caret" id="f13s-c3"></span></div>
+          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-s7ik" class="ts-txt">}</span></div>
+          <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-joe1" class="ts-txt"></span></div>
+          <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-6ghg" class="ts-txt"><span data-hf-id="hf-4c5j" class="ts-kw">export</span> <span data-hf-id="hf-vgw0" class="ts-kw">const</span> ThemeContext = React.<span data-hf-id="hf-jenm" class="ts-fn">createContext</span><span data-hf-id="hf-4csn" class="ts-punct">&lt;</span><span data-hf-id="hf-ztmq" class="ts-type">IThemeContext</span><span data-hf-id="hf-3k6l" class="ts-punct">&gt;</span>({</span></div>
+          <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><span data-hf-id="hf-yi46" class="ts-txt">  theme<span data-hf-id="hf-nnhx" class="ts-punct">: </span><span data-hf-id="hf-rq24" class="ts-str">"light"</span>,</span></div>
+          <div data-hf-id="hf-du2u" class="ts-row"><span data-hf-id="hf-hcwz" class="ts-ln">8</span><span data-hf-id="hf-lq5v" class="ts-txt" id="f13s-l8"></span><span data-hf-id="hf-jvfx" class="ts-caret" id="f13s-c8"></span></div>
+          <div data-hf-id="hf-9gpj" class="ts-row"><span data-hf-id="hf-hr80" class="ts-ln">9</span><span data-hf-id="hf-oyto" class="ts-txt">});</span></div>
+        </div>
+        <div data-hf-id="hf-z2ne" class="ts-mark" id="f13s-mark"></div>
+        <div data-hf-id="hf-imjb" class="ts-code-status">ThemeContext.tsx</div>
+      </div>
+
+      <!-- right column: type card -->
+      <div data-hf-id="hf-qj8c" class="ts-card" id="f13s-tcard">
+        <div data-hf-id="hf-ef4d" class="f13s-ctitle"><span data-hf-id="hf-uckh"><span data-hf-id="hf-9f5g" class="ts-kw">interface</span> <span data-hf-id="hf-07xr" class="ts-type">IThemeContext</span></span></div>
+        <div data-hf-id="hf-wu3n" class="f13s-crule"></div>
+        <div data-hf-id="hf-y7jt" id="f13s-trow"><span data-hf-id="hf-iuly">theme<span data-hf-id="hf-ouf0" class="ts-punct">:</span> <span data-hf-id="hf-b61m" class="ts-type">string</span></span></div>
+        <div data-hf-id="hf-ebz8" class="f13s-crule" id="f13s-crule2"></div>
+        <div data-hf-id="hf-n9jl" id="f13s-trow2"><span data-hf-id="hf-yaz6">setTheme<span data-hf-id="hf-og3z" class="ts-punct">:</span> (theme<span data-hf-id="hf-pn12" class="ts-punct">:</span> <span data-hf-id="hf-bkcn" class="ts-type">string</span>) <span data-hf-id="hf-kpf2" class="ts-kw">=&gt;</span> <span data-hf-id="hf-u4od" class="ts-type">void</span></span></div>
+      </div>
+
+      <!-- child chip -->
+      <div data-hf-id="hf-7y6l" class="ts-chip" id="f13s-child"><span data-hf-id="hf-vj23" class="ts-chip-key">child</span>ThemeToggle</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 16.52;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 24;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="13-settheme-type"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // initial hidden state
+      gsap.set(["#f13s-child", "#f13s-trow2", "#f13s-crule2", "#f13s-mark"], { opacity: 0 });
+
+      // ---- Scene 1 (0.0-2.9): kicker; panel; type card present; "child" (2.08) ----
+      tl.fromTo("#f13s-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f13s-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f13s-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f13s-child", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 2.08);
+
+      // ---- Scene 2 (2.9-6.4): line 3 types from 4.16; "set theme" wash + card row at 4.72 ----
+      typeLine("#f13s-l3", "#f13s-c3", [
+        { t: "  " },
+        { id: "f13s-hl-set", parts: [{ t: "setTheme" }] },
+        { t: ": ", c: "ts-punct" },
+        { id: "f13s-hl-p1", parts: [{ t: "(" }] },
+        { id: "f13s-hl-ts", parts: [
+          { t: "theme" },
+          { t: ": ", c: "ts-punct" },
+          { t: "string", c: "ts-type" }
+        ] },
+        { id: "f13s-hl-p2", parts: [{ t: ") " }, { t: "=>", c: "ts-kw" }, { t: " " }] },
+        { id: "f13s-hl-void", parts: [{ t: "void", c: "ts-type" }] },
+        { t: ";" }
+      ], 0, 4.16, 0.02);
+      // wrap the whole function type in one wash span
+      (function () {
+        var p1 = q("#f13s-hl-p1");
+        var wrap = document.createElement("span");
+        wrap.className = "ts-hl";
+        wrap.id = "f13s-hl-fn";
+        p1.parentNode.insertBefore(wrap, p1);
+        ["#f13s-hl-p1", "#f13s-hl-ts", "#f13s-hl-p2", "#f13s-hl-void"].forEach(function (s) { wrap.appendChild(q(s)); });
+      })();
+
+      washOn("#f13s-hl-set", 4.72);
+      tl.to("#f13s-tcard", { height: 204, duration: 0.45, ease: "power3.out" }, 4.72);
+      tl.to("#f13s-crule2", { opacity: 1, duration: 0.3, ease: "power1.out" }, 4.72);
+      tl.fromTo("#f13s-trow2", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 4.80);
+
+      // ---- Scene 3 (6.4-12.9): "functie" (8.56); "string" (10.40); "niets teruggeeft" (12.08) ----
+      washOff("#f13s-hl-set", 8.56);
+      washOn("#f13s-hl-fn", 8.56);
+      washOff("#f13s-hl-fn", 10.40);
+      washOn("#f13s-hl-ts", 10.40);
+      washOff("#f13s-hl-ts", 12.08);
+      washOn("#f13s-hl-void", 12.08);
+
+      // ---- Scene 4 (12.9-end): line 8 types from 13.40; "lege functie" (14.96) ----
+      washOff("#f13s-hl-void", 13.40);
+      typeLine("#f13s-l8", "#f13s-c8", [
+        { t: "  " },
+        { t: "setTheme" },
+        { t: ": ", c: "ts-punct" },
+        { t: "(theme" },
+        { t: ": ", c: "ts-punct" },
+        { t: "string", c: "ts-type" },
+        { t: ") " },
+        { t: "=>", c: "ts-kw" },
+        { t: " " },
+        { id: "f13s-hl-empty", parts: [{ t: "{}" }] },
+        { t: "," }
+      ], 0, 13.40, 0.02);
+      washOn("#f13s-hl-empty", 14.96);
+      tl.fromTo("#f13s-mark", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power3.out" }, 14.96);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["13-settheme-type"] = tl;
+    })();
+  </script>
+</template>

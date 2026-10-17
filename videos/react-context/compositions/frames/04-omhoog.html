@@ -1,0 +1,280 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 04 positions: full component tree ---- */
+    #f04o-wires { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    .f04o-wire { fill: none; stroke: #94A3B8; stroke-width: 2; }
+    .f04o-node {
+      position: absolute; box-sizing: border-box; width: 300px; height: 80px;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 26px; line-height: 1; color: var(--ts-ink);
+    }
+    .f04o-ring {
+      position: absolute; left: -1px; top: -1px; right: -1px; bottom: -1px; box-sizing: border-box;
+      border: 2px solid var(--ts-blue); border-radius: 12px; opacity: 0;
+    }
+    .f04o-fill { position: absolute; inset: 0; border-radius: 11px; background: var(--ts-blue-tint); opacity: 0; }
+    .f04o-name { position: relative; }
+    #f04o-app { left: 810px; top: 170px; }
+    #f04o-layout { left: 810px; top: 330px; }
+    #f04o-header { left: 520px; top: 490px; }
+    #f04o-main { left: 1100px; top: 490px; }
+    #f04o-toggle { left: 520px; top: 650px; }
+    #f04o-article { left: 1100px; top: 650px; }
+
+    .f04o-note {
+      position: absolute; top: 744px; width: 300px; text-align: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 18px; line-height: 24px; color: var(--ts-blue-dark);
+      opacity: 0;
+    }
+    #f04o-note-article { left: 1100px; }
+    #f04o-note-toggle { left: 520px; }
+
+    /* state chip: fixed width so the 496 / 1134 anchors are exact */
+    #f04o-chip { left: 184px; top: 668px; width: 312px; height: 44px; padding: 0 16px; justify-content: center; font-size: 22px; z-index: 2; }
+  </style>
+
+  <div data-hf-id="hf-d2c7" id="root" data-composition-id="04-omhoog" data-width="1920" data-height="1080" data-duration="14.47">
+    <div data-hf-id="hf-bzni" class="ts-bg clip" id="f04o-bg" data-start="0" data-duration="14.47" data-track-index="0"></div>
+
+    <div data-hf-id="hf-4iy7" class="ts-stage clip" id="f04o-stage" data-start="0" data-duration="14.47" data-track-index="1">
+      <div data-hf-id="hf-fv5u" class="ts-kicker" id="f04o-kicker"><div data-hf-id="hf-lzq3" class="ts-kicker-bar" id="f04o-kbar"></div><span data-hf-id="hf-eake" class="ts-kicker-text" id="f04o-ktext">State omhoog</span></div>
+
+      <svg data-hf-id="hf-x7is" id="f04o-wires" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+        <path data-hf-id="hf-qv5v" class="f04o-wire" d="M960 250 V330" />
+        <path data-hf-id="hf-pvz8" class="f04o-wire" d="M960 410 V450 H670 V490" />
+        <path data-hf-id="hf-14em" class="f04o-wire" d="M960 450 H1250 V490" />
+        <path data-hf-id="hf-8rcj" class="f04o-wire" d="M670 570 V650" />
+        <path data-hf-id="hf-slzi" class="f04o-wire" d="M1250 570 V650" />
+      </svg>
+
+      <div data-hf-id="hf-9xbv" class="f04o-node" id="f04o-app"><div data-hf-id="hf-f002" class="f04o-fill" id="f04o-app-fill"></div><div data-hf-id="hf-ngco" class="f04o-ring" id="f04o-app-ring"></div><span data-hf-id="hf-ar3r" class="f04o-name">App</span></div>
+      <div data-hf-id="hf-dfn0" class="f04o-node" id="f04o-layout"><div data-hf-id="hf-fy00" class="f04o-ring"></div><span data-hf-id="hf-w2ru" class="f04o-name">Layout</span></div>
+      <div data-hf-id="hf-1rix" class="f04o-node" id="f04o-header"><div data-hf-id="hf-jmxk" class="f04o-ring"></div><span data-hf-id="hf-cboh" class="f04o-name">Header</span></div>
+      <div data-hf-id="hf-jfq9" class="f04o-node" id="f04o-main"><div data-hf-id="hf-ig0h" class="f04o-ring"></div><span data-hf-id="hf-jzwh" class="f04o-name">Main</span></div>
+      <div data-hf-id="hf-rq66" class="f04o-node" id="f04o-toggle"><div data-hf-id="hf-6wa7" class="f04o-ring" id="f04o-toggle-ring"></div><span data-hf-id="hf-yxpt" class="f04o-name">ThemeToggle</span></div>
+      <div data-hf-id="hf-do7c" class="f04o-node" id="f04o-article"><div data-hf-id="hf-cb1l" class="f04o-ring" id="f04o-article-ring"></div><span data-hf-id="hf-kzqm" class="f04o-name">Article</span></div>
+
+      <div data-hf-id="hf-ebzh" class="f04o-note" id="f04o-note-article">theme nodig</div>
+      <div data-hf-id="hf-87w1" class="f04o-note" id="f04o-note-toggle">theme nodig</div>
+
+      <div data-hf-id="hf-myui" class="ts-chip ts-chip--new" id="f04o-chip"><span data-hf-id="hf-h79w" class="ts-chip-key">state</span><span data-hf-id="hf-iuly">theme<span data-hf-id="hf-55ep" class="ts-punct">:</span> <span data-hf-id="hf-rq24" class="ts-str">"light"</span></span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.47;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="04-omhoog"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // shared helpers (kept identical to the series; this frame has no code surface)
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // chip anchors: left of a left-column node (right edge 496), right of a centre node (left edge 1134)
+      var CHIP_W = 312;
+      function chipTo(left, centreY, at) {
+        // chip CSS home is (184, 668); move with transforms only
+        tl.to("#f04o-chip", { x: left - (496 - CHIP_W), y: (centreY - 22) - 668, duration: 0.6, ease: "power3.inOut" }, at);
+      }
+      function ringOn(sel, at) { tl.to(sel, { opacity: 1, duration: 0.3, ease: "power1.out" }, at); }
+      function noteIn(sel, at) { tl.fromTo(sel, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, at); }
+
+      // ---- 0.0-3.9: kicker; "Article" (0.32) border blue; "theme ook gebruiken" (0.96) note ----
+      tl.fromTo("#f04o-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f04o-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.set(["#f04o-note-article", "#f04o-note-toggle"], { opacity: 0 }, 0);
+      tl.set("#f04o-chip", { x: 0, y: 0 }, 0);
+
+      ringOn("#f04o-article-ring", 0.32);
+      noteIn("#f04o-note-article", 0.96);
+
+      // ---- 3.9-6.1: "Naar Header" (4.00) ; "Naar Layout" (4.96) ----
+      chipTo(496 - CHIP_W, 530, 4.0);
+      chipTo(1134, 370, 4.96);
+
+      // ---- 6.1-10.7: "meer componenten" (7.56) ThemeToggle blue + note ----
+      ringOn("#f04o-toggle-ring", 7.56);
+      noteIn("#f04o-note-toggle", 7.56);
+
+      // ---- 10.7-end: "helemaal bovenaan" (11.28) chip to App; "in App" (13.12) App blue + tint ----
+      chipTo(1134, 210, 11.28);
+      ringOn("#f04o-app-ring", 13.12);
+      tl.to("#f04o-app-fill", { opacity: 1, duration: 0.3, ease: "power1.out" }, 13.12);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["04-omhoog"] = tl;
+    })();
+  </script>
+</template>

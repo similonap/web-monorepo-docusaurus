@@ -1,0 +1,379 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 06 positions ---- */
+    #f06d-wires { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    .f06d-wire { fill: none; stroke: #94A3B8; stroke-width: 2; }
+    .f06d-wire--on { stroke: #3178C6; }
+
+    .f06d-node {
+      position: absolute; width: 300px; height: 80px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 26px; color: var(--ts-ink);
+    }
+    .f06d-ring {
+      position: absolute; left: -1px; top: -1px; right: -1px; bottom: -1px;
+      border: 2px solid rgba(49, 120, 198, 0); border-radius: 12px; box-sizing: border-box;
+    }
+    .f06d-label { position: relative; }
+    #f06d-app { left: 810px; top: 170px; background: var(--ts-blue-tint); }
+    #f06d-layout { left: 810px; top: 330px; }
+    #f06d-header { left: 520px; top: 490px; }
+    #f06d-main { left: 1100px; top: 490px; }
+    #f06d-toggle { left: 520px; top: 650px; }
+    #f06d-article { left: 1100px; top: 650px; }
+    #f06d-app .f06d-ring, #f06d-article .f06d-ring { border-color: #3178C6; }
+
+    #f06d-chip { left: 1134px; top: 188px; height: 44px; font-size: 22px; }
+
+    .f06d-ctag {
+      position: absolute; height: 30px; box-sizing: border-box; padding: 0 12px;
+      display: flex; align-items: center; white-space: nowrap;
+      background: var(--ts-blue-tint); border: 1px solid var(--ts-blue); border-radius: 999px;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 18px; color: var(--ts-blue-dark);
+    }
+    #f06d-tag1 { left: 976px; top: 275px; }
+    #f06d-tag2 { left: 1105px; top: 413px; transform: translateX(-50%); }
+    #f06d-tag3 { left: 1266px; top: 595px; }
+
+    .f06d-note {
+      position: absolute; height: 30px; display: flex; align-items: center; white-space: nowrap;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 18px; color: var(--ts-error); opacity: 0;
+    }
+    #f06d-note-layout { left: 1134px; top: 355px; }
+    #f06d-note-main { left: 1424px; top: 515px; }
+
+    /* compact Main.tsx panel: x 80, y 150, 700 x 220 */
+    #f06d-panel { left: 80px; top: 150px; width: 700px; height: 220px; opacity: 0; }
+    #f06d-panel .ts-code { font-size: 22px; line-height: 32px; }
+    #f06d-panel .ts-row { height: 32px; }
+    #f06d-panel .ts-ln { font-size: 18px; }
+    #f06d-panel .ts-caret { top: 5px; height: 23px; }
+    .f06d-mark { top: 1px; height: 30px; opacity: 0; }
+    #f06d-mark1 { left: 257px; width: 127px; }
+    #f06d-mark2 { left: 309px; width: 180px; }
+  </style>
+
+  <div data-hf-id="hf-p4pb" id="root" data-composition-id="06-doorgeven" data-width="1920" data-height="1080" data-duration="9.83">
+    <div data-hf-id="hf-ccrp" class="ts-bg clip" id="f06d-bg" data-start="0" data-duration="9.83" data-track-index="0"></div>
+
+    <div data-hf-id="hf-o4yk" class="ts-stage clip" id="f06d-stage" data-start="0" data-duration="9.83" data-track-index="1">
+      <div data-hf-id="hf-7dg1" class="ts-kicker" id="f06d-kicker"><div data-hf-id="hf-93ac" class="ts-kicker-bar" id="f06d-kbar"></div><span data-hf-id="hf-e9h5" class="ts-kicker-text" id="f06d-ktext">Enkel doorgeven</span></div>
+
+      <!-- full component tree (frame 5 end state) -->
+      <svg data-hf-id="hf-kiwb" id="f06d-wires" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+        <path data-hf-id="hf-99mk" class="f06d-wire" d="M960 250 V330" />
+        <path data-hf-id="hf-r1jv" class="f06d-wire" d="M960 410 V450 H670 V490" />
+        <path data-hf-id="hf-s8rh" class="f06d-wire" d="M960 450 H1250 V490" />
+        <path data-hf-id="hf-dvkw" class="f06d-wire" d="M670 570 V650" />
+        <path data-hf-id="hf-kcir" class="f06d-wire" d="M1250 570 V650" />
+        <path data-hf-id="hf-6qpe" class="f06d-wire f06d-wire--on" id="f06d-w1" d="M960 250 V330" />
+        <path data-hf-id="hf-0ygh" class="f06d-wire f06d-wire--on" id="f06d-w2" d="M960 410 V450 H1250 V490" />
+        <path data-hf-id="hf-68m7" class="f06d-wire f06d-wire--on" id="f06d-w3" d="M1250 570 V650" />
+      </svg>
+
+      <div data-hf-id="hf-qjkh" class="f06d-node" id="f06d-app"><div data-hf-id="hf-43ci" class="f06d-ring" id="f06d-r-app"></div><span data-hf-id="hf-k2sj" class="f06d-label">App</span></div>
+      <div data-hf-id="hf-vd8i" class="f06d-node" id="f06d-layout"><div data-hf-id="hf-7qwb" class="f06d-ring" id="f06d-r-layout"></div><span data-hf-id="hf-y5lq" class="f06d-label">Layout</span></div>
+      <div data-hf-id="hf-p17r" class="f06d-node" id="f06d-header"><div data-hf-id="hf-4l0v" class="f06d-ring"></div><span data-hf-id="hf-9wvh" class="f06d-label">Header</span></div>
+      <div data-hf-id="hf-ij47" class="f06d-node" id="f06d-main"><div data-hf-id="hf-j7fq" class="f06d-ring" id="f06d-r-main"></div><span data-hf-id="hf-jjmt" class="f06d-label">Main</span></div>
+      <div data-hf-id="hf-v8is" class="f06d-node" id="f06d-toggle"><div data-hf-id="hf-g5fz" class="f06d-ring"></div><span data-hf-id="hf-175p" class="f06d-label">ThemeToggle</span></div>
+      <div data-hf-id="hf-02qe" class="f06d-node" id="f06d-article"><div data-hf-id="hf-thuh" class="f06d-ring" id="f06d-r-article"></div><span data-hf-id="hf-laea" class="f06d-label">Article</span></div>
+
+      <div data-hf-id="hf-34gd" class="ts-chip ts-chip--new" id="f06d-chip"><span data-hf-id="hf-h79w" class="ts-chip-key">state</span><span data-hf-id="hf-iuly">theme<span data-hf-id="hf-55ep" class="ts-punct">:</span> <span data-hf-id="hf-rq24" class="ts-str">"light"</span></span></div>
+
+      <div data-hf-id="hf-ah0v" class="f06d-ctag" id="f06d-tag1">theme</div>
+      <div data-hf-id="hf-gefm" class="f06d-ctag" id="f06d-tag2">theme</div>
+      <div data-hf-id="hf-o3tl" class="f06d-ctag" id="f06d-tag3">theme</div>
+
+      <div data-hf-id="hf-nshh" class="f06d-note" id="f06d-note-layout">gebruikt theme niet</div>
+      <div data-hf-id="hf-da9u" class="f06d-note" id="f06d-note-main">gebruikt theme niet</div>
+
+      <!-- compact code panel: Main.tsx -->
+      <div data-hf-id="hf-b8aa" class="ts-code-surface" id="f06d-panel">
+        <div data-hf-id="hf-ik0y" class="ts-code-title">Main.tsx</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-xekt" class="ts-txt" id="f06d-l1"></span><span data-hf-id="hf-543f" class="ts-caret" id="f06d-c1"></span><div data-hf-id="hf-iu8a" class="ts-mark ts-mark--wrong f06d-mark" id="f06d-mark1"></div></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-1cou" class="ts-txt" id="f06d-l2"></span><span data-hf-id="hf-u8ls" class="ts-caret" id="f06d-c2"></span><div data-hf-id="hf-ew49" class="ts-mark ts-mark--wrong f06d-mark" id="f06d-mark2"></div></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-5asv" class="ts-txt" id="f06d-l3"></span><span data-hf-id="hf-v09l" class="ts-caret" id="f06d-c3"></span></div>
+        </div>
+        <div data-hf-id="hf-t7az" class="ts-code-status">Main · theme</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 9.83;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 22;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="06-doorgeven"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // hidden-until-cued elements
+      tl.set(["#f06d-panel", "#f06d-note-layout", "#f06d-note-main", "#f06d-mark1", "#f06d-mark2"], { opacity: 0 }, 0);
+
+      // ---- 0.0-2.2: kicker; "Layout" (0.64) ink border; "Main" (1.44) ink border ----
+      tl.fromTo("#f06d-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f06d-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f06d-r-layout", { borderColor: "rgba(30, 41, 59, 0)" }, { borderColor: "rgba(30, 41, 59, 1)", duration: 0.3, ease: "power1.out" }, 0.64);
+      tl.fromTo("#f06d-r-main", { borderColor: "rgba(30, 41, 59, 0)" }, { borderColor: "rgba(30, 41, 59, 1)", duration: 0.3, ease: "power1.out" }, 1.44);
+
+      // ---- 2.2-4.2: blue fades to neutral (2.80); "doen zelf niets met de theme" (2.96) red + notes ----
+      tl.to(["#f06d-w1", "#f06d-w2", "#f06d-w3"], { stroke: "#94A3B8", duration: 0.3, ease: "power1.inOut" }, 2.8);
+      tl.to(["#f06d-tag1", "#f06d-tag2", "#f06d-tag3"], { opacity: 0.5, duration: 0.3, ease: "power1.inOut" }, 2.8);
+      tl.to(["#f06d-r-app", "#f06d-r-article"], { borderColor: "rgba(49, 120, 198, 0)", duration: 0.3, ease: "power1.inOut" }, 2.8);
+      tl.to("#f06d-app", { backgroundColor: "#F1F5F9", duration: 0.3, ease: "power1.inOut" }, 2.8);
+
+      tl.to(["#f06d-r-layout", "#f06d-r-main"], { borderColor: "#D14343", duration: 0.3, ease: "power1.out" }, 2.96);
+      tl.fromTo(["#f06d-note-layout", "#f06d-note-main"], { opacity: 0, x: -8 },
+        { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 2.96);
+
+      // ---- 4.2-end: Main.tsx panel (4.24) types; "als prop ontvangen" (5.64); "door te geven" (7.52) ----
+      tl.fromTo("#f06d-panel", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 4.24);
+
+      var e = typeLine("#f06d-l1", "#f06d-c1", [
+        { t: "const", c: "ts-kw" },
+        { t: " " },
+        { t: "Main", c: "ts-fn" },
+        { t: " = ({ theme }" },
+        { t: ": " },
+        { t: "MainProps", c: "ts-type" },
+        { t: ") " },
+        { t: "=>", c: "ts-kw" },
+        { t: " {" }
+      ], 0, 4.34, 0.0135, 0.06);
+      e = typeLine("#f06d-l2", "#f06d-c2", [
+        { t: "  " },
+        { t: "return", c: "ts-kw" },
+        { t: " " },
+        { t: "<", c: "ts-punct" },
+        { t: "Article", c: "ts-fn" },
+        { t: " theme={theme} " },
+        { t: "/>", c: "ts-punct" },
+        { t: ";" }
+      ], 0, e.end + 0.02, 0.0135, 0.03);
+      typeLine("#f06d-l3", "#f06d-c3", [
+        { t: "};" }
+      ], 0, e.end + 0.02, 0.0135, 0.03);
+
+      tl.fromTo("#f06d-mark1", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, 5.64);
+      tl.fromTo("#f06d-mark2", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out", immediateRender: false }, 7.52);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["06-doorgeven"] = tl;
+    })();
+  </script>
+</template>

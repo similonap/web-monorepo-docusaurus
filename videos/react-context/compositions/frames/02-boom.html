@@ -1,0 +1,305 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 02 (boom) positions ---- */
+    .f02b-node {
+      position: absolute; box-sizing: border-box; width: 300px; height: 80px; background: var(--ts-panel);
+      border: 1px solid var(--ts-hairline); border-radius: 12px;
+    }
+    .f02b-name {
+      position: absolute; left: 0; right: 0; top: 24px; text-align: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 26px; line-height: 32px; color: var(--ts-ink);
+      white-space: nowrap;
+    }
+    .f02b-sub {
+      position: absolute; left: 0; right: 0; top: 46px; text-align: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; line-height: 22px; color: var(--ts-label);
+      white-space: nowrap; opacity: 0;
+    }
+    #f02b-app { left: 810px; top: 170px; }
+    #f02b-layout { left: 810px; top: 330px; }
+    #f02b-header { left: 520px; top: 490px; }
+    #f02b-main { left: 1100px; top: 490px; }
+    #f02b-toggle { left: 520px; top: 650px; }
+    #f02b-article { left: 1100px; top: 650px; }
+
+    #f02b-wires { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    .f02b-wire { fill: none; stroke: #94A3B8; stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  </style>
+
+  <div data-hf-id="hf-jhbf" id="root" data-composition-id="02-boom" data-width="1920" data-height="1080" data-duration="13.35">
+    <div data-hf-id="hf-59xl" class="ts-bg clip" id="f02b-bg" data-start="0" data-duration="13.35" data-track-index="0"></div>
+
+    <div data-hf-id="hf-f8j2" class="ts-stage clip" id="f02b-stage" data-start="0" data-duration="13.35" data-track-index="1">
+      <div data-hf-id="hf-c7in" class="ts-kicker" id="f02b-kicker"><div data-hf-id="hf-y4em" class="ts-kicker-bar" id="f02b-kbar"></div><span data-hf-id="hf-djp1" class="ts-kicker-text" id="f02b-ktext">De componentenboom</span></div>
+
+      <svg data-hf-id="hf-z2p5" id="f02b-wires" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+        <path data-hf-id="hf-wapy" class="f02b-wire" id="f02b-w-layout" pathLength="1" d="M960 250 V330" />
+        <path data-hf-id="hf-dng6" class="f02b-wire" id="f02b-w-header" pathLength="1" d="M960 410 V450 H670 V490" />
+        <path data-hf-id="hf-6004" class="f02b-wire" id="f02b-w-main" pathLength="1" d="M960 450 H1250 V490" />
+        <path data-hf-id="hf-gek8" class="f02b-wire" id="f02b-w-toggle" pathLength="1" d="M670 570 V650" />
+        <path data-hf-id="hf-p2c1" class="f02b-wire" id="f02b-w-article" pathLength="1" d="M1250 570 V650" />
+      </svg>
+
+      <div data-hf-id="hf-btkp" class="f02b-node" id="f02b-app"><div data-hf-id="hf-tdzd" class="f02b-name">App</div></div>
+      <div data-hf-id="hf-3cx6" class="f02b-node" id="f02b-layout"><div data-hf-id="hf-qbqc" class="f02b-name">Layout</div></div>
+      <div data-hf-id="hf-yqzz" class="f02b-node" id="f02b-header"><div data-hf-id="hf-zxib" class="f02b-name">Header</div></div>
+      <div data-hf-id="hf-svn3" class="f02b-node" id="f02b-main"><div data-hf-id="hf-vdhv" class="f02b-name">Main</div></div>
+      <div data-hf-id="hf-yyyk" class="f02b-node" id="f02b-toggle"><div data-hf-id="hf-b9iu" class="f02b-name" id="f02b-toggle-name">ThemeToggle</div><div data-hf-id="hf-nvge" class="f02b-sub" id="f02b-toggle-sub">light / dark</div></div>
+      <div data-hf-id="hf-izi6" class="f02b-node" id="f02b-article"><div data-hf-id="hf-65fk" class="f02b-name">Article</div></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 13.35;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="02-boom"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- shared helpers (kept identical to the series; unused in this frame) ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // node reveal: connector draws 0.3s, node fades in (y 10 -> 0)
+      function grow(wireSel, nodeSel, at) {
+        if (wireSel) tl.to(wireSel, { strokeDashoffset: 0, duration: 0.3, ease: "power2.inOut" }, at);
+        tl.fromTo(nodeSel, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, wireSel ? at + 0.1 : at);
+      }
+
+      // hidden until cued
+      gsap.set(["#f02b-app", "#f02b-layout", "#f02b-header", "#f02b-main", "#f02b-toggle", "#f02b-article"], { opacity: 0 });
+      gsap.set(".f02b-wire", { strokeDashoffset: 1 });
+      gsap.set("#f02b-toggle-sub", { opacity: 0 });
+
+      // ---- 0.0-1.3: kicker ----
+      tl.fromTo("#f02b-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f02b-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+
+      // ---- 1.3-5.2: "App" (1.36), "Layout" (2.44), "Header" (3.68), "Main" (4.48) ----
+      grow(null, "#f02b-app", 1.36);
+      grow("#f02b-w-layout", "#f02b-layout", 2.44);
+      grow("#f02b-w-header", "#f02b-header", 3.68);
+      grow("#f02b-w-main", "#f02b-main", 4.48);
+
+      // ---- 5.2-10.3: "Theme Toggle" (6.32); "light en dark" (8.88) sublabel ----
+      grow("#f02b-w-toggle", "#f02b-toggle", 6.32);
+      tl.to("#f02b-toggle-name", { y: -10, duration: 0.4, ease: "power3.out" }, 8.88);
+      tl.fromTo("#f02b-toggle-sub", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 8.88);
+
+      // ---- 10.3-end: "Article" (11.84), hold ----
+      grow("#f02b-w-article", "#f02b-article", 11.84);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["02-boom"] = tl;
+    })();
+  </script>
+</template>
