@@ -1,0 +1,392 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 05 positions ---- */
+    #f05c-panel { left: 80px; top: 170px; width: 1060px; height: 720px; }
+    .f05c-dim { opacity: 0.5; }
+    #f05c-box { position: absolute; left: 62px; top: 440px; width: 984px; height: 202px; overflow: visible; }
+    #f05c-label { left: 1236px; top: 186px; }
+    #f05c-card { left: 1236px; top: 232px; width: 604px; height: 328px; }
+    #f05c-card .ts-chip { font-variant-ligatures: none; }
+    #f05c-chip1 { left: 36px; top: 52px; }
+    #f05c-chip2 { left: 36px; top: 138px; }
+    #f05c-chip3 { left: 36px; top: 224px; }
+    #f05c-note {
+      left: 1236px; top: 600px; width: 604px; height: 160px; padding: 0 36px;
+      display: flex; align-items: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 26px; line-height: 1.4; color: var(--ts-ink); text-wrap: balance;
+    }
+  </style>
+
+  <div data-hf-id="hf-9ib3" id="root" data-composition-id="05-context" data-width="1920" data-height="1080" data-duration="19.78">
+    <div data-hf-id="hf-q1lc" class="ts-bg clip" id="f05c-bg" data-start="0" data-duration="19.78" data-track-index="0"></div>
+
+    <div data-hf-id="hf-w4sh" class="ts-stage clip" id="f05c-stage" data-start="0" data-duration="19.78" data-track-index="1">
+      <div data-hf-id="hf-v43v" class="ts-kicker" id="f05c-kicker"><div data-hf-id="hf-s536" class="ts-kicker-bar" id="f05c-kbar"></div><span data-hf-id="hf-rqnh" class="ts-kicker-text" id="f05c-ktext">De context</span></div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-x1bo" class="ts-code-surface" id="f05c-panel">
+        <div data-hf-id="hf-h6di" class="ts-code-title">DataProvider.tsx</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-p8x1" class="ts-txt"><span data-hf-id="hf-qaso" class="ts-kw">import</span> React, { <span data-hf-id="hf-uw2v" class="ts-fn">useEffect</span>, <span data-hf-id="hf-md7z" class="ts-fn">useState</span> } <span data-hf-id="hf-e409" class="ts-kw">from</span> <span data-hf-id="hf-ijfh" class="ts-str">"react"</span>;</span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-3973" class="ts-txt f05c-dim"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> url = <span data-hf-id="hf-49xj" class="ts-fold">⋯</span>;</span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-kuqk" class="ts-txt f05c-dim"><span data-hf-id="hf-4c5j" class="ts-kw">export</span> <span data-hf-id="hf-6hdo" class="ts-kw">interface</span> <span data-hf-id="hf-2brp" class="ts-type">Post</span> { <span data-hf-id="hf-vzvr" class="ts-fold">⋯</span> }</span></div>
+          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-joe1" class="ts-txt"></span></div>
+          <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-d5wz" class="ts-txt" id="f05c-l5"></span><span data-hf-id="hf-78rp" class="ts-caret" id="f05c-c5"></span></div>
+          <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-2afc" class="ts-txt" id="f05c-l6"></span><span data-hf-id="hf-b6vq" class="ts-caret" id="f05c-c6"></span></div>
+          <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><span data-hf-id="hf-3235" class="ts-txt" id="f05c-l7"></span><span data-hf-id="hf-f4zr" class="ts-caret" id="f05c-c7"></span></div>
+          <div data-hf-id="hf-du2u" class="ts-row"><span data-hf-id="hf-hcwz" class="ts-ln">8</span><span data-hf-id="hf-2ylq" class="ts-txt" id="f05c-l8"></span><span data-hf-id="hf-rni8" class="ts-caret" id="f05c-c8"></span></div>
+          <div data-hf-id="hf-9gpj" class="ts-row"><span data-hf-id="hf-hr80" class="ts-ln">9</span><span data-hf-id="hf-6wpr" class="ts-txt" id="f05c-l9"></span><span data-hf-id="hf-sf61" class="ts-caret" id="f05c-c9"></span></div>
+          <div data-hf-id="hf-9v0k" class="ts-row"><span data-hf-id="hf-h360" class="ts-ln">10</span><span data-hf-id="hf-5edp" class="ts-txt"></span></div>
+          <div data-hf-id="hf-rmvo" class="ts-row"><span data-hf-id="hf-gouz" class="ts-ln">11</span><span data-hf-id="hf-vl5g" class="ts-txt" id="f05c-l11"></span><span data-hf-id="hf-bdbu" class="ts-caret" id="f05c-c11"></span></div>
+          <div data-hf-id="hf-r8kn" class="ts-row"><span data-hf-id="hf-gajy" class="ts-ln">12</span><span data-hf-id="hf-491b" class="ts-txt" id="f05c-l12"></span><span data-hf-id="hf-7f7t" class="ts-caret" id="f05c-c12"></span></div>
+          <div data-hf-id="hf-qu9m" class="ts-row"><span data-hf-id="hf-fw8x" class="ts-ln">13</span><span data-hf-id="hf-0axa" class="ts-txt" id="f05c-l13"></span><span data-hf-id="hf-6nk0" class="ts-caret" id="f05c-c13"></span></div>
+          <div data-hf-id="hf-qfyl" class="ts-row"><span data-hf-id="hf-fhxw" class="ts-ln">14</span><span data-hf-id="hf-8yt5" class="ts-txt" id="f05c-l14"></span><span data-hf-id="hf-2pfz" class="ts-caret" id="f05c-c14"></span></div>
+          <div data-hf-id="hf-t83s" class="ts-row"><span data-hf-id="hf-f3mv" class="ts-ln">15</span><span data-hf-id="hf-875c" class="ts-txt" id="f05c-l15"></span><span data-hf-id="hf-yrby" class="ts-caret" id="f05c-c15"></span></div>
+        </div>
+        <!-- key mark around createContext (lines 11-15), drawn -->
+        <svg data-hf-id="hf-uj6q" id="f05c-box" viewBox="0 0 984 202" width="984" height="202">
+          <rect data-hf-id="hf-imj6" id="f05c-box-rect" x="1" y="1" width="982" height="200" rx="6" ry="6" fill="none" stroke="#3178C6" stroke-width="2" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" />
+        </svg>
+        <div data-hf-id="hf-jpk9" class="ts-code-status">DataContext · default</div>
+      </div>
+
+      <!-- right column: default value -->
+      <div data-hf-id="hf-dm70" class="ts-label" id="f05c-label">default</div>
+      <div data-hf-id="hf-3k21" class="ts-card" id="f05c-card">
+        <div data-hf-id="hf-e5c6" class="ts-chip" id="f05c-chip1"><span data-hf-id="hf-3y32">posts: <span data-hf-id="hf-raa1" class="ts-punct">[]</span></span></div>
+        <div data-hf-id="hf-a785" class="ts-chip" id="f05c-chip2"><span data-hf-id="hf-ta3f">loading: <span data-hf-id="hf-2wru" class="ts-fn">false</span></span></div>
+        <div data-hf-id="hf-9fkc" class="ts-chip" id="f05c-chip3"><span data-hf-id="hf-71q5">reload: () <span data-hf-id="hf-kpf2" class="ts-kw">=&gt;</span> {}</span></div>
+      </div>
+      <div data-hf-id="hf-ydrz" class="ts-card" id="f05c-note">Alleen gebruikt als er geen Provider boven staat.</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 19.28;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="05-context"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // ---- Scene 1 (0.0-7.0): kicker + surface; "context" (1.44) interface shell; posts / loading / reload ----
+      tl.fromTo("#f05c-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f05c-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f05c-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.0);
+
+      var e = typeLine("#f05c-l5", "#f05c-c5", [
+        { t: "export", c: "ts-kw" },
+        { t: " " },
+        { t: "interface", c: "ts-kw" },
+        { t: " " },
+        { t: "DataContext", c: "ts-type" },
+        { t: " {" }
+      ], 0, 1.44, 0.02);
+      typeLine("#f05c-l9", "#f05c-c9", [{ t: "}" }], 0, e.end + 0.04, 0.02, 0.03);
+
+      var l6 = typeLine("#f05c-l6", "#f05c-c6", [
+        { t: "  " },
+        { id: "f05c-hl-posts", parts: [
+          { t: "posts: " },
+          { t: "Post[]", c: "ts-type" },
+          { t: ";" }
+        ] }
+      ], 0, 3.16, 0.024);
+      washOn("#f05c-hl-posts", l6.marks["f05c-hl-posts"] + 0.05);
+
+      typeLine("#f05c-l7", "#f05c-c7", [
+        { t: "  " },
+        { id: "f05c-hl-loading", parts: [
+          { t: "loading: " },
+          { t: "boolean", c: "ts-type" },
+          { t: ";" }
+        ] }
+      ], 0, 4.04, 0.02);
+      washOff("#f05c-hl-posts", 4.32);
+      washOn("#f05c-hl-loading", 4.32);
+
+      typeLine("#f05c-l8", "#f05c-c8", [
+        { t: "  " },
+        { id: "f05c-hl-reload", parts: [
+          { t: "reload: () " },
+          { t: "=>", c: "ts-kw" },
+          { t: " " },
+          { t: "void", c: "ts-type" },
+          { t: ";" }
+        ] }
+      ], 0, 5.52, 0.02);
+      washOff("#f05c-hl-loading", 6.08);
+      washOn("#f05c-hl-reload", 6.08);
+      washOff("#f05c-hl-reload", 6.9);
+
+      // ---- Scene 2 (7.0-15.2): "create context" (7.36) lines 11 + 15; "data context" (9.04) box; defaults ----
+      e = typeLine("#f05c-l11", "#f05c-c11", [
+        { t: "export", c: "ts-kw" },
+        { t: " " },
+        { t: "const", c: "ts-kw" },
+        { t: " DataContext = React." },
+        { t: "createContext", c: "ts-fn" },
+        { t: "<", c: "ts-punct" },
+        { t: "DataContext", c: "ts-type" },
+        { t: ">", c: "ts-punct" },
+        { t: "({" }
+      ], 0, 7.36, 0.011);
+      typeLine("#f05c-l15", "#f05c-c15", [{ t: "});" }], 0, e.end + 0.04, 0.02, 0.03);
+
+      tl.fromTo("#f05c-box-rect", { attr: { "stroke-dashoffset": 1 } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.8, ease: "power2.inOut" }, 9.04);
+
+      // "default waarde:" (10.56): label + empty card
+      tl.fromTo("#f05c-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 10.56);
+      tl.fromTo("#f05c-card", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 10.6);
+
+      function chipIn(sel, at) {
+        tl.fromTo(sel, { opacity: 0, scale: 0.92, y: 8 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "power3.out" }, at);
+      }
+
+      // "lege lijst," (11.72 / 11.92)
+      typeLine("#f05c-l12", "#f05c-c12", [
+        { t: "  posts: []," }
+      ], 0, 11.72, 0.016);
+      chipIn("#f05c-chip1", 11.92);
+
+      // "loading false," (12.84 / 13.24)
+      typeLine("#f05c-l13", "#f05c-c13", [
+        { t: "  loading: " },
+        { t: "false", c: "ts-fn" },
+        { t: "," }
+      ], 0, 12.84, 0.016);
+      chipIn("#f05c-chip2", 12.84);
+
+      // "lege functie." (14.16 / 14.48)
+      typeLine("#f05c-l14", "#f05c-c14", [
+        { t: "  reload: () " },
+        { t: "=>", c: "ts-kw" },
+        { t: " {}" }
+      ], 0, 14.16, 0.016);
+      chipIn("#f05c-chip3", 14.48);
+
+      // ---- Scene 3 (15.2-19.28): "default" (15.76) card tints; "geen provider" (17.72) note ----
+      tl.fromTo("#f05c-card", { backgroundColor: "#FFFFFF", borderColor: "#E2E8F0" }, { backgroundColor: "#EAF2FB", borderColor: "#3178C6", duration: 0.5, ease: "power2.out", immediateRender: false }, 15.76);
+      tl.fromTo("#f05c-note", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 17.72);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["05-context"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,390 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 09 positions / frame-only primitives ---- */
+    #f09v-panel { left: 80px; top: 170px; width: 1060px; height: 720px; }
+    .f09v-muted { opacity: 0.5; }
+    #f09v-vmark { left: 62px; top: 150px; width: 562px; height: 194px; opacity: 0; }
+
+    /* provider diagram (right column) */
+    #f09v-pbox { position: absolute; left: 1236px; top: 232px; width: 604px; height: 528px; overflow: visible; }
+    #f09v-pbox rect { fill: var(--ts-ground); stroke: var(--ts-blue); stroke-width: 2; }
+    #f09v-ptab {
+      position: absolute; left: 1260px; top: 214px; height: 36px; padding: 0 16px; box-sizing: border-box;
+      display: flex; align-items: center; background: var(--ts-blue-tint); border: 1px solid var(--ts-blue); border-radius: 6px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; color: var(--ts-blue-dark); white-space: nowrap;
+      font-variant-ligatures: none;
+    }
+    #f09v-band {
+      position: absolute; left: 1260px; top: 268px; width: 556px; height: 134px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+    }
+    #f09v-bandlabel { position: absolute; left: 24px; top: 20px; }
+    #f09v-slot {
+      position: absolute; left: 1260px; top: 426px; width: 556px; height: 310px; box-sizing: border-box;
+      border: 2px dashed var(--ts-muted); border-radius: 8px;
+    }
+    #f09v-slotlabel { position: absolute; left: 22px; top: 16px; font-family: var(--ts-mono); font-size: 20px; color: var(--ts-label); font-variant-ligatures: none; }
+    .f09v-comp {
+      position: absolute; left: 1292px; width: 492px; height: 76px; box-sizing: border-box; padding: 0 26px;
+      display: flex; align-items: center; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; color: var(--ts-ink); font-variant-ligatures: none;
+    }
+    #f09v-comp1 { top: 490px; }
+    #f09v-comp2 { top: 588px; }
+    .f09v-vchip { top: 324px; }
+    #f09v-chip-posts { left: 1284px; }
+    #f09v-chip-reload { left: 1414px; }
+    #f09v-chip-loading { left: 1558px; }
+  </style>
+
+  <div data-hf-id="hf-9v00" id="root" data-composition-id="09-value" data-width="1920" data-height="1080" data-duration="12.58">
+    <div data-hf-id="hf-9v01" class="ts-bg clip" id="f09v-bg" data-start="0" data-duration="12.58" data-track-index="0"></div>
+
+    <div data-hf-id="hf-9v02" class="ts-stage clip" id="f09v-stage" data-start="0" data-duration="12.58" data-track-index="1">
+      <div data-hf-id="hf-9v03" class="ts-kicker" id="f09v-kicker"><div data-hf-id="hf-9v04" class="ts-kicker-bar" id="f09v-kbar"></div><span data-hf-id="hf-9v05" class="ts-kicker-text" id="f09v-ktext">Value en children</span></div>
+
+      <!-- code surface: DataProvider.tsx -->
+      <div data-hf-id="hf-9v06" class="ts-code-surface" id="f09v-panel">
+        <div data-hf-id="hf-9v07" class="ts-code-title">DataProvider.tsx</div>
+        <div data-hf-id="hf-9v08" class="ts-code" id="f09v-code">
+          <div data-hf-id="hf-9v10" class="ts-row"><span data-hf-id="hf-9v11" class="ts-ln">1</span><span data-hf-id="hf-9v12" class="ts-txt f09v-muted"><span data-hf-id="hf-9v13" class="ts-kw">export</span> <span data-hf-id="hf-9v14" class="ts-kw">const</span> <span data-hf-id="hf-9v15" class="ts-fn">DataProvider</span> = ({ children }: <span data-hf-id="hf-9v16" class="ts-fold">⋯</span>) <span data-hf-id="hf-9v17" class="ts-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-9v20" class="ts-row"><span data-hf-id="hf-9v21" class="ts-ln">2</span><span data-hf-id="hf-9v22" class="ts-txt f09v-muted ts-fold">  ⋯ states, useEffect, reload</span></div>
+          <div data-hf-id="hf-9v30" class="ts-row"><span data-hf-id="hf-9v31" class="ts-ln">3</span><span data-hf-id="hf-9v32" class="ts-txt"></span></div>
+          <div data-hf-id="hf-9v40" class="ts-row"><span data-hf-id="hf-9v41" class="ts-ln">4</span><span data-hf-id="hf-9v42" class="ts-txt" id="f09v-l4"></span><span data-hf-id="hf-9v43" class="ts-caret" id="f09v-c4"></span></div>
+          <div data-hf-id="hf-9v50" class="ts-row"><span data-hf-id="hf-9v51" class="ts-ln">5</span><span data-hf-id="hf-9v52" class="ts-txt" id="f09v-l5"></span><span data-hf-id="hf-9v53" class="ts-caret" id="f09v-c5"></span></div>
+          <div data-hf-id="hf-9v60" class="ts-row"><span data-hf-id="hf-9v61" class="ts-ln">6</span><span data-hf-id="hf-9v62" class="ts-txt" id="f09v-l6"></span><span data-hf-id="hf-9v63" class="ts-caret" id="f09v-c6"></span></div>
+          <div data-hf-id="hf-9v70" class="ts-row"><span data-hf-id="hf-9v71" class="ts-ln">7</span><span data-hf-id="hf-9v72" class="ts-txt" id="f09v-l7"></span><span data-hf-id="hf-9v73" class="ts-caret" id="f09v-c7"></span></div>
+          <div data-hf-id="hf-9v80" class="ts-row"><span data-hf-id="hf-9v81" class="ts-ln">8</span><span data-hf-id="hf-9v82" class="ts-txt" id="f09v-l8"></span><span data-hf-id="hf-9v83" class="ts-caret" id="f09v-c8"></span></div>
+          <div data-hf-id="hf-9v90" class="ts-row"><span data-hf-id="hf-9v91" class="ts-ln">9</span><span data-hf-id="hf-9v92" class="ts-txt" id="f09v-l9"></span><span data-hf-id="hf-9v93" class="ts-caret" id="f09v-c9"></span></div>
+          <div data-hf-id="hf-9va0" class="ts-row"><span data-hf-id="hf-9va1" class="ts-ln">10</span><span data-hf-id="hf-9va2" class="ts-txt" id="f09v-l10"></span><span data-hf-id="hf-9va3" class="ts-caret" id="f09v-c10"></span></div>
+          <div data-hf-id="hf-9vb0" class="ts-row"><span data-hf-id="hf-9vb1" class="ts-ln">11</span><span data-hf-id="hf-9vb2" class="ts-txt" id="f09v-l11"></span><span data-hf-id="hf-9vb3" class="ts-caret" id="f09v-c11"></span></div>
+          <div data-hf-id="hf-9vc0" class="ts-row"><span data-hf-id="hf-9vc1" class="ts-ln">12</span><span data-hf-id="hf-9vc2" class="ts-txt" id="f09v-l12"></span><span data-hf-id="hf-9vc3" class="ts-caret" id="f09v-c12"></span></div>
+          <div data-hf-id="hf-9vd0" class="ts-row"><span data-hf-id="hf-9vd1" class="ts-ln">13</span><span data-hf-id="hf-9vd2" class="ts-txt" id="f09v-l13"></span><span data-hf-id="hf-9vd3" class="ts-caret" id="f09v-c13"></span></div>
+          <div data-hf-id="hf-9ve0" class="ts-mark" id="f09v-vmark"></div>
+        </div>
+        <div data-hf-id="hf-9ve1" class="ts-code-status">DataProvider · value</div>
+      </div>
+
+      <!-- right column: provider diagram -->
+      <svg data-hf-id="hf-9vf0" id="f09v-pbox" viewBox="0 0 604 528" width="604" height="528"><rect data-hf-id="hf-9vf1" id="f09v-prect" x="1" y="1" width="602" height="526" rx="8" ry="8" pathLength="1"></rect></svg>
+      <div data-hf-id="hf-9vf2" id="f09v-ptab">DataContext.Provider</div>
+
+      <div data-hf-id="hf-9vf3" id="f09v-band"><span data-hf-id="hf-9vf4" class="ts-chip-key" id="f09v-bandlabel">value</span></div>
+      <div data-hf-id="hf-9vf5" class="ts-chip ts-chip--new f09v-vchip" id="f09v-chip-posts">posts</div>
+      <div data-hf-id="hf-9vf6" class="ts-chip ts-chip--new f09v-vchip" id="f09v-chip-reload">reload</div>
+      <div data-hf-id="hf-9vf7" class="ts-chip ts-chip--new f09v-vchip" id="f09v-chip-loading">loading</div>
+
+      <div data-hf-id="hf-9vf8" id="f09v-slot"><span data-hf-id="hf-9vf9" id="f09v-slotlabel">children</span></div>
+      <div data-hf-id="hf-9vfa" class="f09v-comp" id="f09v-comp1">ReloadButton</div>
+      <div data-hf-id="hf-9vfb" class="f09v-comp" id="f09v-comp2">PostList</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 12.08;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="09-value"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+
+      function drop(sel, at) {
+        tl.fromTo(sel, { opacity: 0, y: -28 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, at);
+      }
+
+      // initial hidden states for the diagram (seek-safe: set at 0)
+      gsap.set(["#f09v-ptab", "#f09v-band", "#f09v-chip-posts", "#f09v-chip-reload", "#f09v-chip-loading",
+              "#f09v-slot", "#f09v-comp1", "#f09v-comp2"], { opacity: 0 });
+      gsap.set("#f09v-prect", { attr: { "stroke-dasharray": "1 1", "stroke-dashoffset": 1 } });
+
+      // ---- Scene 1 (0.0-4.6): kicker; surface with lines 1-2; "geeft" (0.64) return shell;
+      //      "data context punt provider" (2.16-3.28) Provider tags + diagram box; "terug." hold ----
+      tl.fromTo("#f09v-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f09v-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f09v-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.0);
+
+      var e = typeLine("#f09v-l4", "#f09v-c4", [
+        { t: "  " },
+        { t: "return", c: "ts-kw" },
+        { t: " (" }
+      ], 0, 0.64, 0.03);
+      e = typeLine("#f09v-l12", "#f09v-c12", [
+        { t: "  );" }
+      ], 0, e.end + 0.04, 0.03, 0.03);
+      typeLine("#f09v-l13", "#f09v-c13", [
+        { t: "}" }
+      ], 0, e.end + 0.04, 0.03, 0.03);
+
+      e = typeLine("#f09v-l5", "#f09v-c5", [
+        { t: "    " },
+        { t: "<", c: "ts-punct" },
+        { t: "DataContext.Provider", c: "ts-fn" },
+        { t: " value=" },
+        { t: "{{", c: "ts-punct" }
+      ], 0, 2.16, 0.026);
+      typeLine("#f09v-l11", "#f09v-c11", [
+        { t: "    " },
+        { t: "</", c: "ts-punct" },
+        { t: "DataContext.Provider", c: "ts-fn" },
+        { t: ">", c: "ts-punct" }
+      ], 0, e.end + 0.04, 0.012, 0.03);
+
+      // provider box draws (stroke-dashoffset), tab settles on "provider" (3.28)
+      tl.to("#f09v-prect", { attr: { "stroke-dashoffset": 0 }, duration: 1.1, ease: "power2.inOut" }, 2.16);
+      tl.fromTo("#f09v-ptab", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.28);
+
+      // ---- Scene 2 (4.6-9.9): "value" (4.96) closing }}> + VALUE band + blue box; chips on posts / reload / loading ----
+      typeLine("#f09v-l9", "#f09v-c9", [
+        { t: "    " },
+        { t: "}}>", c: "ts-punct" }
+      ], 0, 4.96, 0.04);
+      tl.fromTo("#f09v-vmark", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 5.1);
+      tl.fromTo("#f09v-band", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 4.96);
+
+      typeLine("#f09v-l6", "#f09v-c6", [
+        { t: "      posts: posts," }
+      ], 0, 7.6, 0.022);
+      drop("#f09v-chip-posts", 7.6);
+
+      typeLine("#f09v-l7", "#f09v-c7", [
+        { t: "      reload: reload," }
+      ], 0, 8.6, 0.018);
+      drop("#f09v-chip-reload", 8.6);
+
+      typeLine("#f09v-l8", "#f09v-c8", [
+        { t: "      loading: loading" }
+      ], 0, 9.2, 0.02);
+      drop("#f09v-chip-loading", 9.2);
+
+      // ---- Scene 3 (9.9-12.08): "daartussen" (10.16) {children} with a wash; "children." (11.6) slot + components ----
+      var l10 = typeLine("#f09v-l10", "#f09v-c10", [
+        { t: "      " },
+        { id: "f09v-hl-children", parts: [
+          { t: "{", c: "ts-punct" },
+          { t: "children" },
+          { t: "}", c: "ts-punct" }
+        ] }
+      ], 0, 10.16, 0.03);
+      washOn("#f09v-hl-children", l10.marks["f09v-hl-children"] + 0.05);
+
+      tl.fromTo("#f09v-slot", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 11.6);
+      tl.fromTo("#f09v-comp1", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.36, ease: "power3.out" }, 11.6);
+      tl.fromTo("#f09v-comp2", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.36, ease: "power3.out" }, 11.7);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["09-value"] = tl;
+    })();
+  </script>
+</template>

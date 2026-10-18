@@ -1,0 +1,4985 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "audio/vo-01.mp3",
+      "duration_s": 12.88,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Drie",
+          "start": 0.0,
+          "end": 0.24
+        },
+        {
+          "id": "w1",
+          "text": "componenten:",
+          "start": 0.32,
+          "end": 1.36
+        },
+        {
+          "id": "w2",
+          "text": "een",
+          "start": 1.44,
+          "end": 1.52
+        },
+        {
+          "id": "w3",
+          "text": "formulier,",
+          "start": 1.64,
+          "end": 2.48
+        },
+        {
+          "id": "w4",
+          "text": "een",
+          "start": 2.56,
+          "end": 2.64
+        },
+        {
+          "id": "w5",
+          "text": "knop",
+          "start": 2.72,
+          "end": 2.96
+        },
+        {
+          "id": "w6",
+          "text": "om",
+          "start": 3.04,
+          "end": 3.12
+        },
+        {
+          "id": "w7",
+          "text": "te",
+          "start": 3.16,
+          "end": 3.2
+        },
+        {
+          "id": "w8",
+          "text": "herladen,",
+          "start": 3.28,
+          "end": 4.16
+        },
+        {
+          "id": "w9",
+          "text": "en",
+          "start": 4.24,
+          "end": 4.48
+        },
+        {
+          "id": "w10",
+          "text": "een",
+          "start": 4.56,
+          "end": 4.64
+        },
+        {
+          "id": "w11",
+          "text": "lijst",
+          "start": 4.72,
+          "end": 4.96
+        },
+        {
+          "id": "w12",
+          "text": "met",
+          "start": 5.04,
+          "end": 5.12
+        },
+        {
+          "id": "w13",
+          "text": "posts.",
+          "start": 5.2,
+          "end": 6.08
+        },
+        {
+          "id": "w14",
+          "text": "Ze",
+          "start": 6.16,
+          "end": 6.24
+        },
+        {
+          "id": "w15",
+          "text": "hebben",
+          "start": 6.28,
+          "end": 6.56
+        },
+        {
+          "id": "w16",
+          "text": "allemaal",
+          "start": 6.68,
+          "end": 6.96
+        },
+        {
+          "id": "w17",
+          "text": "dezelfde",
+          "start": 7.08,
+          "end": 7.52
+        },
+        {
+          "id": "w18",
+          "text": "data",
+          "start": 7.72,
+          "end": 7.92
+        },
+        {
+          "id": "w19",
+          "text": "nodig.",
+          "start": 8.04,
+          "end": 8.72
+        },
+        {
+          "id": "w20",
+          "text": "Waar",
+          "start": 8.8,
+          "end": 8.96
+        },
+        {
+          "id": "w21",
+          "text": "zet",
+          "start": 9.08,
+          "end": 9.2
+        },
+        {
+          "id": "w22",
+          "text": "je",
+          "start": 9.24,
+          "end": 9.28
+        },
+        {
+          "id": "w23",
+          "text": "die?",
+          "start": 9.4,
+          "end": 10.0
+        },
+        {
+          "id": "w24",
+          "text": "Op",
+          "start": 10.16,
+          "end": 10.32
+        },
+        {
+          "id": "w25",
+          "text": "\u00e9\u00e9n",
+          "start": 10.36,
+          "end": 10.48
+        },
+        {
+          "id": "w26",
+          "text": "plek:",
+          "start": 10.56,
+          "end": 11.28
+        },
+        {
+          "id": "w27",
+          "text": "in",
+          "start": 11.4,
+          "end": 11.52
+        },
+        {
+          "id": "w28",
+          "text": "een",
+          "start": 11.64,
+          "end": 11.76
+        },
+        {
+          "id": "w29",
+          "text": "data",
+          "start": 11.92,
+          "end": 12.08
+        },
+        {
+          "id": "w30",
+          "text": "context.",
+          "start": 12.16,
+          "end": 12.96
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "audio/vo-02.mp3",
+      "duration_s": 16.96,
+      "words": [
+        {
+          "id": "w0",
+          "text": "De",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "eerste",
+          "start": 0.24,
+          "end": 0.48
+        },
+        {
+          "id": "w2",
+          "text": "reflex:",
+          "start": 0.56,
+          "end": 1.36
+        },
+        {
+          "id": "w3",
+          "text": "we",
+          "start": 1.4,
+          "end": 1.44
+        },
+        {
+          "id": "w4",
+          "text": "halen",
+          "start": 1.52,
+          "end": 1.73
+        },
+        {
+          "id": "w5",
+          "text": "de",
+          "start": 1.79,
+          "end": 1.84
+        },
+        {
+          "id": "w6",
+          "text": "posts",
+          "start": 1.92,
+          "end": 2.24
+        },
+        {
+          "id": "w7",
+          "text": "op",
+          "start": 2.32,
+          "end": 2.48
+        },
+        {
+          "id": "w8",
+          "text": "in",
+          "start": 2.56,
+          "end": 2.64
+        },
+        {
+          "id": "w9",
+          "text": "App,",
+          "start": 2.72,
+          "end": 3.04
+        },
+        {
+          "id": "w10",
+          "text": "en",
+          "start": 3.12,
+          "end": 3.2
+        },
+        {
+          "id": "w11",
+          "text": "geven",
+          "start": 3.28,
+          "end": 3.6
+        },
+        {
+          "id": "w12",
+          "text": "alles",
+          "start": 3.76,
+          "end": 3.92
+        },
+        {
+          "id": "w13",
+          "text": "mee",
+          "start": 3.96,
+          "end": 4.08
+        },
+        {
+          "id": "w14",
+          "text": "als",
+          "start": 4.16,
+          "end": 4.32
+        },
+        {
+          "id": "w15",
+          "text": "props.",
+          "start": 4.4,
+          "end": 5.0
+        },
+        {
+          "id": "w16",
+          "text": "Posts",
+          "start": 5.2,
+          "end": 5.6
+        },
+        {
+          "id": "w17",
+          "text": "naar",
+          "start": 5.64,
+          "end": 5.76
+        },
+        {
+          "id": "w18",
+          "text": "de",
+          "start": 5.84,
+          "end": 5.92
+        },
+        {
+          "id": "w19",
+          "text": "lijst.",
+          "start": 6.04,
+          "end": 6.4
+        },
+        {
+          "id": "w20",
+          "text": "Reload",
+          "start": 6.8,
+          "end": 7.28
+        },
+        {
+          "id": "w21",
+          "text": "en",
+          "start": 7.44,
+          "end": 7.6
+        },
+        {
+          "id": "w22",
+          "text": "loading",
+          "start": 7.84,
+          "end": 8.16
+        },
+        {
+          "id": "w23",
+          "text": "naar",
+          "start": 8.2,
+          "end": 8.32
+        },
+        {
+          "id": "w24",
+          "text": "de",
+          "start": 8.36,
+          "end": 8.4
+        },
+        {
+          "id": "w25",
+          "text": "knop.",
+          "start": 8.48,
+          "end": 8.8
+        },
+        {
+          "id": "w26",
+          "text": "Create",
+          "start": 9.12,
+          "end": 9.44
+        },
+        {
+          "id": "w27",
+          "text": "post",
+          "start": 9.52,
+          "end": 9.84
+        },
+        {
+          "id": "w28",
+          "text": "naar",
+          "start": 9.92,
+          "end": 10.0
+        },
+        {
+          "id": "w29",
+          "text": "het",
+          "start": 10.08,
+          "end": 10.16
+        },
+        {
+          "id": "w30",
+          "text": "formulier.",
+          "start": 10.28,
+          "end": 10.8
+        },
+        {
+          "id": "w31",
+          "text": "Dat",
+          "start": 11.2,
+          "end": 11.36
+        },
+        {
+          "id": "w32",
+          "text": "werkt,",
+          "start": 11.44,
+          "end": 12.0
+        },
+        {
+          "id": "w33",
+          "text": "maar",
+          "start": 12.08,
+          "end": 12.32
+        },
+        {
+          "id": "w34",
+          "text": "App",
+          "start": 12.48,
+          "end": 12.64
+        },
+        {
+          "id": "w35",
+          "text": "wordt",
+          "start": 12.72,
+          "end": 12.88
+        },
+        {
+          "id": "w36",
+          "text": "een",
+          "start": 12.92,
+          "end": 12.96
+        },
+        {
+          "id": "w37",
+          "text": "verdeelstation,",
+          "start": 13.08,
+          "end": 14.08
+        },
+        {
+          "id": "w38",
+          "text": "en",
+          "start": 14.2,
+          "end": 14.32
+        },
+        {
+          "id": "w39",
+          "text": "elke",
+          "start": 14.4,
+          "end": 14.64
+        },
+        {
+          "id": "w40",
+          "text": "nieuwe",
+          "start": 14.72,
+          "end": 14.88
+        },
+        {
+          "id": "w41",
+          "text": "component",
+          "start": 14.96,
+          "end": 15.44
+        },
+        {
+          "id": "w42",
+          "text": "vraagt",
+          "start": 15.52,
+          "end": 15.76
+        },
+        {
+          "id": "w43",
+          "text": "weer",
+          "start": 15.8,
+          "end": 16.0
+        },
+        {
+          "id": "w44",
+          "text": "nieuwe",
+          "start": 16.04,
+          "end": 16.24
+        },
+        {
+          "id": "w45",
+          "text": "props.",
+          "start": 16.32,
+          "end": 17.04
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "audio/vo-03.mp3",
+      "duration_s": 12.88,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Met",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "de",
+          "start": 0.24,
+          "end": 0.32
+        },
+        {
+          "id": "w2",
+          "text": "context",
+          "start": 0.56,
+          "end": 0.8
+        },
+        {
+          "id": "w3",
+          "text": "API",
+          "start": 0.96,
+          "end": 1.6
+        },
+        {
+          "id": "w4",
+          "text": "kan",
+          "start": 1.76,
+          "end": 1.84
+        },
+        {
+          "id": "w5",
+          "text": "dat",
+          "start": 1.92,
+          "end": 2.0
+        },
+        {
+          "id": "w6",
+          "text": "eenvoudiger.",
+          "start": 2.08,
+          "end": 3.0
+        },
+        {
+          "id": "w7",
+          "text": "Je",
+          "start": 3.2,
+          "end": 3.28
+        },
+        {
+          "id": "w8",
+          "text": "maakt",
+          "start": 3.32,
+          "end": 3.52
+        },
+        {
+          "id": "w9",
+          "text": "een",
+          "start": 3.6,
+          "end": 3.68
+        },
+        {
+          "id": "w10",
+          "text": "context",
+          "start": 3.96,
+          "end": 4.24
+        },
+        {
+          "id": "w11",
+          "text": "met",
+          "start": 4.36,
+          "end": 4.48
+        },
+        {
+          "id": "w12",
+          "text": "create",
+          "start": 4.64,
+          "end": 5.12
+        },
+        {
+          "id": "w13",
+          "text": "context.",
+          "start": 5.2,
+          "end": 5.84
+        },
+        {
+          "id": "w14",
+          "text": "Je",
+          "start": 6.24,
+          "end": 6.32
+        },
+        {
+          "id": "w15",
+          "text": "zet",
+          "start": 6.4,
+          "end": 6.48
+        },
+        {
+          "id": "w16",
+          "text": "een",
+          "start": 6.56,
+          "end": 6.64
+        },
+        {
+          "id": "w17",
+          "text": "provider",
+          "start": 6.92,
+          "end": 7.2
+        },
+        {
+          "id": "w18",
+          "text": "rond",
+          "start": 7.24,
+          "end": 7.44
+        },
+        {
+          "id": "w19",
+          "text": "je",
+          "start": 7.48,
+          "end": 7.52
+        },
+        {
+          "id": "w20",
+          "text": "componenten.",
+          "start": 7.8,
+          "end": 8.24
+        },
+        {
+          "id": "w21",
+          "text": "En",
+          "start": 8.56,
+          "end": 8.8
+        },
+        {
+          "id": "w22",
+          "text": "elke",
+          "start": 8.88,
+          "end": 9.12
+        },
+        {
+          "id": "w23",
+          "text": "component",
+          "start": 9.36,
+          "end": 9.6
+        },
+        {
+          "id": "w24",
+          "text": "daaronder",
+          "start": 9.64,
+          "end": 10.16
+        },
+        {
+          "id": "w25",
+          "text": "vraagt",
+          "start": 10.4,
+          "end": 10.72
+        },
+        {
+          "id": "w26",
+          "text": "de",
+          "start": 10.76,
+          "end": 10.8
+        },
+        {
+          "id": "w27",
+          "text": "data",
+          "start": 10.96,
+          "end": 11.12
+        },
+        {
+          "id": "w28",
+          "text": "op",
+          "start": 11.2,
+          "end": 11.36
+        },
+        {
+          "id": "w29",
+          "text": "met",
+          "start": 11.44,
+          "end": 11.6
+        },
+        {
+          "id": "w30",
+          "text": "use",
+          "start": 11.84,
+          "end": 12.08
+        },
+        {
+          "id": "w31",
+          "text": "context.",
+          "start": 12.16,
+          "end": 12.96
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "audio/vo-04.mp3",
+      "duration_s": 17.44,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Alles",
+          "start": 0.0,
+          "end": 0.32
+        },
+        {
+          "id": "w1",
+          "text": "wat",
+          "start": 0.4,
+          "end": 0.48
+        },
+        {
+          "id": "w2",
+          "text": "met",
+          "start": 0.56,
+          "end": 0.64
+        },
+        {
+          "id": "w3",
+          "text": "de",
+          "start": 0.72,
+          "end": 0.8
+        },
+        {
+          "id": "w4",
+          "text": "data",
+          "start": 0.96,
+          "end": 1.12
+        },
+        {
+          "id": "w5",
+          "text": "van",
+          "start": 1.2,
+          "end": 1.28
+        },
+        {
+          "id": "w6",
+          "text": "de",
+          "start": 1.36,
+          "end": 1.44
+        },
+        {
+          "id": "w7",
+          "text": "API",
+          "start": 1.48,
+          "end": 1.92
+        },
+        {
+          "id": "w8",
+          "text": "te",
+          "start": 2.0,
+          "end": 2.08
+        },
+        {
+          "id": "w9",
+          "text": "maken",
+          "start": 2.19,
+          "end": 2.4
+        },
+        {
+          "id": "w10",
+          "text": "heeft,",
+          "start": 2.44,
+          "end": 2.8
+        },
+        {
+          "id": "w11",
+          "text": "zetten",
+          "start": 2.88,
+          "end": 3.04
+        },
+        {
+          "id": "w12",
+          "text": "we",
+          "start": 3.12,
+          "end": 3.2
+        },
+        {
+          "id": "w13",
+          "text": "in",
+          "start": 3.28,
+          "end": 3.44
+        },
+        {
+          "id": "w14",
+          "text": "\u00e9\u00e9n",
+          "start": 3.52,
+          "end": 3.76
+        },
+        {
+          "id": "w15",
+          "text": "apart",
+          "start": 3.88,
+          "end": 4.16
+        },
+        {
+          "id": "w16",
+          "text": "bestand:",
+          "start": 4.28,
+          "end": 5.12
+        },
+        {
+          "id": "w17",
+          "text": "data",
+          "start": 5.28,
+          "end": 5.44
+        },
+        {
+          "id": "w18",
+          "text": "provider",
+          "start": 5.72,
+          "end": 6.0
+        },
+        {
+          "id": "w19",
+          "text": "punt",
+          "start": 6.08,
+          "end": 6.16
+        },
+        {
+          "id": "w20",
+          "text": "tsx.",
+          "start": 6.4,
+          "end": 7.44
+        },
+        {
+          "id": "w21",
+          "text": "We",
+          "start": 7.76,
+          "end": 7.84
+        },
+        {
+          "id": "w22",
+          "text": "beginnen",
+          "start": 7.92,
+          "end": 8.24
+        },
+        {
+          "id": "w23",
+          "text": "met",
+          "start": 8.32,
+          "end": 8.4
+        },
+        {
+          "id": "w24",
+          "text": "de",
+          "start": 8.48,
+          "end": 8.56
+        },
+        {
+          "id": "w25",
+          "text": "interface",
+          "start": 8.84,
+          "end": 9.12
+        },
+        {
+          "id": "w26",
+          "text": "Post:",
+          "start": 9.28,
+          "end": 10.08
+        },
+        {
+          "id": "w27",
+          "text": "een",
+          "start": 10.16,
+          "end": 10.24
+        },
+        {
+          "id": "w28",
+          "text": "user",
+          "start": 10.32,
+          "end": 10.56
+        },
+        {
+          "id": "w29",
+          "text": "id,",
+          "start": 10.64,
+          "end": 11.28
+        },
+        {
+          "id": "w30",
+          "text": "een",
+          "start": 11.36,
+          "end": 11.44
+        },
+        {
+          "id": "w31",
+          "text": "id,",
+          "start": 11.52,
+          "end": 12.32
+        },
+        {
+          "id": "w32",
+          "text": "een",
+          "start": 12.4,
+          "end": 12.48
+        },
+        {
+          "id": "w33",
+          "text": "titel",
+          "start": 12.56,
+          "end": 12.88
+        },
+        {
+          "id": "w34",
+          "text": "en",
+          "start": 13.2,
+          "end": 13.28
+        },
+        {
+          "id": "w35",
+          "text": "een",
+          "start": 13.36,
+          "end": 13.44
+        },
+        {
+          "id": "w36",
+          "text": "body.",
+          "start": 13.6,
+          "end": 13.84
+        },
+        {
+          "id": "w37",
+          "text": "Zo",
+          "start": 14.32,
+          "end": 14.48
+        },
+        {
+          "id": "w38",
+          "text": "ziet",
+          "start": 14.56,
+          "end": 14.88
+        },
+        {
+          "id": "w39",
+          "text": "\u00e9\u00e9n",
+          "start": 14.92,
+          "end": 15.04
+        },
+        {
+          "id": "w40",
+          "text": "post",
+          "start": 15.2,
+          "end": 15.44
+        },
+        {
+          "id": "w41",
+          "text": "van",
+          "start": 15.52,
+          "end": 15.68
+        },
+        {
+          "id": "w42",
+          "text": "JSON",
+          "start": 15.76,
+          "end": 16.16
+        },
+        {
+          "id": "w43",
+          "text": "placeholder",
+          "start": 16.24,
+          "end": 16.8
+        },
+        {
+          "id": "w44",
+          "text": "eruit.",
+          "start": 16.88,
+          "end": 17.52
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "path": "audio/vo-05.mp3",
+      "duration_s": 19.28,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Dan",
+          "start": 0.0,
+          "end": 0.24
+        },
+        {
+          "id": "w1",
+          "text": "beschrijven",
+          "start": 0.36,
+          "end": 0.8
+        },
+        {
+          "id": "w2",
+          "text": "we",
+          "start": 0.88,
+          "end": 0.96
+        },
+        {
+          "id": "w3",
+          "text": "wat",
+          "start": 1.04,
+          "end": 1.12
+        },
+        {
+          "id": "w4",
+          "text": "onze",
+          "start": 1.2,
+          "end": 1.36
+        },
+        {
+          "id": "w5",
+          "text": "context",
+          "start": 1.44,
+          "end": 1.92
+        },
+        {
+          "id": "w6",
+          "text": "aanbiedt:",
+          "start": 2.04,
+          "end": 2.72
+        },
+        {
+          "id": "w7",
+          "text": "de",
+          "start": 2.8,
+          "end": 2.88
+        },
+        {
+          "id": "w8",
+          "text": "posts,",
+          "start": 3.16,
+          "end": 3.68
+        },
+        {
+          "id": "w9",
+          "text": "een",
+          "start": 3.76,
+          "end": 3.84
+        },
+        {
+          "id": "w10",
+          "text": "boolean",
+          "start": 4.04,
+          "end": 4.24
+        },
+        {
+          "id": "w11",
+          "text": "loading,",
+          "start": 4.32,
+          "end": 5.04
+        },
+        {
+          "id": "w12",
+          "text": "en",
+          "start": 5.16,
+          "end": 5.28
+        },
+        {
+          "id": "w13",
+          "text": "een",
+          "start": 5.36,
+          "end": 5.44
+        },
+        {
+          "id": "w14",
+          "text": "functie",
+          "start": 5.52,
+          "end": 5.84
+        },
+        {
+          "id": "w15",
+          "text": "reload.",
+          "start": 6.08,
+          "end": 6.84
+        },
+        {
+          "id": "w16",
+          "text": "Met",
+          "start": 7.12,
+          "end": 7.28
+        },
+        {
+          "id": "w17",
+          "text": "create",
+          "start": 7.36,
+          "end": 7.76
+        },
+        {
+          "id": "w18",
+          "text": "context",
+          "start": 8.04,
+          "end": 8.32
+        },
+        {
+          "id": "w19",
+          "text": "maken",
+          "start": 8.4,
+          "end": 8.64
+        },
+        {
+          "id": "w20",
+          "text": "we",
+          "start": 8.68,
+          "end": 8.72
+        },
+        {
+          "id": "w21",
+          "text": "de",
+          "start": 8.8,
+          "end": 8.88
+        },
+        {
+          "id": "w22",
+          "text": "data",
+          "start": 9.04,
+          "end": 9.2
+        },
+        {
+          "id": "w23",
+          "text": "context,",
+          "start": 9.28,
+          "end": 10.0
+        },
+        {
+          "id": "w24",
+          "text": "met",
+          "start": 10.08,
+          "end": 10.16
+        },
+        {
+          "id": "w25",
+          "text": "een",
+          "start": 10.24,
+          "end": 10.32
+        },
+        {
+          "id": "w26",
+          "text": "default",
+          "start": 10.56,
+          "end": 10.8
+        },
+        {
+          "id": "w27",
+          "text": "waarde:",
+          "start": 10.84,
+          "end": 11.44
+        },
+        {
+          "id": "w28",
+          "text": "een",
+          "start": 11.52,
+          "end": 11.6
+        },
+        {
+          "id": "w29",
+          "text": "lege",
+          "start": 11.72,
+          "end": 11.84
+        },
+        {
+          "id": "w30",
+          "text": "lijst,",
+          "start": 11.92,
+          "end": 12.64
+        },
+        {
+          "id": "w31",
+          "text": "loading",
+          "start": 12.84,
+          "end": 13.04
+        },
+        {
+          "id": "w32",
+          "text": "false,",
+          "start": 13.24,
+          "end": 13.68
+        },
+        {
+          "id": "w33",
+          "text": "en",
+          "start": 13.8,
+          "end": 13.92
+        },
+        {
+          "id": "w34",
+          "text": "een",
+          "start": 14.0,
+          "end": 14.08
+        },
+        {
+          "id": "w35",
+          "text": "lege",
+          "start": 14.16,
+          "end": 14.4
+        },
+        {
+          "id": "w36",
+          "text": "functie.",
+          "start": 14.48,
+          "end": 15.36
+        },
+        {
+          "id": "w37",
+          "text": "Die",
+          "start": 15.44,
+          "end": 15.52
+        },
+        {
+          "id": "w38",
+          "text": "default",
+          "start": 15.76,
+          "end": 16.0
+        },
+        {
+          "id": "w39",
+          "text": "gebruikt",
+          "start": 16.08,
+          "end": 16.4
+        },
+        {
+          "id": "w40",
+          "text": "React",
+          "start": 16.6,
+          "end": 16.8
+        },
+        {
+          "id": "w41",
+          "text": "alleen",
+          "start": 16.96,
+          "end": 17.28
+        },
+        {
+          "id": "w42",
+          "text": "als",
+          "start": 17.36,
+          "end": 17.44
+        },
+        {
+          "id": "w43",
+          "text": "er",
+          "start": 17.52,
+          "end": 17.68
+        },
+        {
+          "id": "w44",
+          "text": "geen",
+          "start": 17.72,
+          "end": 17.92
+        },
+        {
+          "id": "w45",
+          "text": "provider",
+          "start": 18.2,
+          "end": 18.48
+        },
+        {
+          "id": "w46",
+          "text": "boven",
+          "start": 18.56,
+          "end": 18.72
+        },
+        {
+          "id": "w47",
+          "text": "staat.",
+          "start": 18.8,
+          "end": 19.36
+        }
+      ]
+    },
+    {
+      "frame": 6,
+      "path": "audio/vo-06.mp3",
+      "duration_s": 16.16,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Nu",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "de",
+          "start": 0.4,
+          "end": 0.48
+        },
+        {
+          "id": "w2",
+          "text": "data",
+          "start": 0.56,
+          "end": 0.8
+        },
+        {
+          "id": "w3",
+          "text": "provider",
+          "start": 0.88,
+          "end": 1.28
+        },
+        {
+          "id": "w4",
+          "text": "zelf.",
+          "start": 1.36,
+          "end": 2.0
+        },
+        {
+          "id": "w5",
+          "text": "Dat",
+          "start": 2.16,
+          "end": 2.24
+        },
+        {
+          "id": "w6",
+          "text": "is",
+          "start": 2.32,
+          "end": 2.4
+        },
+        {
+          "id": "w7",
+          "text": "een",
+          "start": 2.44,
+          "end": 2.48
+        },
+        {
+          "id": "w8",
+          "text": "gewone",
+          "start": 2.56,
+          "end": 2.88
+        },
+        {
+          "id": "w9",
+          "text": "component,",
+          "start": 2.96,
+          "end": 3.63
+        },
+        {
+          "id": "w10",
+          "text": "met",
+          "start": 3.73,
+          "end": 3.84
+        },
+        {
+          "id": "w11",
+          "text": "\u00e9\u00e9n",
+          "start": 3.88,
+          "end": 4.0
+        },
+        {
+          "id": "w12",
+          "text": "prop:",
+          "start": 4.08,
+          "end": 4.72
+        },
+        {
+          "id": "w13",
+          "text": "children.",
+          "start": 4.96,
+          "end": 5.28
+        },
+        {
+          "id": "w14",
+          "text": "Daarin",
+          "start": 5.76,
+          "end": 6.16
+        },
+        {
+          "id": "w15",
+          "text": "zitten",
+          "start": 6.2,
+          "end": 6.4
+        },
+        {
+          "id": "w16",
+          "text": "straks",
+          "start": 6.48,
+          "end": 6.8
+        },
+        {
+          "id": "w17",
+          "text": "alle",
+          "start": 6.92,
+          "end": 7.04
+        },
+        {
+          "id": "w18",
+          "text": "componenten",
+          "start": 7.12,
+          "end": 7.6
+        },
+        {
+          "id": "w19",
+          "text": "die",
+          "start": 7.64,
+          "end": 7.68
+        },
+        {
+          "id": "w20",
+          "text": "we",
+          "start": 7.76,
+          "end": 7.84
+        },
+        {
+          "id": "w21",
+          "text": "erin",
+          "start": 8.0,
+          "end": 8.16
+        },
+        {
+          "id": "w22",
+          "text": "stoppen.",
+          "start": 8.28,
+          "end": 8.84
+        },
+        {
+          "id": "w23",
+          "text": "In",
+          "start": 9.12,
+          "end": 9.2
+        },
+        {
+          "id": "w24",
+          "text": "de",
+          "start": 9.28,
+          "end": 9.32
+        },
+        {
+          "id": "w25",
+          "text": "provider",
+          "start": 9.36,
+          "end": 9.84
+        },
+        {
+          "id": "w26",
+          "text": "maken",
+          "start": 9.92,
+          "end": 10.16
+        },
+        {
+          "id": "w27",
+          "text": "we",
+          "start": 10.24,
+          "end": 10.32
+        },
+        {
+          "id": "w28",
+          "text": "drie",
+          "start": 10.4,
+          "end": 10.56
+        },
+        {
+          "id": "w29",
+          "text": "states:",
+          "start": 10.64,
+          "end": 11.52
+        },
+        {
+          "id": "w30",
+          "text": "posts,",
+          "start": 11.6,
+          "end": 12.4
+        },
+        {
+          "id": "w31",
+          "text": "loading,",
+          "start": 12.48,
+          "end": 13.2
+        },
+        {
+          "id": "w32",
+          "text": "en",
+          "start": 13.32,
+          "end": 13.44
+        },
+        {
+          "id": "w33",
+          "text": "een",
+          "start": 13.52,
+          "end": 13.68
+        },
+        {
+          "id": "w34",
+          "text": "trigger,",
+          "start": 13.88,
+          "end": 14.4
+        },
+        {
+          "id": "w35",
+          "text": "een",
+          "start": 14.44,
+          "end": 14.48
+        },
+        {
+          "id": "w36",
+          "text": "getal",
+          "start": 14.6,
+          "end": 14.88
+        },
+        {
+          "id": "w37",
+          "text": "dat",
+          "start": 14.96,
+          "end": 15.04
+        },
+        {
+          "id": "w38",
+          "text": "begint",
+          "start": 15.12,
+          "end": 15.44
+        },
+        {
+          "id": "w39",
+          "text": "bij",
+          "start": 15.52,
+          "end": 15.6
+        },
+        {
+          "id": "w40",
+          "text": "nul.",
+          "start": 15.68,
+          "end": 16.24
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "path": "audio/vo-07.mp3",
+      "duration_s": 18.24,
+      "words": [
+        {
+          "id": "w0",
+          "text": "In",
+          "start": 0.0,
+          "end": 0.08
+        },
+        {
+          "id": "w1",
+          "text": "een",
+          "start": 0.16,
+          "end": 0.24
+        },
+        {
+          "id": "w2",
+          "text": "use",
+          "start": 0.32,
+          "end": 0.56
+        },
+        {
+          "id": "w3",
+          "text": "effect",
+          "start": 0.76,
+          "end": 0.96
+        },
+        {
+          "id": "w4",
+          "text": "laden",
+          "start": 1.12,
+          "end": 1.36
+        },
+        {
+          "id": "w5",
+          "text": "we",
+          "start": 1.4,
+          "end": 1.44
+        },
+        {
+          "id": "w6",
+          "text": "de",
+          "start": 1.52,
+          "end": 1.6
+        },
+        {
+          "id": "w7",
+          "text": "data.",
+          "start": 1.8,
+          "end": 2.08
+        },
+        {
+          "id": "w8",
+          "text": "We",
+          "start": 2.4,
+          "end": 2.48
+        },
+        {
+          "id": "w9",
+          "text": "zetten",
+          "start": 2.56,
+          "end": 2.8
+        },
+        {
+          "id": "w10",
+          "text": "loading",
+          "start": 3.0,
+          "end": 3.2
+        },
+        {
+          "id": "w11",
+          "text": "op",
+          "start": 3.28,
+          "end": 3.36
+        },
+        {
+          "id": "w12",
+          "text": "true",
+          "start": 3.44,
+          "end": 3.76
+        },
+        {
+          "id": "w13",
+          "text": "en",
+          "start": 3.92,
+          "end": 4.08
+        },
+        {
+          "id": "w14",
+          "text": "maken",
+          "start": 4.16,
+          "end": 4.4
+        },
+        {
+          "id": "w15",
+          "text": "de",
+          "start": 4.44,
+          "end": 4.48
+        },
+        {
+          "id": "w16",
+          "text": "lijst",
+          "start": 4.56,
+          "end": 4.88
+        },
+        {
+          "id": "w17",
+          "text": "leeg.",
+          "start": 4.96,
+          "end": 5.52
+        },
+        {
+          "id": "w18",
+          "text": "Dan",
+          "start": 5.76,
+          "end": 6.0
+        },
+        {
+          "id": "w19",
+          "text": "fetchen",
+          "start": 6.16,
+          "end": 6.48
+        },
+        {
+          "id": "w20",
+          "text": "we",
+          "start": 6.52,
+          "end": 6.56
+        },
+        {
+          "id": "w21",
+          "text": "de",
+          "start": 6.64,
+          "end": 6.72
+        },
+        {
+          "id": "w22",
+          "text": "posts",
+          "start": 6.96,
+          "end": 7.2
+        },
+        {
+          "id": "w23",
+          "text": "en",
+          "start": 7.28,
+          "end": 7.44
+        },
+        {
+          "id": "w24",
+          "text": "lezen",
+          "start": 7.52,
+          "end": 7.76
+        },
+        {
+          "id": "w25",
+          "text": "we",
+          "start": 7.8,
+          "end": 7.84
+        },
+        {
+          "id": "w26",
+          "text": "de",
+          "start": 7.92,
+          "end": 8.0
+        },
+        {
+          "id": "w27",
+          "text": "JSON.",
+          "start": 8.24,
+          "end": 8.72
+        },
+        {
+          "id": "w28",
+          "text": "Is",
+          "start": 8.96,
+          "end": 9.12
+        },
+        {
+          "id": "w29",
+          "text": "cancelled",
+          "start": 9.2,
+          "end": 9.6
+        },
+        {
+          "id": "w30",
+          "text": "intussen",
+          "start": 9.72,
+          "end": 10.08
+        },
+        {
+          "id": "w31",
+          "text": "true,",
+          "start": 10.28,
+          "end": 10.64
+        },
+        {
+          "id": "w32",
+          "text": "dan",
+          "start": 10.72,
+          "end": 10.8
+        },
+        {
+          "id": "w33",
+          "text": "stoppen",
+          "start": 10.88,
+          "end": 11.2
+        },
+        {
+          "id": "w34",
+          "text": "we.",
+          "start": 11.28,
+          "end": 11.56
+        },
+        {
+          "id": "w35",
+          "text": "Anders",
+          "start": 11.76,
+          "end": 12.16
+        },
+        {
+          "id": "w36",
+          "text": "zetten",
+          "start": 12.24,
+          "end": 12.44
+        },
+        {
+          "id": "w37",
+          "text": "we",
+          "start": 12.48,
+          "end": 12.56
+        },
+        {
+          "id": "w38",
+          "text": "de",
+          "start": 12.6,
+          "end": 12.64
+        },
+        {
+          "id": "w39",
+          "text": "posts,",
+          "start": 12.72,
+          "end": 13.17
+        },
+        {
+          "id": "w40",
+          "text": "en",
+          "start": 13.23,
+          "end": 13.28
+        },
+        {
+          "id": "w41",
+          "text": "loading",
+          "start": 13.36,
+          "end": 13.68
+        },
+        {
+          "id": "w42",
+          "text": "weer",
+          "start": 13.72,
+          "end": 13.84
+        },
+        {
+          "id": "w43",
+          "text": "op",
+          "start": 13.92,
+          "end": 14.0
+        },
+        {
+          "id": "w44",
+          "text": "false.",
+          "start": 14.08,
+          "end": 14.72
+        },
+        {
+          "id": "w45",
+          "text": "In",
+          "start": 14.96,
+          "end": 15.04
+        },
+        {
+          "id": "w46",
+          "text": "de",
+          "start": 15.08,
+          "end": 15.12
+        },
+        {
+          "id": "w47",
+          "text": "cleanup",
+          "start": 15.2,
+          "end": 15.6
+        },
+        {
+          "id": "w48",
+          "text": "zetten",
+          "start": 15.68,
+          "end": 15.88
+        },
+        {
+          "id": "w49",
+          "text": "we",
+          "start": 15.92,
+          "end": 16.0
+        },
+        {
+          "id": "w50",
+          "text": "cancelled",
+          "start": 16.08,
+          "end": 16.48
+        },
+        {
+          "id": "w51",
+          "text": "op",
+          "start": 16.56,
+          "end": 16.64
+        },
+        {
+          "id": "w52",
+          "text": "true,",
+          "start": 16.72,
+          "end": 17.2
+        },
+        {
+          "id": "w53",
+          "text": "zoals",
+          "start": 17.28,
+          "end": 17.44
+        },
+        {
+          "id": "w54",
+          "text": "je",
+          "start": 17.52,
+          "end": 17.57
+        },
+        {
+          "id": "w55",
+          "text": "al",
+          "start": 17.63,
+          "end": 17.68
+        },
+        {
+          "id": "w56",
+          "text": "kent.",
+          "start": 17.76,
+          "end": 18.32
+        }
+      ]
+    },
+    {
+      "frame": 8,
+      "path": "audio/vo-08.mp3",
+      "duration_s": 11.92,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Hoe",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "laden",
+          "start": 0.24,
+          "end": 0.48
+        },
+        {
+          "id": "w2",
+          "text": "we",
+          "start": 0.52,
+          "end": 0.56
+        },
+        {
+          "id": "w3",
+          "text": "opnieuw?",
+          "start": 0.68,
+          "end": 1.12
+        },
+        {
+          "id": "w4",
+          "text": "De",
+          "start": 1.6,
+          "end": 1.68
+        },
+        {
+          "id": "w5",
+          "text": "trigger",
+          "start": 1.76,
+          "end": 2.08
+        },
+        {
+          "id": "w6",
+          "text": "staat",
+          "start": 2.16,
+          "end": 2.4
+        },
+        {
+          "id": "w7",
+          "text": "in",
+          "start": 2.48,
+          "end": 2.56
+        },
+        {
+          "id": "w8",
+          "text": "de",
+          "start": 2.6,
+          "end": 2.64
+        },
+        {
+          "id": "w9",
+          "text": "dependency",
+          "start": 3.0,
+          "end": 3.36
+        },
+        {
+          "id": "w10",
+          "text": "array.",
+          "start": 3.52,
+          "end": 3.76
+        },
+        {
+          "id": "w11",
+          "text": "De",
+          "start": 4.08,
+          "end": 4.16
+        },
+        {
+          "id": "w12",
+          "text": "functie",
+          "start": 4.24,
+          "end": 4.56
+        },
+        {
+          "id": "w13",
+          "text": "reload",
+          "start": 4.64,
+          "end": 5.12
+        },
+        {
+          "id": "w14",
+          "text": "telt",
+          "start": 5.2,
+          "end": 5.44
+        },
+        {
+          "id": "w15",
+          "text": "er",
+          "start": 5.48,
+          "end": 5.52
+        },
+        {
+          "id": "w16",
+          "text": "gewoon",
+          "start": 5.6,
+          "end": 5.92
+        },
+        {
+          "id": "w17",
+          "text": "\u00e9\u00e9n",
+          "start": 6.0,
+          "end": 6.12
+        },
+        {
+          "id": "w18",
+          "text": "bij",
+          "start": 6.16,
+          "end": 6.32
+        },
+        {
+          "id": "w19",
+          "text": "op.",
+          "start": 6.44,
+          "end": 6.8
+        },
+        {
+          "id": "w20",
+          "text": "De",
+          "start": 7.04,
+          "end": 7.12
+        },
+        {
+          "id": "w21",
+          "text": "trigger",
+          "start": 7.28,
+          "end": 7.44
+        },
+        {
+          "id": "w22",
+          "text": "verandert,",
+          "start": 7.52,
+          "end": 8.16
+        },
+        {
+          "id": "w23",
+          "text": "het",
+          "start": 8.24,
+          "end": 8.32
+        },
+        {
+          "id": "w24",
+          "text": "effect",
+          "start": 8.4,
+          "end": 8.72
+        },
+        {
+          "id": "w25",
+          "text": "loopt",
+          "start": 8.76,
+          "end": 8.96
+        },
+        {
+          "id": "w26",
+          "text": "opnieuw,",
+          "start": 9.04,
+          "end": 9.6
+        },
+        {
+          "id": "w27",
+          "text": "en",
+          "start": 9.64,
+          "end": 9.68
+        },
+        {
+          "id": "w28",
+          "text": "de",
+          "start": 9.76,
+          "end": 9.84
+        },
+        {
+          "id": "w29",
+          "text": "posts",
+          "start": 10.08,
+          "end": 10.32
+        },
+        {
+          "id": "w30",
+          "text": "worden",
+          "start": 10.4,
+          "end": 10.64
+        },
+        {
+          "id": "w31",
+          "text": "opnieuw",
+          "start": 10.76,
+          "end": 11.12
+        },
+        {
+          "id": "w32",
+          "text": "opgehaald.",
+          "start": 11.2,
+          "end": 12.0
+        }
+      ]
+    },
+    {
+      "frame": 9,
+      "path": "audio/vo-09.mp3",
+      "duration_s": 12.08,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Tot",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "slot",
+          "start": 0.24,
+          "end": 0.48
+        },
+        {
+          "id": "w2",
+          "text": "geeft",
+          "start": 0.64,
+          "end": 0.88
+        },
+        {
+          "id": "w3",
+          "text": "de",
+          "start": 0.92,
+          "end": 0.96
+        },
+        {
+          "id": "w4",
+          "text": "data",
+          "start": 1.12,
+          "end": 1.28
+        },
+        {
+          "id": "w5",
+          "text": "provider",
+          "start": 1.36,
+          "end": 1.84
+        },
+        {
+          "id": "w6",
+          "text": "een",
+          "start": 1.92,
+          "end": 2.08
+        },
+        {
+          "id": "w7",
+          "text": "data",
+          "start": 2.16,
+          "end": 2.48
+        },
+        {
+          "id": "w8",
+          "text": "context",
+          "start": 2.56,
+          "end": 3.04
+        },
+        {
+          "id": "w9",
+          "text": "punt",
+          "start": 3.08,
+          "end": 3.2
+        },
+        {
+          "id": "w10",
+          "text": "provider",
+          "start": 3.28,
+          "end": 3.76
+        },
+        {
+          "id": "w11",
+          "text": "terug.",
+          "start": 3.84,
+          "end": 4.44
+        },
+        {
+          "id": "w12",
+          "text": "In",
+          "start": 4.72,
+          "end": 4.8
+        },
+        {
+          "id": "w13",
+          "text": "value",
+          "start": 4.96,
+          "end": 5.44
+        },
+        {
+          "id": "w14",
+          "text": "zetten",
+          "start": 5.52,
+          "end": 5.76
+        },
+        {
+          "id": "w15",
+          "text": "we",
+          "start": 5.88,
+          "end": 6.0
+        },
+        {
+          "id": "w16",
+          "text": "alles",
+          "start": 6.16,
+          "end": 6.32
+        },
+        {
+          "id": "w17",
+          "text": "wat",
+          "start": 6.4,
+          "end": 6.48
+        },
+        {
+          "id": "w18",
+          "text": "we",
+          "start": 6.52,
+          "end": 6.56
+        },
+        {
+          "id": "w19",
+          "text": "willen",
+          "start": 6.64,
+          "end": 6.8
+        },
+        {
+          "id": "w20",
+          "text": "delen:",
+          "start": 6.88,
+          "end": 7.52
+        },
+        {
+          "id": "w21",
+          "text": "posts,",
+          "start": 7.6,
+          "end": 8.32
+        },
+        {
+          "id": "w22",
+          "text": "reload",
+          "start": 8.6,
+          "end": 8.88
+        },
+        {
+          "id": "w23",
+          "text": "en",
+          "start": 9.04,
+          "end": 9.12
+        },
+        {
+          "id": "w24",
+          "text": "loading.",
+          "start": 9.2,
+          "end": 10.0
+        },
+        {
+          "id": "w25",
+          "text": "En",
+          "start": 10.04,
+          "end": 10.08
+        },
+        {
+          "id": "w26",
+          "text": "daartussen",
+          "start": 10.16,
+          "end": 10.72
+        },
+        {
+          "id": "w27",
+          "text": "renderen",
+          "start": 10.88,
+          "end": 11.16
+        },
+        {
+          "id": "w28",
+          "text": "we",
+          "start": 11.2,
+          "end": 11.36
+        },
+        {
+          "id": "w29",
+          "text": "children.",
+          "start": 11.6,
+          "end": 12.16
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "path": "audio/vo-10.mp3",
+      "duration_s": 9.52,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Kijk",
+          "start": 0.0,
+          "end": 0.24
+        },
+        {
+          "id": "w1",
+          "text": "nu",
+          "start": 0.32,
+          "end": 0.4
+        },
+        {
+          "id": "w2",
+          "text": "naar",
+          "start": 0.44,
+          "end": 0.56
+        },
+        {
+          "id": "w3",
+          "text": "App.",
+          "start": 0.64,
+          "end": 1.04
+        },
+        {
+          "id": "w4",
+          "text": "Geen",
+          "start": 1.44,
+          "end": 1.6
+        },
+        {
+          "id": "w5",
+          "text": "state,",
+          "start": 1.68,
+          "end": 2.32
+        },
+        {
+          "id": "w6",
+          "text": "geen",
+          "start": 2.36,
+          "end": 2.56
+        },
+        {
+          "id": "w7",
+          "text": "fetch,",
+          "start": 2.8,
+          "end": 3.2
+        },
+        {
+          "id": "w8",
+          "text": "geen",
+          "start": 3.24,
+          "end": 3.36
+        },
+        {
+          "id": "w9",
+          "text": "props",
+          "start": 3.44,
+          "end": 3.76
+        },
+        {
+          "id": "w10",
+          "text": "meer.",
+          "start": 3.88,
+          "end": 4.08
+        },
+        {
+          "id": "w11",
+          "text": "We",
+          "start": 4.48,
+          "end": 4.56
+        },
+        {
+          "id": "w12",
+          "text": "zetten",
+          "start": 4.64,
+          "end": 4.8
+        },
+        {
+          "id": "w13",
+          "text": "de",
+          "start": 4.88,
+          "end": 4.96
+        },
+        {
+          "id": "w14",
+          "text": "data",
+          "start": 5.12,
+          "end": 5.28
+        },
+        {
+          "id": "w15",
+          "text": "provider",
+          "start": 5.52,
+          "end": 5.76
+        },
+        {
+          "id": "w16",
+          "text": "rond",
+          "start": 5.92,
+          "end": 6.08
+        },
+        {
+          "id": "w17",
+          "text": "de",
+          "start": 6.16,
+          "end": 6.24
+        },
+        {
+          "id": "w18",
+          "text": "reload",
+          "start": 6.44,
+          "end": 6.64
+        },
+        {
+          "id": "w19",
+          "text": "button",
+          "start": 6.72,
+          "end": 7.04
+        },
+        {
+          "id": "w20",
+          "text": "en",
+          "start": 7.12,
+          "end": 7.2
+        },
+        {
+          "id": "w21",
+          "text": "de",
+          "start": 7.24,
+          "end": 7.28
+        },
+        {
+          "id": "w22",
+          "text": "post",
+          "start": 7.44,
+          "end": 7.68
+        },
+        {
+          "id": "w23",
+          "text": "list,",
+          "start": 7.84,
+          "end": 8.32
+        },
+        {
+          "id": "w24",
+          "text": "en",
+          "start": 8.48,
+          "end": 8.64
+        },
+        {
+          "id": "w25",
+          "text": "dat",
+          "start": 8.72,
+          "end": 8.8
+        },
+        {
+          "id": "w26",
+          "text": "is",
+          "start": 8.88,
+          "end": 8.96
+        },
+        {
+          "id": "w27",
+          "text": "alles.",
+          "start": 9.16,
+          "end": 9.6
+        }
+      ]
+    },
+    {
+      "frame": 11,
+      "path": "audio/vo-11.mp3",
+      "duration_s": 14.08,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Elke",
+          "start": 0.0,
+          "end": 0.24
+        },
+        {
+          "id": "w1",
+          "text": "component",
+          "start": 0.32,
+          "end": 0.88
+        },
+        {
+          "id": "w2",
+          "text": "haalt",
+          "start": 0.96,
+          "end": 1.2
+        },
+        {
+          "id": "w3",
+          "text": "zelf",
+          "start": 1.28,
+          "end": 1.6
+        },
+        {
+          "id": "w4",
+          "text": "op",
+          "start": 1.68,
+          "end": 1.76
+        },
+        {
+          "id": "w5",
+          "text": "wat",
+          "start": 1.84,
+          "end": 1.92
+        },
+        {
+          "id": "w6",
+          "text": "hij",
+          "start": 2.0,
+          "end": 2.08
+        },
+        {
+          "id": "w7",
+          "text": "nodig",
+          "start": 2.16,
+          "end": 2.48
+        },
+        {
+          "id": "w8",
+          "text": "heeft.",
+          "start": 2.52,
+          "end": 3.0
+        },
+        {
+          "id": "w9",
+          "text": "De",
+          "start": 3.2,
+          "end": 3.28
+        },
+        {
+          "id": "w10",
+          "text": "reload",
+          "start": 3.36,
+          "end": 3.76
+        },
+        {
+          "id": "w11",
+          "text": "button",
+          "start": 3.92,
+          "end": 4.08
+        },
+        {
+          "id": "w12",
+          "text": "vraagt",
+          "start": 4.16,
+          "end": 4.48
+        },
+        {
+          "id": "w13",
+          "text": "reload",
+          "start": 4.64,
+          "end": 5.2
+        },
+        {
+          "id": "w14",
+          "text": "en",
+          "start": 5.36,
+          "end": 5.52
+        },
+        {
+          "id": "w15",
+          "text": "loading",
+          "start": 5.76,
+          "end": 6.24
+        },
+        {
+          "id": "w16",
+          "text": "met",
+          "start": 6.36,
+          "end": 6.48
+        },
+        {
+          "id": "w17",
+          "text": "use",
+          "start": 6.56,
+          "end": 6.8
+        },
+        {
+          "id": "w18",
+          "text": "context.",
+          "start": 6.88,
+          "end": 7.64
+        },
+        {
+          "id": "w19",
+          "text": "Zolang",
+          "start": 7.84,
+          "end": 8.08
+        },
+        {
+          "id": "w20",
+          "text": "er",
+          "start": 8.12,
+          "end": 8.16
+        },
+        {
+          "id": "w21",
+          "text": "geladen",
+          "start": 8.28,
+          "end": 8.64
+        },
+        {
+          "id": "w22",
+          "text": "wordt,",
+          "start": 8.76,
+          "end": 9.04
+        },
+        {
+          "id": "w23",
+          "text": "staat",
+          "start": 9.12,
+          "end": 9.28
+        },
+        {
+          "id": "w24",
+          "text": "de",
+          "start": 9.32,
+          "end": 9.36
+        },
+        {
+          "id": "w25",
+          "text": "knop",
+          "start": 9.4,
+          "end": 9.6
+        },
+        {
+          "id": "w26",
+          "text": "uit.",
+          "start": 9.68,
+          "end": 10.24
+        },
+        {
+          "id": "w27",
+          "text": "De",
+          "start": 10.48,
+          "end": 10.56
+        },
+        {
+          "id": "w28",
+          "text": "post",
+          "start": 10.64,
+          "end": 10.88
+        },
+        {
+          "id": "w29",
+          "text": "list",
+          "start": 10.96,
+          "end": 11.28
+        },
+        {
+          "id": "w30",
+          "text": "vraagt",
+          "start": 11.32,
+          "end": 11.6
+        },
+        {
+          "id": "w31",
+          "text": "alleen",
+          "start": 11.72,
+          "end": 11.92
+        },
+        {
+          "id": "w32",
+          "text": "de",
+          "start": 12.0,
+          "end": 12.08
+        },
+        {
+          "id": "w33",
+          "text": "posts,",
+          "start": 12.16,
+          "end": 12.68
+        },
+        {
+          "id": "w34",
+          "text": "en",
+          "start": 12.72,
+          "end": 12.8
+        },
+        {
+          "id": "w35",
+          "text": "toont",
+          "start": 12.88,
+          "end": 13.12
+        },
+        {
+          "id": "w36",
+          "text": "ze",
+          "start": 13.16,
+          "end": 13.2
+        },
+        {
+          "id": "w37",
+          "text": "in",
+          "start": 13.28,
+          "end": 13.36
+        },
+        {
+          "id": "w38",
+          "text": "een",
+          "start": 13.4,
+          "end": 13.44
+        },
+        {
+          "id": "w39",
+          "text": "lijst.",
+          "start": 13.52,
+          "end": 14.16
+        }
+      ]
+    },
+    {
+      "frame": 12,
+      "path": "audio/vo-12.mp3",
+      "duration_s": 17.28,
+      "words": [
+        {
+          "id": "w0",
+          "text": "En",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "wil",
+          "start": 0.24,
+          "end": 0.32
+        },
+        {
+          "id": "w2",
+          "text": "je",
+          "start": 0.4,
+          "end": 0.48
+        },
+        {
+          "id": "w3",
+          "text": "data",
+          "start": 0.64,
+          "end": 0.8
+        },
+        {
+          "id": "w4",
+          "text": "aanpassen?",
+          "start": 0.88,
+          "end": 1.76
+        },
+        {
+          "id": "w5",
+          "text": "Dan",
+          "start": 1.88,
+          "end": 2.0
+        },
+        {
+          "id": "w6",
+          "text": "voeg",
+          "start": 2.08,
+          "end": 2.24
+        },
+        {
+          "id": "w7",
+          "text": "je",
+          "start": 2.28,
+          "end": 2.32
+        },
+        {
+          "id": "w8",
+          "text": "een",
+          "start": 2.4,
+          "end": 2.48
+        },
+        {
+          "id": "w9",
+          "text": "functie",
+          "start": 2.56,
+          "end": 2.88
+        },
+        {
+          "id": "w10",
+          "text": "toe",
+          "start": 2.96,
+          "end": 3.2
+        },
+        {
+          "id": "w11",
+          "text": "aan",
+          "start": 3.24,
+          "end": 3.28
+        },
+        {
+          "id": "w12",
+          "text": "de",
+          "start": 3.36,
+          "end": 3.44
+        },
+        {
+          "id": "w13",
+          "text": "context.",
+          "start": 3.52,
+          "end": 4.32
+        },
+        {
+          "id": "w14",
+          "text": "Create",
+          "start": 4.56,
+          "end": 4.96
+        },
+        {
+          "id": "w15",
+          "text": "post",
+          "start": 5.16,
+          "end": 5.36
+        },
+        {
+          "id": "w16",
+          "text": "stuurt",
+          "start": 5.52,
+          "end": 5.84
+        },
+        {
+          "id": "w17",
+          "text": "een",
+          "start": 5.92,
+          "end": 6.0
+        },
+        {
+          "id": "w18",
+          "text": "POST",
+          "start": 6.12,
+          "end": 6.24
+        },
+        {
+          "id": "w19",
+          "text": "request",
+          "start": 6.32,
+          "end": 6.72
+        },
+        {
+          "id": "w20",
+          "text": "naar",
+          "start": 6.76,
+          "end": 6.88
+        },
+        {
+          "id": "w21",
+          "text": "de",
+          "start": 6.96,
+          "end": 7.04
+        },
+        {
+          "id": "w22",
+          "text": "API,",
+          "start": 7.08,
+          "end": 7.92
+        },
+        {
+          "id": "w23",
+          "text": "en",
+          "start": 7.96,
+          "end": 8.0
+        },
+        {
+          "id": "w24",
+          "text": "voegt",
+          "start": 8.08,
+          "end": 8.32
+        },
+        {
+          "id": "w25",
+          "text": "de",
+          "start": 8.36,
+          "end": 8.4
+        },
+        {
+          "id": "w26",
+          "text": "nieuwe",
+          "start": 8.48,
+          "end": 8.72
+        },
+        {
+          "id": "w27",
+          "text": "post",
+          "start": 8.88,
+          "end": 9.04
+        },
+        {
+          "id": "w28",
+          "text": "toe",
+          "start": 9.12,
+          "end": 9.36
+        },
+        {
+          "id": "w29",
+          "text": "aan",
+          "start": 9.44,
+          "end": 9.52
+        },
+        {
+          "id": "w30",
+          "text": "de",
+          "start": 9.56,
+          "end": 9.6
+        },
+        {
+          "id": "w31",
+          "text": "lijst.",
+          "start": 9.72,
+          "end": 10.48
+        },
+        {
+          "id": "w32",
+          "text": "Vergeet",
+          "start": 10.52,
+          "end": 10.88
+        },
+        {
+          "id": "w33",
+          "text": "niet:",
+          "start": 10.96,
+          "end": 11.52
+        },
+        {
+          "id": "w34",
+          "text": "ook",
+          "start": 11.6,
+          "end": 11.84
+        },
+        {
+          "id": "w35",
+          "text": "create",
+          "start": 11.92,
+          "end": 12.32
+        },
+        {
+          "id": "w36",
+          "text": "post",
+          "start": 12.4,
+          "end": 12.72
+        },
+        {
+          "id": "w37",
+          "text": "moet",
+          "start": 12.8,
+          "end": 12.96
+        },
+        {
+          "id": "w38",
+          "text": "in",
+          "start": 13.0,
+          "end": 13.04
+        },
+        {
+          "id": "w39",
+          "text": "de",
+          "start": 13.12,
+          "end": 13.2
+        },
+        {
+          "id": "w40",
+          "text": "value",
+          "start": 13.28,
+          "end": 13.68
+        },
+        {
+          "id": "w41",
+          "text": "van",
+          "start": 13.76,
+          "end": 13.84
+        },
+        {
+          "id": "w42",
+          "text": "de",
+          "start": 13.87,
+          "end": 13.89
+        },
+        {
+          "id": "w43",
+          "text": "provider.",
+          "start": 13.92,
+          "end": 14.88
+        },
+        {
+          "id": "w44",
+          "text": "Dan",
+          "start": 15.0,
+          "end": 15.12
+        },
+        {
+          "id": "w45",
+          "text": "kan",
+          "start": 15.2,
+          "end": 15.28
+        },
+        {
+          "id": "w46",
+          "text": "het",
+          "start": 15.36,
+          "end": 15.44
+        },
+        {
+          "id": "w47",
+          "text": "post",
+          "start": 15.6,
+          "end": 15.76
+        },
+        {
+          "id": "w48",
+          "text": "form",
+          "start": 15.84,
+          "end": 16.08
+        },
+        {
+          "id": "w49",
+          "text": "hem",
+          "start": 16.16,
+          "end": 16.24
+        },
+        {
+          "id": "w50",
+          "text": "gewoon",
+          "start": 16.32,
+          "end": 16.56
+        },
+        {
+          "id": "w51",
+          "text": "gebruiken.",
+          "start": 16.64,
+          "end": 17.36
+        }
+      ]
+    },
+    {
+      "frame": 13,
+      "path": "audio/vo-13.mp3",
+      "duration_s": 31.52,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Misschien",
+          "start": 0.0,
+          "end": 0.32
+        },
+        {
+          "id": "w1",
+          "text": "denk",
+          "start": 0.4,
+          "end": 0.56
+        },
+        {
+          "id": "w2",
+          "text": "je",
+          "start": 0.6,
+          "end": 0.64
+        },
+        {
+          "id": "w3",
+          "text": "nu:",
+          "start": 0.72,
+          "end": 0.96
+        },
+        {
+          "id": "w4",
+          "text": "lijkt",
+          "start": 1.44,
+          "end": 1.68
+        },
+        {
+          "id": "w5",
+          "text": "dit",
+          "start": 1.76,
+          "end": 1.84
+        },
+        {
+          "id": "w6",
+          "text": "niet",
+          "start": 1.89,
+          "end": 2.0
+        },
+        {
+          "id": "w7",
+          "text": "op",
+          "start": 2.08,
+          "end": 2.16
+        },
+        {
+          "id": "w8",
+          "text": "use",
+          "start": 2.32,
+          "end": 2.56
+        },
+        {
+          "id": "w9",
+          "text": "fetch?",
+          "start": 2.64,
+          "end": 3.32
+        },
+        {
+          "id": "w10",
+          "text": "Niet",
+          "start": 3.6,
+          "end": 3.84
+        },
+        {
+          "id": "w11",
+          "text": "helemaal.",
+          "start": 3.88,
+          "end": 4.48
+        },
+        {
+          "id": "w12",
+          "text": "Use",
+          "start": 4.88,
+          "end": 5.12
+        },
+        {
+          "id": "w13",
+          "text": "fetch",
+          "start": 5.2,
+          "end": 5.52
+        },
+        {
+          "id": "w14",
+          "text": "is",
+          "start": 5.56,
+          "end": 5.6
+        },
+        {
+          "id": "w15",
+          "text": "een",
+          "start": 5.68,
+          "end": 5.84
+        },
+        {
+          "id": "w16",
+          "text": "custom",
+          "start": 6.04,
+          "end": 6.24
+        },
+        {
+          "id": "w17",
+          "text": "hook:",
+          "start": 6.32,
+          "end": 6.88
+        },
+        {
+          "id": "w18",
+          "text": "herbruikbare",
+          "start": 7.0,
+          "end": 7.6
+        },
+        {
+          "id": "w19",
+          "text": "logica.",
+          "start": 7.68,
+          "end": 8.4
+        },
+        {
+          "id": "w20",
+          "text": "Roepen",
+          "start": 8.64,
+          "end": 8.88
+        },
+        {
+          "id": "w21",
+          "text": "de",
+          "start": 8.92,
+          "end": 8.96
+        },
+        {
+          "id": "w22",
+          "text": "lijst",
+          "start": 9.04,
+          "end": 9.36
+        },
+        {
+          "id": "w23",
+          "text": "en",
+          "start": 9.4,
+          "end": 9.44
+        },
+        {
+          "id": "w24",
+          "text": "de",
+          "start": 9.48,
+          "end": 9.52
+        },
+        {
+          "id": "w25",
+          "text": "knop",
+          "start": 9.6,
+          "end": 9.92
+        },
+        {
+          "id": "w26",
+          "text": "allebei",
+          "start": 10.04,
+          "end": 10.32
+        },
+        {
+          "id": "w27",
+          "text": "use",
+          "start": 10.48,
+          "end": 10.72
+        },
+        {
+          "id": "w28",
+          "text": "fetch",
+          "start": 10.88,
+          "end": 11.04
+        },
+        {
+          "id": "w29",
+          "text": "aan,",
+          "start": 11.16,
+          "end": 11.52
+        },
+        {
+          "id": "w30",
+          "text": "dan",
+          "start": 11.6,
+          "end": 11.68
+        },
+        {
+          "id": "w31",
+          "text": "heeft",
+          "start": 11.76,
+          "end": 11.92
+        },
+        {
+          "id": "w32",
+          "text": "elk",
+          "start": 12.0,
+          "end": 12.16
+        },
+        {
+          "id": "w33",
+          "text": "zijn",
+          "start": 12.24,
+          "end": 12.4
+        },
+        {
+          "id": "w34",
+          "text": "eigen",
+          "start": 12.44,
+          "end": 12.72
+        },
+        {
+          "id": "w35",
+          "text": "state,",
+          "start": 12.92,
+          "end": 13.2
+        },
+        {
+          "id": "w36",
+          "text": "en",
+          "start": 13.24,
+          "end": 13.28
+        },
+        {
+          "id": "w37",
+          "text": "worden",
+          "start": 13.36,
+          "end": 13.52
+        },
+        {
+          "id": "w38",
+          "text": "de",
+          "start": 13.6,
+          "end": 13.68
+        },
+        {
+          "id": "w39",
+          "text": "posts",
+          "start": 13.76,
+          "end": 14.16
+        },
+        {
+          "id": "w40",
+          "text": "twee",
+          "start": 14.24,
+          "end": 14.48
+        },
+        {
+          "id": "w41",
+          "text": "keer",
+          "start": 14.56,
+          "end": 14.72
+        },
+        {
+          "id": "w42",
+          "text": "opgehaald.",
+          "start": 14.8,
+          "end": 15.76
+        },
+        {
+          "id": "w43",
+          "text": "Een",
+          "start": 15.8,
+          "end": 15.92
+        },
+        {
+          "id": "w44",
+          "text": "refetch",
+          "start": 16.0,
+          "end": 16.48
+        },
+        {
+          "id": "w45",
+          "text": "in",
+          "start": 16.52,
+          "end": 16.56
+        },
+        {
+          "id": "w46",
+          "text": "de",
+          "start": 16.64,
+          "end": 16.72
+        },
+        {
+          "id": "w47",
+          "text": "knop",
+          "start": 16.8,
+          "end": 17.04
+        },
+        {
+          "id": "w48",
+          "text": "herlaadt",
+          "start": 17.12,
+          "end": 17.52
+        },
+        {
+          "id": "w49",
+          "text": "de",
+          "start": 17.56,
+          "end": 17.6
+        },
+        {
+          "id": "w50",
+          "text": "lijst",
+          "start": 17.68,
+          "end": 17.92
+        },
+        {
+          "id": "w51",
+          "text": "dus",
+          "start": 17.96,
+          "end": 18.16
+        },
+        {
+          "id": "w52",
+          "text": "niet.",
+          "start": 18.24,
+          "end": 18.96
+        },
+        {
+          "id": "w53",
+          "text": "Een",
+          "start": 19.0,
+          "end": 19.12
+        },
+        {
+          "id": "w54",
+          "text": "data",
+          "start": 19.28,
+          "end": 19.44
+        },
+        {
+          "id": "w55",
+          "text": "context",
+          "start": 19.72,
+          "end": 20.0
+        },
+        {
+          "id": "w56",
+          "text": "deelt",
+          "start": 20.08,
+          "end": 20.4
+        },
+        {
+          "id": "w57",
+          "text": "data:",
+          "start": 20.6,
+          "end": 21.28
+        },
+        {
+          "id": "w58",
+          "text": "\u00e9\u00e9n",
+          "start": 21.36,
+          "end": 21.44
+        },
+        {
+          "id": "w59",
+          "text": "state,",
+          "start": 21.52,
+          "end": 22.24
+        },
+        {
+          "id": "w60",
+          "text": "\u00e9\u00e9n",
+          "start": 22.28,
+          "end": 22.4
+        },
+        {
+          "id": "w61",
+          "text": "fetch,",
+          "start": 22.56,
+          "end": 23.12
+        },
+        {
+          "id": "w62",
+          "text": "voor",
+          "start": 23.24,
+          "end": 23.36
+        },
+        {
+          "id": "w63",
+          "text": "elke",
+          "start": 23.44,
+          "end": 23.68
+        },
+        {
+          "id": "w64",
+          "text": "component",
+          "start": 23.96,
+          "end": 24.24
+        },
+        {
+          "id": "w65",
+          "text": "onder",
+          "start": 24.32,
+          "end": 24.56
+        },
+        {
+          "id": "w66",
+          "text": "de",
+          "start": 24.6,
+          "end": 24.64
+        },
+        {
+          "id": "w67",
+          "text": "provider.",
+          "start": 24.72,
+          "end": 25.6
+        },
+        {
+          "id": "w68",
+          "text": "Kort",
+          "start": 25.64,
+          "end": 25.84
+        },
+        {
+          "id": "w69",
+          "text": "gezegd:",
+          "start": 25.88,
+          "end": 26.64
+        },
+        {
+          "id": "w70",
+          "text": "use",
+          "start": 26.72,
+          "end": 26.96
+        },
+        {
+          "id": "w71",
+          "text": "fetch",
+          "start": 27.12,
+          "end": 27.28
+        },
+        {
+          "id": "w72",
+          "text": "gaat",
+          "start": 27.32,
+          "end": 27.52
+        },
+        {
+          "id": "w73",
+          "text": "over",
+          "start": 27.64,
+          "end": 27.76
+        },
+        {
+          "id": "w74",
+          "text": "hoe",
+          "start": 27.8,
+          "end": 27.84
+        },
+        {
+          "id": "w75",
+          "text": "je",
+          "start": 27.92,
+          "end": 28.0
+        },
+        {
+          "id": "w76",
+          "text": "data",
+          "start": 28.2,
+          "end": 28.4
+        },
+        {
+          "id": "w77",
+          "text": "ophaalt,",
+          "start": 28.48,
+          "end": 29.2
+        },
+        {
+          "id": "w78",
+          "text": "een",
+          "start": 29.28,
+          "end": 29.44
+        },
+        {
+          "id": "w79",
+          "text": "context",
+          "start": 29.72,
+          "end": 30.0
+        },
+        {
+          "id": "w80",
+          "text": "over",
+          "start": 30.08,
+          "end": 30.24
+        },
+        {
+          "id": "w81",
+          "text": "hoe",
+          "start": 30.32,
+          "end": 30.4
+        },
+        {
+          "id": "w82",
+          "text": "je",
+          "start": 30.48,
+          "end": 30.56
+        },
+        {
+          "id": "w83",
+          "text": "data",
+          "start": 30.76,
+          "end": 30.96
+        },
+        {
+          "id": "w84",
+          "text": "deelt.",
+          "start": 31.0,
+          "end": 31.6
+        }
+      ]
+    },
+    {
+      "frame": 14,
+      "path": "audio/vo-14.mp3",
+      "duration_s": 25.92,
+      "words": [
+        {
+          "id": "w0",
+          "text": "En",
+          "start": 0.0,
+          "end": 0.16
+        },
+        {
+          "id": "w1",
+          "text": "het",
+          "start": 0.24,
+          "end": 0.32
+        },
+        {
+          "id": "w2",
+          "text": "mooie",
+          "start": 0.36,
+          "end": 0.64
+        },
+        {
+          "id": "w3",
+          "text": "is:",
+          "start": 0.72,
+          "end": 1.04
+        },
+        {
+          "id": "w4",
+          "text": "je",
+          "start": 1.28,
+          "end": 1.44
+        },
+        {
+          "id": "w5",
+          "text": "kan",
+          "start": 1.52,
+          "end": 1.6
+        },
+        {
+          "id": "w6",
+          "text": "ze",
+          "start": 1.68,
+          "end": 1.76
+        },
+        {
+          "id": "w7",
+          "text": "combineren.",
+          "start": 1.84,
+          "end": 2.68
+        },
+        {
+          "id": "w8",
+          "text": "Niets",
+          "start": 2.96,
+          "end": 3.2
+        },
+        {
+          "id": "w9",
+          "text": "zegt",
+          "start": 3.24,
+          "end": 3.52
+        },
+        {
+          "id": "w10",
+          "text": "dat",
+          "start": 3.6,
+          "end": 3.68
+        },
+        {
+          "id": "w11",
+          "text": "de",
+          "start": 3.72,
+          "end": 3.76
+        },
+        {
+          "id": "w12",
+          "text": "fetch",
+          "start": 3.84,
+          "end": 4.08
+        },
+        {
+          "id": "w13",
+          "text": "logica",
+          "start": 4.16,
+          "end": 4.56
+        },
+        {
+          "id": "w14",
+          "text": "zelf",
+          "start": 4.64,
+          "end": 4.96
+        },
+        {
+          "id": "w15",
+          "text": "in",
+          "start": 5.0,
+          "end": 5.04
+        },
+        {
+          "id": "w16",
+          "text": "de",
+          "start": 5.12,
+          "end": 5.16
+        },
+        {
+          "id": "w17",
+          "text": "provider",
+          "start": 5.2,
+          "end": 5.68
+        },
+        {
+          "id": "w18",
+          "text": "moet",
+          "start": 5.72,
+          "end": 5.84
+        },
+        {
+          "id": "w19",
+          "text": "staan.",
+          "start": 5.92,
+          "end": 6.24
+        },
+        {
+          "id": "w20",
+          "text": "In",
+          "start": 6.72,
+          "end": 6.8
+        },
+        {
+          "id": "w21",
+          "text": "de",
+          "start": 6.88,
+          "end": 6.96
+        },
+        {
+          "id": "w22",
+          "text": "data",
+          "start": 7.12,
+          "end": 7.28
+        },
+        {
+          "id": "w23",
+          "text": "provider",
+          "start": 7.36,
+          "end": 7.84
+        },
+        {
+          "id": "w24",
+          "text": "roep",
+          "start": 8.0,
+          "end": 8.16
+        },
+        {
+          "id": "w25",
+          "text": "je",
+          "start": 8.2,
+          "end": 8.24
+        },
+        {
+          "id": "w26",
+          "text": "gewoon",
+          "start": 8.36,
+          "end": 8.72
+        },
+        {
+          "id": "w27",
+          "text": "use",
+          "start": 8.96,
+          "end": 9.2
+        },
+        {
+          "id": "w28",
+          "text": "fetch",
+          "start": 9.28,
+          "end": 9.6
+        },
+        {
+          "id": "w29",
+          "text": "aan,",
+          "start": 9.68,
+          "end": 10.16
+        },
+        {
+          "id": "w30",
+          "text": "met",
+          "start": 10.28,
+          "end": 10.4
+        },
+        {
+          "id": "w31",
+          "text": "Post",
+          "start": 10.48,
+          "end": 10.8
+        },
+        {
+          "id": "w32",
+          "text": "array",
+          "start": 11.0,
+          "end": 11.2
+        },
+        {
+          "id": "w33",
+          "text": "en",
+          "start": 11.28,
+          "end": 11.36
+        },
+        {
+          "id": "w34",
+          "text": "de",
+          "start": 11.44,
+          "end": 11.52
+        },
+        {
+          "id": "w35",
+          "text": "url",
+          "start": 11.6,
+          "end": 12.0
+        },
+        {
+          "id": "w36",
+          "text": "van",
+          "start": 12.08,
+          "end": 12.16
+        },
+        {
+          "id": "w37",
+          "text": "de",
+          "start": 12.2,
+          "end": 12.24
+        },
+        {
+          "id": "w38",
+          "text": "posts.",
+          "start": 12.32,
+          "end": 13.08
+        },
+        {
+          "id": "w39",
+          "text": "Data",
+          "start": 13.36,
+          "end": 13.76
+        },
+        {
+          "id": "w40",
+          "text": "geef",
+          "start": 13.84,
+          "end": 14.08
+        },
+        {
+          "id": "w41",
+          "text": "je",
+          "start": 14.12,
+          "end": 14.16
+        },
+        {
+          "id": "w42",
+          "text": "door",
+          "start": 14.28,
+          "end": 14.4
+        },
+        {
+          "id": "w43",
+          "text": "als",
+          "start": 14.48,
+          "end": 14.64
+        },
+        {
+          "id": "w44",
+          "text": "posts,",
+          "start": 14.72,
+          "end": 15.44
+        },
+        {
+          "id": "w45",
+          "text": "met",
+          "start": 15.52,
+          "end": 15.6
+        },
+        {
+          "id": "w46",
+          "text": "een",
+          "start": 15.68,
+          "end": 15.76
+        },
+        {
+          "id": "w47",
+          "text": "lege",
+          "start": 15.88,
+          "end": 16.0
+        },
+        {
+          "id": "w48",
+          "text": "lijst",
+          "start": 16.08,
+          "end": 16.4
+        },
+        {
+          "id": "w49",
+          "text": "zolang",
+          "start": 16.48,
+          "end": 16.72
+        },
+        {
+          "id": "w50",
+          "text": "er",
+          "start": 16.76,
+          "end": 16.8
+        },
+        {
+          "id": "w51",
+          "text": "nog",
+          "start": 16.84,
+          "end": 16.96
+        },
+        {
+          "id": "w52",
+          "text": "niets",
+          "start": 17.0,
+          "end": 17.2
+        },
+        {
+          "id": "w53",
+          "text": "is,",
+          "start": 17.28,
+          "end": 17.92
+        },
+        {
+          "id": "w54",
+          "text": "en",
+          "start": 18.0,
+          "end": 18.08
+        },
+        {
+          "id": "w55",
+          "text": "refetch",
+          "start": 18.32,
+          "end": 18.96
+        },
+        {
+          "id": "w56",
+          "text": "als",
+          "start": 19.12,
+          "end": 19.28
+        },
+        {
+          "id": "w57",
+          "text": "reload.",
+          "start": 19.36,
+          "end": 20.12
+        },
+        {
+          "id": "w58",
+          "text": "De",
+          "start": 20.4,
+          "end": 20.44
+        },
+        {
+          "id": "w59",
+          "text": "provider",
+          "start": 20.48,
+          "end": 20.96
+        },
+        {
+          "id": "w60",
+          "text": "wordt",
+          "start": 21.04,
+          "end": 21.17
+        },
+        {
+          "id": "w61",
+          "text": "een",
+          "start": 21.23,
+          "end": 21.28
+        },
+        {
+          "id": "w62",
+          "text": "stuk",
+          "start": 21.36,
+          "end": 21.6
+        },
+        {
+          "id": "w63",
+          "text": "korter,",
+          "start": 21.64,
+          "end": 22.16
+        },
+        {
+          "id": "w64",
+          "text": "en",
+          "start": 22.2,
+          "end": 22.24
+        },
+        {
+          "id": "w65",
+          "text": "de",
+          "start": 22.32,
+          "end": 22.4
+        },
+        {
+          "id": "w66",
+          "text": "componenten",
+          "start": 22.64,
+          "end": 23.04
+        },
+        {
+          "id": "w67",
+          "text": "merken",
+          "start": 23.12,
+          "end": 23.36
+        },
+        {
+          "id": "w68",
+          "text": "er",
+          "start": 23.44,
+          "end": 23.52
+        },
+        {
+          "id": "w69",
+          "text": "niets",
+          "start": 23.6,
+          "end": 23.84
+        },
+        {
+          "id": "w70",
+          "text": "van.",
+          "start": 23.96,
+          "end": 24.48
+        },
+        {
+          "id": "w71",
+          "text": "Het",
+          "start": 24.56,
+          "end": 24.64
+        },
+        {
+          "id": "w72",
+          "text": "kan",
+          "start": 24.72,
+          "end": 24.88
+        },
+        {
+          "id": "w73",
+          "text": "dus",
+          "start": 24.92,
+          "end": 25.2
+        },
+        {
+          "id": "w74",
+          "text": "allemaal.",
+          "start": 25.32,
+          "end": 26.0
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "path": "audio/vo-15.mp3",
+      "duration_s": 12.08,
+      "words": [
+        {
+          "id": "w0",
+          "text": "Samengevat:",
+          "start": 0.0,
+          "end": 1.2
+        },
+        {
+          "id": "w1",
+          "text": "alle",
+          "start": 1.28,
+          "end": 1.52
+        },
+        {
+          "id": "w2",
+          "text": "data",
+          "start": 1.72,
+          "end": 1.92
+        },
+        {
+          "id": "w3",
+          "text": "en",
+          "start": 2.0,
+          "end": 2.08
+        },
+        {
+          "id": "w4",
+          "text": "logica",
+          "start": 2.16,
+          "end": 2.72
+        },
+        {
+          "id": "w5",
+          "text": "zitten",
+          "start": 2.8,
+          "end": 3.04
+        },
+        {
+          "id": "w6",
+          "text": "op",
+          "start": 3.16,
+          "end": 3.28
+        },
+        {
+          "id": "w7",
+          "text": "\u00e9\u00e9n",
+          "start": 3.36,
+          "end": 3.52
+        },
+        {
+          "id": "w8",
+          "text": "plek,",
+          "start": 3.6,
+          "end": 4.16
+        },
+        {
+          "id": "w9",
+          "text": "in",
+          "start": 4.24,
+          "end": 4.32
+        },
+        {
+          "id": "w10",
+          "text": "de",
+          "start": 4.4,
+          "end": 4.48
+        },
+        {
+          "id": "w11",
+          "text": "data",
+          "start": 4.64,
+          "end": 4.8
+        },
+        {
+          "id": "w12",
+          "text": "provider.",
+          "start": 4.88,
+          "end": 5.76
+        },
+        {
+          "id": "w13",
+          "text": "De",
+          "start": 5.84,
+          "end": 5.92
+        },
+        {
+          "id": "w14",
+          "text": "componenten",
+          "start": 6.2,
+          "end": 6.64
+        },
+        {
+          "id": "w15",
+          "text": "vragen",
+          "start": 6.72,
+          "end": 7.04
+        },
+        {
+          "id": "w16",
+          "text": "met",
+          "start": 7.12,
+          "end": 7.2
+        },
+        {
+          "id": "w17",
+          "text": "use",
+          "start": 7.28,
+          "end": 7.52
+        },
+        {
+          "id": "w18",
+          "text": "context",
+          "start": 7.6,
+          "end": 8.08
+        },
+        {
+          "id": "w19",
+          "text": "alleen",
+          "start": 8.24,
+          "end": 8.48
+        },
+        {
+          "id": "w20",
+          "text": "wat",
+          "start": 8.56,
+          "end": 8.64
+        },
+        {
+          "id": "w21",
+          "text": "ze",
+          "start": 8.72,
+          "end": 8.88
+        },
+        {
+          "id": "w22",
+          "text": "nodig",
+          "start": 8.96,
+          "end": 9.2
+        },
+        {
+          "id": "w23",
+          "text": "hebben.",
+          "start": 9.24,
+          "end": 9.84
+        },
+        {
+          "id": "w24",
+          "text": "En",
+          "start": 9.96,
+          "end": 10.08
+        },
+        {
+          "id": "w25",
+          "text": "App",
+          "start": 10.28,
+          "end": 10.48
+        },
+        {
+          "id": "w26",
+          "text": "blijft",
+          "start": 10.53,
+          "end": 10.88
+        },
+        {
+          "id": "w27",
+          "text": "lekker",
+          "start": 10.92,
+          "end": 11.2
+        },
+        {
+          "id": "w28",
+          "text": "overzichtelijk.",
+          "start": 11.32,
+          "end": 12.16
+        }
+      ]
+    }
+  ],
+  "sfx": [
+    {
+      "frame": 1,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 0.32,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 1,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 1.64,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 1,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 2.72,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 1,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 4.72,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 1,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 7.72,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 1,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 11.92,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 1.92,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 5.2,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 6.8,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 9.12,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 13.08,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 14.72,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 3.96,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 6.92,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 9.36,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 11.84,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 4.28,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 1.48,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 8.84,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 14.92,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 1.44,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 7.36,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 11.92,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 12.84,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 14.48,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 15.76,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 0.88,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 4.96,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 7.12,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 10.64,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 11.6,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 12.48,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 13.88,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 0.32,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 3.0,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 3.44,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 6.16,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 9.2,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 12.72,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 14.08,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 15.2,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 16.72,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 8,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 2.16,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 8,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 4.24,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 8,
+      "file": "assets/sfx/click-soft.mp3",
+      "offset_s": 5.2,
+      "duration_s": 0.37,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 8,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 7.28,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 8,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 8.4,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 8,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 10.4,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 9,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 0.64,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 9,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 4.96,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 9,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 7.6,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 9,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 8.6,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 9,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 9.2,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 9,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 11.6,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 10,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 1.68,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 10,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 2.8,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 10,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 3.44,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 10,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 4.64,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 10,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 9.16,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 3.36,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 4.64,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 5.76,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 8.28,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 10.48,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 10.64,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 11,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 12.88,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 2.56,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 4.56,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 6.12,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 8.08,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 11.92,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 15.0,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/click-soft.mp3",
+      "offset_s": 16.32,
+      "duration_s": 0.37,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 12,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 16.64,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 2.32,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 3.6,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 9.04,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 10.48,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 12.44,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 14.24,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/click-soft.mp3",
+      "offset_s": 16.0,
+      "duration_s": 0.37,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 19.28,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 21.36,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 22.28,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 23.96,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 27.8,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 13,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 30.32,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 1.84,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 3.84,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 5.72,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 8.96,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 10.48,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 11.6,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 13.36,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 15.88,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 18.32,
+      "duration_s": 1.5,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 21.64,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 22.64,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 14,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 24.56,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 15,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 1.72,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 15,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 4.64,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 15,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 6.2,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 15,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 7.28,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 15,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 10.28,
+      "duration_s": 0.72,
+      "volume": 0.35,
+      "source": "host"
+    },
+    {
+      "frame": 15,
+      "file": "assets/sfx/whoosh-short.mp3",
+      "offset_s": 11.32,
+      "duration_s": 0.57,
+      "volume": 0.35,
+      "source": "host"
+    }
+  ]
+}

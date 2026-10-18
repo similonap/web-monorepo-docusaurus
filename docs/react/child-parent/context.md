@@ -236,6 +236,8 @@ export default App;
 
 ## Data Context
 
+<YouTubeVideo src="https://youtu.be/DYxdvXnme7Y" title="React - DataContext: data delen met een provider" />
+
 Een veel voorkomend patroon is dat je data vanuit een API ophaalt en deze data dan doorgeeft aan verschillende componenten. Dit kan je doen door de data in de state van de bovenste component te plaatsen en deze dan door te geven aan de onderliggende componenten. Je zou dit kunnen doen aan de hand van props, maar dit is niet altijd even handig. Dit wordt meestal gedaan aan de hand van de Context API.
 
 In dit voorbeeld gaan we gebruik maken van de API op https://jsonplaceholder.typicode.com/posts. Deze API geeft een lijst van posts terug. We maken een interface aan voor een post.

@@ -1,0 +1,419 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f06e-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f06e-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f06e-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f06e-kicker .f06e-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f06e-panel {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      width: 1060px;
+      height: 720px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f06e-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 50px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f06e-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 42px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f06e-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 64px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      line-height: 38px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f06e-row { position: relative; height: 38px; white-space: pre; }
+    .f06e-ln {
+      position: absolute;
+      left: 0;
+      width: 56px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 20px;
+    }
+    .f06e-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f06e-ch { display: inline; }
+    .f06e-kw { color: #CC785C; }
+    .f06e-fn { color: #E8A55A; }
+    .f06e-str { color: #5DB8A6; }
+    .f06e-dim { color: rgba(250, 249, 245, 0.6); }
+    .f06e-fold { color: rgba(250, 249, 245, 0.4); }
+    .f06e-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f06e-caret {
+      position: absolute;
+      top: 6px;
+      left: 0;
+      width: 3px;
+      height: 27px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f06e-blockwash {
+      position: absolute;
+      left: 72px;
+      top: 304px; /* row 9 */
+      width: 900px;
+      height: 76px; /* rows 9-10 */
+      border-radius: 6px;
+      background: rgba(232, 165, 90, 0.24);
+      opacity: 0;
+    }
+
+    /* right column: scherm */
+    .f06e-col {
+      position: absolute;
+      left: 1236px;
+      top: 180px;
+      width: 604px;
+      height: 700px;
+    }
+    .f06e-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(20, 20, 19, 0.62);
+    }
+    .f06e-card {
+      position: absolute;
+      left: 0;
+      top: 52px;
+      width: 604px;
+      height: 238px;
+      box-sizing: border-box;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    .f06e-err {
+      position: absolute;
+      left: 32px;
+      top: 36px;
+      padding: 4px 0 4px 20px;
+      border-left: 3px solid #CC785C;
+      font-family: "Inter", sans-serif;
+      font-weight: 400;
+      font-size: 24px;
+      line-height: 36px;
+      color: #141413;
+      white-space: nowrap;
+    }
+
+    /* state chip */
+    .f06e-chip {
+      position: absolute;
+      left: 0;
+      top: 312px;
+      height: 60px;
+      padding: 0 26px 0 22px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      color: #141413;
+      white-space: pre;
+    }
+    .f06e-chip-k { color: rgba(20, 20, 19, 0.5); font-size: 20px; letter-spacing: 0.16em; text-transform: uppercase; }
+    .f06e-chip-sep { width: 1px; height: 28px; background: rgba(20, 20, 19, 0.2); }
+    .f06e-valbox {
+      position: relative;
+      display: inline-block;
+      width: 80px;
+      height: 38px;
+      overflow: hidden;
+      vertical-align: middle;
+    }
+    .f06e-val { position: absolute; left: 0; top: 0; line-height: 38px; }
+
+    /* mini App.tsx panel */
+    .f06e-mini {
+      position: absolute;
+      left: 1236px;
+      top: 580px;
+      width: 604px;
+      height: 180px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f06e-mbar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 44px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f06e-mcode {
+      position: absolute;
+      left: 0; right: 0;
+      top: 60px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      line-height: 34px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f06e-mrow { position: relative; height: 34px; white-space: pre; }
+    .f06e-mtxt { position: absolute; left: 24px; top: 0; white-space: pre; }
+  </style>
+
+  <div data-hf-id="hf-e6r0" id="root" data-composition-id="06-error" data-width="1920" data-height="1080" data-duration="13.08">
+    <div data-hf-id="hf-e6b1" class="f06e-bg clip" id="f06e-bg" data-start="0" data-duration="13.08" data-track-index="0"></div>
+
+    <div data-hf-id="hf-e6s2" class="f06e-stage clip" id="f06e-stage" data-start="0" data-duration="13.08" data-track-index="1">
+      <div data-hf-id="hf-e6k3" class="f06e-kicker" id="f06e-kicker"><span data-hf-id="hf-e6k4" class="f06e-spike">✱</span>Error state</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-e6p5" class="f06e-panel" id="f06e-panel">
+        <div data-hf-id="hf-e6t6" class="f06e-titlebar">App.tsx</div>
+        <div data-hf-id="hf-e6c7" class="f06e-code">
+          <div data-hf-id="hf-e6w8" class="f06e-blockwash" id="f06e-blockwash"></div>
+          <div data-hf-id="hf-e6r1" class="f06e-row"><span data-hf-id="hf-e6n1" class="f06e-ln">1</span><span data-hf-id="hf-e6x1" class="f06e-txt"><span data-hf-id="hf-e6a1" class="f06e-kw">const</span> [posts, <span data-hf-id="hf-e6b2" class="f06e-fn">setPosts</span>] = <span data-hf-id="hf-e6c2" class="f06e-fn">useState</span><span data-hf-id="hf-e6d2" class="f06e-dim">&lt;Post[]&gt;</span>([]);</span></div>
+          <div data-hf-id="hf-e6r2" class="f06e-row"><span data-hf-id="hf-e6n2" class="f06e-ln">2</span><span data-hf-id="hf-e6x2" class="f06e-txt"><span data-hf-id="hf-e6a3" class="f06e-kw">const</span> [loading, <span data-hf-id="hf-e6b3" class="f06e-fn">setLoading</span>] = <span data-hf-id="hf-e6c3" class="f06e-fn">useState</span><span data-hf-id="hf-e6d3" class="f06e-dim">&lt;boolean&gt;</span>(<span data-hf-id="hf-e6f3" class="f06e-fn">false</span>);</span></div>
+          <div data-hf-id="hf-e6r3" class="f06e-row"><span data-hf-id="hf-e6n3" class="f06e-ln">3</span><span data-hf-id="hf-e6x3" class="f06e-txt" id="f06e-line3"></span><span data-hf-id="hf-e6q3" class="f06e-caret" id="f06e-caret3"></span></div>
+          <div data-hf-id="hf-e6r4" class="f06e-row"><span data-hf-id="hf-e6n4" class="f06e-ln">4</span><span data-hf-id="hf-e6x4" class="f06e-txt"></span></div>
+          <div data-hf-id="hf-e6r5" class="f06e-row"><span data-hf-id="hf-e6n5" class="f06e-ln">5</span><span data-hf-id="hf-e6x5" class="f06e-txt"><span data-hf-id="hf-e6a5" class="f06e-fn">useEffect</span>(() <span data-hf-id="hf-e6b5" class="f06e-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-e6r6" class="f06e-row"><span data-hf-id="hf-e6n6" class="f06e-ln">6</span><span data-hf-id="hf-e6x6" class="f06e-txt">  <span data-hf-id="hf-e6a6" class="f06e-kw">const</span> <span data-hf-id="hf-e6b6" class="f06e-fn">fetchData</span> = <span data-hf-id="hf-e6c6" class="f06e-kw">async</span> () <span data-hf-id="hf-e6d6" class="f06e-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-e6r7" class="f06e-row"><span data-hf-id="hf-e6n7" class="f06e-ln">7</span><span data-hf-id="hf-e6x7" class="f06e-txt">    <span data-hf-id="hf-e6a7" class="f06e-kw">try</span> {</span></div>
+          <div data-hf-id="hf-e6r8" class="f06e-row"><span data-hf-id="hf-e6n8" class="f06e-ln">8</span><span data-hf-id="hf-e6x8" class="f06e-txt">      <span data-hf-id="hf-e6a8" class="f06e-fold">⋯</span></span></div>
+          <div data-hf-id="hf-e6r9" class="f06e-row"><span data-hf-id="hf-e6n9" class="f06e-ln">9</span><span data-hf-id="hf-e6x9" class="f06e-txt">    } <span data-hf-id="hf-e6a9" class="f06e-kw">catch</span> (err) {</span></div>
+          <div data-hf-id="hf-e6ra" class="f06e-row"><span data-hf-id="hf-e6na" class="f06e-ln">10</span><span data-hf-id="hf-e6xa" class="f06e-txt" id="f06e-line10"></span><span data-hf-id="hf-e6qa" class="f06e-caret" id="f06e-caret10"></span></div>
+          <div data-hf-id="hf-e6rb" class="f06e-row"><span data-hf-id="hf-e6nb" class="f06e-ln">11</span><span data-hf-id="hf-e6xb" class="f06e-txt">    } <span data-hf-id="hf-e6ab" class="f06e-kw">finally</span> {</span></div>
+          <div data-hf-id="hf-e6rc" class="f06e-row"><span data-hf-id="hf-e6nc" class="f06e-ln">12</span><span data-hf-id="hf-e6xc" class="f06e-txt">      <span data-hf-id="hf-e6ac" class="f06e-fn">setLoading</span>(<span data-hf-id="hf-e6bc" class="f06e-fn">false</span>);</span></div>
+          <div data-hf-id="hf-e6rd" class="f06e-row"><span data-hf-id="hf-e6nd" class="f06e-ln">13</span><span data-hf-id="hf-e6xd" class="f06e-txt">    }</span></div>
+          <div data-hf-id="hf-e6re" class="f06e-row"><span data-hf-id="hf-e6ne" class="f06e-ln">14</span><span data-hf-id="hf-e6xe" class="f06e-txt">  }</span></div>
+          <div data-hf-id="hf-e6rf" class="f06e-row"><span data-hf-id="hf-e6nf" class="f06e-ln">15</span><span data-hf-id="hf-e6xf" class="f06e-txt">  <span data-hf-id="hf-e6af" class="f06e-fn">fetchData</span>();</span></div>
+          <div data-hf-id="hf-e6rg" class="f06e-row"><span data-hf-id="hf-e6ng" class="f06e-ln">16</span><span data-hf-id="hf-e6xg" class="f06e-txt">}, []);</span></div>
+        </div>
+        <div data-hf-id="hf-e6st" class="f06e-status">App.tsx · state</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-e6co" class="f06e-col">
+        <div data-hf-id="hf-e6lb" class="f06e-label" id="f06e-lab-scr">scherm</div>
+        <div data-hf-id="hf-e6cd" class="f06e-card" id="f06e-card">
+          <div data-hf-id="hf-e6er" class="f06e-err" id="f06e-err">Error: Something went wrong<br data-hf-id="hf-e6br">fetching data</div>
+        </div>
+        <div data-hf-id="hf-e6ch" class="f06e-chip" id="f06e-chip">
+          <span data-hf-id="hf-e6ck" class="f06e-chip-k">state</span><span data-hf-id="hf-e6cs" class="f06e-chip-sep"></span><span data-hf-id="hf-e6cv">error: <span data-hf-id="hf-e6vb" class="f06e-valbox"><span data-hf-id="hf-e6v0" class="f06e-val" id="f06e-v0">null</span><span data-hf-id="hf-e6v1" class="f06e-val" id="f06e-v1">Error</span></span></span>
+        </div>
+      </div>
+
+      <!-- mini App.tsx -->
+      <div data-hf-id="hf-e6mi" class="f06e-mini" id="f06e-mini">
+        <div data-hf-id="hf-e6mb" class="f06e-mbar">App.tsx</div>
+        <div data-hf-id="hf-e6mc" class="f06e-mcode">
+          <div data-hf-id="hf-e6m1" class="f06e-mrow"><span data-hf-id="hf-e6t1" class="f06e-mtxt">{loading &amp;&amp; <span data-hf-id="hf-e6u1" class="f06e-dim">&lt;</span><span data-hf-id="hf-e6g1" class="f06e-fn">Spinner</span> <span data-hf-id="hf-e6h1" class="f06e-dim">/&gt;</span>}</span></div>
+          <div data-hf-id="hf-e6m2" class="f06e-mrow"><span data-hf-id="hf-e6t2" class="f06e-mtxt"><span data-hf-id="hf-e6mh" class="f06e-hl" id="f06e-mhl">{error &amp;&amp; <span data-hf-id="hf-e6u2" class="f06e-dim">&lt;p&gt;</span>Error: {error.message}<span data-hf-id="hf-e6h2" class="f06e-dim">&lt;/p&gt;</span>}</span></span></div>
+          <div data-hf-id="hf-e6m3" class="f06e-mrow"><span data-hf-id="hf-e6t3" class="f06e-mtxt"><span data-hf-id="hf-e6u3" class="f06e-dim">&lt;ul&gt;</span>{posts.<span data-hf-id="hf-e6g3" class="f06e-fn">map</span>( <span data-hf-id="hf-e6f4" class="f06e-fold">⋯</span> )}<span data-hf-id="hf-e6h3" class="f06e-dim">&lt;/ul&gt;</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 12.98;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 84;
+      var WASH = "rgba(232, 165, 90, 0.24)";
+      var CLEAR = "rgba(232, 165, 90, 0)";
+      var root = document.querySelector('[data-composition-id="06-error"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "f06e-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "f06e-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length };
+      }
+
+      var per = 0.024;
+
+      // ---- Scene 1 (0.0-2.5): kicker, code without lines 3 and 10, empty scherm card ----
+      tl.fromTo("#f06e-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.05);
+      tl.fromTo("#f06e-panel", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.05);
+      tl.fromTo("#f06e-lab-scr", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.15);
+      tl.fromTo("#f06e-card", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.15);
+      // hidden until cued
+      tl.set("#f06e-chip", { opacity: 0 }, 0);
+      tl.set("#f06e-mini", { opacity: 0 }, 0);
+      tl.set("#f06e-err", { opacity: 0 }, 0);
+      tl.set("#f06e-v0", { yPercent: 0 }, 0);
+      tl.set("#f06e-v1", { yPercent: 100 }, 0);
+
+      // "fout" (0.32): faint amber wash on the empty catch block
+      tl.fromTo("#f06e-blockwash", { opacity: 0 }, { opacity: 0.6, duration: 0.5, ease: "power1.out" }, 0.32);
+      tl.to("#f06e-blockwash", { opacity: 0, duration: 0.4, ease: "power1.inOut" }, 3.3);
+
+      // ---- Scene 2 (2.5-6.6): line 3 types on ----
+      // "error state," (3.52): up to useState<
+      var a = typeLine("#f06e-line3", "#f06e-caret3", [
+        { t: "const", c: "f06e-kw" },
+        { t: " [error, " },
+        { t: "setError", c: "f06e-fn" },
+        { t: "] = " },
+        { t: "useState", c: "f06e-fn" },
+        { t: "<", c: "f06e-dim" }
+      ], 0, 3.52, per);
+      // "Error" (5.12): Error | null>(null);
+      typeLine("#f06e-line3", "#f06e-caret3", [
+        { id: "f06e-hl-type", parts: [{ t: "Error | null", c: "f06e-dim" }] },
+        { t: ">", c: "f06e-dim" },
+        { t: "(null);" }
+      ], a.col, 5.12, 0.03, 0.2);
+      tl.to("#f06e-hl-type", { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 5.3);
+
+      // "null." (5.92): chip error: null pops in
+      tl.fromTo("#f06e-chip", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 5.92);
+
+      // ---- Scene 3 (6.6-9.0): "catch" (7.08) line 10 types on ----
+      tl.to("#f06e-hl-type", { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, 6.9);
+      typeLine("#f06e-line10", "#f06e-caret10", [
+        { t: "      " },
+        { id: "f06e-hl-set", parts: [
+          { t: "setError", c: "f06e-fn" },
+          { t: "(err " },
+          { t: "as", c: "f06e-kw" },
+          { t: " " },
+          { t: "Error", c: "f06e-dim" },
+          { t: ")" }
+        ] },
+        { t: ";" }
+      ], 0, 7.08, per);
+      tl.to("#f06e-hl-set", { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 7.5);
+
+      // "error object." (8.04): chip value swap null -> Error
+      tl.to("#f06e-v0", { yPercent: -100, duration: 0.25, ease: "power2.inOut" }, 8.04);
+      tl.to("#f06e-v1", { yPercent: 0, duration: 0.25, ease: "power2.inOut" }, 8.04);
+
+      // ---- Scene 4 (9.0-12.48): "niet null," (10.0) mini panel, wash on line 2 ----
+      tl.to("#f06e-hl-set", { backgroundColor: CLEAR, duration: 0.45, ease: "power1.inOut" }, 9.6);
+      tl.fromTo("#f06e-mini", { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 10.0);
+      tl.to("#f06e-mhl", { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 10.32);
+
+      // "foutmelding." (11.76): error message in the scherm card, coral left border (pop)
+      tl.fromTo("#f06e-err", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 11.76);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["06-error"] = tl;
+    })();
+  </script>
+</template>

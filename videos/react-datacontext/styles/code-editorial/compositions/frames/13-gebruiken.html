@@ -1,0 +1,356 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f13g-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f13g-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f13g-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f13g-kicker .f13g-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f13g-panel {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      width: 1060px;
+      height: 710px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f13g-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f13g-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.04em;
+    }
+    .f13g-status-left { position: absolute; left: 28px; top: 0; line-height: 46px; }
+    .f13g-status-tag {
+      position: absolute;
+      right: 20px;
+      top: 9px;
+      height: 28px;
+      line-height: 26px;
+      padding: 0 12px;
+      box-sizing: border-box;
+      border: 1px solid rgba(250, 249, 245, 0.22);
+      border-radius: 6px;
+      color: rgba(250, 249, 245, 0.62);
+    }
+    .f13g-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 80px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      line-height: 35px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f13g-row { position: relative; height: 35px; white-space: pre; }
+    .f13g-ln {
+      position: absolute;
+      left: 0;
+      width: 54px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.56);
+      font-size: 20px;
+    }
+    .f13g-txt { position: absolute; left: 78px; top: 0; white-space: pre; }
+    .f13g-ch { display: inline; }
+    .f13g-kw { color: #CC785C; }
+    .f13g-fn { color: #E8A55A; }
+    .f13g-str { color: #5DB8A6; }
+    .f13g-dim { color: rgba(250, 249, 245, 0.6); }
+    .f13g-fold { color: rgba(250, 249, 245, 0.4); }
+    .f13g-caret {
+      position: absolute;
+      top: 5px;
+      left: 0;
+      width: 3px;
+      height: 25px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f13g-wash {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 35px;
+      background: rgba(232, 165, 90, 0.24);
+      border-radius: 4px;
+      opacity: 0;
+    }
+
+    /* right column diagram */
+    .f13g-tile {
+      position: absolute;
+      box-sizing: border-box;
+      height: 90px;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "JetBrains Mono", monospace;
+      color: #141413;
+      white-space: nowrap;
+    }
+    #f13g-hook { left: 1336px; top: 260px; width: 404px; font-size: 30px; }
+    #f13g-posts { left: 1236px; top: 470px; width: 284px; font-size: 26px; }
+    #f13g-users { left: 1556px; top: 470px; width: 284px; font-size: 26px; }
+    .f13g-tile .f13g-tdim { color: rgba(20, 20, 19, 0.55); }
+
+    .f13g-arrows {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: visible;
+    }
+
+    .f13g-note {
+      position: absolute;
+      left: 1236px;
+      top: 618px;
+      width: 604px;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 400;
+      font-size: 30px;
+      line-height: 44px;
+      color: #141413;
+      white-space: nowrap;
+    }
+    .f13g-one { position: relative; display: inline-block; }
+    .f13g-uline {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 2px;
+      height: 3px;
+      background: #CC785C;
+      transform-origin: 0% 50%;
+    }
+  </style>
+
+  <div data-hf-id="hf-13g0" id="root" data-composition-id="13-gebruiken" data-width="1920" data-height="1080" data-duration="12.52">
+    <div data-hf-id="hf-13g1" class="f13g-bg clip" id="f13g-bg" data-start="0" data-duration="12.52" data-track-index="0"></div>
+
+    <div data-hf-id="hf-13g2" class="f13g-stage clip" id="f13g-stage" data-start="0" data-duration="12.52" data-track-index="1">
+      <div data-hf-id="hf-13g3" class="f13g-kicker" id="f13g-kicker"><span data-hf-id="hf-yjug" class="f13g-spike">✱</span>In App</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-13g4" class="f13g-panel" id="f13g-panel">
+        <div data-hf-id="hf-hjuv" class="f13g-titlebar">App.tsx</div>
+        <div data-hf-id="hf-ctmc" class="f13g-code" id="f13g-code">
+          <div data-hf-id="hf-ydqo" class="f13g-wash" id="f13g-wash"></div>
+          <div data-hf-id="hf-ha3e" class="f13g-row"><span data-hf-id="hf-1c6y" class="f13g-ln">1</span><span data-hf-id="hf-rhwi" class="f13g-txt"><span data-hf-id="hf-qewu" class="f13g-kw">const</span> <span data-hf-id="hf-fpb8" class="f13g-fn">App</span> = () <span data-hf-id="hf-7arg" class="f13g-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-4hvi" class="f13g-row"><span data-hf-id="hf-1qhz" class="f13g-ln">2</span><span data-hf-id="hf-v6ff" class="f13g-txt" id="f13g-line2"></span><span data-hf-id="hf-68hj" class="f13g-caret" id="f13g-caret2"></span></div>
+          <div data-hf-id="hf-4w6j" class="f13g-row"><span data-hf-id="hf-24t0" class="f13g-ln">3</span><span data-hf-id="hf-r8be" class="f13g-txt" id="f13g-line3"></span><span data-hf-id="hf-2adi" class="f13g-caret" id="f13g-caret3"></span></div>
+          <div data-hf-id="hf-5ahk" class="f13g-row"><span data-hf-id="hf-2j41" class="f13g-ln">4</span><span data-hf-id="hf-8glp" class="f13g-txt" id="f13g-line4"></span><span data-hf-id="hf-d5v5" class="f13g-caret" id="f13g-caret4"></span></div>
+          <div data-hf-id="hf-2icd" class="f13g-row"><span data-hf-id="hf-2xf2" class="f13g-ln">5</span><span data-hf-id="hf-7oxw" class="f13g-txt" id="f13g-line5"></span><span data-hf-id="hf-ce7c" class="f13g-caret" id="f13g-caret5"></span></div>
+          <div data-hf-id="hf-2wne" class="f13g-row"><span data-hf-id="hf-3bq3" class="f13g-ln">6</span><span data-hf-id="hf-gzhb" class="f13g-txt"></span></div>
+          <div data-hf-id="hf-3ayf" class="f13g-row"><span data-hf-id="hf-3q14" class="f13g-ln">7</span><span data-hf-id="hf-ixin" class="f13g-txt">  <span data-hf-id="hf-e20o" class="f13g-kw">if</span> (loading) <span data-hf-id="hf-zw1d" class="f13g-kw">return</span> <span data-hf-id="hf-09jf" class="f13g-dim">&lt;</span><span data-hf-id="hf-b1e6" class="f13g-fn">Spinner</span> <span data-hf-id="hf-08sw" class="f13g-dim">/&gt;</span>;</span></div>
+          <div data-hf-id="hf-3p9g" class="f13g-row"><span data-hf-id="hf-44c5" class="f13g-ln">8</span><span data-hf-id="hf-z6sw" class="f13g-txt">  <span data-hf-id="hf-mu1c" class="f13g-kw">if</span> (error) <span data-hf-id="hf-xc6d" class="f13g-kw">return</span> <span data-hf-id="hf-jiml" class="f13g-dim">&lt;p&gt;</span>Error: {error.message}<span data-hf-id="hf-83z2" class="f13g-dim">&lt;/p&gt;</span>;</span></div>
+          <div data-hf-id="hf-7a0p" class="f13g-row"><span data-hf-id="hf-4in6" class="f13g-ln">9</span><span data-hf-id="hf-rl7j" class="f13g-txt"></span></div>
+          <div data-hf-id="hf-7obq" class="f13g-row"><span data-hf-id="hf-m77i" class="f13g-ln">10</span><span data-hf-id="hf-1bmd" class="f13g-txt">  <span data-hf-id="hf-yj3g" class="f13g-kw">return</span> (</span></div>
+          <div data-hf-id="hf-03wq" class="f13g-row"><span data-hf-id="hf-lswh" class="f13g-ln">11</span><span data-hf-id="hf-r6wi" class="f13g-txt">    <span data-hf-id="hf-wcof" class="f13g-dim">&lt;&gt;</span></span></div>
+          <div data-hf-id="hf-zplp" class="f13g-row"><span data-hf-id="hf-mztk" class="f13g-ln">12</span><span data-hf-id="hf-hnhk" class="f13g-txt">      <span data-hf-id="hf-ko37" class="f13g-dim">&lt;button</span> onClick={refetch}<span data-hf-id="hf-zgxd" class="f13g-dim">&gt;</span>Vernieuwen<span data-hf-id="hf-jnoi" class="f13g-dim">&lt;/button&gt;</span></span></div>
+          <div data-hf-id="hf-0wis" class="f13g-row"><span data-hf-id="hf-mlij" class="f13g-ln">13</span><span data-hf-id="hf-y0pd" class="f13g-txt">      <span data-hf-id="hf-c850" class="f13g-dim">&lt;ul&gt;</span>{posts?.<span data-hf-id="hf-w1y1" class="f13g-fn">map</span>(post <span data-hf-id="hf-w0qc" class="f13g-kw">=&gt;</span> ( <span data-hf-id="hf-7ekx" class="f13g-fold">⋯</span> ))}<span data-hf-id="hf-pve9" class="f13g-dim">&lt;/ul&gt;</span></span></div>
+          <div data-hf-id="hf-0i7r" class="f13g-row"><span data-hf-id="hf-klze" class="f13g-ln">14</span><span data-hf-id="hf-qslh" class="f13g-txt">    <span data-hf-id="hf-iuc6" class="f13g-dim">&lt;/&gt;</span></span></div>
+          <div data-hf-id="hf-1p4u" class="f13g-row"><span data-hf-id="hf-k7od" class="f13g-ln">15</span><span data-hf-id="hf-qssb" class="f13g-txt">  );</span></div>
+          <div data-hf-id="hf-1att" class="f13g-row"><span data-hf-id="hf-lelg" class="f13g-ln">16</span><span data-hf-id="hf-k8g6" class="f13g-txt">}</span></div>
+        </div>
+        <div data-hf-id="hf-645g" class="f13g-status">
+          <span data-hf-id="hf-379o" class="f13g-status-left">App · component</span>
+          <span data-hf-id="hf-q6wt" class="f13g-status-tag" id="f13g-tag">16 regels</span>
+        </div>
+      </div>
+
+      <!-- right column: one hook, two uses -->
+      <svg data-hf-id="hf-oj90" class="f13g-arrows" viewBox="0 0 1920 1080" aria-hidden="true">
+        <g data-hf-id="hf-c49z" id="f13g-arrow1">
+          <path data-hf-id="hf-4763" id="f13g-a1-line" d="M 1488 352 L 1394 466" fill="none" stroke="rgba(20,20,19,0.45)" stroke-width="2" stroke-linecap="round" />
+          <path data-hf-id="hf-wp15" id="f13g-a1-head" d="M 1391.6 451.4 L 1394 466 L 1407.0 459.9" fill="none" stroke="rgba(20,20,19,0.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+        <g data-hf-id="hf-3ge4" id="f13g-arrow2">
+          <path data-hf-id="hf-41vx" id="f13g-a2-line" d="M 1588 352 L 1682 466" fill="none" stroke="rgba(20,20,19,0.45)" stroke-width="2" stroke-linecap="round" />
+          <path data-hf-id="hf-m2wr" id="f13g-a2-head" d="M 1684.4 451.4 L 1682 466 L 1669.0 459.9" fill="none" stroke="rgba(20,20,19,0.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+      </svg>
+
+      <div data-hf-id="hf-13g5" class="f13g-tile" id="f13g-hook">useFetch&lt;T&gt;</div>
+      <div data-hf-id="hf-13g6" class="f13g-tile" id="f13g-posts">posts<span data-hf-id="hf-0bfm" class="f13g-tdim">&#160;·&#160;Post[]</span></div>
+      <div data-hf-id="hf-13g7" class="f13g-tile" id="f13g-users">users<span data-hf-id="hf-2x0n" class="f13g-tdim">&#160;·&#160;User[]</span></div>
+
+      <div data-hf-id="hf-13g8" class="f13g-note" id="f13g-note"><span data-hf-id="hf-3udr" class="f13g-one">1×<span data-hf-id="hf-krx3" class="f13g-uline" id="f13g-uline"></span></span> geschreven · 2× gebruikt</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 12.42;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 24;
+      var X0 = 78;
+      var LH = 35;
+      var chPx = FS * CW;
+      var root = document.querySelector('[data-composition-id="13-gebruiken"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (per-character reveal + stepping caret) ----
+      function typeLine(lineSel, caretSel, segments, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (p) {
+          for (var i = 0; i < p.t.length; i++) {
+            var s = document.createElement("span");
+            s.className = "f13g-ch" + (p.c ? " " + p.c : "");
+            s.textContent = p.t[i];
+            line.appendChild(s);
+            chars.push(s);
+          }
+        });
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return end;
+      }
+
+      function destructLine(names) {
+        return [{ t: "  " }, { t: "const", c: "f13g-kw" }, { t: " { " + names + " } =" }];
+      }
+      function callLine(type, path) {
+        return [
+          { t: "    " },
+          { t: "useFetch", c: "f13g-fn" },
+          { t: "<" },
+          { t: type, c: "f13g-dim" },
+          { t: ">(" },
+          { t: '"https://jsonplaceholder.typicode.com/' + path + '"', c: "f13g-str" },
+          { t: ");" }
+        ];
+      }
+
+      function pop(sel, at) {
+        tl.fromTo(sel, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" }, at);
+      }
+      function drawArrow(lineSel, headSel, at) {
+        var len = q(lineSel).getTotalLength ? q(lineSel).getTotalLength() : 148;
+        tl.fromTo(lineSel, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: 0.45, ease: "power3.out" }, at);
+        tl.fromTo(headSel, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, at + 0.3);
+      }
+
+      // ---- Scene 1 (0.0–2.5): kicker, code surface with the gap, "16 regels" tag ----
+      tl.fromTo("#f13g-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.0);
+      tl.fromTo("#f13g-panel", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f13g-tag", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 1.04);
+
+      // right column hidden until cued
+      tl.set(["#f13g-hook", "#f13g-posts", "#f13g-users", "#f13g-note"], { opacity: 0 }, 0);
+      tl.set(["#f13g-a1-head", "#f13g-a2-head"], { opacity: 0 }, 0);
+      tl.set("#f13g-uline", { scaleX: 0 }, 0);
+
+      // wash geometry: `Post[]` / `User[]` start at col 13 (4 indent + "useFetch<"), 6 chars
+      tl.set("#f13g-wash", { x: X0 + 13 * chPx - 3, y: 2 * LH, width: 6 * chPx + 6, opacity: 0 }, 0);
+
+      // ---- Scene 2 (2.5–8.4): two useFetch calls + diagram ----
+      // "Use fetch met Post array" (2.56) → lines 2–3 type on fast
+      var e2 = typeLine("#f13g-line2", "#f13g-caret2", destructLine("data: posts, loading, error, refetch"), 2.56, 0.008);
+      typeLine("#f13g-line3", "#f13g-caret3", callLine("Post[]", "posts"), e2 + 0.02, 0.006, 0.02);
+      // "Post" (3.44) → amber wash on Post[]
+      tl.fromTo("#f13g-wash", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, 3.44);
+
+      // "posts," (4.68) → hook tile, arrow, posts tile
+      pop("#f13g-hook", 4.68);
+      drawArrow("#f13g-a1-line", "#f13g-a1-head", 4.8);
+      pop("#f13g-posts", 5.0);
+
+      // "use fetch met User array" (5.6) → lines 4–5 type on
+      var e4 = typeLine("#f13g-line4", "#f13g-caret4", destructLine("data: users"), 5.6, 0.012);
+      typeLine("#f13g-line5", "#f13g-caret5", callLine("User[]", "users"), e4 + 0.02, 0.006, 0.02);
+      // "User" (6.48) → wash moves to User[]
+      tl.to("#f13g-wash", { y: 4 * LH, duration: 0.4, ease: "power3.out" }, 6.48);
+
+      // "users." (7.6) → second arrow + users tile
+      drawArrow("#f13g-a2-line", "#f13g-a2-head", 7.6);
+      pop("#f13g-users", 7.8);
+
+      // ---- Scene 3 (8.4–11.92): arrows pulse, payoff note ----
+      // "Twee keer" (8.56) → both arrows pulse once in amber
+      var arrowParts = ["#f13g-a1-line", "#f13g-a1-head", "#f13g-a2-line", "#f13g-a2-head"];
+      tl.to(arrowParts, { stroke: "#E8A55A", strokeWidth: 4, duration: 0.3, ease: "power2.out" }, 8.56);
+      tl.to(arrowParts, { stroke: "rgba(20,20,19,0.45)", strokeWidth: 2, duration: 0.6, ease: "power2.inOut" }, 8.95);
+
+      // "één keer geschreven." (10.72) → note + coral underline under 1×
+      tl.fromTo("#f13g-note", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 10.72);
+      tl.to("#f13g-uline", { scaleX: 1, duration: 0.5, ease: "power3.out" }, 11.0);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["13-gebruiken"] = tl;
+    })();
+  </script>
+</template>

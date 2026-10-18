@@ -1,0 +1,393 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+
+    /* ---- frame 13 positions ---- */
+    .f13v-card { top: 170px; width: 840px; height: 590px; }
+    #f13v-cardL { left: 80px; }
+    #f13v-cardR { left: 1000px; }
+    .f13v-head { position: absolute; top: 200px; font-family: var(--ts-mono); font-weight: 500; font-size: 30px; line-height: 40px; color: var(--ts-ink); white-space: nowrap; font-variant-ligatures: none; }
+    .f13v-sub { position: absolute; top: 250px; font-family: var(--ts-sans); font-weight: 500; font-size: 20px; line-height: 28px; color: var(--ts-ink-soft); white-space: nowrap; }
+    #f13v-headL, #f13v-subL { left: 120px; }
+    #f13v-headR, #f13v-subR { left: 1040px; }
+    .f13v-pill { top: 320px; height: 38px; box-sizing: border-box; padding: 0 16px; display: flex; align-items: center; line-height: 1; }
+    .f13v-api { background: var(--ts-panel); color: var(--ts-ink-soft); width: 112px; justify-content: center; }
+    #f13v-apiL { left: 444px; }
+    #f13v-apiR { left: 1364px; }
+    .f13v-badge-n { background: var(--ts-panel); color: var(--ts-ink-soft); }
+    #f13v-badgeL { left: 572px; }
+    #f13v-badgeR { left: 1492px; }
+    .f13v-comp {
+      position: absolute; height: 90px; width: 310px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-mono); font-size: 24px; color: var(--ts-ink); font-variant-ligatures: none;
+    }
+    #f13v-plL { left: 150px; top: 510px; }
+    #f13v-rbL { left: 540px; top: 510px; }
+    #f13v-plR { left: 1070px; top: 620px; }
+    #f13v-rbR { left: 1460px; top: 620px; }
+    .f13v-small {
+      position: absolute; height: 40px; box-sizing: border-box; padding: 0 14px; display: flex; align-items: center;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+      font-variant-ligatures: none;
+    }
+    .f13v-uf { top: 450px; width: 220px; justify-content: center; }
+    #f13v-ufL1 { left: 195px; }
+    #f13v-ufL2 { left: 585px; }
+    .f13v-uc { top: 555px; width: 140px; height: 32px; justify-content: center; font-size: 18px; }
+    #f13v-ucR1 { left: 1155px; }
+    #f13v-ucR2 { left: 1545px; }
+    #f13v-refetch { left: 712px; top: 494px; height: 32px; font-size: 18px; background: var(--ts-blue-tint); border-color: var(--ts-blue); color: var(--ts-blue-dark); }
+    .f13v-state { top: 620px; width: 190px; justify-content: center; }
+    #f13v-dataL1 { left: 210px; }
+    #f13v-dataL2 { left: 600px; }
+    #f13v-posts { left: 1325px; top: 439px; width: 190px; justify-content: center; }
+    .f13v-val { position: relative; display: inline-block; width: 4ch; height: 50px; overflow: hidden; vertical-align: top; }
+    .f13v-v { position: absolute; left: 0; top: 0; line-height: 50px; }
+    #f13v-stale { position: absolute; left: 210px; top: 684px; width: 190px; text-align: center; font-family: var(--ts-sans); font-weight: 500; font-size: 18px; line-height: 24px; color: var(--ts-muted); white-space: nowrap; }
+    /* provider */
+    #f13v-prov { position: absolute; left: 1170px; top: 410px; width: 500px; height: 110px; }
+    #f13v-prov-svg { position: absolute; left: 0; top: 0; width: 500px; height: 110px; overflow: visible; }
+    #f13v-prov-rect { fill: #FFFFFF; stroke: var(--ts-blue); stroke-width: 2; }
+    #f13v-tab {
+      position: absolute; left: 1194px; top: 392px; height: 36px; padding: 0 14px; box-sizing: border-box;
+      background: var(--ts-blue-tint); border: 2px solid var(--ts-blue); border-radius: 8px;
+      display: flex; align-items: center; font-family: var(--ts-mono); font-weight: 500; font-size: 20px; color: var(--ts-blue-dark);
+    }
+    /* lines */
+    .f13v-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .f13v-line { fill: none; stroke: var(--ts-muted); stroke-width: 2; stroke-linecap: round; }
+    .f13v-line--key { stroke: var(--ts-blue); }
+    .f13v-head-m { fill: var(--ts-muted); }
+    .f13v-head-b { fill: var(--ts-blue); }
+    /* verdicts */
+    .f13v-verdict { position: absolute; top: 806px; width: 840px; text-align: center; font-family: var(--ts-sans); font-weight: 600; font-size: 34px; line-height: 44px; color: var(--ts-ink); white-space: nowrap; }
+    #f13v-verL { left: 80px; }
+    #f13v-verR { left: 1000px; }
+    .f13v-deel { position: relative; display: inline-block; }
+    #f13v-ubar { left: 0; right: 0; top: 46px; }
+  </style>
+
+  <div data-hf-id="hf-f13r" id="root" data-composition-id="13-verschil" data-width="1920" data-height="1080" data-duration="32.02">
+    <div data-hf-id="hf-f13b" class="ts-bg clip" id="f13v-bg" data-start="0" data-duration="32.02" data-track-index="0"></div>
+
+    <div data-hf-id="hf-f13s" class="ts-stage clip" id="f13v-stage" data-start="0" data-duration="32.02" data-track-index="1">
+      <div data-hf-id="hf-f13k" class="ts-kicker" id="f13v-kicker"><div data-hf-id="hf-f13kb" class="ts-kicker-bar" id="f13v-kbar"></div><span data-hf-id="hf-f13kt" class="ts-kicker-text" id="f13v-ktext">useFetch of DataContext?</span></div>
+
+      <!-- cards -->
+      <div data-hf-id="hf-f13cl" class="ts-card f13v-card" id="f13v-cardL"></div>
+      <div data-hf-id="hf-f13cr" class="ts-card f13v-card" id="f13v-cardR"></div>
+      <div data-hf-id="hf-f13hl" class="f13v-head" id="f13v-headL">useFetch</div>
+      <div data-hf-id="hf-f13sl" class="f13v-sub" id="f13v-subL">custom hook · herbruikbare logica</div>
+      <div data-hf-id="hf-f13hr" class="f13v-head" id="f13v-headR">DataContext</div>
+      <div data-hf-id="hf-f13sr" class="f13v-sub" id="f13v-subR">gedeelde data</div>
+
+      <!-- lines -->
+      <svg data-hf-id="hf-f13sv" class="f13v-svg" viewBox="0 0 1920 1080">
+        <path data-hf-id="hf-f13p1" class="f13v-line" id="f13v-lnL1" d="M 486 360 C 486 412 305 398 305 442" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"></path>
+        <path data-hf-id="hf-f13p2" class="f13v-line" id="f13v-lnL2" d="M 514 360 C 514 412 695 398 695 442" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"></path>
+        <polygon data-hf-id="hf-f13h1" class="f13v-head-m" id="f13v-hdL1" points="299,441 311,441 305,450"></polygon>
+        <polygon data-hf-id="hf-f13h2" class="f13v-head-m" id="f13v-hdL2" points="689,441 701,441 695,450"></polygon>
+        <path data-hf-id="hf-f13p3" class="f13v-line f13v-line--key" id="f13v-lnR" d="M 1420 360 L 1420 382" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"></path>
+        <polygon data-hf-id="hf-f13h3" class="f13v-head-b" id="f13v-hdR" points="1414,381 1426,381 1420,390"></polygon>
+        <path data-hf-id="hf-f13p4" class="f13v-line" id="f13v-lnR1" d="M 1225 618 L 1225 532" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"></path>
+        <path data-hf-id="hf-f13p5" class="f13v-line" id="f13v-lnR2" d="M 1615 618 L 1615 532" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"></path>
+        <polygon data-hf-id="hf-f13h4" class="f13v-head-m" id="f13v-hdR1" points="1219,532 1231,532 1225,523"></polygon>
+        <polygon data-hf-id="hf-f13h5" class="f13v-head-m" id="f13v-hdR2" points="1609,532 1621,532 1615,523"></polygon>
+      </svg>
+
+      <!-- left card content -->
+      <div data-hf-id="hf-f13al" class="ts-tag f13v-pill f13v-api" id="f13v-apiL">/posts</div>
+      <div data-hf-id="hf-f13bl" class="ts-tag f13v-pill f13v-badge-n" id="f13v-badgeL">2× fetch</div>
+      <div data-hf-id="hf-f13u1" class="f13v-small f13v-uf" id="f13v-ufL1">useFetch&lt;Post[]&gt;</div>
+      <div data-hf-id="hf-f13u2" class="f13v-small f13v-uf" id="f13v-ufL2">useFetch&lt;Post[]&gt;</div>
+      <div data-hf-id="hf-f13c1" class="f13v-comp" id="f13v-plL">PostList</div>
+      <div data-hf-id="hf-f13c2" class="f13v-comp" id="f13v-rbL">ReloadButton</div>
+      <div data-hf-id="hf-f13rf" class="f13v-small" id="f13v-refetch">refetch()</div>
+      <div data-hf-id="hf-f13d1" class="ts-chip f13v-state" id="f13v-dataL1"><span data-hf-id="hf-f13k1" class="ts-chip-key">state</span><span data-hf-id="hf-f13v1" class="f13v-val"><span data-hf-id="hf-f13v1a" class="f13v-v">data</span></span></div>
+      <div data-hf-id="hf-f13d2" class="ts-chip f13v-state" id="f13v-dataL2"><span data-hf-id="hf-f13k2" class="ts-chip-key">state</span><span data-hf-id="hf-f13v2" class="f13v-val"><span data-hf-id="hf-f13v2a" class="f13v-v" id="f13v-old">data</span><span data-hf-id="hf-f13v2b" class="f13v-v" id="f13v-new">data</span></span></div>
+      <div data-hf-id="hf-f13st" id="f13v-stale">niet herladen</div>
+
+      <!-- right card content -->
+      <div data-hf-id="hf-f13ar" class="ts-tag f13v-pill f13v-api" id="f13v-apiR">/posts</div>
+      <div data-hf-id="hf-f13br" class="ts-tag f13v-pill" id="f13v-badgeR">1× fetch</div>
+      <div data-hf-id="hf-f13pv" id="f13v-prov">
+        <svg data-hf-id="hf-f13ps" id="f13v-prov-svg" viewBox="0 0 500 110"><rect data-hf-id="hf-f13pr" id="f13v-prov-rect" x="1" y="1" width="498" height="108" rx="8" ry="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"></rect></svg>
+      </div>
+      <div data-hf-id="hf-f13tb" id="f13v-tab">DataProvider</div>
+      <div data-hf-id="hf-f13po" class="ts-chip" id="f13v-posts"><span data-hf-id="hf-f13k3" class="ts-chip-key">state</span>posts</div>
+      <div data-hf-id="hf-f13c3" class="f13v-comp" id="f13v-plR">PostList</div>
+      <div data-hf-id="hf-f13c4" class="f13v-comp" id="f13v-rbR">ReloadButton</div>
+      <div data-hf-id="hf-f13x1" class="f13v-small f13v-uc" id="f13v-ucR1">useContext</div>
+      <div data-hf-id="hf-f13x2" class="f13v-small f13v-uc" id="f13v-ucR2">useContext</div>
+
+      <!-- verdicts -->
+      <div data-hf-id="hf-f13vl" class="f13v-verdict" id="f13v-verL">hoe haal je data op?</div>
+      <div data-hf-id="hf-f13vr" class="f13v-verdict" id="f13v-verR">hoe <span data-hf-id="hf-f13dl" class="f13v-deel">deel<span data-hf-id="hf-f13ub" class="ts-underline" id="f13v-ubar"></span></span> je data?</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 31.52;
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var OUT = "power3.out";
+
+      function settle(sel, at, dy, dur, stagger) {
+        tl.fromTo(sel, { opacity: 0, y: dy === undefined ? 14 : dy },
+          { opacity: 1, y: 0, duration: dur || 0.6, ease: OUT, stagger: stagger || 0 }, at);
+      }
+      function fade(sel, at, dur) {
+        tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: dur || 0.2, ease: "power1.out" }, at);
+      }
+      function draw(sel, at, dur) {
+        tl.fromTo(sel, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: dur || 0.5, ease: "power2.inOut" }, at);
+      }
+      function pop(sel, at) {
+        tl.fromTo(sel, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4, ease: OUT }, at);
+      }
+
+      // initial hidden states (seek-safe)
+      gsap.set("#f13v-new", { yPercent: 100 });
+      gsap.set(["#f13v-hdL1", "#f13v-hdL2", "#f13v-hdR", "#f13v-hdR1", "#f13v-hdR2"], { opacity: 0 });
+      gsap.set("#f13v-ubar", { scaleX: 0 });
+
+      // ---- Scene 1 (0.0-4.8): kicker; cards with headers only ----
+      tl.fromTo("#f13v-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: OUT }, 0.1);
+      tl.fromTo("#f13v-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: OUT }, 0.2);
+      // "use fetch?" (2.32)
+      settle(["#f13v-cardL", "#f13v-headL"], 2.32, 16, 0.8, 0.08);
+      // "Niet helemaal." (3.6)
+      settle(["#f13v-cardR", "#f13v-headR"], 3.6, 16, 0.8, 0.08);
+
+      // ---- Scene 2 (4.8-15.8): left card, own state per component ----
+      // "custom hook:" (6.04)
+      settle("#f13v-subL", 6.04, 8, 0.5);
+      // "lijst" (9.04) / "knop" (9.6)
+      settle("#f13v-plL", 9.04);
+      settle("#f13v-rbL", 9.6);
+      // "use fetch" (10.48): useFetch chips
+      settle(["#f13v-ufL1", "#f13v-ufL2"], 10.48, 8, 0.5, 0.12);
+      // "eigen state," (12.44): own data chips
+      settle(["#f13v-dataL1", "#f13v-dataL2"], 12.44, 8, 0.5, 0.12);
+      // "twee keer opgehaald." (14.24): API pill, two lines, badge
+      settle("#f13v-apiL", 14.24, 8, 0.45);
+      draw("#f13v-lnL1", 14.4);
+      draw("#f13v-lnL2", 14.5);
+      fade("#f13v-hdL1", 14.86, 0.15);
+      fade("#f13v-hdL2", 14.96, 0.15);
+      pop("#f13v-badgeL", 14.8);
+
+      // ---- Scene 3 (15.8-19.0): refetch only reloads the button ----
+      // "refetch" (16.0)
+      pop("#f13v-refetch", 16.0);
+      tl.fromTo("#f13v-rbL", { scale: 0.96 }, { scale: 1, duration: 0.3, ease: "power2.out", immediateRender: false }, 16.2);
+      tl.fromTo("#f13v-lnL2", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut", immediateRender: false }, 16.3);
+      tl.fromTo("#f13v-hdL2", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out", immediateRender: false }, 16.72);
+      tl.to("#f13v-old", { yPercent: -100, duration: 0.25, ease: OUT }, 16.84);
+      tl.fromTo("#f13v-new", { yPercent: 100 }, { yPercent: 0, duration: 0.25, ease: OUT, immediateRender: false }, 16.84);
+      tl.to("#f13v-dataL2", { backgroundColor: "#EAF2FB", borderColor: "#3178C6", duration: 0.3, ease: "power2.out" }, 16.84);
+      // "herlaadt de lijst dus niet." (17.12 / 18.24)
+      tl.to("#f13v-dataL1", { opacity: 0.45, duration: 0.4, ease: "power2.out" }, 17.68);
+      settle("#f13v-stale", 18.24, 6, 0.45);
+
+      // ---- Scene 4 (19.0-25.6): one provider, one state, one fetch ----
+      // "data context" (19.28)
+      settle("#f13v-subR", 19.28, 8, 0.5);
+      // "één state," (21.36): provider border wipe + posts chip
+      fade("#f13v-prov", 21.36, 0.01);
+      draw("#f13v-prov-rect", 21.36, 0.5);
+      settle("#f13v-tab", 21.6, 6, 0.4);
+      settle("#f13v-posts", 21.6, 8, 0.45);
+      // "één fetch," (22.28): API pill, single blue line, badge
+      settle("#f13v-apiR", 22.28, 8, 0.45);
+      draw("#f13v-lnR", 22.46, 0.35);
+      fade("#f13v-hdR", 22.76, 0.15);
+      pop("#f13v-badgeR", 22.56);
+      // "component" (23.96): boxes, lines up, useContext chips
+      settle(["#f13v-plR", "#f13v-rbR"], 23.96, 14, 0.6, 0.1);
+      draw("#f13v-lnR1", 24.2, 0.45);
+      draw("#f13v-lnR2", 24.3, 0.45);
+      fade("#f13v-hdR1", 24.6, 0.15);
+      fade("#f13v-hdR2", 24.7, 0.15);
+      settle(["#f13v-ucR1", "#f13v-ucR2"], 24.3, 6, 0.4, 0.1);
+
+      // ---- Scene 5 (25.6-31.52): verdicts ----
+      // "hoe je data ophaalt," (27.8)
+      settle("#f13v-verL", 27.8, 12, 0.6);
+      // "hoe je data deelt." (30.32), underline under "deel"
+      settle("#f13v-verR", 30.32, 12, 0.6);
+      tl.fromTo("#f13v-ubar", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: OUT, immediateRender: false }, 30.7);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["13-verschil"] = tl;
+    })();
+  </script>
+</template>

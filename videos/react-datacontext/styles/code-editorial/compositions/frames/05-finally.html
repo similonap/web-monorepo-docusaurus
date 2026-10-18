@@ -1,0 +1,309 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f05f-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f05f-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f05f-kicker {
+      position: absolute; left: 80px; top: 92px;
+      font-family: "JetBrains Mono", monospace; font-size: 28px; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase; color: #141413;
+    }
+    .f05f-kicker .f05f-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface */
+    .f05f-panel {
+      position: absolute; left: 80px; top: 164px; width: 1060px; height: 726px;
+      background: #181715; border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px; overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f05f-titlebar {
+      position: absolute; left: 0; right: 0; top: 0; height: 52px;
+      background: #252320; border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: "JetBrains Mono", monospace; font-size: 22px;
+      color: rgba(250, 249, 245, 0.62); letter-spacing: 0.02em;
+    }
+    .f05f-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 34px;
+      background: #252320; border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: "JetBrains Mono", monospace; font-size: 17px;
+      color: rgba(250, 249, 245, 0.45); letter-spacing: 0.04em;
+    }
+    .f05f-code {
+      position: absolute; left: 0; right: 0; top: 62px; height: 630px;
+      font-family: "JetBrains Mono", monospace; font-size: 24px; line-height: 35px;
+      color: #FAF9F5; font-variant-ligatures: none;
+    }
+    .f05f-ln {
+      position: absolute; left: 0; width: 56px; height: 35px; text-align: right;
+      color: rgba(250, 249, 245, 0.32); font-size: 20px;
+    }
+    .f05f-row { position: absolute; left: 0; right: 0; height: 35px; white-space: pre; }
+    .f05f-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f05f-ch { display: inline; }
+    .f05f-kw { color: #CC785C; }
+    .f05f-fn { color: #E8A55A; }
+    .f05f-str { color: #5DB8A6; }
+    .f05f-dim { color: rgba(250, 249, 245, 0.6); }
+    .f05f-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f05f-caret {
+      position: absolute; top: 4px; left: 0; width: 3px; height: 27px;
+      background: #FAF9F5; opacity: 0;
+    }
+    .f05f-overlay { position: absolute; left: 0; top: 0; width: 1060px; height: 726px; overflow: visible; }
+
+    /* right column: scherm */
+    .f05f-label {
+      position: absolute; left: 1236px; top: 180px;
+      font-family: "JetBrains Mono", monospace; font-size: 26px; font-weight: 400;
+      letter-spacing: 0.16em; text-transform: uppercase; color: rgba(20, 20, 19, 0.62);
+    }
+    .f05f-card {
+      position: absolute; left: 1236px; top: 232px; width: 604px; height: 308px;
+      box-sizing: border-box; background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12); border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      overflow: hidden;
+    }
+    .f05f-spinner { position: absolute; left: 274px; top: 126px; width: 56px; height: 56px; }
+
+    /* chips */
+    .f05f-chip {
+      position: absolute; height: 46px; padding: 0 18px; box-sizing: border-box;
+      display: flex; align-items: center;
+      background: #EFE9DE; border: 1px solid rgba(20, 20, 19, 0.12); border-radius: 6px;
+      font-family: "JetBrains Mono", monospace; font-size: 26px; font-weight: 500;
+      letter-spacing: 0.02em; line-height: 1; color: #141413; white-space: pre;
+    }
+    .f05f-note { left: 1236px; top: 560px; }
+    .f05f-ok { left: 1316px; top: 624px; }
+    .f05f-ko { left: 1316px; top: 690px; }
+    .f05f-links { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+  </style>
+
+  <div data-hf-id="hf-kgd8" id="root" data-composition-id="05-finally" data-width="1920" data-height="1080" data-duration="14.1">
+    <div data-hf-id="hf-i3au" class="f05f-bg clip" id="f05f-bg" data-start="0" data-duration="14.1" data-track-index="0"></div>
+
+    <div data-hf-id="hf-q0dt" class="f05f-stage clip" id="f05f-stage" data-start="0" data-duration="14.1" data-track-index="1">
+      <div data-hf-id="hf-ex9z" class="f05f-kicker" id="f05f-kicker"><span data-hf-id="hf-1qme" class="f05f-spike">✱</span>Finally</div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-h2cy" class="f05f-panel" id="f05f-panel">
+        <div data-hf-id="hf-fyod" class="f05f-titlebar">App.tsx</div>
+        <div data-hf-id="hf-664s" class="f05f-code" id="f05f-code">
+          <span data-hf-id="hf-a4zp" class="f05f-ln" style="top:0px">1</span>
+          <span data-hf-id="hf-fv7k" class="f05f-ln" style="top:35px">2</span>
+          <span data-hf-id="hf-2na8" class="f05f-ln" style="top:70px">3</span>
+          <span data-hf-id="hf-g6ka" class="f05f-ln" style="top:105px">4</span>
+          <span data-hf-id="hf-kzru" class="f05f-ln" style="top:140px">5</span>
+          <span data-hf-id="hf-gsa7" class="f05f-ln" style="top:175px">6</span>
+          <span data-hf-id="hf-vyig" class="f05f-ln" style="top:210px">7</span>
+          <span data-hf-id="hf-ncav" class="f05f-ln" style="top:245px">8</span>
+          <span data-hf-id="hf-3d3b" class="f05f-ln" style="top:280px">9</span>
+          <span data-hf-id="hf-rx8u" class="f05f-ln" style="top:315px">10</span>
+          <span data-hf-id="hf-4vgc" class="f05f-ln" style="top:350px">11</span>
+          <span data-hf-id="hf-n05n" class="f05f-ln" style="top:385px">12</span>
+          <span data-hf-id="hf-n6q4" class="f05f-ln" style="top:420px">13</span>
+          <span data-hf-id="hf-r67t" class="f05f-ln" style="top:455px">14</span>
+          <span data-hf-id="hf-gaub" class="f05f-ln" style="top:490px">15</span>
+          <span data-hf-id="hf-z6jn" class="f05f-ln" style="top:525px">16</span>
+          <span data-hf-id="hf-y6e9" class="f05f-ln" style="top:560px">17</span>
+          <span data-hf-id="hf-1s25" class="f05f-ln" id="f05f-ln18" style="top:595px">18</span>
+
+          <div data-hf-id="hf-ievi" class="f05f-row" id="f05f-r1" style="top:0px"><span data-hf-id="hf-82nl" class="f05f-txt"><span data-hf-id="hf-6yi7" class="f05f-fn">useEffect</span>(() <span data-hf-id="hf-0hl2" class="f05f-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-3u8n" class="f05f-row" id="f05f-r2" style="top:35px"><span data-hf-id="hf-sjm4" class="f05f-txt">  <span data-hf-id="hf-68iw" class="f05f-kw">const</span> <span data-hf-id="hf-2m0t" class="f05f-fn">fetchData</span> = <span data-hf-id="hf-5p03" class="f05f-kw">async</span> () <span data-hf-id="hf-7qx6" class="f05f-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-0gkp" class="f05f-row" id="f05f-r3" style="top:70px"><span data-hf-id="hf-7xu6" class="f05f-txt">    <span data-hf-id="hf-n5uq" class="f05f-kw">try</span> {</span></div>
+          <div data-hf-id="hf-5xdj" class="f05f-row" id="f05f-r4" style="top:105px"><span data-hf-id="hf-zitj" class="f05f-txt">      <span data-hf-id="hf-qsxf" class="f05f-fn">setLoading</span>(<span data-hf-id="hf-10ov" class="f05f-fn">true</span>);</span></div>
+          <div data-hf-id="hf-2m2v" class="f05f-row" id="f05f-r5" style="top:140px"><span data-hf-id="hf-q3oc" class="f05f-txt">      <span data-hf-id="hf-ukkg" class="f05f-kw">const</span> response = <span data-hf-id="hf-i7s9" class="f05f-kw">await</span> <span data-hf-id="hf-mbfh" class="f05f-fn">fetch</span>(url);</span></div>
+          <div data-hf-id="hf-i7v4" class="f05f-row" id="f05f-r6" style="top:175px"><span data-hf-id="hf-lsdb" class="f05f-txt">      <span data-hf-id="hf-f0j6" class="f05f-kw">if</span> (!response.ok) {</span></div>
+          <div data-hf-id="hf-llol" class="f05f-row" id="f05f-r7" style="top:210px"><span data-hf-id="hf-lq81" class="f05f-txt">        <span data-hf-id="hf-43cs" class="f05f-hl" id="f05f-hl-throw"><span data-hf-id="hf-a8ur" class="f05f-kw">throw</span> <span data-hf-id="hf-71hx" class="f05f-kw">new</span> <span data-hf-id="hf-ip5n" class="f05f-fn">Error</span>(<span data-hf-id="hf-lm6t" class="f05f-str">"Something went wrong fetching data"</span>);</span></span></div>
+          <div data-hf-id="hf-vzcs" class="f05f-row" id="f05f-r8" style="top:245px"><span data-hf-id="hf-7584" class="f05f-txt">      }</span></div>
+          <div data-hf-id="hf-ecbo" class="f05f-row" id="f05f-r9" style="top:280px"><span data-hf-id="hf-8dni" class="f05f-txt">      <span data-hf-id="hf-tdnd" class="f05f-kw">const</span> result: <span data-hf-id="hf-smr5" class="f05f-dim">Post[]</span> = <span data-hf-id="hf-uml9" class="f05f-kw">await</span> response.json();</span></div>
+          <div data-hf-id="hf-co6h" class="f05f-row" id="f05f-r10" style="top:315px"><span data-hf-id="hf-fqzi" class="f05f-txt">      <span data-hf-id="hf-hb80" class="f05f-fn">setPosts</span>(result);</span></div>
+          <div data-hf-id="hf-4g05" class="f05f-row" id="f05f-r11" style="top:350px"><span data-hf-id="hf-ztwn" class="f05f-txt">      <span data-hf-id="hf-2kb7" class="f05f-fn">setLoading</span>(<span data-hf-id="hf-g2g2" class="f05f-fn">false</span>);</span></div>
+          <div data-hf-id="hf-ieeg" class="f05f-row" id="f05f-r12" style="top:385px"><span data-hf-id="hf-winx" class="f05f-txt">    } <span data-hf-id="hf-f1md" class="f05f-hl" id="f05f-hl-catch"><span data-hf-id="hf-d2kg" class="f05f-kw">catch</span> (err)</span> {</span></div>
+          <div data-hf-id="hf-yx21" class="f05f-row" id="f05f-r13" style="top:420px"><span data-hf-id="hf-xhjp" class="f05f-txt"> </span></div>
+          <div data-hf-id="hf-q75i" class="f05f-row" id="f05f-r14" style="top:455px"><span data-hf-id="hf-h8jj" class="f05f-txt" id="f05f-line14">    }</span><span data-hf-id="hf-fzqo" class="f05f-caret" id="f05f-caret14"></span></div>
+          <div data-hf-id="hf-vkfi" class="f05f-row" id="f05f-rnew" style="top:490px"><span data-hf-id="hf-k017" class="f05f-txt" id="f05f-linenew"></span><span data-hf-id="hf-9lab" class="f05f-caret" id="f05f-caretnew"></span></div>
+          <div data-hf-id="hf-x1cq" class="f05f-row" id="f05f-r15" style="top:490px"><span data-hf-id="hf-4qj0" class="f05f-txt">  }</span></div>
+          <div data-hf-id="hf-7bp4" class="f05f-row" id="f05f-r16" style="top:525px"><span data-hf-id="hf-zflm" class="f05f-txt">  <span data-hf-id="hf-sc9d" class="f05f-fn">fetchData</span>();</span></div>
+          <div data-hf-id="hf-v1xo" class="f05f-row" id="f05f-r17" style="top:560px"><span data-hf-id="hf-smq4" class="f05f-txt">}, []);</span></div>
+        </div>
+
+        <svg data-hf-id="hf-7vnq" class="f05f-overlay" viewBox="0 0 1060 726">
+          <!-- jump arrow: line 7 throw -> line 12 catch -->
+          <path data-hf-id="hf-bdvp" id="f05f-arrow" fill="none" stroke="#FAF9F5" stroke-opacity="0.85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M992,290 C1030,290 1040,300 1040,330 L1040,425 C1040,455 1030,465 1000,465 L392,465" />
+          <path data-hf-id="hf-rsby" id="f05f-arrowhead" fill="none" stroke="#FAF9F5" stroke-opacity="0.85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M406,456 L392,465 L406,474" />
+          <!-- coral rough box around skipped setLoading(false) (line 11) -->
+          <path data-hf-id="hf-g3dq" id="f05f-box" fill="none" stroke="#CC785C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M152,409 C240,405 350,406 448,410 C451,422 451,438 447,452 C350,455 240,454 150,451 C147,438 147,422 151,408 C180,406 205,406 228,407" />
+        </svg>
+
+        <div data-hf-id="hf-seau" class="f05f-status">App · useEffect</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-6v62" class="f05f-label" id="f05f-lab-scr">scherm</div>
+      <div data-hf-id="hf-ef8i" class="f05f-card" id="f05f-card">
+        <svg data-hf-id="hf-el64" class="f05f-spinner" id="f05f-spinner" viewBox="0 0 56 56">
+          <circle data-hf-id="hf-ylhb" cx="28" cy="28" r="26" fill="none" stroke="#141413" stroke-opacity="0.15" stroke-width="4" />
+          <path data-hf-id="hf-zupw" d="M28,2 A26,26 0 0 1 54,28" fill="none" stroke="#141413" stroke-width="4" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <div data-hf-id="hf-x82u" class="f05f-chip f05f-note" id="f05f-note">loading: true</div>
+
+      <svg data-hf-id="hf-ecv4" class="f05f-links" viewBox="0 0 1920 1080">
+        <path data-hf-id="hf-a46h" id="f05f-link-ok" fill="none" stroke="#141413" stroke-opacity="0.35" stroke-width="1.5" d="M1316,647 C1240,647 1230,664 1150,664" />
+        <path data-hf-id="hf-65a9" id="f05f-link-ko" fill="none" stroke="#141413" stroke-opacity="0.35" stroke-width="1.5" d="M1316,713 C1240,713 1230,664 1150,664" />
+        <circle data-hf-id="hf-u6jj" id="f05f-link-dot" cx="1148" cy="664" r="4" fill="#141413" fill-opacity="0.55" />
+      </svg>
+      <div data-hf-id="hf-je7d" class="f05f-chip f05f-ok" id="f05f-ok">lukt ✓</div>
+      <div data-hf-id="hf-n5zm" class="f05f-chip f05f-ko" id="f05f-ko">mislukt ✗</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.1;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 24;
+      var X0 = 84;
+      var LH = 35;
+      var WASH = "rgba(232, 165, 90, 0.24)";
+      var CLEAR = "rgba(232, 165, 90, 0)";
+      var root = document.querySelector('[data-composition-id="05-finally"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "f05f-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "f05f-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length };
+      }
+
+      function drawPrep(sel) {
+        var el = q(sel);
+        var len = el.getTotalLength ? el.getTotalLength() : 1200;
+        tl.set(el, { strokeDasharray: len, strokeDashoffset: len }, 0);
+        return el;
+      }
+
+      // ---- spinner: turns the whole frame, timeline-driven ----
+      tl.fromTo("#f05f-spinner", { rotation: 0, transformOrigin: "50% 50%" },
+        { rotation: 360 * 14, duration: DUR, ease: "none" }, 0);
+
+      // ---- Scene 1 (0.0-3.4): kicker; "loopt het mis" wash on throw; "springen" arrow; "catch." wash ----
+      tl.fromTo("#f05f-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.to("#f05f-hl-throw", { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 0.6);
+
+      var arrow = drawPrep("#f05f-arrow");
+      tl.set("#f05f-arrowhead", { opacity: 0 }, 0);
+      tl.to(arrow, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 1.6);
+      tl.to("#f05f-arrowhead", { opacity: 1, duration: 0.15, ease: "power1.out" }, 2.12);
+
+      tl.to("#f05f-hl-throw", { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, 2.92);
+      tl.to("#f05f-hl-catch", { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 2.92);
+
+      // ---- Scene 2 (3.4-7.9): coral box on skipped line; dims; loading note ----
+      var box = drawPrep("#f05f-box");
+      tl.to("#f05f-hl-catch", { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, 3.6);
+      tl.to(box, { strokeDashoffset: 0, duration: 0.5, ease: "power1.inOut" }, 3.7);
+      tl.to("#f05f-r11", { opacity: 0.4, duration: 0.5, ease: "power2.out" }, 4.96);
+      tl.fromTo("#f05f-note", { opacity: 0, y: 10, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, 6.16);
+
+      // ---- Scene 3 (7.9-14.1): the move into finally ----
+      tl.to("#f05f-box", { opacity: 0, duration: 0.35, ease: "power2.out" }, 8.4);
+      tl.to(["#f05f-arrow", "#f05f-arrowhead"], { opacity: 0, duration: 0.35, ease: "power2.out" }, 8.4);
+      tl.fromTo("#f05f-ln18", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 8.5);
+
+      // FLIP: line 11 lifts out, slides down to slot 13, settles back in
+      tl.to("#f05f-r11", { x: 28, opacity: 1, duration: 0.2, ease: "power2.out" }, 8.4);
+      tl.to("#f05f-r11", { y: 3 * LH, duration: 0.6, ease: "power3.out" }, 8.5);
+      tl.to("#f05f-r11", { x: 0, duration: 0.35, ease: "power3.out" }, 9.0);
+      // reflow: catch block up one slot, tail down one slot
+      tl.to(["#f05f-r12", "#f05f-r13", "#f05f-r14"], { y: -LH, duration: 0.6, ease: "power3.out" }, 8.5);
+      tl.to(["#f05f-r15", "#f05f-r16", "#f05f-r17"], { y: LH, duration: 0.6, ease: "power3.out" }, 8.5);
+      // `} finally {` and closing `}` type in
+      var f = typeLine("#f05f-line14", "#f05f-caret14", [
+        { t: " " },
+        { id: "f05f-hl-finally", parts: [{ t: "finally", c: "f05f-kw" }] },
+        { t: " {" }
+      ], 5, 8.75, 0.03);
+      typeLine("#f05f-linenew", "#f05f-caretnew", [{ t: "    }" }], 0, f.end + 0.08, 0.03, 0.04);
+
+      // "finally." (9.92): amber wash
+      tl.to("#f05f-hl-finally", { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, 9.92);
+
+      // "altijd," (11.44): chip lukt + connector
+      var linkOk = drawPrep("#f05f-link-ok");
+      var linkKo = drawPrep("#f05f-link-ko");
+      tl.set("#f05f-link-dot", { opacity: 0 }, 0);
+      tl.fromTo("#f05f-ok", { opacity: 0, y: 10, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, 11.44);
+      tl.to(linkOk, { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut" }, 11.54);
+      tl.to("#f05f-link-dot", { opacity: 1, duration: 0.2, ease: "power1.out" }, 11.94);
+
+      // "of niet." (12.96): chip mislukt + connector to the same spot
+      tl.fromTo("#f05f-ko", { opacity: 0, y: 10, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, 12.96);
+      tl.to(linkKo, { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut" }, 13.06);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["05-finally"] = tl;
+    })();
+  </script>
+</template>

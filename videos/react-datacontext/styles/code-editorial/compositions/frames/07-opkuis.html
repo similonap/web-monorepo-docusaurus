@@ -1,0 +1,365 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EB_Garamond-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f07-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f07-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f07-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f07-kicker .f07-spike { color: #CC785C; margin-right: 14px; }
+
+    /* statement (scene 1) */
+    .f07-statement {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 360px;
+      height: 160px;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 40px;
+      font-family: "EB Garamond", serif;
+      font-weight: 400;
+      font-size: 120px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #141413;
+    }
+    .f07-statement .f07-it { font-style: italic; }
+
+    /* compact code surface */
+    .f07-panel {
+      position: absolute;
+      left: 80px;
+      top: 220px;
+      width: 760px;
+      height: 520px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f07-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 56px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+    }
+    .f07-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f07-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 76px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      line-height: 35px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f07-row { position: relative; height: 35px; white-space: pre; opacity: 0.55; }
+    .f07-ln {
+      position: absolute;
+      left: 0;
+      width: 50px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 20px;
+    }
+    .f07-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .f07-kw { color: #CC785C; }
+    .f07-fn { color: #E8A55A; }
+    .f07-fold { color: rgba(250, 249, 245, 0.4); }
+    .f07-uline {
+      position: absolute;
+      left: 133.6px;
+      top: 31px;
+      width: 245px;
+      height: 3px;
+      border-radius: 2px;
+      background: #CC785C;
+      transform-origin: left center;
+    }
+
+    /* dashed cleanup slot */
+    .f07-slotrow { position: relative; height: 0; overflow: hidden; }
+    .f07-slot {
+      position: absolute;
+      left: 104.8px;
+      top: 8px;
+      width: 440px;
+      height: 54px;
+      box-sizing: border-box;
+      border: 2px dashed rgba(250, 249, 245, 0.3);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      color: rgba(250, 249, 245, 0.5);
+      letter-spacing: 0.02em;
+    }
+
+    /* timeline */
+    .f07-lanelab {
+      position: absolute;
+      left: 920px;
+      width: 180px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      font-size: 27px;
+      color: #141413;
+    }
+    #f07-lab1 { top: 360px; }
+    #f07-lab2 { top: 470px; }
+    .f07-bar {
+      position: absolute;
+      left: 1120px;
+      width: 0;
+      height: 48px;
+      box-sizing: border-box;
+      background: #ECE3D4;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 6px;
+    }
+    #f07-bar1 { top: 360px; }
+    #f07-bar2 { top: 470px; }
+    .f07-axis {
+      position: absolute;
+      left: 1120px;
+      top: 580px;
+      width: 700px;
+      height: 1px;
+      background: rgba(20, 20, 19, 0.3);
+      transform-origin: left center;
+    }
+    .f07-axislab {
+      position: absolute;
+      left: 920px;
+      top: 564px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: rgba(20, 20, 19, 0.55);
+    }
+    .f07-marker {
+      position: absolute;
+      left: 1346px;
+      top: 262px;
+      width: 1px;
+      height: 318px;
+      background: rgba(20, 20, 19, 0.6);
+      transform-origin: center top;
+    }
+    .f07-tag {
+      position: absolute;
+      height: 36px;
+      padding: 0 14px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 9999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      line-height: 1;
+      color: #141413;
+      white-space: pre;
+    }
+    #f07-tag-unmount { left: 1360px; top: 262px; }
+    #f07-tag-again { left: 1360px; top: 306px; color: rgba(20, 20, 19, 0.7); }
+    #f07-tag-busy { left: 1360px; top: 530px; }
+    .f07-arrow {
+      position: absolute;
+      left: 1790px;
+      top: 526px;
+      width: 24px;
+      height: 104px;
+    }
+    .f07-land {
+      position: absolute;
+      left: 1808px;
+      top: 482px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #CC785C;
+      border: 3px solid #FAF9F5;
+      box-sizing: border-box;
+    }
+    .f07-chip {
+      position: absolute;
+      right: 80px;
+      top: 640px;
+      height: 56px;
+      padding: 0 22px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      background: #EFE9DE;
+      border: 2px solid #CC785C;
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 26px;
+      color: #CC785C;
+      white-space: pre;
+    }
+  </style>
+
+  <div data-hf-id="hf-myg9" id="root" data-composition-id="07-opkuis" data-width="1920" data-height="1080" data-duration="14.66">
+    <div data-hf-id="hf-zszp" class="f07-bg clip" id="f07-bg" data-start="0" data-duration="14.66" data-track-index="0"></div>
+
+    <div data-hf-id="hf-kjve" class="f07-stage clip" id="f07-stage" data-start="0" data-duration="14.66" data-track-index="1">
+      <div data-hf-id="hf-q85h" class="f07-kicker" id="f07-kicker"><span data-hf-id="hf-x4o2" class="f07-spike">✱</span>Opkuis</div>
+
+      <!-- Scene 1 statement -->
+      <div data-hf-id="hf-qvuk" class="f07-statement" id="f07-statement">
+        <span data-hf-id="hf-3s41" id="f07-klaar">Klaar?</span>
+        <span data-hf-id="hf-zzia" class="f07-it" id="f07-nee">Nee hoor.</span>
+      </div>
+
+      <!-- compact code surface -->
+      <div data-hf-id="hf-49au" class="f07-panel" id="f07-panel">
+        <div data-hf-id="hf-nymv" class="f07-titlebar">App.tsx</div>
+        <div data-hf-id="hf-1ygd" class="f07-code">
+          <div data-hf-id="hf-c7oq" class="f07-row"><span data-hf-id="hf-3hjw" class="f07-ln">1</span><span data-hf-id="hf-s2qi" class="f07-txt"><span data-hf-id="hf-gedv" class="f07-fn">useEffect</span>(() =&gt; {</span></div>
+          <div data-hf-id="hf-1xgu" class="f07-row"><span data-hf-id="hf-2amt" class="f07-ln">2</span><span data-hf-id="hf-v60r" class="f07-txt">  <span data-hf-id="hf-4fk4" class="f07-kw">const</span> <span data-hf-id="hf-3bdt" class="f07-fn">fetchData</span> = <span data-hf-id="hf-c18f" class="f07-kw">async</span> () =&gt; {</span></div>
+          <div data-hf-id="hf-2brv" class="f07-row"><span data-hf-id="hf-2oxu" class="f07-ln">3</span><span data-hf-id="hf-fb0d" class="f07-txt">    <span data-hf-id="hf-av7n" class="f07-fold">⋯</span></span></div>
+          <div data-hf-id="hf-7o0o" class="f07-row" id="f07-setline"><span data-hf-id="hf-4ogz" class="f07-ln">4</span><span data-hf-id="hf-l21u" class="f07-txt">    <span data-hf-id="hf-mqkk" class="f07-fn">setPosts</span>(result);</span><span data-hf-id="hf-i5n5" class="f07-uline" id="f07-uline"></span></div>
+          <div data-hf-id="hf-2q2w" class="f07-row"><span data-hf-id="hf-52s0" class="f07-ln">5</span><span data-hf-id="hf-wgi9" class="f07-txt">    <span data-hf-id="hf-ixab" class="f07-fold">⋯</span></span></div>
+          <div data-hf-id="hf-zxxp" class="f07-row"><span data-hf-id="hf-3vux" class="f07-ln">6</span><span data-hf-id="hf-1zwg" class="f07-txt">  }</span></div>
+          <div data-hf-id="hf-0c8q" class="f07-row"><span data-hf-id="hf-4a5y" class="f07-ln">7</span><span data-hf-id="hf-p3m3" class="f07-txt">  <span data-hf-id="hf-0nzp" class="f07-fn">fetchData</span>();</span></div>
+          <div data-hf-id="hf-koka" class="f07-slotrow" id="f07-slotrow"><div data-hf-id="hf-6yqn" class="f07-slot" id="f07-slot">cleanup?</div></div>
+          <div data-hf-id="hf-0qjr" class="f07-row"><span data-hf-id="hf-zwsn" class="f07-ln">8</span><span data-hf-id="hf-rq88" class="f07-txt">}, []);</span></div>
+        </div>
+        <div data-hf-id="hf-5emz" class="f07-status">useEffect · deps [] · geen cleanup</div>
+      </div>
+
+      <!-- timeline -->
+      <div data-hf-id="hf-gipq" class="f07-lanelab" id="f07-lab1">component</div>
+      <div data-hf-id="hf-b9dk" class="f07-lanelab" id="f07-lab2">fetch #1</div>
+      <div data-hf-id="hf-so5t" class="f07-bar" id="f07-bar1"></div>
+      <div data-hf-id="hf-ytvm" class="f07-bar" id="f07-bar2"></div>
+      <div data-hf-id="hf-pvyn" class="f07-axislab" id="f07-axislab">tijd</div>
+      <div data-hf-id="hf-n836" class="f07-axis" id="f07-axis"></div>
+
+      <div data-hf-id="hf-puka" class="f07-marker" id="f07-marker"></div>
+      <div data-hf-id="hf-az3f" class="f07-tag" id="f07-tag-unmount">unmount</div>
+      <div data-hf-id="hf-55v2" class="f07-tag" id="f07-tag-again">of: effect opnieuw</div>
+      <div data-hf-id="hf-87r9" class="f07-tag" id="f07-tag-busy">nog bezig…</div>
+
+      <svg data-hf-id="hf-qown" class="f07-arrow" id="f07-arrow" viewBox="0 0 24 104" fill="none">
+        <path data-hf-id="hf-z2pq" d="M12 2 L12 98" stroke="rgba(20,20,19,0.6)" stroke-width="2" stroke-linecap="round" />
+        <path data-hf-id="hf-ia8w" d="M4 88 L12 99 L20 88" stroke="rgba(20,20,19,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <div data-hf-id="hf-17u6" class="f07-land" id="f07-land"></div>
+      <div data-hf-id="hf-sejq" class="f07-chip" id="f07-chip">setPosts(…)</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.66;
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // geometry: track 1120..1820 (700px), both lanes grow at the same speed from 3.8s
+      var T0 = 3.8, TEND = 11.96, TRACK = 700;
+      var speed = TRACK / (TEND - T0);
+      var T_UNMOUNT = 6.44;
+      var W1 = Math.round((T_UNMOUNT - T0) * speed); // ~226px -> marker at x 1346
+
+      // ---- Scene 1 (0.0-3.8): kicker, "Klaar?" / "Nee hoor.", then code settles in ----
+      tl.fromTo("#f07-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.0);
+      tl.fromTo("#f07-klaar", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.0);
+      tl.fromTo("#f07-nee", { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 0.88);
+      tl.to("#f07-statement", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 3.04);
+      tl.fromTo("#f07-panel", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 3.1);
+
+      // timeline scaffold: axis drawn, lane labels in, by 3.8s
+      tl.fromTo("#f07-axis", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, 3.24);
+      tl.fromTo("#f07-axislab", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 3.4);
+      tl.fromTo(["#f07-lab1", "#f07-lab2"], { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", stagger: 0.1 }, 3.4);
+
+      // lanes grow at constant speed
+      tl.fromTo("#f07-bar1", { width: 0 }, { width: W1, duration: T_UNMOUNT - T0, ease: "none" }, T0);
+      tl.fromTo("#f07-bar2", { width: 0 }, { width: TRACK, duration: TEND - T0, ease: "none" }, T0);
+
+      // ---- Scene 2 (3.8-5.5): the dashed cleanup slot opens ----
+      tl.fromTo("#f07-slotrow", { height: 0 }, { height: 70, duration: 0.8, ease: "power3.out" }, 4.04);
+      tl.fromTo("#f07-slot", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 4.3);
+
+      // ---- Scene 3 (5.5-11.0): component unmounts, fetch keeps running ----
+      tl.fromTo("#f07-marker", { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: "power3.out" }, T_UNMOUNT);
+      tl.fromTo("#f07-tag-unmount", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, T_UNMOUNT + 0.08);
+      tl.to("#f07-bar1", { opacity: 0.35, duration: 0.5, ease: "power1.inOut" }, T_UNMOUNT + 0.1);
+      tl.to("#f07-lab1", { opacity: 0.35, duration: 0.5, ease: "power1.inOut" }, T_UNMOUNT + 0.1);
+      tl.fromTo("#f07-tag-again", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 7.2);
+      tl.fromTo("#f07-tag-busy", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.24);
+
+      // ---- Scene 4 (11.0-14.16): fetch lands late and still sets state ----
+      tl.fromTo("#f07-arrow", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 11.96);
+      // the one coral moment: landing marker + chip, linked underline in the code
+      tl.fromTo("#f07-land", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 12.64);
+      tl.fromTo("#f07-chip", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 12.66);
+      tl.to("#f07-setline", { opacity: 1, duration: 0.4, ease: "power1.out" }, 13.6);
+      tl.fromTo("#f07-uline", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 13.72);
+
+      tl.set({}, {}, DUR);
+      window.__timelines["07-opkuis"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,28 @@
+{
+  "tts_provider": null,
+  "voice_id": null,
+  "bgm": null,
+  "bgm_pending": false,
+  "bgm_provider": null,
+  "bgm_pid": null,
+  "bgm_log": null,
+  "bgm_mode": null,
+  "bgm_target_duration_s": null,
+  "bgm_seed_duration_s": null,
+  "bgm_loop_count": null,
+  "voices": [],
+  "sfx": [
+    {
+      "id": "07",
+      "name": "typing @3.0",
+      "file": "assets/sfx/typing-3-0.mp3",
+      "source": "openverse",
+      "duration_s": 0.753,
+      "license": "by",
+      "credit": "\"Keyboard Key Echoing\" by qubodup is licensed under CC BY 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/.",
+      "offset_s": 0,
+      "volume": 0.35
+    }
+  ],
+  "total_duration_s": 0
+}

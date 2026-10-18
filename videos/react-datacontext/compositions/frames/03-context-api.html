@@ -1,0 +1,320 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+
+    /* ---- frame 03 positions ---- */
+    .f03c-card {
+      position: absolute; top: 220px; width: 520px; height: 220px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 12px;
+    }
+    #f03c-card1 { left: 120px; }
+    #f03c-card2 { left: 700px; }
+    #f03c-card3 { left: 1280px; }
+    .f03c-num { position: absolute; left: 32px; top: 26px; font-family: var(--ts-sans); font-weight: 700; font-size: 40px; line-height: 48px; color: var(--ts-blue); }
+    .f03c-title { position: absolute; left: 82px; top: 30px; font-family: var(--ts-mono); font-weight: 500; font-size: 30px; line-height: 44px; color: var(--ts-ink); white-space: nowrap; font-variant-ligatures: none; }
+    .f03c-title-bar { left: 0; right: 0; top: 50px; }
+    .f03c-wash { position: absolute; left: 20px; right: 20px; top: 104px; height: 80px; border-radius: 6px; background: var(--ts-wash); }
+    .f03c-code { position: absolute; left: 32px; top: 110px; font-family: var(--ts-mono); font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none; }
+    .f03c-row { height: 34px; white-space: pre; }
+    #f03c-active {
+      position: absolute; left: 120px; top: 220px; width: 520px; height: 220px; box-sizing: border-box;
+      border: 2px solid var(--ts-blue); border-radius: 12px; pointer-events: none;
+    }
+    /* diagram */
+    .f03c-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    #f03c-prov-rect { fill: none; stroke: var(--ts-blue); stroke-width: 2; }
+    .f03c-arrow { fill: none; stroke: var(--ts-blue); stroke-width: 2; stroke-linecap: round; }
+    .f03c-head { fill: var(--ts-blue); }
+    #f03c-tab {
+      position: absolute; left: 890px; top: 522px; width: 140px; height: 36px; box-sizing: border-box;
+      background: var(--ts-blue-tint); border: 2px solid var(--ts-blue); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 20px; color: var(--ts-blue-dark);
+    }
+    .f03c-comp {
+      position: absolute; top: 700px; width: 260px; height: 90px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-mono); font-size: 24px; color: var(--ts-ink);
+    }
+    #f03c-compA { left: 680px; }
+    #f03c-compB { left: 980px; }
+  </style>
+
+  <div data-hf-id="hf-f03r" id="root" data-composition-id="03-context-api" data-width="1920" data-height="1080" data-duration="13.38">
+    <div data-hf-id="hf-f03b" class="ts-bg clip" id="f03c-bg" data-start="0" data-duration="13.38" data-track-index="0"></div>
+
+    <div data-hf-id="hf-f03s" class="ts-stage clip" id="f03c-stage" data-start="0" data-duration="13.38" data-track-index="1">
+      <div data-hf-id="hf-f03k" class="ts-kicker" id="f03c-kicker"><div data-hf-id="hf-f03kb" class="ts-kicker-bar" id="f03c-kbar"></div><span data-hf-id="hf-f03kt" class="ts-kicker-text" id="f03c-ktext">Context API</span></div>
+
+      <!-- card 1 -->
+      <div data-hf-id="hf-f03c1" class="f03c-card" id="f03c-card1">
+        <div data-hf-id="hf-f03w1" class="f03c-wash" id="f03c-wash1"></div>
+        <div data-hf-id="hf-f03n1" class="f03c-num">1</div>
+        <div data-hf-id="hf-f03t1" class="f03c-title" id="f03c-title1">createContext</div>
+        <div data-hf-id="hf-f03d1" class="f03c-code" id="f03c-code1">
+          <div data-hf-id="hf-f03r11" class="f03c-row"><span data-hf-id="hf-f03a1" class="ts-kw">const</span> DataContext =</div>
+          <div data-hf-id="hf-f03r12" class="f03c-row">  React.<span data-hf-id="hf-f03a2" class="ts-fn">createContext</span><span data-hf-id="hf-f03a3" class="ts-punct">(</span><span data-hf-id="hf-f03a4" class="ts-fold">⋯</span><span data-hf-id="hf-f03a5" class="ts-punct">);</span></div>
+        </div>
+      </div>
+
+      <!-- card 2 -->
+      <div data-hf-id="hf-f03c2" class="f03c-card" id="f03c-card2">
+        <div data-hf-id="hf-f03n2" class="f03c-num">2</div>
+        <div data-hf-id="hf-f03t2" class="f03c-title" id="f03c-title2">Provider</div>
+        <div data-hf-id="hf-f03d2" class="f03c-code" id="f03c-code2">
+          <div data-hf-id="hf-f03r21" class="f03c-row"><span data-hf-id="hf-f03b1" class="ts-punct">&lt;</span><span data-hf-id="hf-f03b2" class="ts-fn">DataContext.Provider</span></div>
+          <div data-hf-id="hf-f03r22" class="f03c-row">  value<span data-hf-id="hf-f03b3" class="ts-punct">={</span><span data-hf-id="hf-f03b4" class="ts-fold">⋯</span><span data-hf-id="hf-f03b5" class="ts-punct">}&gt;</span></div>
+        </div>
+      </div>
+
+      <!-- card 3 -->
+      <div data-hf-id="hf-f03c3" class="f03c-card" id="f03c-card3">
+        <div data-hf-id="hf-f03n3" class="f03c-num">3</div>
+        <div data-hf-id="hf-f03t3" class="f03c-title" id="f03c-title3">useContext<div data-hf-id="hf-f03u3" class="ts-underline f03c-title-bar" id="f03c-ubar"></div></div>
+        <div data-hf-id="hf-f03d3" class="f03c-code" id="f03c-code3">
+          <div data-hf-id="hf-f03r31" class="f03c-row"><span data-hf-id="hf-f03e1" class="ts-kw">const</span> <span data-hf-id="hf-f03e2" class="ts-punct">{</span> <span data-hf-id="hf-f03e3" class="ts-fold">⋯</span> <span data-hf-id="hf-f03e4" class="ts-punct">}</span> =</div>
+          <div data-hf-id="hf-f03r32" class="f03c-row">  <span data-hf-id="hf-f03e5" class="ts-fn">useContext</span><span data-hf-id="hf-f03e6" class="ts-punct">(</span>DataContext<span data-hf-id="hf-f03e7" class="ts-punct">);</span></div>
+        </div>
+      </div>
+
+      <!-- moving active border -->
+      <div data-hf-id="hf-f03ac" id="f03c-active"></div>
+
+      <!-- diagram: provider box around two components -->
+      <svg data-hf-id="hf-f03sv" class="f03c-svg" viewBox="0 0 1920 1080">
+        <rect data-hf-id="hf-f03pr" id="f03c-prov-rect" x="580" y="540" width="760" height="300" rx="8" ry="8" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"></rect>
+        <path data-hf-id="hf-f03p1" class="f03c-arrow" id="f03c-arrow1" d="M 810 692 L 922 574" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"></path>
+        <path data-hf-id="hf-f03p2" class="f03c-arrow" id="f03c-arrow2" d="M 1110 692 L 998 574" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"></path>
+        <polygon data-hf-id="hf-f03h1" class="f03c-head" id="f03c-head1" points="928,568 911,575 921,584"></polygon>
+        <polygon data-hf-id="hf-f03h2" class="f03c-head" id="f03c-head2" points="992,568 1009,575 999,584"></polygon>
+      </svg>
+      <div data-hf-id="hf-f03tb" id="f03c-tab">Provider</div>
+      <div data-hf-id="hf-f03ca" class="f03c-comp" id="f03c-compA">ComponentA</div>
+      <div data-hf-id="hf-f03cb" class="f03c-comp" id="f03c-compB">ComponentB</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 12.88;
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- Scene 1 (0.0-3.2): kicker; "context API" (0.56 / 0.96) three empty cards with numbers ----
+      tl.fromTo("#f03c-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f03c-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo(["#f03c-card1", "#f03c-card2", "#f03c-card3"],
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", stagger: 0.12 }, 0.56);
+
+      // hidden until named
+      tl.set(["#f03c-title1", "#f03c-code1", "#f03c-title2", "#f03c-code2", "#f03c-title3", "#f03c-code3",
+              "#f03c-wash1", "#f03c-active", "#f03c-tab", "#f03c-compA", "#f03c-compB",
+              "#f03c-head1", "#f03c-head2"], { opacity: 0 }, 0);
+      tl.set("#f03c-ubar", { scaleX: 0 }, 0);
+
+      function reveal(titleSel, codeSel, at) {
+        tl.fromTo(titleSel, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, at);
+        tl.fromTo(codeSel, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, at + 0.12);
+      }
+
+      // ---- Scene 2 (3.2-8.5) ----
+      // "context" (3.96): card 1 title + code + blue border
+      tl.fromTo("#f03c-active", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, 3.96);
+      reveal("#f03c-title1", "#f03c-code1", 3.96);
+      // "create context." (4.64 / 5.2): wash on the code line
+      tl.fromTo("#f03c-wash1", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 4.9);
+      // "provider" (6.92): border moves to card 2
+      tl.to("#f03c-wash1", { opacity: 0, duration: 0.4, ease: "power1.inOut" }, 6.92);
+      tl.to("#f03c-active", { x: 580, duration: 0.5, ease: "power3.inOut" }, 6.92);
+      reveal("#f03c-title2", "#f03c-code2", 7.02);
+      // "rond" (7.24): provider box border wipes on, tab settles
+      tl.fromTo("#f03c-prov-rect", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 7.24);
+      tl.fromTo("#f03c-tab", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 7.6);
+      // "componenten." (7.8): component boxes settle inside
+      tl.fromTo(["#f03c-compA", "#f03c-compB"],
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.1 }, 7.8);
+
+      // ---- Scene 3 (8.5-12.88) ----
+      // "component" (9.36): border moves to card 3
+      tl.to("#f03c-active", { x: 1160, duration: 0.5, ease: "power3.inOut" }, 9.36);
+      reveal("#f03c-title3", "#f03c-code3", 9.46);
+      // "vraagt" (10.4): arrows from components up to the provider tab
+      tl.fromTo("#f03c-arrow1", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, 10.4);
+      tl.fromTo("#f03c-head1", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, 10.82);
+      tl.fromTo("#f03c-arrow2", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, 10.5);
+      tl.fromTo("#f03c-head2", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, 10.92);
+      // "use context." (11.84 / 12.16): underline wipe under the useContext title
+      tl.fromTo("#f03c-ubar", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 11.9);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["03-context-api"] = tl;
+    })();
+  </script>
+</template>

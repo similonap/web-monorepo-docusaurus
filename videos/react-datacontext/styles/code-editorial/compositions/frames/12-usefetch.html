@@ -1,0 +1,379 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "EB Garamond"; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: block; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Inter", sans-serif;
+      color: #141413;
+    }
+    .f12uf-bg { position: absolute; inset: 0; background: #FAF9F5; }
+    .f12uf-stage { position: absolute; inset: 0; }
+
+    /* kicker */
+    .f12uf-kicker {
+      position: absolute;
+      left: 80px;
+      top: 92px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    .f12uf-kicker .f12uf-spike { color: #CC785C; margin-right: 14px; }
+
+    /* code surface (18 lines, 24px / 35px) */
+    .f12uf-panel {
+      position: absolute;
+      left: 80px;
+      top: 170px;
+      width: 1060px;
+      height: 720px;
+      background: #181715;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-sizing: border-box;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+    }
+    .f12uf-titlebar {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 46px;
+      background: #252320;
+      border-bottom: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 21px;
+      color: rgba(250, 249, 245, 0.62);
+      letter-spacing: 0.02em;
+      white-space: pre;
+    }
+    .f12uf-tcaret {
+      display: inline-block;
+      width: 2px;
+      height: 22px;
+      margin-left: 2px;
+      background: rgba(250, 249, 245, 0.8);
+      vertical-align: middle;
+      opacity: 0;
+    }
+    .f12uf-status {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 36px;
+      background: #252320;
+      border-top: 1px solid rgba(250, 249, 245, 0.14);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 17px;
+      color: rgba(250, 249, 245, 0.45);
+      letter-spacing: 0.04em;
+    }
+    .f12uf-code {
+      position: absolute;
+      left: 0; right: 0;
+      top: 52px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      line-height: 35px;
+      color: #FAF9F5;
+      font-variant-ligatures: none;
+    }
+    .f12uf-row { position: relative; height: 35px; white-space: pre; }
+    .f12uf-ln {
+      position: absolute;
+      left: 0;
+      width: 60px;
+      text-align: right;
+      color: rgba(250, 249, 245, 0.32);
+      font-size: 20px;
+    }
+    .f12uf-txt { position: absolute; left: 84px; top: 0; white-space: pre; }
+    .f12uf-kw { color: #CC785C; }
+    .f12uf-fn { color: #E8A55A; }
+    .f12uf-num { color: #E8A55A; }
+    .f12uf-str { color: #5DB8A6; }
+    .f12uf-dim { color: rgba(250, 249, 245, 0.6); }
+    .f12uf-fold { color: rgba(250, 249, 245, 0.4); }
+    .f12uf-hl { border-radius: 4px; background: rgba(232, 165, 90, 0); }
+    .f12uf-gen { border-radius: 4px; background: rgba(204, 120, 92, 0); }
+    .f12uf-gap {
+      display: inline-block;
+      width: 0;
+      height: 35px;
+      overflow: hidden;
+      vertical-align: top;
+      white-space: pre;
+    }
+    .f12uf-caret {
+      position: absolute;
+      top: 5px;
+      left: 0;
+      width: 3px;
+      height: 25px;
+      background: #FAF9F5;
+      opacity: 0;
+    }
+    .f12uf-tag {
+      position: absolute;
+      left: 720px;
+      top: 494px;
+      height: 32px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 19px;
+      color: #141413;
+      letter-spacing: 0.02em;
+      white-space: pre;
+    }
+
+    /* right column */
+    .f12uf-note {
+      position: absolute;
+      left: 1236px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      color: rgba(20, 20, 19, 0.5);
+      letter-spacing: 0.04em;
+    }
+    .f12uf-chip {
+      position: absolute;
+      height: 60px;
+      box-sizing: border-box;
+      padding: 0 26px;
+      display: flex;
+      align-items: center;
+      background: #EFE9DE;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      color: #141413;
+      letter-spacing: 0.02em;
+      white-space: pre;
+    }
+    .f12uf-chip .f12uf-cdim { color: rgba(20, 20, 19, 0.55); }
+  </style>
+
+  <div data-hf-id="hf-itzi" id="root" data-composition-id="12-usefetch" data-width="1920" data-height="1080" data-duration="20.42">
+    <div data-hf-id="hf-wz5y" class="f12uf-bg clip" id="f12uf-bg" data-start="0" data-duration="20.42" data-track-index="0"></div>
+
+    <div data-hf-id="hf-e0m5" class="f12uf-stage clip" id="f12uf-stage" data-start="0" data-duration="20.42" data-track-index="1">
+      <div data-hf-id="hf-ahx0" class="f12uf-kicker" id="f12uf-kicker"><span data-hf-id="hf-b3ar" class="f12uf-spike">✱</span>Custom hook</div>
+
+      <!-- code surface: useFetch.ts -->
+      <div data-hf-id="hf-pm9o" class="f12uf-panel" id="f12uf-panel">
+        <div data-hf-id="hf-knni" class="f12uf-titlebar"><span data-hf-id="hf-lk08" id="f12uf-fname"></span><span data-hf-id="hf-65k3" class="f12uf-tcaret" id="f12uf-tcaret"></span></div>
+        <div data-hf-id="hf-gh0y" class="f12uf-code" id="f12uf-code">
+          <div data-hf-id="hf-jonp" class="f12uf-row"><span data-hf-id="hf-kxlv" class="f12uf-ln">1</span><span data-hf-id="hf-fc7t" class="f12uf-txt f12uf-if"><span data-hf-id="hf-q4wr" class="f12uf-kw">interface</span> <span data-hf-id="hf-ugtz" class="f12uf-fn">FetchState</span><span data-hf-id="hf-2p9e" class="f12uf-dim">&lt;T&gt;</span> {</span></div>
+          <div data-hf-id="hf-5w3t" class="f12uf-row"><span data-hf-id="hf-kjau" class="f12uf-ln">2</span><span data-hf-id="hf-c2sv" class="f12uf-txt f12uf-if">  loading: <span data-hf-id="hf-ddyc" class="f12uf-dim">boolean</span>;</span></div>
+          <div data-hf-id="hf-730w" class="f12uf-row"><span data-hf-id="hf-k4zt" class="f12uf-ln">3</span><span data-hf-id="hf-fpxf" class="f12uf-txt f12uf-if">  data: <span data-hf-id="hf-1nr1" class="f12uf-dim">T | null</span>;</span></div>
+          <div data-hf-id="hf-6opv" class="f12uf-row"><span data-hf-id="hf-jqos" class="f12uf-ln">4</span><span data-hf-id="hf-l6fh" class="f12uf-txt f12uf-if">  error: <span data-hf-id="hf-fybr" class="f12uf-dim">Error | null</span>;</span></div>
+          <div data-hf-id="hf-4p6q" class="f12uf-row"><span data-hf-id="hf-jcdr" class="f12uf-ln">5</span><span data-hf-id="hf-wqci" class="f12uf-txt f12uf-if">  refetch: <span data-hf-id="hf-lusk" class="f12uf-dim">() =&gt; void</span>;</span></div>
+          <div data-hf-id="hf-4avp" class="f12uf-row"><span data-hf-id="hf-iy2q" class="f12uf-ln">6</span><span data-hf-id="hf-ejlr" class="f12uf-txt f12uf-if">}</span></div>
+          <div data-hf-id="hf-5hss" class="f12uf-row"><span data-hf-id="hf-ijrp" class="f12uf-ln">7</span></div>
+          <div data-hf-id="hf-53hr" class="f12uf-row"><span data-hf-id="hf-i5go" class="f12uf-ln">8</span><span data-hf-id="hf-11ba" class="f12uf-txt"><span data-hf-id="hf-562i" id="f12uf-l8a"></span><span data-hf-id="hf-qov7" id="f12uf-l8t" class="f12uf-gen"></span><span data-hf-id="hf-17yh" id="f12uf-l8b"></span><span data-hf-id="hf-4dod" class="f12uf-gap" id="f12uf-gap">: <span data-hf-id="hf-6n5j" class="f12uf-fn">FetchState</span><span data-hf-id="hf-cs3q" class="f12uf-dim">&lt;T&gt;</span></span><span data-hf-id="hf-y8ow" id="f12uf-l8c"></span></span></div>
+          <div data-hf-id="hf-33ym" class="f12uf-row"><span data-hf-id="hf-hr5n" class="f12uf-ln">9</span><span data-hf-id="hf-v7se" class="f12uf-txt f12uf-mv">  <span data-hf-id="hf-ay5n" class="f12uf-kw">const</span> [error, <span data-hf-id="hf-15ww" class="f12uf-fn">setError</span>] = <span data-hf-id="hf-xn2y" class="f12uf-fn">useState</span><span data-hf-id="hf-ve2v" class="f12uf-dim">&lt;Error | null&gt;</span>(null);</span></div>
+          <div data-hf-id="hf-2pnl" class="f12uf-row"><span data-hf-id="hf-da09" class="f12uf-ln">10</span><span data-hf-id="hf-q7ya" class="f12uf-txt f12uf-mv">  <span data-hf-id="hf-63pn" class="f12uf-kw">const</span> [<span data-hf-id="hf-1cr6" class="f12uf-hl f12uf-hl10">data</span>, <span data-hf-id="hf-byvx" class="f12uf-fn f12uf-hl f12uf-hl10">setData</span>] = <span data-hf-id="hf-983i" class="f12uf-fn">useState</span><span data-hf-id="hf-57xt" class="f12uf-dim">&lt;<span data-hf-id="hf-xt2a" class="f12uf-hl f12uf-hl10">T</span> | null&gt;</span>(null);</span></div>
+          <div data-hf-id="hf-q0or" class="f12uf-row"><span data-hf-id="hf-doba" class="f12uf-ln">11</span><span data-hf-id="hf-3i6k" class="f12uf-txt f12uf-mv">  <span data-hf-id="hf-5pem" class="f12uf-kw">const</span> [loading, <span data-hf-id="hf-4mju" class="f12uf-fn">setLoading</span>] = <span data-hf-id="hf-9mej" class="f12uf-fn">useState</span><span data-hf-id="hf-v1jm" class="f12uf-dim">&lt;boolean&gt;</span>(false);</span></div>
+          <div data-hf-id="hf-qezs" class="f12uf-row"><span data-hf-id="hf-e2mb" class="f12uf-ln">12</span><span data-hf-id="hf-bm5p" class="f12uf-txt f12uf-mv">  <span data-hf-id="hf-5b3l" class="f12uf-kw">const</span> [trigger, <span data-hf-id="hf-t6by" class="f12uf-fn">setTrigger</span>] = <span data-hf-id="hf-a0pk" class="f12uf-fn">useState</span><span data-hf-id="hf-6h4p" class="f12uf-dim">&lt;number&gt;</span>(<span data-hf-id="hf-3dt2" class="f12uf-num">0</span>);</span></div>
+          <div data-hf-id="hf-p82p" class="f12uf-row"><span data-hf-id="hf-egxc" class="f12uf-ln">13</span><span data-hf-id="hf-qq34" class="f12uf-txt f12uf-mv">  <span data-hf-id="hf-4wsk" class="f12uf-kw">const</span> refetch = () =&gt; <span data-hf-id="hf-bd5e" class="f12uf-fn">setTrigger</span>(trigger =&gt; trigger + <span data-hf-id="hf-2zi1" class="f12uf-num">1</span>);</span></div>
+          <div data-hf-id="hf-pmdq" class="f12uf-row"><span data-hf-id="hf-bos5" class="f12uf-ln">14</span></div>
+          <div data-hf-id="hf-ofgn" class="f12uf-row"><span data-hf-id="hf-c336" class="f12uf-ln">15</span><span data-hf-id="hf-4pad" class="f12uf-txt f12uf-mv">  <span data-hf-id="hf-2b74" class="f12uf-fn">useEffect</span>(() =&gt; { <span data-hf-id="hf-w848" class="f12uf-fold">⋯</span> }, [trigger, url]);</span></div>
+          <div data-hf-id="hf-otro" class="f12uf-row"><span data-hf-id="hf-che7" class="f12uf-ln">16</span></div>
+          <div data-hf-id="hf-nmul" class="f12uf-row"><span data-hf-id="hf-cvp8" class="f12uf-ln">17</span><span data-hf-id="hf-ege1" class="f12uf-txt" id="f12uf-l17"></span></div>
+          <div data-hf-id="hf-o15m" class="f12uf-row"><span data-hf-id="hf-a3k1" class="f12uf-ln">18</span><span data-hf-id="hf-x83q" class="f12uf-txt" id="f12uf-l18"></span></div>
+          <span data-hf-id="hf-ikf7" class="f12uf-caret" id="f12uf-caret"></span>
+          <div data-hf-id="hf-x04s" class="f12uf-tag" id="f12uf-tag">uit App.tsx</div>
+        </div>
+        <div data-hf-id="hf-317v" class="f12uf-status">useFetch · custom hook</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-eixj" class="f12uf-note" id="f12uf-bv" style="top: 274px;">bv.</div>
+      <div data-hf-id="hf-12ab" class="f12uf-chip" id="f12uf-chip-t" style="left: 1310px; top: 260px;">T = <span data-hf-id="hf-v2sb" class="f12uf-cdim">Post[]</span></div>
+
+      <div data-hf-id="hf-s4pt" class="f12uf-note" id="f12uf-ret" style="top: 330px; font-size: 20px; letter-spacing: 0.16em;">RETURN</div>
+      <div data-hf-id="hf-ud12" class="f12uf-chip" id="f12uf-r-data" style="left: 1236px; top: 380px;">data: <span data-hf-id="hf-v3d8" class="f12uf-cdim">T | null</span></div>
+      <div data-hf-id="hf-78hf" class="f12uf-chip" id="f12uf-r-loading" style="left: 1236px; top: 460px;">loading: <span data-hf-id="hf-nzin" class="f12uf-cdim">boolean</span></div>
+      <div data-hf-id="hf-k6fy" class="f12uf-chip" id="f12uf-r-error" style="left: 1236px; top: 540px;">error: <span data-hf-id="hf-4pze" class="f12uf-cdim">Error | null</span></div>
+      <div data-hf-id="hf-7yst" class="f12uf-chip" id="f12uf-r-refetch" style="left: 1236px; top: 620px;">refetch: <span data-hf-id="hf-uqap" class="f12uf-cdim">() =&gt; void</span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 20.42;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 24;
+      var LH = 35;
+      var X0 = 84;
+      var chPx = FS * CW;
+      var root = document.querySelector('[data-composition-id="12-usefetch"]');
+      var q = function (s) { return root.querySelector(s); };
+      var qa = function (s) { return Array.prototype.slice.call(root.querySelectorAll(s)); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var caret = q("#f12uf-caret");
+
+      // ---- type-on helper: chars inserted (display) one by one, caret steps per char ----
+      // host: element to append into; line: 1-based row (caret y); col0: column where typing starts
+      function typeOn(hostSel, line, segments, start, per, col0, lead) {
+        if (lead === undefined) lead = 0.1;
+        var host0 = q(hostSel);
+        var chars = [];
+        segments.forEach(function (seg) {
+          var host = host0;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = seg.hl || "f12uf-hl";
+            host.id = seg.id;
+            host0.appendChild(host);
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              if (p.c) s.className = p.c;
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var y = (line - 1) * LH;
+        tl.set(chars, { display: "none" }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col0 * chPx, y: y }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.set(el, { display: "inline" }, at);
+          tl.set(caret, { x: X0 + (col0 + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end + 0.12);
+        return end;
+      }
+
+      function pop(sel, at) {
+        tl.fromTo(sel, { opacity: 0, y: 10, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, at);
+      }
+
+      // initial hidden states (seek-safe: set at 0)
+      gsap.set(qa(".f12uf-if"), { opacity: 0 });
+      gsap.set(qa(".f12uf-mv"), { opacity: 0 });
+      gsap.set(["#f12uf-tag", "#f12uf-bv", "#f12uf-chip-t", "#f12uf-ret",
+              "#f12uf-r-data", "#f12uf-r-loading", "#f12uf-r-error", "#f12uf-r-refetch"], { opacity: 0 });
+      gsap.set("#f12uf-gap", { width: 0 });
+
+      // ---- Scene 1 (0.0–3.6): kicker; empty surface on "nieuw bestand"; file name on "use fetch punt ts" ----
+      tl.fromTo("#f12uf-kicker", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f12uf-panel", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.68);
+
+      // title bar types "useFetch.ts"
+      (function () {
+        var host = q("#f12uf-fname");
+        var name = "useFetch.ts";
+        var chars = [];
+        for (var i = 0; i < name.length; i++) {
+          var s = document.createElement("span");
+          s.textContent = name[i];
+          host.appendChild(s);
+          chars.push(s);
+        }
+        tl.set(chars, { display: "none" }, 0);
+        tl.set("#f12uf-tcaret", { opacity: 1 }, 1.66);
+        chars.forEach(function (el, i) { tl.set(el, { display: "inline" }, 1.76 + i * 0.07); });
+        tl.set("#f12uf-tcaret", { opacity: 0 }, 1.76 + name.length * 0.07 + 0.25);
+      })();
+
+      // ---- Scene 2 (3.6–11.3): signature, "url", generic <T> (coral), braces, chip T = Post[] ----
+      var per = 0.03;
+      typeOn("#f12uf-l8a", 8, [
+        { t: "export", c: "f12uf-kw" }, { t: " " },
+        { t: "function", c: "f12uf-kw" }, { t: " " },
+        { t: "useFetch", c: "f12uf-fn" }
+      ], 4.0, per, 0);
+
+      typeOn("#f12uf-l8b", 8, [
+        { t: "(url: " }, { t: "string", c: "f12uf-dim" }, { t: ")" }
+      ], 5.76, per, 24);
+
+      // "generiek" -> insert <T> right after useFetch; text after it shifts right
+      typeOn("#f12uf-l8t", 8, [{ t: "<T>" }], 6.88, 0.07, 24);
+      tl.to("#f12uf-l8t", { backgroundColor: "rgba(204, 120, 92, 0.38)", duration: 0.35, ease: "power1.out" }, 7.0);
+
+      // "T." -> " {" closes line 8, line 18 "}"
+      var e8 = typeOn("#f12uf-l8c", 8, [{ t: " {" }], 7.84, 0.05, 40, 0.06);
+      typeOn("#f12uf-l18", 18, [{ t: "}" }], e8 + 0.15, 0.05, 0, 0.06);
+
+      // "welk type data" -> bv. + chip T = Post[]
+      tl.fromTo("#f12uf-bv", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 9.44);
+      pop("#f12uf-chip-t", 10.0);
+
+      // ---- Scene 3 (11.3–15.0): state + effect move in from App ----
+      tl.fromTo(qa(".f12uf-mv"), { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out", stagger: 0.06 }, 11.84);
+      tl.to(qa(".f12uf-hl10"), { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.3, ease: "power1.out" }, 12.52);
+      tl.to(qa(".f12uf-hl10"), { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.4, ease: "power1.inOut" }, 13.32);
+
+      tl.fromTo("#f12uf-tag", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 13.76);
+      tl.to("#f12uf-tag", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 14.9);
+
+      // ---- Scene 4 (15.0–19.92): return line, interface, ": FetchState<T>" opens, four return values ----
+      typeOn("#f12uf-l17", 17, [
+        { t: "  " },
+        { t: "return", c: "f12uf-kw" },
+        { t: " { " },
+        { id: "f12uf-w-data", parts: [{ t: "data" }] },
+        { t: ", " },
+        { id: "f12uf-w-loading", parts: [{ t: "loading" }] },
+        { t: ", " },
+        { id: "f12uf-w-error", parts: [{ t: "error" }] },
+        { t: ", " },
+        { id: "f12uf-w-refetch", parts: [{ t: "refetch" }] },
+        { t: " };" }
+      ], 15.2, 0.024, 0);
+
+      tl.fromTo(qa(".f12uf-if"), { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.05 }, 15.92);
+      tl.fromTo("#f12uf-gap", { width: 0 }, { width: 15 * chPx, duration: 0.6, ease: "power3.out" }, 15.92);
+      tl.fromTo("#f12uf-ret", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 15.92);
+
+      var beats = [
+        ["data", 16.84], ["loading", 17.44], ["error", 18.36], ["refetch", 19.12]
+      ];
+      beats.forEach(function (b, i) {
+        tl.to("#f12uf-w-" + b[0], { backgroundColor: "rgba(232, 165, 90, 0.24)", duration: 0.3, ease: "power1.out" }, b[1]);
+        if (i > 0) {
+          tl.to("#f12uf-w-" + beats[i - 1][0], { backgroundColor: "rgba(232, 165, 90, 0)", duration: 0.4, ease: "power1.inOut" }, b[1]);
+        }
+        pop("#f12uf-r-" + b[0], b[1]);
+      });
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["12-usefetch"] = tl;
+    })();
+  </script>
+</template>

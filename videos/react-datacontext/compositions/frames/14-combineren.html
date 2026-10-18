@@ -1,0 +1,470 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+
+    /* ---- frame 14 positions / frame-only primitives ---- */
+    #f14c-panel { left: 80px; top: 170px; width: 1060px; height: 720px; }
+    #f14c-panel .ts-code { font-size: 24px; line-height: 35px; }
+    #f14c-panel .ts-row { position: absolute; left: 0; right: 0; top: 0; height: 35px; }
+    #f14c-panel .ts-caret { top: 5px; height: 25px; }
+    #f14c-rf { transform-origin: left center; }
+    #f14c-strike { position: absolute; left: 105px; top: 17px; width: 389px; height: 2px; background: var(--ts-ink-soft); transform-origin: left center; }
+    #f14c-box { position: absolute; left: 62px; top: 101px; width: 820px; height: 113px; overflow: visible; }
+    #f14c-box rect { fill: none; stroke: #3178C6; stroke-width: 2; }
+    .f14c-st { position: absolute; left: 28px; top: 0; height: 40px; display: flex; align-items: center; white-space: nowrap; }
+
+    /* right column: tiles */
+    .f14c-tile {
+      position: absolute; top: 240px; height: 76px; box-sizing: border-box;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 28px; font-weight: 500; color: var(--ts-ink);
+      white-space: nowrap; font-variant-ligatures: none;
+    }
+    #f14c-tile-fetch { left: 1275px; width: 200px; }
+    #f14c-tile-ctx { left: 1551px; width: 250px; }
+    #f14c-plus {
+      position: absolute; left: 1495px; top: 240px; width: 36px; height: 76px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 44px; line-height: 1; color: var(--ts-blue);
+    }
+
+    /* right column: mapping panel */
+    #f14c-map { left: 1236px; top: 380px; width: 604px; height: 220px; }
+    #f14c-map .ts-mini-title::before { display: none; }
+    .f14c-mrow { position: absolute; left: 28px; right: 28px; height: 44px; display: flex; align-items: center; white-space: pre; }
+    .f14c-mfrom { display: inline-block; width: 200px; color: var(--ts-code-text); }
+    .f14c-marrow { display: inline-block; width: 64px; color: var(--ts-muted); }
+    .f14c-mto { color: var(--ts-blue-dark); font-weight: 500; }
+    #f14c-m1 { top: 12px; }
+    #f14c-m2 { top: 62px; }
+    #f14c-m3 { top: 112px; }
+
+    /* right column: components + closing */
+    .f14c-comp {
+      position: absolute; top: 640px; width: 292px; height: 72px; box-sizing: border-box; padding: 0 24px;
+      display: flex; align-items: center; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; color: var(--ts-ink); font-variant-ligatures: none; white-space: nowrap;
+    }
+    #f14c-comp1 { left: 1236px; }
+    #f14c-comp2 { left: 1548px; }
+    #f14c-same { left: 1236px; top: 732px; font-size: 18px; color: var(--ts-ink-soft); }
+    #f14c-close {
+      position: absolute; left: 1236px; top: 786px; display: inline-block;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 44px; line-height: 1.1; letter-spacing: -0.015em;
+      color: var(--ts-ink); white-space: nowrap;
+    }
+    #f14c-uline { left: 0; right: 0; bottom: -14px; }
+  </style>
+
+  <div id="root" data-composition-id="14-combineren" data-width="1920" data-height="1080" data-duration="26.52">
+    <div class="ts-bg clip" id="f14c-bg" data-start="0" data-duration="26.52" data-track-index="0"></div>
+
+    <div class="ts-stage clip" id="f14c-stage" data-start="0" data-duration="26.52" data-track-index="1">
+      <div class="ts-kicker" id="f14c-kicker"><div class="ts-kicker-bar" id="f14c-kbar"></div><span class="ts-kicker-text" id="f14c-ktext">Samen gebruiken</span></div>
+
+      <!-- right column: the two tiles -->
+      <div class="f14c-tile" id="f14c-tile-fetch">useFetch</div>
+      <div id="f14c-plus">+</div>
+      <div class="f14c-tile" id="f14c-tile-ctx">DataContext</div>
+
+      <!-- code surface: DataProvider.tsx (rows absolutely placed, slots driven by the timeline) -->
+      <div class="ts-code-surface" id="f14c-panel">
+        <div class="ts-code-title">DataProvider.tsx</div>
+        <div class="ts-code" id="f14c-code">
+          <div class="ts-row" id="f14c-r1"><span class="ts-ln">1</span><span class="ts-txt" id="f14c-l1"></span><span class="ts-caret" id="f14c-c1"></span></div>
+          <div class="ts-row" id="f14c-r2"><span class="ts-ln">2</span><span class="ts-txt"></span></div>
+          <div class="ts-row" id="f14c-r3"><span class="ts-ln">3</span><span class="ts-txt"><span class="ts-kw">export</span> <span class="ts-kw">const</span> <span class="ts-fn">DataProvider</span> = ({ children }: <span class="ts-fold">⋯</span>) <span class="ts-kw">=&gt;</span> {</span></div>
+          <div class="ts-row" id="f14c-rf"><span class="ts-txt ts-fold">  ⋯ states, useEffect, reload</span><span id="f14c-strike"></span></div>
+          <div class="ts-row" id="f14c-r4"><span class="ts-ln">4</span><span class="ts-txt" id="f14c-l4"></span><span class="ts-caret" id="f14c-c4"></span></div>
+          <div class="ts-row" id="f14c-r5"><span class="ts-ln">5</span><span class="ts-txt" id="f14c-l5"></span><span class="ts-caret" id="f14c-c5"></span></div>
+          <div class="ts-row" id="f14c-r6"><span class="ts-ln">6</span><span class="ts-txt" id="f14c-l6"></span><span class="ts-caret" id="f14c-c6"></span></div>
+          <div class="ts-row" id="f14c-r7"><span class="ts-ln">7</span><span class="ts-txt"></span></div>
+          <div class="ts-row" id="f14c-r8"><span class="ts-ln">8</span><span class="ts-txt">  <span class="ts-kw">return</span> (<span id="f14c-r8tail"> <span class="ts-fold">⋯</span> );</span></span></div>
+          <div class="ts-row" id="f14c-r9"><span class="ts-ln">9</span><span class="ts-txt">    <span class="ts-punct">&lt;</span><span class="ts-fn">DataContext.Provider</span> value=<span class="ts-punct">{{</span></span></div>
+          <div class="ts-row" id="f14c-r10"><span class="ts-ln">10</span><span class="ts-txt" id="f14c-l10"></span><span class="ts-caret" id="f14c-c10"></span></div>
+          <div class="ts-row" id="f14c-r11"><span class="ts-ln">11</span><span class="ts-txt" id="f14c-l11"></span><span class="ts-caret" id="f14c-c11"></span></div>
+          <div class="ts-row" id="f14c-r12"><span class="ts-ln">12</span><span class="ts-txt" id="f14c-l12"></span><span class="ts-caret" id="f14c-c12"></span></div>
+          <div class="ts-row" id="f14c-r13"><span class="ts-ln">13</span><span class="ts-txt">    <span class="ts-punct">}}&gt;</span></span></div>
+          <div class="ts-row" id="f14c-r14"><span class="ts-ln">14</span><span class="ts-txt">      <span class="ts-punct">{</span>children<span class="ts-punct">}</span></span></div>
+          <div class="ts-row" id="f14c-r15"><span class="ts-ln">15</span><span class="ts-txt">    <span class="ts-punct">&lt;/</span><span class="ts-fn">DataContext.Provider</span><span class="ts-punct">&gt;</span></span></div>
+          <div class="ts-row" id="f14c-r16"><span class="ts-ln">16</span><span class="ts-txt">  );</span></div>
+          <div class="ts-row" id="f14c-r17"><span class="ts-ln">17</span><span class="ts-txt">}</span></div>
+          <svg id="f14c-box" viewBox="0 0 820 113" aria-hidden="true"><rect id="f14c-boxrect" x="1" y="1" width="818" height="111" rx="6" ry="6" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"></rect></svg>
+        </div>
+        <div class="ts-code-status"><span class="f14c-st" id="f14c-st1">DataProvider</span><span class="f14c-st" id="f14c-st2">DataProvider · met useFetch</span></div>
+      </div>
+
+      <!-- right column: mapping panel -->
+      <div class="ts-mini" id="f14c-map">
+        <div class="ts-mini-title">value</div>
+        <div class="ts-mini-code">
+          <div class="f14c-mrow" id="f14c-m1"><span class="f14c-mfrom">data <span class="ts-punct">??</span> <span class="ts-punct">[]</span></span><span class="f14c-marrow">→</span><span class="f14c-mto">posts</span></div>
+          <div class="f14c-mrow" id="f14c-m2"><span class="f14c-mfrom">loading</span><span class="f14c-marrow">→</span><span class="f14c-mto">loading</span></div>
+          <div class="f14c-mrow" id="f14c-m3"><span class="f14c-mfrom"><span class="ts-fn">refetch</span></span><span class="f14c-marrow">→</span><span class="f14c-mto">reload</span></div>
+        </div>
+      </div>
+
+      <!-- right column: the two components, unchanged -->
+      <div class="f14c-comp" id="f14c-comp1">ReloadButton</div>
+      <div class="f14c-comp" id="f14c-comp2">PostList</div>
+      <div class="ts-label" id="f14c-same">ongewijzigd</div>
+
+      <!-- closing statement -->
+      <div id="f14c-close">Het kan allemaal.<div class="ts-underline" id="f14c-uline"></div></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 25.92;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 24;
+      var X0 = 76;
+      var RH = 35; // row height
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="14-combineren"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        gsap.set(chars, { opacity: 0 });
+        gsap.set(caret, { opacity: 0 });
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+      function slot(sel, n) { gsap.set(sel, { y: n * RH }); }
+      function moveTo(sel, n, at) { tl.to(sel, { y: n * RH, duration: 0.4, ease: "power3.out" }, at); }
+      function rowIn(sel, at) { tl.to(sel, { opacity: 1, duration: 0.35, ease: "power1.out" }, at); }
+      function settle(sel, at, dy) {
+        tl.fromTo(sel, { opacity: 0, y: dy || 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, at);
+      }
+
+      // ---- initial states (seek-safe) ----
+      // before state: 1, 2, 3, fold, 8 (folded), 17 visible; the rest wait in their final slots
+      slot("#f14c-r1", 0); slot("#f14c-r2", 1); slot("#f14c-r3", 2); slot("#f14c-rf", 3);
+      slot("#f14c-r8", 4); slot("#f14c-r17", 5);
+      ["#f14c-r4", "#f14c-r5", "#f14c-r6", "#f14c-r7"].forEach(function (s, i) { slot(s, 3 + i); });
+      ["#f14c-r9", "#f14c-r10", "#f14c-r11", "#f14c-r12", "#f14c-r13", "#f14c-r14", "#f14c-r15", "#f14c-r16"]
+        .forEach(function (s, i) { slot(s, 8 + i); });
+      gsap.set(["#f14c-r4", "#f14c-r5", "#f14c-r6", "#f14c-r7",
+                "#f14c-r9", "#f14c-r10", "#f14c-r11", "#f14c-r12", "#f14c-r13", "#f14c-r14", "#f14c-r15", "#f14c-r16",
+                "#f14c-st2", "#f14c-plus", "#f14c-m1", "#f14c-m2", "#f14c-m3"], { opacity: 0 });
+      gsap.set("#f14c-strike", { scaleX: 0 });
+
+      // ---- Scene 1 (0.0-2.9): kicker; "mooie" (0.36) tiles apart; "combineren." (1.84) they meet with a + ----
+      tl.fromTo("#f14c-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f14c-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f14c-tile-fetch", { opacity: 0, x: -75 }, { opacity: 1, x: -75, duration: 0.5, ease: "power3.out" }, 0.36);
+      tl.fromTo("#f14c-tile-ctx", { opacity: 0, x: 39 }, { opacity: 1, x: 39, duration: 0.5, ease: "power3.out" }, 0.46);
+      tl.to("#f14c-tile-fetch", { x: 0, duration: 0.6, ease: "power3.out" }, 1.84);
+      tl.to("#f14c-tile-ctx", { x: 0, duration: 0.6, ease: "power3.out" }, 1.84);
+      tl.fromTo("#f14c-plus", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, 2.04);
+
+      // ---- Scene 2 (2.9-6.7): "fetch logica" (3.84) code surface, before state; "zelf" (4.64) strike; "staan." (5.92) collapse ----
+      tl.fromTo("#f14c-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 3.84);
+      tl.to("#f14c-strike", { scaleX: 1, duration: 0.45, ease: "power2.inOut" }, 4.64);
+      tl.to("#f14c-rf", { opacity: 0.35, duration: 0.35, ease: "power1.out" }, 5.2);
+      tl.to("#f14c-rf", { scaleY: 0, opacity: 0, duration: 0.4, ease: "power2.inOut" }, 5.92);
+      moveTo("#f14c-r8", 3, 5.92);
+      moveTo("#f14c-r17", 4, 5.92);
+
+      // ---- Scene 3 (6.7-13.3): "use fetch" (8.96) import + lines 4-6 type on, blue box; "Post array" (10.48) wash; "url" (11.6) wash ----
+      ["#f14c-r4", "#f14c-r5", "#f14c-r6", "#f14c-r7"].forEach(function (s) { rowIn(s, 8.7); });
+      moveTo("#f14c-r8", 7, 8.7);
+      moveTo("#f14c-r17", 8, 8.7);
+
+      typeLine("#f14c-l1", "#f14c-c1", [
+        { t: "import", c: "ts-kw" },
+        { t: " { useFetch } " },
+        { t: "from", c: "ts-kw" },
+        { t: " " },
+        { t: "\"../hooks/useFetch\"", c: "ts-str" },
+        { t: ";" }
+      ], 0, 8.96, 0.006, 0.06);
+
+      var e = typeLine("#f14c-l4", "#f14c-c4", [
+        { t: "  " },
+        { t: "const", c: "ts-kw" },
+        { t: " { data, loading, refetch } = " },
+        { t: "useFetch", c: "ts-fn" },
+        { id: "f14c-hl-type", parts: [
+          { t: "<", c: "ts-punct" },
+          { t: "Post[]", c: "ts-type" },
+          { t: ">", c: "ts-punct" }
+        ] },
+        { t: "(" }
+      ], 0, 9.28, 0.009, 0.06);
+      e = typeLine("#f14c-l5", "#f14c-c5", [
+        { t: "    " },
+        { id: "f14c-hl-url", parts: [
+          { t: "\"https://jsonplaceholder.typicode.com/posts\"", c: "ts-str" }
+        ] }
+      ], 0, e.end + 0.02, 0.008, 0.03);
+      typeLine("#f14c-l6", "#f14c-c6", [
+        { t: "  );" }
+      ], 0, e.end + 0.02, 0.012, 0.03);
+      tl.fromTo("#f14c-boxrect", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 9.28);
+
+      washOn("#f14c-hl-type", 10.48);
+      washOff("#f14c-hl-type", 11.6);
+      washOn("#f14c-hl-url", 11.6);
+
+      // ---- Scene 4 (13.3-20.4): "Data" (13.36) return unfolds, line 10 + mapping row 1; "lege lijst" (15.88) wash;
+      //      "nog niets" (16.84) line 11 + row 2; "refetch als reload." (18.32 / 19.36) line 12, wash, row 3 ----
+      washOff("#f14c-hl-url", 13.36);
+      tl.to("#f14c-r8tail", { opacity: 0, duration: 0.2, ease: "power1.out" }, 13.36);
+      ["#f14c-r9", "#f14c-r10", "#f14c-r11", "#f14c-r12", "#f14c-r13", "#f14c-r14", "#f14c-r15", "#f14c-r16"].forEach(function (s) { rowIn(s, 13.4); });
+      moveTo("#f14c-r17", 16, 13.36);
+
+      typeLine("#f14c-l10", "#f14c-c10", [
+        { t: "      posts: data " },
+        { id: "f14c-hl-nn", parts: [
+          { t: "??", c: "ts-punct" },
+          { t: " " },
+          { t: "[]", c: "ts-punct" }
+        ] },
+        { t: "," }
+      ], 0, 13.6, 0.026);
+      settle("#f14c-map", 13.6, 12);
+      settle("#f14c-m1", 13.9, 8);
+
+      washOn("#f14c-hl-nn", 15.88);
+
+      washOff("#f14c-hl-nn", 16.84);
+      typeLine("#f14c-l11", "#f14c-c11", [
+        { t: "      loading: loading," }
+      ], 0, 16.84, 0.022);
+      settle("#f14c-m2", 16.84, 8);
+
+      typeLine("#f14c-l12", "#f14c-c12", [
+        { t: "      reload: " },
+        { id: "f14c-hl-ref", parts: [
+          { t: "refetch", c: "ts-fn" }
+        ] }
+      ], 0, 18.32, 0.026);
+      washOn("#f14c-hl-ref", 19.36);
+      settle("#f14c-m3", 19.36, 8);
+
+      // ---- Scene 5 (20.4-25.92): "korter," (21.64) box fades, status text; "componenten" (22.64) components;
+      //      "Het kan dus allemaal." (24.56 / 25.32) closing + underline. Hold ----
+      tl.to("#f14c-box", { opacity: 0, duration: 0.45, ease: "power1.inOut" }, 21.64);
+      washOff("#f14c-hl-ref", 21.64);
+      tl.to("#f14c-st1", { opacity: 0, duration: 0.3, ease: "power1.inOut" }, 21.64);
+      tl.to("#f14c-st2", { opacity: 1, duration: 0.4, ease: "power1.out" }, 21.74);
+
+      settle("#f14c-comp1", 22.64);
+      settle("#f14c-comp2", 22.74);
+      settle("#f14c-same", 22.84, 6);
+
+      settle("#f14c-close", 24.56, 12);
+      tl.fromTo("#f14c-uline", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 25.32);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["14-combineren"] = tl;
+    })();
+  </script>
+</template>
