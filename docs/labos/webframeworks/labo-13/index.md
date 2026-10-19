@@ -1,14 +1,13 @@
-# 13. React Native: opslag en lijsten
+# 13. React Native: navigatie
 
 ## Theorie
 
 Bekijk voor het labo aan te vangen eerst de volgende topics:
 
-- [AsyncStorage](../../../react-native/extra/async-storage.md)
-- [Lijsten en keys](../../../react-native/lists-and-keys/index.md)
-- [Custom hooks](../../../react/hooks/custom-hooks.md)
+- [Expo Router](../../../react-native/expo-router/index.md)
+- [Communicatie tussen componenten](../../../react/child-parent/index.md)
 
 ## Oefeningen
 
-- [Rainbow AsyncStorage](../../../exercises/react-native/labo-5-rainbow-asyncstorage/README.md)
-- [Todo App](../../../exercises/react-native/labo-5-todo-app/README.md)
+- [Twitter](../../../exercises/react-native/labo-4-twitter/README.md)
+- [Rainbow Navigation](../../../exercises/react-native/labo-4-rainbow-navigation/README.md)

@@ -1,13 +1,15 @@
-# 15. Next.js: rendering en data
+# 15. React Native: herhaling
 
 ## Theorie
 
-Bekijk voor het labo aan te vangen eerst de volgende topics:
+Herlees voor het labo aan te vangen minstens de volgende topics:
 
-- [Next.js](../../../nextjs/index.md)
-- [Client-side en server-side rendering](../../../nextjs/csr-ssr.md)
+- [Expo Router](../../../react-native/expo-router/index.md)
+- [Lijsten en keys](../../../react-native/lists-and-keys/index.md)
+- [AsyncStorage](../../../react-native/extra/async-storage.md)
+- [Camera](../../../react-native/extra/camera.md)
+- [Location](../../../react-native/extra/location.md)
 
 ## Oefeningen
 
-- [Bitcoin Price](../../../exercises/nextjs/labo-1-bitcoin-price/README.md)
-- [Y-Clone](../../../exercises/nextjs/labo-1-y-clone-twitter/README.md)
+- [Herhalingsopdracht: BPost app](../../../exercises/react-native/labo-6-herhalingsopdracht-bpost-app/README.md)

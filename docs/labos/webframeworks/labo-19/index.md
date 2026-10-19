@@ -1,14 +1,13 @@
-# 19. Next.js: herhaling
+# 19. Next.js: login
 
 ## Theorie
 
-Herlees voor het labo aan te vangen minstens de volgende topics:
+Bekijk voor het labo aan te vangen eerst de volgende topics:
 
-- [Client-side en server-side rendering](../../../nextjs/csr-ssr.md)
-- [Routing](../../../nextjs/routing.md)
 - [Forms](../../../nextjs/forms.md)
-- [Optimalisatie van fonts en afbeeldingen](../../../nextjs/font-image-optimization.md)
+- [Proxy](../../../nextjs/proxy.md)
+- [Routing](../../../nextjs/routing.md)
 
 ## Oefeningen
 
-- [Herhalingsoefening: Spotifi](../../../exercises/nextjs/labo-5-herhalingsoefening-spotifi/README.md)
+- [Y-Clone Login](../../../exercises/nextjs/labo-4-y-clone-login-twitter/README.md)

@@ -1,15 +1,14 @@
-# 14. React Native: herhaling
+# 14. React Native: opslag en lijsten
 
 ## Theorie
 
-Herlees voor het labo aan te vangen minstens de volgende topics:
+Bekijk voor het labo aan te vangen eerst de volgende topics:
 
-- [Expo Router](../../../react-native/expo-router/index.md)
-- [Lijsten en keys](../../../react-native/lists-and-keys/index.md)
 - [AsyncStorage](../../../react-native/extra/async-storage.md)
-- [Camera](../../../react-native/extra/camera.md)
-- [Location](../../../react-native/extra/location.md)
+- [Lijsten en keys](../../../react-native/lists-and-keys/index.md)
+- [Custom hooks](../../../react/hooks/custom-hooks.md)
 
 ## Oefeningen
 
-- [Herhalingsopdracht: BPost app](../../../exercises/react-native/labo-6-herhalingsopdracht-bpost-app/README.md)
+- [Rainbow AsyncStorage](../../../exercises/react-native/labo-5-rainbow-asyncstorage/README.md)
+- [Todo App](../../../exercises/react-native/labo-5-todo-app/README.md)

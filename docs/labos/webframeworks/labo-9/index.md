@@ -1,15 +1,13 @@
-# 9. React Native: core components
+# 9. React: routing
 
 ## Theorie
 
 Bekijk voor het labo aan te vangen eerst de volgende topics:
 
-- [React Native](../../../react-native/index.md)
-- [Expo](../../../react-native/expo/index.md)
-- [Core components](../../../react-native/core-components/index.md)
-- [Custom components](../../../react-native/custom-components/index.md)
+- [Routing](../../../react/routing/index.md)
 
 ## Oefeningen
 
-- [Core Components](../../../exercises/react-native/labo-1-core-components/README.md)
-- [RandomMoviePosters](../../../exercises/react-native/labo-1-randommovieposters/README.md)
+- [Pokémon app](../../../exercises/react/labo-9-pokemon-app/README.md)
+- [Portfolio app](../../../exercises/react/labo-9-portfolio-app/README.md)
+- [Quiz app met React Router](../../../exercises/react/labo-9-quiz-app-met-react-router/README.md)

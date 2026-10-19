@@ -1,12 +1,13 @@
-# 17. Next.js: forms
+# 17. Next.js: routing
 
 ## Theorie
 
 Bekijk voor het labo aan te vangen eerst de volgende topics:
 
-- [Forms](../../../nextjs/forms.md)
 - [Routing](../../../nextjs/routing.md)
+- [Client-side en server-side rendering](../../../nextjs/csr-ssr.md)
 
 ## Oefeningen
 
-- [Y-Clone Forms](../../../exercises/nextjs/labo-3-y-clone-forms-twitter/README.md)
+- [Search/Sorting/Paging](../../../exercises/nextjs/labo-2-search-sorting-paging/README.md)
+- [Y-Clone Routing](../../../exercises/nextjs/labo-2-y-clone-routing-twitter/README.md)

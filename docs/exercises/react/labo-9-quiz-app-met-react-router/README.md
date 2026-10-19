@@ -4,10 +4,10 @@ sidebar_label: "Quiz app met React Router"
 
 # Quiz app met React Router
 
-Download het [starterproject](/exercise-files/react/labo-8-quiz-app-met-react-router/starter.zip) en voer daarna `npm install` uit.
+Download het [starterproject](/exercise-files/react/labo-9-quiz-app-met-react-router/starter.zip) en voer daarna `npm install` uit.
 
 > 📂 **Naam project:** n/a  
-> 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-8-quiz-app-met-react-router/starter.zip).
+> 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/react/labo-9-quiz-app-met-react-router/starter.zip).
 
 We gaan verder met de Quiz app uit de vorige oefening. Maak hier een kopie van zodat je de originele code nog hebt. Want we gaan hier nog wat uitbreidingen op maken. 
 
