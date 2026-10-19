@@ -13,6 +13,12 @@
     "start:webframeworks": "node scripts/course.cjs --course courses/webframeworks start",
     "build:webframeworks": "node scripts/course.cjs --course courses/webframeworks build",
     "serve:webframeworks": "node scripts/course.cjs --course courses/webframeworks serve",
+    "start:webprogramming": "node scripts/course.cjs --course courses/webprogramming start",
+    "build:webprogramming": "node scripts/course.cjs --course courses/webprogramming build",
+    "serve:webprogramming": "node scripts/course.cjs --course courses/webprogramming serve",
+    "start:webontwikkeling": "node scripts/course.cjs --course courses/webontwikkeling start",
+    "build:webontwikkeling": "node scripts/course.cjs --course courses/webontwikkeling build",
+    "serve:webontwikkeling": "node scripts/course.cjs --course courses/webontwikkeling serve",
     "test": "node --test scripts/tests/*.test.cjs",
     "test:exercises": "node scripts/test-exercises.cjs",
     "videos": "node scripts/render-videos.cjs"

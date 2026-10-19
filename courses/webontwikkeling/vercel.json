@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "cd ../.. && npm ci --include=dev",
+  "buildCommand": "cd ../.. && node scripts/course.cjs --course courses/webontwikkeling build",
+  "ignoreCommand": "cd ../.. && git diff --quiet HEAD^ HEAD -- courses/webontwikkeling docs src static codesandbox scripts package.json package-lock.json",
+  "outputDirectory": ".course/build",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
+        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" }
+      ]
+    }
+  ]
+}

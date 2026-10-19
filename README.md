@@ -7,8 +7,9 @@ ook wanneer er nieuwe bijkomen.
 
 De cursussen zelf staan in `courses/<cursus>/`: per cursus een
 `docusaurus.config.ts`, `sidebars.ts` en `vercel.json`. Inhoud en navigatie
-wijzigen zo in dezelfde commit. Momenteel is dat `courses/webframeworks/`; de
-andere cursussen verhuizen op dezelfde manier.
+wijzigen zo in dezelfde commit. Dat zijn `courses/webframeworks/`,
+`courses/webontwikkeling/` en `courses/webprogramming/`, elk met eigen
+`npm run start:<cursus>`, `build:<cursus>` en `serve:<cursus>`.
 
 Cursussen die nog niet verhuisd zijn, staan in een afzonderlijke
 cursusrepository. Die bevat alleen de Docusaurus-configuratie,
