@@ -5,7 +5,13 @@ startcode en oplossingen, `src/`, quizzen en `static/`. De eigen `sidebars.ts`
 gebruikt autogeneratie vanaf `docs/`, zodat de broncursus alle onderwerpen bevat,
 ook wanneer er nieuwe bijkomen.
 
-Afzonderlijke cursusrepositories bevatten alleen hun Docusaurus-configuratie,
+De cursussen zelf staan in `courses/<cursus>/`: per cursus een
+`docusaurus.config.ts`, `sidebars.ts` en `vercel.json`. Inhoud en navigatie
+wijzigen zo in dezelfde commit. Momenteel is dat `courses/webframeworks/`; de
+andere cursussen verhuizen op dezelfde manier.
+
+Cursussen die nog niet verhuisd zijn, staan in een afzonderlijke
+cursusrepository. Die bevat alleen de Docusaurus-configuratie,
 sidebars, npm-opdrachten, README, workflow en een Git-submoduleverwijzing naar
 deze monorepo. De submodule heet `course-material/` en legt per cursus een
 specifieke monorepo-commit vast. Ze houden geen eigen kopieën van lessen,
@@ -32,7 +38,20 @@ npm run build      # volledige broncursus bouwen in .course/build/
 npm run serve      # bestaande build bekijken
 ```
 
-Een andere cursus samenstellen of bouwen:
+Een cursus uit `courses/` bekijken of bouwen:
+
+```bash
+npm run start:webframeworks   # ontwikkelserver
+npm run build:webframeworks   # productiebuild in courses/webframeworks/.course/build/
+npm run serve:webframeworks   # bestaande build bekijken
+```
+
+Op Vercel krijgt elke cursus een eigen project op deze repository, met als
+Root Directory `courses/<cursus>`. De `vercel.json` in die map installeert en
+bouwt vanuit de root en slaat een build over wanneer niets wijzigde dat de
+cursus gebruikt.
+
+Een cursus in een afzonderlijke repository samenstellen of bouwen:
 
 ```bash
 node scripts/course.cjs --course ../webontwikkeling-docusaurus assemble

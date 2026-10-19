@@ -10,6 +10,9 @@
     "serve": "node scripts/course.cjs serve",
     "clear": "node scripts/course.cjs clear",
     "typecheck": "node scripts/course.cjs typecheck",
+    "start:webframeworks": "node scripts/course.cjs --course courses/webframeworks start",
+    "build:webframeworks": "node scripts/course.cjs --course courses/webframeworks build",
+    "serve:webframeworks": "node scripts/course.cjs --course courses/webframeworks serve",
     "test": "node --test scripts/tests/*.test.cjs",
     "test:exercises": "node scripts/test-exercises.cjs",
     "videos": "node scripts/render-videos.cjs"

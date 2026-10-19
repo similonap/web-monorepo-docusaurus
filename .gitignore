@@ -25,8 +25,8 @@ yarn-error.log*
 /static/exercise-files/
 
 # Assembled course (all content is generated from the monorepo)
-/.course/
-/.course-tmp-*/
+.course/
+.course-tmp-*/
 /build_output.log
 
 # Gerenderde video's (staan op YouTube; broncode in videos/ blijft versiebeheerd)
