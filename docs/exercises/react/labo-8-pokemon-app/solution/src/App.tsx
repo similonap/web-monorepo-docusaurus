@@ -1,6 +1,5 @@
 import React, { createContext, CSSProperties, useContext, useEffect, useState } from 'react';
 import { ColorRing } from 'react-loader-spinner';
-import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
 import oak from './assets/oak.png';
 

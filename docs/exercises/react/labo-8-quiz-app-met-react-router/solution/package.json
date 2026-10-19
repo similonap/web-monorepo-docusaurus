@@ -1,0 +1,24 @@
+{
+  "name": "labo-8-quiz-app-met-react-router-solution",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "html-entities": "^2.6.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-loader-spinner": "^8.0.2",
+    "react-router": "^8.4.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.21"
+  }
+}

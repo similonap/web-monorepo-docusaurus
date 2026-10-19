@@ -2,7 +2,7 @@
 
 Tot nu toe bestonden onze applicaties uit één enkele pagina. Dit is niet erg handig als je een volledige website wil maken. Daarom is er een manier nodig om meerdere pagina's te maken. Dit kan met behulp van een router. Een router is een stukje code dat bepaalt welke pagina getoond moet worden op basis van de URL. 
 
-In het onderdeel React.js hebben we gebruik gemaakt van een declaratieve manier om routes te definiëren met behulp van de bibliotheek React Router. Je beschrijft dan in je code welke componenten bij welke URL's horen. Dit is een goede manier om routes te definiëren, maar het heeft als nadeel dat je aanzienlijke hoeveelheid code moet schrijven om de router te configureren. 
+In het onderdeel React.js hebben we routes gedefinieerd met behulp van de bibliotheek React Router (in data mode). Je beschrijft dan in je code, met een array van route objecten, welke componenten bij welke URL's horen. Dit is een goede manier om routes te definiëren, maar het heeft als nadeel dat je aanzienlijke hoeveelheid code moet schrijven om de router te configureren. 
 
 ## File-system based router
 
