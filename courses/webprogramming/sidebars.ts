@@ -449,7 +449,43 @@ const sidebars: SidebarsConfig = {
     },
     {
       "type": "category",
-      "label": "4. TypeScript: async en fetch",
+      "label": "4. TypeScript: arraymethodes",
+      "items": [
+        {
+          "type": "doc",
+          "id": "exercises/node-typescript/boodschappenlijst/README",
+          "label": "Boodschappenlijst"
+        },
+        {
+          "type": "doc",
+          "id": "exercises/node-typescript/getallen/README",
+          "label": "Getallen"
+        },
+        {
+          "type": "doc",
+          "id": "exercises/node-typescript/studentenlijst/README",
+          "label": "Studentenlijst"
+        },
+        {
+          "type": "doc",
+          "id": "exercises/node-typescript/winkelmandje/README",
+          "label": "Winkelmandje"
+        },
+        {
+          "type": "doc",
+          "id": "exercises/node-typescript/sorteren/README",
+          "label": "Sorteren"
+        },
+        {
+          "type": "doc",
+          "id": "exercises/node-typescript/filmlijst/README",
+          "label": "Filmlijst"
+        }
+      ]
+    },
+    {
+      "type": "category",
+      "label": "5. TypeScript: async en fetch",
       "items": [
         {
           "type": "doc",
@@ -500,7 +536,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       "type": "category",
-      "label": "5. TypeScript: modules en npm",
+      "label": "6. TypeScript: modules en npm",
       "items": [
         {
           "type": "doc",
@@ -531,7 +567,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       "type": "category",
-      "label": "6. Frontend: Vite en DOM",
+      "label": "7. Frontend: Vite en DOM",
       "items": [
         {
           "type": "doc",
@@ -562,7 +598,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       "type": "category",
-      "label": "7. Frontend: API’s en DOM",
+      "label": "8. Frontend: API’s en DOM",
       "items": [
         {
           "type": "doc",
@@ -588,7 +624,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       "type": "category",
-      "label": "8. Backend: Express en requests",
+      "label": "9. Backend: Express en requests",
       "items": [
         {
           "type": "doc",
@@ -614,7 +650,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       "type": "category",
-      "label": "9. Backend: MySQL en routing",
+      "label": "10. Backend: MySQL en routing",
       "items": [
         {
           "type": "doc",
@@ -635,7 +671,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       "type": "category",
-      "label": "10. Full Stack: forms, Express en MySQL",
+      "label": "11. Full Stack: forms, Express en MySQL",
       "items": [
         {
           "type": "doc",
@@ -656,7 +692,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       "type": "category",
-      "label": "11. Full Stack: extra en datums",
+      "label": "12. Full Stack: extra en datums",
       "items": [
         {
           "type": "doc",
