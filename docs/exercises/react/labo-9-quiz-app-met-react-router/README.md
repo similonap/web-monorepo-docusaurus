@@ -2,6 +2,8 @@
 sidebar_label: "Quiz app met React Router"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 # Quiz app met React Router
 
 Download het [starterproject](/exercise-files/react/labo-9-quiz-app-met-react-router/starter.zip) en voer daarna `npm install` uit.
@@ -19,3 +21,7 @@ Uitbreidingen:
 - Als je voor een nieuw moeilijkheidsniveau kiest, moet de quiz opnieuw beginnen.
 
 ![Alt text](./assets/quiz.gif)
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-9-quiz-app-met-react-router" />

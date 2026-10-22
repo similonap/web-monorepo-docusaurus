@@ -2,6 +2,8 @@
 sidebar_label: "Color Clicker"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -26,3 +28,7 @@ Maak 10 vierkanten met willekeurige kleuren en toon deze in een rij op het scher
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-3-color-clicker" />

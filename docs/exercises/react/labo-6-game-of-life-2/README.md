@@ -2,6 +2,8 @@
 sidebar_label: "Game of Life (2)"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -30,3 +32,7 @@ Maak ook een `PLAY` button die de `step` functie elke seconde aanroept. Maak ook
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-6-game-of-life-2" />

@@ -2,6 +2,8 @@
 sidebar_label: "Kleurkiezer"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -36,3 +38,7 @@ Gebruik deze component in de `App` component om de volgende pagina te maken:
 #### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/pBx9IClu9eA'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-4-kleurkiezer" />

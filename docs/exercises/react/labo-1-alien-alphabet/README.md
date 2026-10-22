@@ -2,6 +2,8 @@
 sidebar_label: "Alien Alphabet"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -29,3 +31,7 @@ We willen in deze opdracht een aanzet geven tot een vertaalprogramma voor een bu
 #### Voorbeeldoplossing
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-1-alien-alphabet" />

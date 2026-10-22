@@ -2,6 +2,8 @@
 sidebar_label: "Counter List"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -66,3 +68,7 @@ Zorg er nu voor dat de `CounterList` component de `Counter` component gebruikt. 
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-7-counter-list" />

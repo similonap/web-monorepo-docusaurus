@@ -2,6 +2,8 @@
 sidebar_label: "Quizapp"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -33,3 +35,7 @@ Maak een nieuwe React applicatie aan en noem deze `lab-communication-quiz-app`.
 ### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/L00lS5tKMcQ'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-7-quizapp" />

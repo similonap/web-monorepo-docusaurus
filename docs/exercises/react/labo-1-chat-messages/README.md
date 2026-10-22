@@ -2,6 +2,8 @@
 sidebar_label: "Chat messages"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -77,3 +79,7 @@ const messages = [
 #### Voorbeeldoplossing
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-1-chat-messages" />

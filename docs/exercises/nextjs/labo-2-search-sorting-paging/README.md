@@ -2,6 +2,8 @@
 sidebar_label: "Search/Sorting/Paging"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 # Search/Sorting/Paging
 
 
@@ -39,3 +41,7 @@ Voorzie drie verschillende routes in de applicatie:
 - `/sorting`: een pagina waar de gebruiker de spreuken kan sorteren op naam, difficulty, type of id. De sorteer veld en richting moeten worden weergegeven in de URL als query parameters `sortField` en `sortDirection`.
 - `/paging`: een pagina waar de gebruiker door de spreuken kan bladeren met paginatie. De huidige pagina moet worden weergegeven in de URL als query parameter `page`.
 - `all`: een pagina waar de gebruiker alle functionaliteiten (zoeken, sorteren en pagineren) kan gebruiken. De zoekterm, sorteer veld, sorteer richting en huidige pagina moeten worden weergegeven in de URL als query parameters `q`, `sortField`, `sortDirection` en `page`.
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="nextjs/labo-2-search-sorting-paging" />

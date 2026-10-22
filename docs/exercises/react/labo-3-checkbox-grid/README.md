@@ -2,6 +2,8 @@
 sidebar_label: "Checkbox Grid"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -21,3 +23,7 @@ Maak een grid van checkboxes met de grootte die je meekrijgt als property. Als j
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-3-checkbox-grid" />

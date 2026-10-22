@@ -2,6 +2,8 @@
 sidebar_label: "Lijsten"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -34,3 +36,7 @@ Maak een nieuwe react applicatie aan `lab-basics-lists`.
 #### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/68O9gQZ8Ykk'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-1-lijsten" />

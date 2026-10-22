@@ -2,6 +2,8 @@
 sidebar_label: "Counter list"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -34,3 +36,7 @@ Je hoeft nog niet elke counter in een apart component te zetten. Je gaat dit lat
 #### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/FKcudUHxIc8'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-5-counter-list" />

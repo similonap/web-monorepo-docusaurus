@@ -2,6 +2,8 @@
 sidebar_label: "Maaltafels State"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -23,3 +25,7 @@ Maak een kopie van de maaltafels code van labo 2 naar een nieuw project en noem 
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-4-maaltafels-state" />

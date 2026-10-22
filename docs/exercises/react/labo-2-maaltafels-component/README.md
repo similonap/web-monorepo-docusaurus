@@ -2,6 +2,8 @@
 sidebar_label: "Maaltafels component"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -36,3 +38,7 @@ De applicatie moet ongeveer er als volgt uitzien:
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-2-maaltafels-component" />

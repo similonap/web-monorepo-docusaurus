@@ -2,6 +2,8 @@
 sidebar_label: "Regenboog"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -36,3 +38,7 @@ Dit wordt later nog uitgelegd! Begrijp je hoe dit werkt, kan je ook eens probere
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-1-regenboog" />

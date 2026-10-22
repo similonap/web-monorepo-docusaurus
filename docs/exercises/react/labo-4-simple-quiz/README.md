@@ -2,6 +2,8 @@
 sidebar_label: "Simple Quiz"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -45,3 +47,7 @@ Gebruik o.a. deze vragen:
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-4-simple-quiz" />

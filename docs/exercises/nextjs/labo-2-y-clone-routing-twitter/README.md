@@ -2,6 +2,8 @@
 sidebar_label: "Y-Clone (Routing) (twitter)"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 # Y-Clone (Routing) (twitter)
 
 Download het [starterproject](/exercise-files/nextjs/labo-2-y-clone-routing-twitter/starter.zip) en voer daarna `npm install` uit.
@@ -148,3 +150,7 @@ Bij het laden van de posts moet er een laadskelet getoond worden.
 Voorzie een profiel pagina op de route `/[username]` waar `[username]` de gebruikersnaam is van het profiel dat bekeken wordt. Op deze pagina worden alle posts van de gebruiker getoond met paginatie. Hier hoeft geen zoekbalk of sortering voorzien te worden.
 
 ![alt text](./assets/profile.png)
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="nextjs/labo-2-y-clone-routing-twitter" />

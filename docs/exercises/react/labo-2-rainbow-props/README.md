@@ -2,6 +2,8 @@
 sidebar_label: "Rainbow Props"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -30,3 +32,7 @@ Dit zal de volgende output geven:
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-2-rainbow-props" />

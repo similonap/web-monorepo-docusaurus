@@ -2,6 +2,8 @@
 sidebar_label: "Y-Clone (Forms) (twitter)"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 # Y-Clone (Forms) (twitter)
 
 Download het [starterproject](/exercise-files/nextjs/labo-3-y-clone-forms-twitter/starter.zip) en voer daarna `npm install` uit.
@@ -13,3 +15,7 @@ Download het [starterproject](/exercise-files/nextjs/labo-3-y-clone-forms-twitte
 In deze oefening moet je het vorige project uitbreiden met een formulier waarmee een gebruiker een nieuwe post kan aanmaken. Er moet nog geen user authenticatie zijn, dus je kan de post aanmaken onder de naam `JonDoe`.
 
 ![alt text](./assets/post.png)
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="nextjs/labo-3-y-clone-forms-twitter" />

@@ -2,6 +2,8 @@
 sidebar_label: "Game of Life (1)"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -25,3 +27,7 @@ In deze opdracht wordt van je verwacht om een React-component te implementeren v
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-5-game-of-life-1" />

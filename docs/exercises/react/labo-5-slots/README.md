@@ -2,6 +2,8 @@
 sidebar_label: "Slots"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -34,3 +36,7 @@ Het spel ziet er nu als volgt uit:
 #### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/u1gLw9UwTh0'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-5-slots" />

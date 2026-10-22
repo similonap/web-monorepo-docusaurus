@@ -2,6 +2,8 @@
 sidebar_label: "Who's that Pokémon?"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -63,3 +65,7 @@ const pokemons: Pokemon[] = [
 #### Voorbeeldoplossing
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-1-who-s-that-pokemon" />

@@ -2,6 +2,8 @@
 sidebar_label: "Pokemon"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -22,3 +24,7 @@ Maak een nieuwe React applicatie aan en noem deze `lab-hooks-pokemon-pokedex`.
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-6-pokemon" />

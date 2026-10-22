@@ -2,6 +2,8 @@
 sidebar_label: "Joske het vierkant"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 import CodeSandbox from '@site/src/components/CodeSandbox/CodeSandbox';
@@ -29,3 +31,7 @@ Josje is nu een blij cirkeltje!
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-4-joske-het-vierkant" />

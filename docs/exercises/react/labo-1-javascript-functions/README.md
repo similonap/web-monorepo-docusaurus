@@ -2,6 +2,8 @@
 sidebar_label: "Javascript functions"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -53,3 +55,7 @@ Toon nu de volgende informatie in de browser:
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-1-javascript-functions" />

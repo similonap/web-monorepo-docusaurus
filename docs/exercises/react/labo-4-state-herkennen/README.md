@@ -2,6 +2,8 @@
 sidebar_label: "State herkennen"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -16,3 +18,7 @@ Identificeer de state in de volgende componenten. Geef aan waar de state zich be
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-4-state-herkennen" />

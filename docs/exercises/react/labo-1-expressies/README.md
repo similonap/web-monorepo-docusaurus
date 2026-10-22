@@ -2,6 +2,8 @@
 sidebar_label: "Expressies"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -54,3 +56,7 @@ export default App;
 #### Video
 
 <YouTubeVideo src='https://youtu.be/wHT0FYsQa6k'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-1-expressies" />

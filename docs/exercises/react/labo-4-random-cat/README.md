@@ -2,6 +2,8 @@
 sidebar_label: "Random Cat"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -30,3 +32,7 @@ Maak een component `RandomCat` aan met de volgende functionaliteit:
 #### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/nh5lVRHBj0s'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-4-random-cat" />

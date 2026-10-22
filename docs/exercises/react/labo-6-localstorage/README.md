@@ -2,6 +2,8 @@
 sidebar_label: "LocalStorage"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -32,3 +34,7 @@ Maak een nieuwe React applicatie aan en noem deze `lab-hooks-local-storage`.
 ### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/-ZCPmx5HGvA'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-6-localstorage" />

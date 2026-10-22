@@ -2,6 +2,8 @@
 sidebar_label: "Bitcoin Price"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 # Bitcoin Price
 
 
@@ -24,3 +26,7 @@ Om duidelijk te maken wat er mogelijk is met server components en wat niet moet 
 - Zorg ervoor als je op de currency klikt dat deze een andere background color krijgt. Denk opnieuw goe na over welke componenten client en welke server componenten zijn.
 - Zorg ervoor dat de prijs van de bitcoin elke 10 seconden wordt uitgelezen. Kan je dan nog altijd server components gebruiken? 
 - Probeer een server component te gebruiken voor het initieel inlezen van de bitcoin data. De data moet blijven updaten elke minuut.
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="nextjs/labo-1-bitcoin-price" />

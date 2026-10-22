@@ -2,6 +2,8 @@
 sidebar_label: "Filtering en sorting"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -31,3 +33,7 @@ Maak een component `Filtering` aan met de volgende functionaliteit:
 #### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/wvtt_BGSNrc'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-5-filtering-en-sorting" />

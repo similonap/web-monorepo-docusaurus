@@ -2,6 +2,8 @@
 sidebar_label: "useInterval hook"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -24,3 +26,7 @@ Schrijf een eenvoudig webapplicatie die de `useInterval` hook gebruikt om een te
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-6-useinterval-hook" />

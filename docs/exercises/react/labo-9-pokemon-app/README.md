@@ -2,6 +2,8 @@
 sidebar_label: "Pokemon app"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -22,3 +24,7 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 <YouTubeVideo src='https://youtu.be/sE1_ULJJ81Y'/>
 <YouTubeVideo src='https://youtu.be/I3kNyxoDCzU'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-9-pokemon-app" />

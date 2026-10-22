@@ -2,6 +2,8 @@
 sidebar_label: "Maaltafels"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -20,3 +22,7 @@ Maak een React-component met de naam MultiplicationTable die een tabel genereert
 #### Voorbeeldoplossing
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-1-maaltafels" />

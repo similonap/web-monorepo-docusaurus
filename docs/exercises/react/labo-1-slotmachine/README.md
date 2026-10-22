@@ -2,6 +2,8 @@
 sidebar_label: "Slotmachine"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -36,3 +38,7 @@ Maak een nieuwe react applicatie aan `lab-basics-slot-machine`.
 #### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/v-MZWSG5uN0'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-1-slotmachine" />

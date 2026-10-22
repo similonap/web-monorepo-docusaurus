@@ -2,6 +2,8 @@
 sidebar_label: "Todo App"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -77,3 +79,7 @@ Herstructureer deze applicatie als volgt:
 ### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/RNC2X9D3XbI'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-7-todo-app" />

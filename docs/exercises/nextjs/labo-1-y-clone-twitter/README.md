@@ -2,6 +2,8 @@
 sidebar_label: "Y-Clone (twitter)"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 # Y-Clone (twitter)
 
 
@@ -22,3 +24,7 @@ Zorg ervoor dat je de Post interface uitbreidt met een `profile` property die de
 Voorzie een kleine like button die simpelweg tussen twee states kan wisselen: geliked en niet geliked. Er hoeft hier uiteraard geen backend aan te pas te komen. 
 
 Denk goed na over welke componenten server en welke client componenten zijn.
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="nextjs/labo-1-y-clone-twitter" />

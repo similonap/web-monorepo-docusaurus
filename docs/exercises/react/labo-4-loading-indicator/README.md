@@ -2,6 +2,8 @@
 sidebar_label: "Loading indicator"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -37,3 +39,7 @@ Zorg er nu voor dat de applicatie de volgende functionaliteiten heeft:
 #### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/SSZaOVdY3ls'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-4-loading-indicator" />

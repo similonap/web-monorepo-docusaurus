@@ -2,6 +2,8 @@
 sidebar_label: "Alien Alphabet"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -23,3 +25,7 @@ Maak een nieuwe React applicatie aan en noem deze `lab-state-alien-alphabet`.
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-5-alien-alphabet" />

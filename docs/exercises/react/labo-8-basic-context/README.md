@@ -2,6 +2,8 @@
 sidebar_label: "Basic context"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -35,3 +37,7 @@ Maak een nieuwe React applicatie aan en noem deze `lab-context-settings`.
 ### Oplossingsvideo
 
 <YouTubeVideo src='https://youtu.be/owOyNsHt800'/>
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-8-basic-context" />

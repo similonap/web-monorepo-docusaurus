@@ -2,6 +2,8 @@
 sidebar_label: "TextInput"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -21,3 +23,7 @@ Maak een rij van textboxes met de grootte die je meekrijgt als property. Als je 
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-3-textinput" />

@@ -2,6 +2,8 @@
 sidebar_label: "Who's that pokemon?"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -25,3 +27,7 @@ Toon in de `App` component twee keer de `PokemonImage` component. Eén keer met 
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-2-who-s-that-pokemon" />

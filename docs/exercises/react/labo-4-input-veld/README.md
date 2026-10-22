@@ -2,6 +2,8 @@
 sidebar_label: "Input veld"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 import ExercisePreview from '@site/src/components/ExercisePreview';
 import SolutionPreview from './solution/src/App';
 
@@ -23,3 +25,7 @@ Gebruik deze component in de `App` component om de volgende pagina te maken:
 ## Live voorbeeld
 
 <ExercisePreview component={SolutionPreview} />
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-4-input-veld" />
