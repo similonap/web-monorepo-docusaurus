@@ -197,6 +197,7 @@ const sidebars: SidebarsConfig = {
       doc('exercises/react/labo-9-pokemon-app/README', 'Pokémon app'),
       doc('exercises/react/labo-9-portfolio-app/README', 'Portfolio app'),
       doc('exercises/react/labo-9-quiz-app-met-react-router/README', 'Quiz app met React Router'),
+      doc('exercises/react/labo-9-petshelter/README', 'Dierenasiel met React Router'),
     ]),
     labo(10, 'React Native: core components', [
       doc('exercises/react-native/labo-1-core-components/README', 'Core Components'),
