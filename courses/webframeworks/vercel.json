@@ -6,5 +6,8 @@
   "ignoreCommand": "cd ../.. && git diff --quiet HEAD^ HEAD -- courses/webframeworks docs src static codesandbox scripts package.json package-lock.json",
   "outputDirectory": ".course/build",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "git": {
+    "deploymentEnabled": { "gh-pages": false }
+  }
 }

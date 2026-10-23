@@ -1,21 +1,20 @@
-name: Deploy to GitHub Pages
+name: Test en build
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-    # Review pull requests that target main
   pull_request:
     branches:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  deploy:
-    name: Deploy to GitHub Pages
+  build:
+    name: Test en build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,14 +36,3 @@ jobs:
 
       - name: Build website
         run: npm run build
-
-      # Popular action to deploy to GitHub Pages:
-      # Docs: https://github.com/peaceiris/actions-gh-pages
-      - name: Deploy to GitHub Pages
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./.course/build
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
