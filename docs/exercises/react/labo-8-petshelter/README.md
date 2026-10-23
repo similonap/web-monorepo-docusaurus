@@ -2,6 +2,8 @@
 sidebar_label: "Dierenasiel"
 ---
 
+import SolutionDownload from '@site/src/components/SolutionDownload';
+
 # Dierenasiel De Warme Poot
 
 Download het [starterproject](/exercise-files/react/labo-8-petshelter/starter.zip) en voer daarna `npm install` uit.
@@ -109,3 +111,7 @@ Overal `useContext(ThemeContext)` en `useContext(DierenContext)` schrijven, is w
 - Onthoud het gekozen thema in `localStorage`, zodat de site na het herladen van de pagina in hetzelfde thema opent.
 - Voeg aan de `DierenContext` een functie `annuleer(id)` toe die een adoptie ongedaan maakt, en toon in `AdopteerKnop` een knop `Annuleer` bij een dier dat al geplaatst is.
 - Laat in de `Nav` naast **Onze dieren** een teller zien met het aantal dieren dat nog een thuis zoekt (bv. `Onze dieren (15)`). Gebruik hiervoor je `useDieren` hook.
+
+## Oplossing downloaden
+
+<SolutionDownload exercise="react/labo-8-petshelter" />

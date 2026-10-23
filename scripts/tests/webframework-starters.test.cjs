@@ -22,6 +22,7 @@ const expectedStarters = [
   'react/labo-6-game-of-life-2',
   'react/labo-8-petshelter',
   'react/labo-8-quiz-app',
+  'react/labo-9-petshelter',
   'react/labo-9-quiz-app-met-react-router',
   'react/labo-8-todo-app',
 ].sort();
