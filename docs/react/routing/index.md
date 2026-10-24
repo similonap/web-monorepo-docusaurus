@@ -2,6 +2,8 @@
 sidebar_position: 10
 ---
 
+import YouTubeVideo from '@site/src/components/YouTubeVideo';
+
 # React Router
 
 ## Twee soorten routering
@@ -47,6 +49,8 @@ In oudere versies installeerde je het pakket `react-router-dom`. Dat pakket best
 :::
 
 ### Voorbeeld
+
+<YouTubeVideo src="https://youtu.be/DYg8jQ92f8Q" title="React Router: routes, layout, Link en NavLink" />
 
 Om te zien hoe je React Router gebruikt, bekijken we een voorbeeld. Dit voorbeeld heeft een aantal pagina's en een gedeelde layout die op elke pagina getoond wordt.
 

@@ -1,0 +1,453 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 13 positions ---- */
+    #f13e-panel { left: 80px; top: 170px; width: 1060px; height: 720px; }
+    /* this frame: 17 rows at 24px / 35px */
+    #f13e-panel .ts-code { font-size: 24px; line-height: 35px; }
+    #f13e-panel .ts-row { height: 35px; }
+    #f13e-panel .ts-caret { top: 5px; height: 25px; }
+    /* key box around `errorElement: <ErrorPage />` on line 14 (col 4, 27 chars, 14.4px per char; tight on the right so the comma stays outside) */
+    #f13e-mark { left: 130px; top: 519px; width: 395px; height: 39px; opacity: 0; }
+
+    /* scherm: demo card (full layout), standard position */
+    #f13e-label { left: 1236px; top: 176px; }
+    #f13e-card { left: 1236px; top: 210px; width: 604px; height: 360px; overflow: hidden; }
+    .f13e-addr {
+      position: absolute; left: 0; right: 0; top: 0; height: 44px; box-sizing: border-box;
+      background: var(--ts-ground-subtle); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding-left: 18px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted); white-space: nowrap;
+    }
+    .f13e-path { color: var(--ts-ink); }
+    #f13e-body { position: absolute; left: 0; right: 0; top: 44px; bottom: 0; }
+    .f13e-header {
+      position: absolute; left: 0; right: 0; top: 0; height: 56px; box-sizing: border-box;
+      border-bottom: 1px solid var(--ts-hairline); display: flex; align-items: center; padding: 0 20px;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 22px; color: var(--ts-ink);
+    }
+    .f13e-nav {
+      position: absolute; left: 0; right: 0; top: 56px; height: 48px; box-sizing: border-box;
+      border-bottom: 1px solid var(--ts-hairline); display: flex; align-items: center; gap: 28px; padding: 0 20px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .f13e-content { position: absolute; left: 0; right: 0; top: 104px; height: 172px; box-sizing: border-box; padding: 20px; }
+    .f13e-h { font-family: var(--ts-sans); font-weight: 700; font-size: 26px; line-height: 1.2; color: var(--ts-ink); white-space: nowrap; }
+    .f13e-p { margin-top: 8px; font-family: var(--ts-sans); font-weight: 400; font-size: 20px; line-height: 1.3; color: var(--ts-ink-soft); white-space: nowrap; }
+    .f13e-footer {
+      position: absolute; left: 0; right: 0; top: 276px; height: 40px; box-sizing: border-box;
+      background: var(--ts-ground-subtle); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding-left: 20px;
+      font-family: var(--ts-sans); font-weight: 400; font-size: 18px; color: var(--ts-muted);
+    }
+    /* render error: red inset outline on the content area + tag on its top edge */
+    #f13e-bad { position: absolute; left: 6px; right: 6px; top: 110px; height: 160px; box-sizing: border-box; border: 2px solid var(--ts-error); border-radius: 8px; opacity: 0; }
+    #f13e-badtag {
+      position: absolute; right: 20px; top: 98px; height: 24px; line-height: 24px; padding: 0 8px;
+      background: var(--ts-ground); font-family: var(--ts-mono); font-size: 18px; color: var(--ts-error); white-space: nowrap; opacity: 0;
+    }
+    /* ErrorPage view: white body with only the heading */
+    #f13e-errview { position: absolute; left: 0; right: 0; top: 44px; bottom: 0; background: var(--ts-ground); opacity: 0; }
+    #f13e-errh { position: absolute; left: 24px; top: 24px; }
+    #f13e-errline { position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 1px; background: var(--ts-blue); transform-origin: left center; opacity: 0; }
+
+    /* chips under the card */
+    #f13e-chip { left: 1236px; top: 610px; height: 44px; padding: 0 16px; gap: 12px; font-size: 22px; opacity: 0; }
+    #f13e-row404 { position: absolute; left: 1236px; top: 680px; height: 44px; display: flex; align-items: center; gap: 16px; opacity: 0; }
+    #f13e-row404 .ts-chip { position: relative; height: 44px; padding: 0 16px; font-size: 22px; }
+    .f13e-note { font-family: var(--ts-sans); font-weight: 500; font-size: 22px; color: var(--ts-ink-soft); white-space: nowrap; }
+  </style>
+
+  <div data-hf-id="hf-ur4x" id="root" data-composition-id="13-errorelement" data-width="1920" data-height="1080" data-duration="22.87">
+    <div data-hf-id="hf-7vrb" class="ts-bg clip" id="f13e-bg" data-start="0" data-duration="22.87" data-track-index="0"></div>
+
+    <div data-hf-id="hf-r9i4" class="ts-stage clip" id="f13e-stage" data-start="0" data-duration="22.87" data-track-index="1">
+      <div data-hf-id="hf-uouw" class="ts-kicker" id="f13e-kicker"><div data-hf-id="hf-d7al" class="ts-kicker-bar" id="f13e-kbar"></div><span data-hf-id="hf-h3ea" class="ts-kicker-text" id="f13e-ktext">errorElement</span></div>
+
+      <!-- code surface: App.tsx, 17 rows -->
+      <div data-hf-id="hf-b2ol" class="ts-code-surface" id="f13e-panel">
+        <div data-hf-id="hf-x5y0" class="ts-code-title">App.tsx</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-tllk" class="ts-txt" id="f13e-l1"></span><span data-hf-id="hf-xxla" class="ts-caret" id="f13e-c1"></span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-4h37" class="ts-txt" id="f13e-l2"></span><span data-hf-id="hf-tzh9" class="ts-caret" id="f13e-c2"></span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-joe1" class="ts-txt"></span></div>
+          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-hr9h" class="ts-txt" id="f13e-l4"></span><span data-hf-id="hf-gpaz" class="ts-caret" id="f13e-c4"></span></div>
+          <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-gzlo" class="ts-txt" id="f13e-l5"></span><span data-hf-id="hf-cr6y" class="ts-caret" id="f13e-c5"></span></div>
+          <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-pnhj" class="ts-txt" id="f13e-l6"></span><span data-hf-id="hf-6lh5" class="ts-caret" id="f13e-c6"></span></div>
+          <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><span data-hf-id="hf-lpdi" class="ts-txt" id="f13e-l7"></span><span data-hf-id="hf-5ttc" class="ts-caret" id="f13e-c7"></span></div>
+          <div data-hf-id="hf-du2u" class="ts-row"><span data-hf-id="hf-hcwz" class="ts-ln">8</span><span data-hf-id="hf-2xnt" class="ts-txt" id="f13e-l8"></span><span data-hf-id="hf-tbav" class="ts-caret" id="f13e-c8"></span></div>
+          <div data-hf-id="hf-9gpj" class="ts-row"><span data-hf-id="hf-hr80" class="ts-ln">9</span><span data-hf-id="hf-5edp" class="ts-txt"></span></div>
+          <div data-hf-id="hf-9v0k" class="ts-row"><span data-hf-id="hf-h360" class="ts-ln">10</span><span data-hf-id="hf-j31o" class="ts-txt"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> router = <span data-hf-id="hf-hm40" class="ts-fn">createBrowserRouter</span>([</span></div>
+          <div data-hf-id="hf-rmvo" class="ts-row"><span data-hf-id="hf-gouz" class="ts-ln">11</span><span data-hf-id="hf-t04m" class="ts-txt">  {</span></div>
+          <div data-hf-id="hf-r8kn" class="ts-row"><span data-hf-id="hf-gajy" class="ts-ln">12</span><span data-hf-id="hf-fgfw" class="ts-txt">    path: <span data-hf-id="hf-9rvz" class="ts-str">"/"</span>,</span></div>
+          <div data-hf-id="hf-qu9m" class="ts-row"><span data-hf-id="hf-fw8x" class="ts-ln">13</span><span data-hf-id="hf-avwv" class="ts-txt">    <span data-hf-id="hf-37ru" class="ts-hl" id="f13e-hl-root">element: <span data-hf-id="hf-4csn" class="ts-punct">&lt;</span><span data-hf-id="hf-akyf" class="ts-fn">Root</span><span data-hf-id="hf-07ek" class="ts-punct"> /&gt;</span></span>,</span></div>
+          <div data-hf-id="hf-qfyl" class="ts-row"><span data-hf-id="hf-fhxw" class="ts-ln">14</span><span data-hf-id="hf-pq0k" class="ts-txt" id="f13e-l14"></span><span data-hf-id="hf-vs1q" class="ts-caret" id="f13e-c14"></span></div>
+          <div data-hf-id="hf-t83s" class="ts-row"><span data-hf-id="hf-f3mv" class="ts-ln">15</span><span data-hf-id="hf-fa8c" class="ts-txt">    children: [<span data-hf-id="hf-gduc" class="ts-fold">&#47;* ... *&#47;</span>],</span></div>
+          <div data-hf-id="hf-stsr" class="ts-row"><span data-hf-id="hf-epbu" class="ts-ln">16</span><span data-hf-id="hf-19wg" class="ts-txt">  },</span></div>
+          <div data-hf-id="hf-sfhq" class="ts-row"><span data-hf-id="hf-eb0t" class="ts-ln">17</span><span data-hf-id="hf-0ilo" class="ts-txt">]);</span></div>
+        </div>
+        <div data-hf-id="hf-y4e4" class="ts-mark" id="f13e-mark"></div>
+        <div data-hf-id="hf-irjp" class="ts-code-status">App.tsx · errorElement</div>
+      </div>
+
+      <!-- right column: the demo card (present from the start) -->
+      <div data-hf-id="hf-1i82" class="ts-label" id="f13e-label">scherm</div>
+      <div data-hf-id="hf-aobq" class="ts-card" id="f13e-card">
+        <div data-hf-id="hf-3q3o" class="f13e-addr">localhost:5173<span data-hf-id="hf-rc9k" class="f13e-path">/about</span></div>
+        <div data-hf-id="hf-a5dn" id="f13e-body">
+          <div data-hf-id="hf-vaai" class="f13e-header">MySite</div>
+          <div data-hf-id="hf-symj" class="f13e-nav"><span data-hf-id="hf-e1du">Home</span><span data-hf-id="hf-cgsq">About</span><span data-hf-id="hf-n4uf">Contact</span></div>
+          <div data-hf-id="hf-lsdn" class="f13e-content">
+            <div data-hf-id="hf-rrtd" class="f13e-h">About</div>
+            <div data-hf-id="hf-a8dk" class="f13e-p">Over dit project.</div>
+          </div>
+          <div data-hf-id="hf-puka" class="f13e-footer">Footer</div>
+          <div data-hf-id="hf-ssf0" id="f13e-bad"></div>
+          <div data-hf-id="hf-07uz" id="f13e-badtag">throw new Error()</div>
+        </div>
+        <div data-hf-id="hf-c35b" id="f13e-errview" data-layout-allow-overlap>
+          <div data-hf-id="hf-sotf" class="f13e-h" id="f13e-errh">Er ging iets mis<div data-hf-id="hf-jh46" id="f13e-errline"></div></div>
+        </div>
+      </div>
+
+      <!-- what useRouteError returns -->
+      <div data-hf-id="hf-vpwu" class="ts-chip" id="f13e-chip"><span data-hf-id="hf-a88b" class="ts-chip-key">error</span><span data-hf-id="hf-q3dv">Error: …</span></div>
+      <div data-hf-id="hf-gea7" id="f13e-row404"><div data-hf-id="hf-n2mq" class="ts-chip">404</div><span data-hf-id="hf-s710" class="f13e-note">fout van de router</span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 22.87;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 24;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="13-errorelement"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // hidden-until-cued elements
+      gsap.set(["#f13e-mark", "#f13e-bad", "#f13e-badtag", "#f13e-errview", "#f13e-errline", "#f13e-chip", "#f13e-row404"], { opacity: 0 });
+
+      // ---- 0.0-2.4: kicker; panel in at 0.1 with the static lines ----
+      tl.fromTo("#f13e-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f13e-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f13e-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1);
+
+      // "renderen" (1.68): red inset outline on the About content + `throw new Error()` tag
+      tl.fromTo("#f13e-bad", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out", immediateRender: false }, 1.68);
+      tl.fromTo("#f13e-badtag", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out", immediateRender: false }, 1.72);
+
+      // ---- 2.4-5.0: "error element": line 14 types from 2.48; wash + key box at 4.08 ----
+      typeLine("#f13e-l14", "#f13e-c14", [
+        { t: "    " },
+        { id: "f13e-hl-err", parts: [
+          { t: "errorElement: " },
+          { t: "<", c: "ts-punct" },
+          { t: "ErrorPage", c: "ts-fn" },
+          { t: " />", c: "ts-punct" }
+        ] },
+        { t: "," }
+      ], 0, 2.48, 0.03);
+      washOn("#f13e-hl-err", 4.08);
+      tl.fromTo("#f13e-mark", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power3.out", immediateRender: false }, 4.08);
+
+      // ---- 5.0-8.0: "in plaats van" (6.08): card body swaps to the ErrorPage view ----
+      tl.to("#f13e-body", { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 6.08);
+      tl.fromTo("#f13e-errview", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out", immediateRender: false }, 6.2);
+      // "gewone element" (7.04): wash moves to `element: <Root />`
+      washOff("#f13e-hl-err", 7.04);
+      washOn("#f13e-hl-root", 7.04);
+
+      // ---- 8.0-12.1: "use route error": lines 1, 2, 8 type fast from 8.44; wash on useRouteError() at 9.68 ----
+      washOff("#f13e-hl-root", 8.44);
+      var P = 0.012;
+      var e = typeLine("#f13e-l1", "#f13e-c1", [
+        { t: "const", c: "ts-kw" },
+        { t: " " },
+        { t: "ErrorPage", c: "ts-fn" },
+        { t: " = () " },
+        { t: "=>", c: "ts-kw" },
+        { t: " {" }
+      ], 0, 8.44, P);
+      e = typeLine("#f13e-l2", "#f13e-c2", [
+        { t: "  " },
+        { t: "const", c: "ts-kw" },
+        { t: " error = " },
+        { id: "f13e-hl-use", parts: [
+          { t: "useRouteError", c: "ts-fn" },
+          { t: "()" }
+        ] },
+        { t: ";" }
+      ], 0, e.end + 0.02, P, 0.03);
+      typeLine("#f13e-l8", "#f13e-c8", [
+        { t: "};" }
+      ], 0, e.end + 0.02, P, 0.03);
+      washOn("#f13e-hl-use", 9.68);
+
+      // "wat er misging" (11.20): chip error: Error: …
+      tl.fromTo("#f13e-chip", { opacity: 0, y: 10, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, 11.2);
+
+      // ---- 12.1-18.0: "Is route error response": lines 4, 5, 6 type from 12.16; wash at 13.12 ----
+      washOff("#f13e-hl-use", 12.16);
+      e = typeLine("#f13e-l4", "#f13e-c4", [
+        { t: "  " },
+        { t: "if", c: "ts-kw" },
+        { t: " (" },
+        { id: "f13e-hl-isre", parts: [
+          { t: "isRouteErrorResponse", c: "ts-fn" },
+          { t: "(error)" }
+        ] },
+        { t: ") {" }
+      ], 0, 12.16, P);
+      e = typeLine("#f13e-l5", "#f13e-c5", [
+        { t: "    " },
+        { t: "return", c: "ts-kw" },
+        { t: " " },
+        { t: "<h1>", c: "ts-punct" },
+        { id: "f13e-hl-status", parts: [{ t: "{error.status}" }] },
+        { t: " {error.statusText}" },
+        { t: "</h1>", c: "ts-punct" },
+        { t: ";" }
+      ], 0, e.end + 0.02, P, 0.03);
+      typeLine("#f13e-l6", "#f13e-c6", [
+        { t: "  }" }
+      ], 0, e.end + 0.02, P, 0.03);
+      washOn("#f13e-hl-isre", 13.12);
+
+      // "vier nul vier" (17.20): row 404 + fout van de router
+      tl.fromTo("#f13e-row404", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, 17.2);
+
+      // ---- 18.0-end: "status" (19.12): wash to {error.status}; "algemene melding": line 7 from 20.64 ----
+      washOff("#f13e-hl-isre", 19.12);
+      washOn("#f13e-hl-status", 19.12);
+      typeLine("#f13e-l7", "#f13e-c7", [
+        { t: "  " },
+        { id: "f13e-hl-l7", parts: [
+          { t: "return", c: "ts-kw" },
+          { t: " " },
+          { t: "<h1>", c: "ts-punct" },
+          { t: "Er ging iets mis" },
+          { t: "</h1>", c: "ts-punct" },
+          { t: ";" }
+        ] }
+      ], 0, 20.64, P);
+      washOff("#f13e-hl-status", 21.32);
+      washOn("#f13e-hl-l7", 21.32);
+      tl.fromTo("#f13e-errline", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, 21.32);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["13-errorelement"] = tl;
+    })();
+  </script>
+</template>

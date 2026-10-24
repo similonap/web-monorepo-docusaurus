@@ -1,0 +1,292 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 04 positions ---- */
+    #f04p-cards { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    /* demo card, 480x330 (0.9x rows: address 40, header 50, nav 44, footer 36, content rest) */
+    .f04p-card {
+      position: absolute; top: 200px; width: 480px; height: 330px; box-sizing: border-box;
+      background: #FFFFFF; border: 1px solid var(--ts-hairline); border-radius: 12px;
+      box-shadow: var(--ts-shadow); overflow: hidden; display: flex; flex-direction: column; opacity: 0;
+    }
+    #f04p-card1 { left: 120px; }
+    #f04p-card2 { left: 720px; }
+    #f04p-card3 { left: 1320px; }
+    .f04p-addr {
+      flex: 0 0 40px; height: 40px; box-sizing: border-box; background: var(--ts-ground-subtle);
+      border-bottom: 1px solid var(--ts-hairline); padding-left: 16px; display: flex; align-items: center;
+      font-family: var(--ts-mono); font-size: 16px; color: var(--ts-ink); white-space: nowrap;
+    }
+    .f04p-host { color: var(--ts-muted); }
+    /* layout rows: wrappers grow from height 0 */
+    .f04p-wrap { position: relative; flex: 0 0 auto; height: 0; overflow: hidden; }
+    .f04p-row {
+      position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; display: flex; align-items: center;
+    }
+    .f04p-header { height: 50px; padding: 0 18px; border-bottom: 1px solid var(--ts-hairline);
+      font-family: var(--ts-sans); font-weight: 700; font-size: 20px; color: var(--ts-ink); }
+    .f04p-nav { height: 44px; padding: 0 18px; border-bottom: 1px solid var(--ts-hairline); gap: 25px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft); }
+    .f04p-footer { top: 0; bottom: auto; height: 36px; padding-left: 18px; background: var(--ts-ground-subtle);
+      border-top: 1px solid var(--ts-hairline);
+      font-family: var(--ts-sans); font-weight: 400; font-size: 16px; color: var(--ts-muted); }
+    .f04p-content { flex: 1 1 auto; min-height: 0; box-sizing: border-box; padding: 18px; overflow: hidden; }
+    .f04p-h { font-family: var(--ts-sans); font-weight: 700; font-size: 23px; line-height: 1.2; color: var(--ts-ink); }
+    .f04p-p { margin-top: 8px; font-family: var(--ts-sans); font-weight: 400; font-size: 18px; line-height: 1.3; color: var(--ts-ink-soft); }
+    /* red inset outline on the repeated layout parts */
+    .f04p-wrong {
+      position: absolute; left: 3px; right: 3px; top: 3px; bottom: 3px; box-sizing: border-box;
+      border: 2px solid var(--ts-error); border-radius: 6px; opacity: 0;
+    }
+    #f04p-dup {
+      position: absolute; left: 0; top: 570px; width: 1920px; text-align: center;
+      font-family: var(--ts-mono); font-weight: 500; font-size: 24px; line-height: 32px; color: var(--ts-error); opacity: 0;
+    }
+    /* statement: layout */
+    #f04p-hero { position: absolute; left: 0; top: 640px; width: 1920px; display: flex; justify-content: center; }
+    #f04p-word { position: relative; display: inline-block; font-size: 120px; opacity: 0; }
+    #f04p-bar { left: 0; width: 100%; bottom: -20px; }
+  </style>
+
+  <div data-hf-id="hf-p4r0" id="root" data-composition-id="04-probleem" data-width="1920" data-height="1080" data-duration="12.87">
+    <div data-hf-id="hf-p4b1" class="ts-bg clip" id="f04p-bg" data-start="0" data-duration="12.87" data-track-index="0"></div>
+
+    <div data-hf-id="hf-p4s2" class="ts-stage clip" id="f04p-stage" data-start="0" data-duration="12.87" data-track-index="1">
+      <div data-hf-id="hf-p4k3" class="ts-kicker" id="f04p-kicker"><div data-hf-id="hf-p4k4" class="ts-kicker-bar" id="f04p-kbar"></div><span data-hf-id="hf-p4k5" class="ts-kicker-text" id="f04p-ktext">Het probleem</span></div>
+
+      <div data-hf-id="hf-p4c0" id="f04p-cards">
+        <!-- card 1: Home -->
+        <div data-hf-id="hf-p4c1" class="f04p-card" id="f04p-card1">
+          <div data-hf-id="hf-p4a1" class="f04p-addr"><span data-hf-id="hf-p4h1" class="f04p-host">localhost:5173</span><span data-hf-id="hf-p4t1">/</span></div>
+          <div data-hf-id="hf-p4w11" class="f04p-wrap f04p-wh" id="f04p-h1"><div data-hf-id="hf-p4r11" class="f04p-row f04p-header">MySite<div data-hf-id="hf-p4x11" class="f04p-wrong"></div></div></div>
+          <div data-hf-id="hf-p4w12" class="f04p-wrap f04p-wn" id="f04p-n1"><div data-hf-id="hf-p4r12" class="f04p-row f04p-nav"><span data-hf-id="hf-p4l11">Home</span><span data-hf-id="hf-p4l12">About</span><span data-hf-id="hf-p4l13">Contact</span><div data-hf-id="hf-p4x12" class="f04p-wrong"></div></div></div>
+          <div data-hf-id="hf-p4o1" class="f04p-content"><div data-hf-id="hf-p4oh1" class="f04p-h">Home</div><div data-hf-id="hf-p4op1" class="f04p-p">Welkom op MySite.</div></div>
+          <div data-hf-id="hf-p4w13" class="f04p-wrap f04p-wf" id="f04p-f1"><div data-hf-id="hf-p4r13" class="f04p-row f04p-footer">Footer<div data-hf-id="hf-p4x13" class="f04p-wrong"></div></div></div>
+        </div>
+        <!-- card 2: About -->
+        <div data-hf-id="hf-p4c2" class="f04p-card" id="f04p-card2">
+          <div data-hf-id="hf-p4a2" class="f04p-addr"><span data-hf-id="hf-p4h2" class="f04p-host">localhost:5173</span><span data-hf-id="hf-p4t2">/about</span></div>
+          <div data-hf-id="hf-p4w21" class="f04p-wrap f04p-wh" id="f04p-h2"><div data-hf-id="hf-p4r21" class="f04p-row f04p-header">MySite<div data-hf-id="hf-p4x21" class="f04p-wrong"></div></div></div>
+          <div data-hf-id="hf-p4w22" class="f04p-wrap f04p-wn" id="f04p-n2"><div data-hf-id="hf-p4r22" class="f04p-row f04p-nav"><span data-hf-id="hf-p4l21">Home</span><span data-hf-id="hf-p4l22">About</span><span data-hf-id="hf-p4l23">Contact</span><div data-hf-id="hf-p4x22" class="f04p-wrong"></div></div></div>
+          <div data-hf-id="hf-p4o2" class="f04p-content"><div data-hf-id="hf-p4oh2" class="f04p-h">About</div><div data-hf-id="hf-p4op2" class="f04p-p">Over dit project.</div></div>
+          <div data-hf-id="hf-p4w23" class="f04p-wrap f04p-wf" id="f04p-f2"><div data-hf-id="hf-p4r23" class="f04p-row f04p-footer">Footer<div data-hf-id="hf-p4x23" class="f04p-wrong"></div></div></div>
+        </div>
+        <!-- card 3: Contact -->
+        <div data-hf-id="hf-p4c3" class="f04p-card" id="f04p-card3">
+          <div data-hf-id="hf-p4a3" class="f04p-addr"><span data-hf-id="hf-p4h3" class="f04p-host">localhost:5173</span><span data-hf-id="hf-p4t3">/contact</span></div>
+          <div data-hf-id="hf-p4w31" class="f04p-wrap f04p-wh" id="f04p-h3"><div data-hf-id="hf-p4r31" class="f04p-row f04p-header">MySite<div data-hf-id="hf-p4x31" class="f04p-wrong"></div></div></div>
+          <div data-hf-id="hf-p4w32" class="f04p-wrap f04p-wn" id="f04p-n3"><div data-hf-id="hf-p4r32" class="f04p-row f04p-nav"><span data-hf-id="hf-p4l31">Home</span><span data-hf-id="hf-p4l32">About</span><span data-hf-id="hf-p4l33">Contact</span><div data-hf-id="hf-p4x32" class="f04p-wrong"></div></div></div>
+          <div data-hf-id="hf-p4o3" class="f04p-content"><div data-hf-id="hf-p4oh3" class="f04p-h">Contact</div><div data-hf-id="hf-p4op3" class="f04p-p">Stuur ons een bericht.</div></div>
+          <div data-hf-id="hf-p4w33" class="f04p-wrap f04p-wf" id="f04p-f3"><div data-hf-id="hf-p4r33" class="f04p-row f04p-footer">Footer<div data-hf-id="hf-p4x33" class="f04p-wrong"></div></div></div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-p4d0" id="f04p-dup">3× dezelfde code</div>
+
+      <div data-hf-id="hf-p4e0" id="f04p-hero">
+        <span data-hf-id="hf-p4e1" class="ts-hero" id="f04p-word" style="position: relative;">layout<div data-hf-id="hf-p4e2" class="ts-hero-bar" id="f04p-bar"></div></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 12.87;
+      var root = document.querySelector('[data-composition-id="04-probleem"]');
+      var qa = function (s) { return Array.prototype.slice.call(root.querySelectorAll(s)); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- 0.0-2.9: kicker; "elke pagina" (1.52) three page-only cards ----
+      tl.fromTo("#f04p-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f04p-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo(["#f04p-card1", "#f04p-card2", "#f04p-card3"], { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.12 }, 1.52);
+
+      // ---- 2.9-6.6: "header" (2.96), "navigatie" (4.04), "footer" (5.76): rows grow in all three ----
+      tl.fromTo(qa(".f04p-wh"), { height: 0 }, { height: 50, duration: 0.35, ease: "power3.out", stagger: 0.08 }, 2.96);
+      tl.fromTo(qa(".f04p-wn"), { height: 0 }, { height: 44, duration: 0.35, ease: "power3.out", stagger: 0.08 }, 4.04);
+      tl.fromTo(qa(".f04p-wf"), { height: 0 }, { height: 36, duration: 0.35, ease: "power3.out", stagger: 0.08 }, 5.76);
+
+      // ---- 6.6-9.8: "opnieuw" (8.56) red outlines on header/nav/footer; "schrijven" (9.04) label ----
+      var wrongs = qa(".f04p-wrong");
+      tl.fromTo(wrongs, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out", stagger: 0.05 }, 8.56);
+      tl.fromTo("#f04p-dup", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 9.04);
+
+      // ---- 9.8-end: "Daarvoor" (9.92) clear red, cards up + dim; "layout" (11.04) statement; bar (11.3) ----
+      tl.to(wrongs, { opacity: 0, duration: 0.35, ease: "power2.inOut" }, 9.92);
+      tl.to("#f04p-dup", { opacity: 0, duration: 0.35, ease: "power2.inOut" }, 9.92);
+      tl.to("#f04p-cards", { y: -40, opacity: 0.35, duration: 0.6, ease: "power3.out" }, 9.92);
+      tl.fromTo("#f04p-word", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 11.04);
+      tl.fromTo("#f04p-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 11.3);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["04-probleem"] = tl;
+    })();
+  </script>
+</template>

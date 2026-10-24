@@ -1,0 +1,300 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 14 positions: four recap rows + next-video pointer ---- */
+    .f14s-row { position: absolute; left: 80px; width: 1760px; height: 96px; }
+    #f14s-r1 { top: 190px; }
+    #f14s-r2 { top: 320px; }
+    #f14s-r3 { top: 450px; }
+    #f14s-r4 { top: 580px; }
+    .f14s-line {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+      background: var(--ts-hairline); transform-origin: left center;
+    }
+    .f14s-chips {
+      position: absolute; left: 0; top: 0; width: 680px; height: 96px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .f14s-chips .ts-chip { position: relative; font-size: 26px; font-weight: 500; opacity: 0; }
+    .f14s-stmt {
+      position: absolute; left: 740px; top: 0; height: 96px; display: flex; align-items: center;
+      white-space: nowrap; opacity: 0;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 36px; line-height: 1.2;
+      letter-spacing: -0.01em; color: var(--ts-ink);
+    }
+
+    #f14s-next { position: absolute; left: 80px; top: 740px; width: 1760px; height: 52px; }
+    #f14s-nlabel { left: 0; top: 16px; opacity: 0; }
+    #f14s-nchip { left: 280px; top: 0; font-size: 26px; opacity: 0; }
+  </style>
+
+  <div data-hf-id="hf-r14a" id="root" data-composition-id="14-samenvatting" data-width="1920" data-height="1080" data-duration="24.29">
+    <div data-hf-id="hf-r14b" class="ts-bg clip" id="f14s-bg" data-start="0" data-duration="24.29" data-track-index="0"></div>
+
+    <div data-hf-id="hf-r14c" class="ts-stage clip" id="f14s-stage" data-start="0" data-duration="24.29" data-track-index="1">
+      <div data-hf-id="hf-r14d" class="ts-kicker" id="f14s-kicker"><div data-hf-id="hf-r14e" class="ts-kicker-bar" id="f14s-kbar"></div><span data-hf-id="hf-r14f" class="ts-kicker-text" id="f14s-ktext">Samengevat</span></div>
+
+      <!-- row 1: createBrowserRouter -->
+      <div data-hf-id="hf-r14g" class="f14s-row" id="f14s-r1">
+        <div data-hf-id="hf-r14h" class="f14s-line" id="f14s-l1"></div>
+        <div data-hf-id="hf-r14i" class="f14s-chips">
+          <span data-hf-id="hf-r14j" class="ts-chip" id="f14s-c1a">createBrowserRouter</span>
+        </div>
+        <div data-hf-id="hf-r14k" class="f14s-stmt" id="f14s-s1">koppelt URL's aan componenten</div>
+      </div>
+
+      <!-- row 2: Outlet -->
+      <div data-hf-id="hf-r14l" class="f14s-row" id="f14s-r2">
+        <div data-hf-id="hf-r14m" class="f14s-line" id="f14s-l2"></div>
+        <div data-hf-id="hf-r14n" class="f14s-chips">
+          <span data-hf-id="hf-r14o" class="ts-chip" id="f14s-c2a">&lt;Outlet /&gt;</span>
+        </div>
+        <div data-hf-id="hf-r14p" class="f14s-stmt" id="f14s-s2">een layout voor elke pagina</div>
+      </div>
+
+      <!-- row 3: Link / NavLink / (not) a href -->
+      <div data-hf-id="hf-r14q" class="f14s-row" id="f14s-r3">
+        <div data-hf-id="hf-r14r" class="f14s-line" id="f14s-l3"></div>
+        <div data-hf-id="hf-r14s" class="f14s-chips">
+          <span data-hf-id="hf-r14t" class="ts-chip" id="f14s-c3a">&lt;Link&gt;</span>
+          <span data-hf-id="hf-r14u" class="ts-chip" id="f14s-c3b">&lt;NavLink&gt;</span>
+          <span data-hf-id="hf-r14v" class="ts-chip ts-chip--struck" id="f14s-c3c">&lt;a href&gt;</span>
+        </div>
+        <div data-hf-id="hf-r14w" class="f14s-stmt" id="f14s-s3">navigeren zonder request</div>
+      </div>
+
+      <!-- row 4: path "*" + errorElement -->
+      <div data-hf-id="hf-r14x" class="f14s-row" id="f14s-r4">
+        <div data-hf-id="hf-r14y" class="f14s-line" id="f14s-l4"></div>
+        <div data-hf-id="hf-r14z" class="f14s-chips">
+          <span data-hf-id="hf-r150" class="ts-chip" id="f14s-c4a">path: "*"</span>
+          <span data-hf-id="hf-r151" class="ts-chip" id="f14s-c4b">errorElement</span>
+        </div>
+        <div data-hf-id="hf-r152" class="f14s-stmt" id="f14s-s4">vangt ontbrekende pagina's en fouten op</div>
+      </div>
+
+      <!-- next video pointer -->
+      <div data-hf-id="hf-r153" id="f14s-next">
+        <span data-hf-id="hf-r154" class="ts-label" id="f14s-nlabel">volgende video</span>
+        <span data-hf-id="hf-r155" class="ts-chip ts-chip--new" id="f14s-nchip">/detail/:id</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 24.29;
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function chipIn(sel, at, to) {
+        tl.fromTo(sel, { opacity: 0, x: 12 }, { opacity: to === undefined ? 1 : to, x: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, at);
+      }
+      function stmtIn(sel, at) {
+        tl.fromTo(sel, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, at);
+      }
+      function lineIn(sel, at) {
+        tl.fromTo(sel, { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, at);
+      }
+
+      // ---- 0.0-1.5: kicker ----
+      tl.fromTo("#f14s-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f14s-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+
+      // ---- 1.5-5.9: "create browser router" (1.44), "URL's" (3.52) ----
+      lineIn("#f14s-l1", 1.44);
+      chipIn("#f14s-c1a", 1.44);
+      stmtIn("#f14s-s1", 3.52);
+
+      // ---- 5.9-9.9: "Outlet" (6.48), "dezelfde structuur" (8.24) ----
+      lineIn("#f14s-l2", 6.48);
+      chipIn("#f14s-c2a", 6.48);
+      stmtIn("#f14s-s2", 8.24);
+
+      // ---- 9.9-14.4: "Link" (11.04), "Nav Link" (11.60), "a-tag" (13.20, struck + 35%) ----
+      lineIn("#f14s-l3", 11.04);
+      chipIn("#f14s-c3a", 11.04);
+      chipIn("#f14s-c3b", 11.6);
+      stmtIn("#f14s-s3", 11.6);
+      chipIn("#f14s-c3c", 13.2, 0.35);
+
+      // ---- 14.4-19.8: "sterretje" (14.48), "error element" (15.36), "ontbrekende" (16.60) ----
+      lineIn("#f14s-l4", 14.48);
+      chipIn("#f14s-c4a", 14.48);
+      chipIn("#f14s-c4b", 15.36);
+      stmtIn("#f14s-s4", 16.6);
+
+      // ---- 19.8-end: "parameters" (19.20) label, "URL" (20.24) chip pops in ----
+      tl.fromTo("#f14s-nlabel", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 19.2);
+      tl.fromTo("#f14s-nchip", { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out", immediateRender: false }, 20.24);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["14-samenvatting"] = tl;
+    })();
+  </script>
+</template>

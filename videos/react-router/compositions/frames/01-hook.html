@@ -1,0 +1,378 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+
+    /* ---- frame 01 positions ---- */
+    #f01r-scene { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    /* demo card (full layout variant), 604x360, scaled 1.25 by GSAP around its centre (960, 380) */
+    #f01r-wrap { position: absolute; left: 658px; top: 200px; width: 604px; height: 360px; opacity: 0; }
+    #f01r-card { left: 0; top: 0; width: 604px; height: 360px; overflow: hidden; }
+    .f01r-addr {
+      position: absolute; left: 0; top: 0; right: 0; height: 44px; box-sizing: border-box;
+      background: var(--ts-ground-subtle); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding-left: 18px;
+      font-family: var(--ts-mono); font-size: 18px; white-space: nowrap;
+    }
+    .f01r-host { color: var(--ts-muted); }
+    .f01r-path { position: relative; display: inline-block; color: var(--ts-ink); }
+    .f01r-pathtxt { display: inline-block; border-radius: 4px; }
+    #f01r-path-old { position: absolute; left: 0; top: 0; }
+    #f01r-path-new { opacity: 0; background: var(--ts-wash-clear); }
+    .f01r-header {
+      position: absolute; left: 0; right: 0; top: 44px; height: 56px; box-sizing: border-box;
+      border-bottom: 1px solid var(--ts-hairline); display: flex; align-items: center; padding: 0 20px;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 22px; color: var(--ts-ink);
+    }
+    .f01r-nav {
+      position: absolute; left: 0; right: 0; top: 100px; height: 48px; box-sizing: border-box;
+      border-bottom: 1px solid var(--ts-hairline); display: flex; align-items: center; gap: 28px; padding: 0 20px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .f01r-link { position: relative; display: inline-block; line-height: 1; }
+    .f01r-ripple {
+      position: absolute; left: 50%; top: 50%; width: 60px; height: 60px; margin: -30px 0 0 -30px;
+      border-radius: 50%; background: rgba(49, 120, 198, 0.2); opacity: 0; pointer-events: none;
+    }
+    .f01r-content { position: absolute; left: 0; right: 0; top: 148px; height: 172px; }
+    .f01r-page { position: absolute; left: 20px; top: 20px; right: 20px; }
+    .f01r-page-h { font-family: var(--ts-sans); font-weight: 700; font-size: 26px; line-height: 34px; color: var(--ts-ink); }
+    .f01r-page-p { margin-top: 8px; font-family: var(--ts-sans); font-weight: 400; font-size: 20px; line-height: 28px; color: var(--ts-ink-soft); }
+    #f01r-page-about { opacity: 0; }
+    .f01r-footer {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-ground-subtle); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding-left: 20px;
+      font-family: var(--ts-sans); font-weight: 400; font-size: 18px; color: var(--ts-muted);
+    }
+    /* netwerk chip, centred at (960, 644) */
+    #f01r-chiprow { position: absolute; left: 0; top: 618px; width: 1920px; height: 52px; display: flex; justify-content: center; }
+    #f01r-chip { position: relative; opacity: 0; }
+    /* statement + hero */
+    #f01r-stmt-row { position: absolute; left: 0; top: 570px; width: 1920px; display: flex; justify-content: center; }
+    #f01r-stmt { font-size: 52px; color: var(--ts-ink-soft); white-space: nowrap; opacity: 0; }
+    #f01r-hero { position: absolute; left: 0; top: 650px; width: 1920px; display: flex; justify-content: center; }
+    #f01r-word { position: relative; display: inline-block; font-size: 160px; opacity: 0; }
+    #f01r-bar { left: 0; width: 100%; bottom: -22px; }
+    /* cursor */
+    #f01r-cursor { position: absolute; left: 0; top: 0; width: 224px; height: 224px; pointer-events: none; z-index: 20; opacity: 0; }
+    #f01r-cursor svg {
+      display: block; width: 100%; height: 100%;
+      fill: #1E293B; stroke: #FFFFFF; stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round;
+    }
+  </style>
+
+  <div data-hf-id="hf-fn5z" id="root" data-composition-id="01-hook" data-width="1920" data-height="1080" data-duration="13.67">
+    <div data-hf-id="hf-imot" class="ts-bg clip" id="f01r-bg" data-start="0" data-duration="13.67" data-track-index="0"></div>
+
+    <div data-hf-id="hf-3fjq" class="ts-stage clip" id="f01r-stage" data-start="0" data-duration="13.67" data-track-index="1">
+      <div data-hf-id="hf-5nf4" class="ts-kicker" id="f01r-kicker"><div data-hf-id="hf-m91h" class="ts-kicker-bar" id="f01r-kbar"></div><span data-hf-id="hf-wxw1" class="ts-kicker-text" id="f01r-ktext">Navigeren</span></div>
+
+      <div data-hf-id="hf-rbit" id="f01r-scene">
+        <div data-hf-id="hf-yoib" id="f01r-wrap">
+          <div data-hf-id="hf-jn62" class="ts-card" id="f01r-card">
+            <div data-hf-id="hf-540p" class="f01r-addr"><span data-hf-id="hf-y0vs" class="f01r-host">localhost:5173</span><span data-hf-id="hf-rhku" class="f01r-path"><span data-hf-id="hf-by5u" class="f01r-pathtxt" id="f01r-path-old">/</span><span data-hf-id="hf-bq5y" class="f01r-pathtxt" id="f01r-path-new">/about</span></span></div>
+            <div data-hf-id="hf-1vh2" class="f01r-header">MySite</div>
+            <div data-hf-id="hf-9tnz" class="f01r-nav">
+              <span data-hf-id="hf-caut" class="f01r-link" id="f01r-nav-home">Home</span>
+              <span data-hf-id="hf-ev57" class="f01r-link" id="f01r-nav-about">About<span data-hf-id="hf-e6nm" class="f01r-ripple" id="f01r-rip"></span></span>
+              <span data-hf-id="hf-x35j" class="f01r-link" id="f01r-nav-contact">Contact</span>
+            </div>
+            <div data-hf-id="hf-q16n" class="f01r-content">
+              <div data-hf-id="hf-atc8" class="f01r-page" id="f01r-page-home"><div data-hf-id="hf-zhl1" class="f01r-page-h">Home</div><div data-hf-id="hf-ijpj" class="f01r-page-p">Welkom op MySite.</div></div>
+              <div data-hf-id="hf-x2m8" class="f01r-page" id="f01r-page-about"><div data-hf-id="hf-fg37" class="f01r-page-h">About</div><div data-hf-id="hf-b0nu" class="f01r-page-p">Over dit project.</div></div>
+            </div>
+            <div data-hf-id="hf-r4rq" class="f01r-footer">Footer</div>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-29ij" id="f01r-chiprow">
+          <div data-hf-id="hf-u5j4" class="ts-chip ts-chip--new" id="f01r-chip"><span data-hf-id="hf-3w9d" class="ts-chip-key">netwerk</span><span data-hf-id="hf-klkn">0 requests</span></div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-15zi" id="f01r-stmt-row"><span data-hf-id="hf-04sl" class="ts-statement" id="f01r-stmt">client-side routing</span></div>
+
+      <div data-hf-id="hf-31iv" id="f01r-hero">
+        <span data-hf-id="hf-htfz" class="ts-hero" id="f01r-word">React Router<div data-hf-id="hf-lw9x" class="ts-hero-bar" id="f01r-bar"></div></span>
+      </div>
+
+      <div data-hf-id="hf-gqtv" id="f01r-cursor" aria-hidden="true" data-layout-allow-overflow="">
+        <svg data-hf-id="hf-ulu9" viewBox="0 0 24 24"><path data-hf-id="hf-fueh" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 13.67;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="01-hook"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (shared; unused in this frame) ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // ---- 0.0-1.4: kicker; large card fades in (0.1); cursor enters, clicks About at 0.72 ("link") ----
+      tl.fromTo("#f01r-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f01r-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f01r-wrap",
+        { opacity: 0, y: 12, scale: 1.25, transformOrigin: "50% 50%" },
+        { opacity: 1, y: 0, scale: 1.25, transformOrigin: "50% 50%", duration: 0.7, ease: "power3.out" }, 0.1);
+
+      // cursor (tip = x/y through xPercent/yPercent)
+      var cursor = "#f01r-cursor";
+      var PRESS = 0.1;
+      var TIP_ORIGIN = "20.83% 12.5%";
+      var ABOUT_X = 752, ABOUT_Y = 312; // centre of the About nav link on screen
+      function click(target, rip, at) {
+        tl.to(cursor, { scale: 0.86, duration: PRESS, ease: "power2.in", transformOrigin: TIP_ORIGIN }, at);
+        tl.to(cursor, { scale: 1, duration: 0.22, ease: "power2.out", transformOrigin: TIP_ORIGIN }, at + PRESS);
+        tl.to(target, { scale: 0.96, duration: 0.07, ease: "power1.in" }, at);
+        tl.to(target, { scale: 1, duration: 0.3, ease: "power3.out" }, at + 0.07);
+        tl.fromTo(rip, { scale: 0.5, opacity: 0.9 }, { scale: 2.6, opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, at + 0.02);
+      }
+      tl.fromTo(cursor,
+        { xPercent: -20.83, yPercent: -12.5, x: 1240, y: 760, scale: 1, opacity: 0 },
+        { xPercent: -20.83, yPercent: -12.5, x: ABOUT_X, y: ABOUT_Y, opacity: 1, duration: 0.5, ease: "power3.out" },
+        0.1);
+      click("#f01r-nav-about", "#f01r-rip", 0.72);
+      // park the cursor beside the card so the URL and content swaps stay visible
+      tl.to(cursor, { x: 1460, y: 520, duration: 0.6, ease: "power3.out" }, 1.2);
+
+      // ---- 1.4-3.8: "URL" (1.68): path / -> /about, blue wash on the path 1.68-3.4 ----
+      tl.to("#f01r-path-old", { y: -12, opacity: 0, duration: 0.25, ease: "power2.out" }, 1.68);
+      tl.fromTo("#f01r-path-new", { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, 1.68);
+      washOn("#f01r-path-new", 1.68);
+      washOff("#f01r-path-new", 3.0);
+
+      // ---- 3.8-5.0: "andere pagina" (4.24): content Home -> About ----
+      tl.to("#f01r-page-home", { opacity: 0, duration: 0.2, ease: "power2.out" }, 4.24);
+      tl.fromTo("#f01r-page-about", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out", immediateRender: false }, 4.3);
+
+      // ---- 5.0-7.3: cursor out (5.8); "opnieuw" (6.56) netwerk chip ----
+      tl.to(cursor, { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 5.8);
+      tl.fromTo("#f01r-chip", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out", immediateRender: false }, 6.56);
+
+      // ---- 7.3-11.3: scene up + dim (7.44); "client-side routing" (8.08) statement ----
+      tl.to("#f01r-scene", { y: -120, opacity: 0.3, duration: 0.6, ease: "power3.out" }, 7.44);
+      tl.fromTo("#f01r-stmt", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 8.08);
+
+      // ---- 11.3-end: "React Router" (11.44) hero; bar (11.92) ----
+      tl.fromTo("#f01r-word", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", immediateRender: false }, 11.44);
+      tl.fromTo("#f01r-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 11.92);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["01-hook"] = tl;
+    })();
+  </script>
+</template>

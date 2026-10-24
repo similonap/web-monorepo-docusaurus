@@ -1,0 +1,505 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 06 positions ---- */
+    #f06c-panel { left: 80px; top: 170px; width: 1060px; height: 570px; }
+
+    /* line-level wash (behind the text of a row) */
+    .f06c-lw { position: absolute; top: 2px; height: 34px; border-radius: 4px; background: var(--ts-wash-clear); }
+    #f06c-lw7 { left: 170px; width: 601px; }
+
+    /* ---- right column, part 1: route tree ---- */
+    #f06c-tree { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #f06c-wires { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    .f06c-wire { fill: none; stroke: #94A3B8; stroke-width: 2; }
+    .f06c-node {
+      position: absolute; box-sizing: border-box; background: var(--ts-panel);
+      border: 1px solid var(--ts-hairline); border-radius: 12px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: var(--ts-mono); color: var(--ts-ink); white-space: nowrap;
+    }
+    #f06c-root { left: 1388px; top: 220px; width: 300px; height: 64px; font-size: 24px; font-weight: 500; line-height: 1; }
+    .f06c-child { top: 380px; width: 180px; height: 80px; gap: 8px; }
+    #f06c-home { left: 1236px; }
+    #f06c-about { left: 1448px; }
+    #f06c-contact { left: 1660px; }
+    .f06c-key { font-size: 18px; line-height: 1; color: var(--ts-muted); }
+    .f06c-el { font-size: 22px; font-weight: 500; line-height: 1; }
+    #f06c-ring {
+      position: absolute; left: 1236px; top: 380px; width: 180px; height: 80px; box-sizing: border-box;
+      border: 2px solid var(--ts-blue); border-radius: 12px;
+    }
+    .f06c-ptag {
+      position: absolute; box-sizing: border-box; height: 30px; padding: 0 12px; border-radius: 999px;
+      background: var(--ts-blue-tint); border: 1px solid var(--ts-blue);
+      font-family: var(--ts-mono); font-size: 18px; font-weight: 500; line-height: 28px; color: var(--ts-blue-dark);
+      white-space: nowrap;
+    }
+    #f06c-roottag { left: 1404px; top: 205px; }
+    .f06c-pillwrap { position: absolute; top: 484px; width: 180px; height: 34px; display: flex; justify-content: center; }
+    .f06c-pill {
+      box-sizing: border-box; height: 34px; padding: 0 14px; border-radius: 999px;
+      background: var(--ts-blue-tint); border: 1px solid var(--ts-blue);
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; line-height: 32px; color: var(--ts-blue-dark);
+      white-space: nowrap;
+    }
+
+    /* ---- right column, part 2: the demo card (standard position, full layout) ---- */
+    #f06c-label { left: 1236px; top: 176px; }
+    #f06c-card { left: 1236px; top: 210px; width: 604px; height: 360px; overflow: hidden; }
+    .f06c-row { position: absolute; left: 0; right: 0; box-sizing: border-box; }
+    .f06c-pwash { position: absolute; inset: 0; background: var(--ts-wash); }
+    #f06c-addr {
+      top: 0; height: 44px; background: var(--ts-ground-subtle); border-bottom: 1px solid var(--ts-hairline);
+      padding-left: 18px; font-family: var(--ts-mono); font-size: 18px; line-height: 43px; white-space: pre;
+      font-variant-ligatures: none;
+    }
+    .f06c-host { color: var(--ts-muted); }
+    #f06c-path { color: var(--ts-ink); }
+    #f06c-acaret { position: absolute; left: 169px; top: 12px; width: 2px; height: 20px; background: var(--ts-blue); }
+    #f06c-hdr {
+      top: 44px; height: 56px; padding: 0 20px; border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center;
+      font-family: var(--ts-sans); font-weight: 700; font-size: 22px; color: var(--ts-ink);
+    }
+    #f06c-nav {
+      top: 100px; height: 48px; padding: 0 20px; border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; gap: 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    #f06c-content { top: 148px; height: 170px; padding: 20px; }
+    .f06c-h { font-family: var(--ts-sans); font-weight: 700; font-size: 26px; line-height: 1.2; color: var(--ts-ink); }
+    .f06c-p { margin-top: 8px; font-family: var(--ts-sans); font-weight: 400; font-size: 20px; line-height: 1.4; color: var(--ts-ink-soft); }
+    #f06c-foot {
+      top: 318px; height: 40px; background: var(--ts-ground-subtle); border-top: 1px solid var(--ts-hairline);
+      padding-left: 20px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-weight: 400; font-size: 18px; color: var(--ts-muted);
+    }
+    /* Outlet marker: dashed blue rect inset 6px in the content area + tag on its top edge */
+    #f06c-outlet {
+      position: absolute; left: 6px; top: 154px; width: 590px; height: 158px; box-sizing: border-box;
+      border: 2px dashed var(--ts-blue); border-radius: 8px;
+    }
+    #f06c-otag {
+      position: absolute; right: 19px; top: 142px; height: 24px; padding: 0 8px; background: var(--ts-ground);
+      font-family: var(--ts-mono); font-size: 18px; font-weight: 500; line-height: 24px; color: var(--ts-blue-dark);
+      white-space: nowrap;
+    }
+  </style>
+
+  <div data-hf-id="hf-tagi" id="root" data-composition-id="06-children" data-width="1920" data-height="1080" data-duration="22.47">
+    <div data-hf-id="hf-07nb" class="ts-bg clip" id="f06c-bg" data-start="0" data-duration="22.47" data-track-index="0"></div>
+
+    <div data-hf-id="hf-hbys" class="ts-stage clip" id="f06c-stage" data-start="0" data-duration="22.47" data-track-index="1">
+      <div data-hf-id="hf-zyss" class="ts-kicker" id="f06c-kicker"><div data-hf-id="hf-22ix" class="ts-kicker-bar" id="f06c-kbar"></div><span data-hf-id="hf-kqpr" class="ts-kicker-text" id="f06c-ktext">Children</span></div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-ce9x" class="ts-code-surface" id="f06c-panel">
+        <div data-hf-id="hf-x5y0" class="ts-code-title">App.tsx</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-1fbh" class="ts-txt"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> <span data-hf-id="hf-rv7e" class="ts-hl" id="f06c-hl-router">router</span> = <span data-hf-id="hf-hm40" class="ts-fn">createBrowserRouter</span>([</span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-ep03" class="ts-txt" id="f06c-l2"></span><span data-hf-id="hf-zdb5" class="ts-caret" id="f06c-c2"></span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-aqw2" class="ts-txt" id="f06c-l3"></span><span data-hf-id="hf-0g0o" class="ts-caret" id="f06c-c3"></span></div>
+          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-u6s5" class="ts-txt" id="f06c-l4"></span><span data-hf-id="hf-whwn" class="ts-caret" id="f06c-c4"></span></div>
+          <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-r7ik" class="ts-txt" id="f06c-l5"></span><span data-hf-id="hf-sjsm" class="ts-caret" id="f06c-c5"></span></div>
+          <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-2307" class="ts-txt" id="f06c-l6"></span><span data-hf-id="hf-kjph" class="ts-caret" id="f06c-c6"></span></div>
+          <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><div data-hf-id="hf-j0xb" class="f06c-lw" id="f06c-lw7"></div><span data-hf-id="hf-y4w6" class="ts-txt" id="f06c-l7"></span><span data-hf-id="hf-nu0s" class="ts-caret" id="f06c-c7"></span></div>
+          <div data-hf-id="hf-du2u" class="ts-row"><span data-hf-id="hf-hcwz" class="ts-ln">8</span><span data-hf-id="hf-fd6h" class="ts-txt" id="f06c-l8"></span><span data-hf-id="hf-jvwr" class="ts-caret" id="f06c-c8"></span></div>
+          <div data-hf-id="hf-9gpj" class="ts-row"><span data-hf-id="hf-hr80" class="ts-ln">9</span><span data-hf-id="hf-elio" class="ts-txt" id="f06c-l9"></span><span data-hf-id="hf-fxsq" class="ts-caret" id="f06c-c9"></span></div>
+          <div data-hf-id="hf-9v0k" class="ts-row"><span data-hf-id="hf-h360" class="ts-ln">10</span><span data-hf-id="hf-fn34" class="ts-txt" id="f06c-l10"></span><span data-hf-id="hf-w212" class="ts-caret" id="f06c-c10"></span></div>
+          <div data-hf-id="hf-rmvo" class="ts-row"><span data-hf-id="hf-gouz" class="ts-ln">11</span><span data-hf-id="hf-0ilo" class="ts-txt">]);</span></div>
+        </div>
+        <div data-hf-id="hf-ndvo" class="ts-code-status">App.tsx · children</div>
+      </div>
+
+      <!-- right column, part 1: route tree -->
+      <div data-hf-id="hf-vblr" id="f06c-tree">
+        <svg data-hf-id="hf-r5ky" id="f06c-wires" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+          <path data-hf-id="hf-x63f" class="f06c-wire" id="f06c-w0" d="M1538 284 V330" stroke-dasharray="46" stroke-dashoffset="46" />
+          <path data-hf-id="hf-okjf" class="f06c-wire" id="f06c-w1" d="M1538 330 H1326 V380" stroke-dasharray="262" stroke-dashoffset="262" />
+          <path data-hf-id="hf-t52i" class="f06c-wire" id="f06c-w2" d="M1538 330 V380" stroke-dasharray="50" stroke-dashoffset="50" />
+          <path data-hf-id="hf-cbac" class="f06c-wire" id="f06c-w3" d="M1538 330 H1750 V380" stroke-dasharray="262" stroke-dashoffset="262" />
+        </svg>
+        <div data-hf-id="hf-alty" class="f06c-node" id="f06c-root"><span data-hf-id="hf-uckh"><span data-hf-id="hf-4csn" class="ts-punct">&lt;</span><span data-hf-id="hf-akyf" class="ts-fn">Root</span><span data-hf-id="hf-07ek" class="ts-punct"> /&gt;</span></span></div>
+        <div data-hf-id="hf-515z" class="f06c-ptag" id="f06c-roottag">/</div>
+        <div data-hf-id="hf-kpl9" class="f06c-node f06c-child" id="f06c-home"><span data-hf-id="hf-clqo" class="f06c-key">index</span><span data-hf-id="hf-jpfw" class="f06c-el"><span data-hf-id="hf-c0rr" class="ts-punct">&lt;</span><span data-hf-id="hf-ap14" class="ts-fn">Home</span><span data-hf-id="hf-gvec" class="ts-punct"> /&gt;</span></span></div>
+        <div data-hf-id="hf-ayf3" class="f06c-node f06c-child" id="f06c-about"><span data-hf-id="hf-rw95" class="f06c-key">about</span><span data-hf-id="hf-zoo4" class="f06c-el"><span data-hf-id="hf-bmgq" class="ts-punct">&lt;</span><span data-hf-id="hf-hidk" class="ts-fn">About</span><span data-hf-id="hf-foh9" class="ts-punct"> /&gt;</span></span></div>
+        <div data-hf-id="hf-r7bg" class="f06c-node f06c-child" id="f06c-contact"><span data-hf-id="hf-vdbc" class="f06c-key">contact</span><span data-hf-id="hf-yhr1" class="f06c-el"><span data-hf-id="hf-b85p" class="ts-punct">&lt;</span><span data-hf-id="hf-777h" class="ts-fn">Contact</span><span data-hf-id="hf-g2sa" class="ts-punct"> /&gt;</span></span></div>
+        <div data-hf-id="hf-7wi9" id="f06c-ring"></div>
+        <div data-hf-id="hf-sn43" class="f06c-pillwrap" style="left: 1236px;"><div data-hf-id="hf-4jux" class="f06c-pill" id="f06c-pill-home">/</div></div>
+        <div data-hf-id="hf-owuw" class="f06c-pillwrap" style="left: 1448px;"><div data-hf-id="hf-8nk2" class="f06c-pill" id="f06c-pill-about">/about</div></div>
+        <div data-hf-id="hf-zya0" class="f06c-pillwrap" style="left: 1660px;"><div data-hf-id="hf-o8zc" class="f06c-pill" id="f06c-pill-contact">/contact</div></div>
+      </div>
+
+      <!-- right column, part 2: scherm (demo card) -->
+      <div data-hf-id="hf-b9ey" class="ts-label" id="f06c-label">scherm</div>
+      <div data-hf-id="hf-pjjy" class="ts-card" id="f06c-card">
+        <div data-hf-id="hf-mwdj" class="f06c-row" id="f06c-addr"><span data-hf-id="hf-oh1w" class="f06c-host">localhost:5173</span><span data-hf-id="hf-fsyv" id="f06c-path"></span><span data-hf-id="hf-2ol4" id="f06c-acaret"></span></div>
+        <div data-hf-id="hf-r4y9" class="f06c-row" id="f06c-hdr">MySite<div data-hf-id="hf-1dj1" class="f06c-pwash" id="f06c-hdr-w"></div></div>
+        <div data-hf-id="hf-1mth" class="f06c-row" id="f06c-nav"><span data-hf-id="hf-e1du">Home</span><span data-hf-id="hf-cgsq">About</span><span data-hf-id="hf-n4uf">Contact</span><div data-hf-id="hf-5poo" class="f06c-pwash" id="f06c-nav-w"></div></div>
+        <div data-hf-id="hf-uat1" class="f06c-row" id="f06c-content">
+          <div data-hf-id="hf-gewq" id="f06c-page"><div data-hf-id="hf-rngp" class="f06c-h">About</div><div data-hf-id="hf-kq0g" class="f06c-p">Over dit project.</div></div>
+        </div>
+        <div data-hf-id="hf-6exp" class="f06c-row" id="f06c-foot">Footer<div data-hf-id="hf-i2vl" class="f06c-pwash" id="f06c-foot-w"></div></div>
+        <div data-hf-id="hf-7ynk" id="f06c-outlet"></div>
+        <div data-hf-id="hf-7lag" id="f06c-otag">&lt;Outlet /&gt;</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 22.47;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="06-children"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      var EL = function (name) {
+        return [
+          { t: "<", c: "ts-punct" },
+          { t: name, c: "ts-fn" },
+          { t: " />", c: "ts-punct" }
+        ];
+      };
+      var pop = function (sel, at) {
+        tl.fromTo(sel, { opacity: 0, y: 6, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: "power3.out" }, at);
+      };
+
+      // ---- 0.0-1.1: kicker; panel 0.1 with lines 1 and 11; "router" (0.32) ----
+      tl.fromTo("#f06c-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f06c-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f06c-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1);
+      washOn("#f06c-hl-router", 0.32);
+
+      // ---- 1.1-3.4: "Root" (1.20): lines 2, 3, 4, 10; Root node; "route op slash" (2.48) ----
+      var P = 0.014;
+      var e = typeLine("#f06c-l2", "#f06c-c2", [{ t: "  {" }], 0, 1.2, P);
+      var l3 = typeLine("#f06c-l3", "#f06c-c3", [
+        { t: "    " },
+        { id: "f06c-hl-path", parts: [{ t: "path: " }, { t: "\"/\"", c: "ts-str" }] },
+        { t: "," }
+      ], 0, e.end + 0.02, P, 0.03);
+      var l4 = typeLine("#f06c-l4", "#f06c-c4", [
+        { t: "    " },
+        { id: "f06c-hl-el", parts: [{ t: "element: " }].concat(EL("Root")) },
+        { t: "," }
+      ], 0, l3.end + 0.02, P, 0.03);
+      typeLine("#f06c-l10", "#f06c-c10", [{ t: "  }," }], 0, l4.end + 0.02, P, 0.03);
+
+      tl.fromTo("#f06c-root", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 1.2);
+
+      washOff("#f06c-hl-router", 2.48);
+      washOn("#f06c-hl-path", 2.48);
+      pop("#f06c-roottag", 2.48);
+
+      // ---- 3.4-5.5: "children" (4.56): lines 5, 9, then 6, 7, 8; connectors + child nodes (4.80) ----
+      var PC = 0.01;
+      var l5 = typeLine("#f06c-l5", "#f06c-c5", [
+        { t: "    " },
+        { id: "f06c-hl-children", parts: [{ t: "children" }] },
+        { t: ": [" }
+      ], 0, 4.56, PC);
+      e = typeLine("#f06c-l9", "#f06c-c9", [{ t: "    ]," }], 0, l5.end + 0.02, PC, 0.03);
+      e = typeLine("#f06c-l6", "#f06c-c6", [
+        { t: "      { " },
+        { id: "f06c-hl-index", parts: [{ t: "index: " }, { t: "true", c: "ts-fn" }] },
+        { t: ", element: " }
+      ].concat(EL("Home"), [{ t: " }," }]), 0, e.end + 0.02, PC, 0.03);
+      e = typeLine("#f06c-l7", "#f06c-c7", [
+        { t: "      { path: " },
+        { id: "f06c-hl-about", parts: [{ t: "\"about\"", c: "ts-str" }] },
+        { t: ", element: " }
+      ].concat(EL("About"), [{ t: " }," }]), 0, e.end + 0.02, PC, 0.03);
+      typeLine("#f06c-l8", "#f06c-c8", [
+        { t: "      { path: " },
+        { id: "f06c-hl-contact", parts: [{ t: "\"contact\"", c: "ts-str" }] },
+        { t: ", element: " }
+      ].concat(EL("Contact"), [{ t: " }," }]), 0, e.end + 0.02, PC, 0.03);
+
+      washOff("#f06c-hl-path", 4.56);
+      washOn("#f06c-hl-children", Math.max(4.56, l5.marks["f06c-hl-children"] + 0.06));
+
+      tl.fromTo("#f06c-w0", { strokeDashoffset: 46 }, { strokeDashoffset: 0, duration: 0.18, ease: "power1.in" }, 4.8);
+      tl.fromTo(["#f06c-w1", "#f06c-w2", "#f06c-w3"], { strokeDashoffset: function (i) { return [262, 50, 262][i]; } },
+        { strokeDashoffset: 0, duration: 0.4, ease: "power3.out" }, 4.98);
+      tl.fromTo(["#f06c-home", "#f06c-about", "#f06c-contact"], { opacity: 0, y: 8 },
+        { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", stagger: 0.15 }, 4.8);
+
+      // ---- 5.5-9.9: "relatief" (6.48); "about" (7.60); "slash about" (9.04) ----
+      washOff("#f06c-hl-children", 6.48);
+      washOn(["#f06c-hl-about", "#f06c-hl-contact"], 6.48);
+      washOff("#f06c-hl-contact", 7.6);
+      pop("#f06c-pill-about", 9.04);
+      pop("#f06c-pill-contact", 9.3);
+
+      // ---- 9.9-15.1: "index true" (10.56); "standaardpagina" (11.76); "slash zelf" (14.24) ----
+      washOff("#f06c-hl-about", 10.56);
+      washOn("#f06c-hl-index", 10.56);
+      tl.fromTo("#f06c-ring", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power3.out" }, 11.76);
+      pop("#f06c-pill-home", 14.24);
+
+      // ---- 15.1-18.5: "Surf je naar slash about" (15.12): tree out, card in; path types (15.84) ----
+      tl.to("#f06c-tree", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 15.12);
+      tl.fromTo("#f06c-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 15.12);
+      tl.fromTo("#f06c-card", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 15.12);
+
+      // layout rows, outlet and page hidden until named
+      tl.set(["#f06c-hdr", "#f06c-nav", "#f06c-foot", "#f06c-outlet", "#f06c-otag", "#f06c-page",
+        "#f06c-hdr-w", "#f06c-nav-w", "#f06c-foot-w", "#f06c-acaret"], { opacity: 0 }, 0);
+
+      // address path types per character 15.84-16.30
+      var pathEl = q("#f06c-path");
+      var pchars = [];
+      "/about".split("").forEach(function (c) {
+        var s = document.createElement("span");
+        s.textContent = c;
+        pathEl.appendChild(s);
+        pchars.push(s);
+      });
+      var APX = 10.8; // 18px mono advance
+      var APER = 0.46 / 6;
+      tl.set(pchars, { opacity: 0 }, 0);
+      tl.set("#f06c-acaret", { opacity: 1, x: 0 }, 15.74);
+      pchars.forEach(function (el, i) {
+        var at = 15.84 + i * APER;
+        tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+        tl.set("#f06c-acaret", { x: (i + 1) * APX }, at);
+      });
+      tl.set("#f06c-acaret", { opacity: 0 }, 16.4);
+
+      washOff("#f06c-hl-index", 15.84);
+      washOn("#f06c-lw7", 15.84);
+
+      // ---- 18.5-end: "eerst Root" (18.64); "Outlet" (19.68); "About pagina" (20.32) ----
+      washOff("#f06c-lw7", 18.64);
+      washOn("#f06c-hl-el", 18.64);
+      tl.fromTo(["#f06c-hdr", "#f06c-nav", "#f06c-foot"], { opacity: 0, y: 8 },
+        { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", stagger: 0.08 }, 18.64);
+      tl.fromTo(["#f06c-hdr-w", "#f06c-nav-w", "#f06c-foot-w"], { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: "power1.out", stagger: 0.08 }, 18.64);
+      tl.to(["#f06c-hdr-w", "#f06c-nav-w", "#f06c-foot-w"], { opacity: 0, duration: 0.4, ease: "power1.inOut" }, 19.5);
+
+      tl.fromTo(["#f06c-outlet", "#f06c-otag"], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 19.68);
+
+      tl.fromTo("#f06c-page", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 20.32);
+      washOff("#f06c-hl-el", 20.32);
+      washOn("#f06c-lw7", 20.32);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["06-children"] = tl;
+    })();
+  </script>
+</template>

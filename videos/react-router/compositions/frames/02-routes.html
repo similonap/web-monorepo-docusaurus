@@ -1,0 +1,421 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 02 positions ---- */
+    #f02r-panel { left: 80px; top: 170px; width: 1060px; height: 414px; }
+
+    /* route table (right column) */
+    #f02r-label { left: 1236px; top: 176px; }
+    .f02r-col { font-size: 18px; top: 236px; }
+    #f02r-col-url { left: 1236px; }
+    #f02r-col-comp { left: 1560px; }
+    .f02r-chip { height: 56px; }
+    /* right-column elements start hidden; each is revealed on its spoken word */
+    #f02r-label, .f02r-col, .f02r-chip { opacity: 0; }
+    #f02r-p1 { left: 1236px; top: 270px; }
+    #f02r-p2 { left: 1236px; top: 350px; }
+    #f02r-p3 { left: 1236px; top: 430px; }
+    #f02r-e1 { left: 1560px; top: 270px; }
+    #f02r-e2 { left: 1560px; top: 350px; }
+    #f02r-e3 { left: 1560px; top: 430px; }
+    .f02r-arrow { position: absolute; left: 1470px; width: 40px; height: 16px; overflow: visible; }
+    #f02r-a1 { top: 290px; }
+    #f02r-a2 { top: 370px; }
+    #f02r-a3 { top: 450px; }
+    .f02r-shaft { fill: none; stroke: #94A3B8; stroke-width: 2; stroke-dasharray: 31; stroke-dashoffset: 31; }
+    .f02r-head { fill: #94A3B8; opacity: 0; }
+  </style>
+
+  <div data-hf-id="hf-r2a0" id="root" data-composition-id="02-routes" data-width="1920" data-height="1080" data-duration="14.71">
+    <div data-hf-id="hf-r2a1" class="ts-bg clip" id="f02r-bg" data-start="0" data-duration="14.71" data-track-index="0"></div>
+
+    <div data-hf-id="hf-r2a2" class="ts-stage clip" id="f02r-stage" data-start="0" data-duration="14.71" data-track-index="1">
+      <div data-hf-id="hf-r2a3" class="ts-kicker" id="f02r-kicker"><div data-hf-id="hf-r2a4" class="ts-kicker-bar" id="f02r-kbar"></div><span data-hf-id="hf-r2a5" class="ts-kicker-text" id="f02r-ktext">Routes</span></div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-r2a6" class="ts-code-surface" id="f02r-panel">
+        <div data-hf-id="hf-r2a7" class="ts-code-title">App.tsx</div>
+        <div data-hf-id="hf-r2a8" class="ts-code">
+          <div data-hf-id="hf-r2b1" class="ts-row"><span data-hf-id="hf-r2c1" class="ts-ln">1</span><span data-hf-id="hf-r2d1" class="ts-txt" id="f02r-l1"></span><span data-hf-id="hf-r2e1" class="ts-caret" id="f02r-c1"></span></div>
+          <div data-hf-id="hf-r2b2" class="ts-row"><span data-hf-id="hf-r2c2" class="ts-ln">2</span><span data-hf-id="hf-r2d2" class="ts-txt"></span></div>
+          <div data-hf-id="hf-r2b3" class="ts-row"><span data-hf-id="hf-r2c3" class="ts-ln">3</span><span data-hf-id="hf-r2d3" class="ts-txt" id="f02r-l3"></span><span data-hf-id="hf-r2e3" class="ts-caret" id="f02r-c3"></span></div>
+          <div data-hf-id="hf-r2b4" class="ts-row"><span data-hf-id="hf-r2c4" class="ts-ln">4</span><span data-hf-id="hf-r2d4" class="ts-txt" id="f02r-l4"></span><span data-hf-id="hf-r2e4" class="ts-caret" id="f02r-c4"></span></div>
+          <div data-hf-id="hf-r2b5" class="ts-row"><span data-hf-id="hf-r2c5" class="ts-ln">5</span><span data-hf-id="hf-r2d5" class="ts-txt" id="f02r-l5"></span><span data-hf-id="hf-r2e5" class="ts-caret" id="f02r-c5"></span></div>
+          <div data-hf-id="hf-r2b6" class="ts-row"><span data-hf-id="hf-r2c6" class="ts-ln">6</span><span data-hf-id="hf-r2d6" class="ts-txt" id="f02r-l6"></span><span data-hf-id="hf-r2e6" class="ts-caret" id="f02r-c6"></span></div>
+          <div data-hf-id="hf-r2b7" class="ts-row"><span data-hf-id="hf-r2c7" class="ts-ln">7</span><span data-hf-id="hf-r2d7" class="ts-txt" id="f02r-l7"></span><span data-hf-id="hf-r2e7" class="ts-caret" id="f02r-c7"></span></div>
+        </div>
+        <div data-hf-id="hf-r2a9" class="ts-code-status">App.tsx · createBrowserRouter</div>
+      </div>
+
+      <!-- right column: route table -->
+      <div data-hf-id="hf-r2f0" class="ts-label" id="f02r-label">routes</div>
+      <div data-hf-id="hf-r2f1" class="ts-label f02r-col" id="f02r-col-url">URL</div>
+      <div data-hf-id="hf-r2f2" class="ts-label f02r-col" id="f02r-col-comp">component</div>
+
+      <div data-hf-id="hf-r2g1" class="ts-chip f02r-chip" id="f02r-p1">/</div>
+      <div data-hf-id="hf-r2g2" class="ts-chip f02r-chip" id="f02r-p2">/about</div>
+      <div data-hf-id="hf-r2g3" class="ts-chip f02r-chip" id="f02r-p3">/contact</div>
+
+      <svg data-hf-id="hf-r2h1" class="f02r-arrow" id="f02r-a1" viewBox="0 0 40 16" xmlns="http://www.w3.org/2000/svg"><path data-hf-id="hf-r2i1" class="f02r-shaft" id="f02r-s1" d="M0 8 H31" /><polygon data-hf-id="hf-r2j1" class="f02r-head" id="f02r-h1" points="30,2 40,8 30,14" /></svg>
+      <svg data-hf-id="hf-r2h2" class="f02r-arrow" id="f02r-a2" viewBox="0 0 40 16" xmlns="http://www.w3.org/2000/svg"><path data-hf-id="hf-r2i2" class="f02r-shaft" id="f02r-s2" d="M0 8 H31" /><polygon data-hf-id="hf-r2j2" class="f02r-head" id="f02r-h2" points="30,2 40,8 30,14" /></svg>
+      <svg data-hf-id="hf-r2h3" class="f02r-arrow" id="f02r-a3" viewBox="0 0 40 16" xmlns="http://www.w3.org/2000/svg"><path data-hf-id="hf-r2i3" class="f02r-shaft" id="f02r-s3" d="M0 8 H31" /><polygon data-hf-id="hf-r2j3" class="f02r-head" id="f02r-h3" points="30,2 40,8 30,14" /></svg>
+
+      <div data-hf-id="hf-r2k1" class="ts-chip f02r-chip" id="f02r-e1"><span data-hf-id="hf-r2l1"><span data-hf-id="hf-r2m1" class="ts-punct">&lt;</span><span data-hf-id="hf-r2n1" class="ts-fn">Home</span><span data-hf-id="hf-r2o1" class="ts-punct"> /&gt;</span></span></div>
+      <div data-hf-id="hf-r2k2" class="ts-chip f02r-chip" id="f02r-e2"><span data-hf-id="hf-r2l2"><span data-hf-id="hf-r2m2" class="ts-punct">&lt;</span><span data-hf-id="hf-r2n2" class="ts-fn">About</span><span data-hf-id="hf-r2o2" class="ts-punct"> /&gt;</span></span></div>
+      <div data-hf-id="hf-r2k3" class="ts-chip f02r-chip" id="f02r-e3"><span data-hf-id="hf-r2l3"><span data-hf-id="hf-r2m3" class="ts-punct">&lt;</span><span data-hf-id="hf-r2n3" class="ts-fn">Contact</span><span data-hf-id="hf-r2o3" class="ts-punct"> /&gt;</span></span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 14.71;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="02-routes"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // pop-in for a route-table chip
+      function pop(sel, at) {
+        tl.fromTo(sel, { opacity: 0, y: 8, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, at);
+      }
+      // arrow: shaft draws from the left, then the small solid head fades in
+      function arrow(n, at) {
+        tl.to("#f02r-s" + n, { strokeDashoffset: 0, duration: 0.3, ease: "power2.out" }, at);
+        tl.to("#f02r-h" + n, { opacity: 1, duration: 0.15, ease: "power1.out" }, at + 0.22);
+      }
+
+      // ---- 0.0-1.9: kicker; panel in at 0.1 (empty, line numbers only); routes label ----
+      tl.fromTo("#f02r-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f02r-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f02r-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1);
+
+      // ---- 1.9-4.3: "create browser router" (1.92): lines 1 and 3; wash on createBrowserRouter ----
+      var e = typeLine("#f02r-l1", "#f02r-c1", [
+        { t: "import", c: "ts-kw" },
+        { t: " { " },
+        { t: "createBrowserRouter", c: "ts-fn" },
+        { t: " } " },
+        { t: "from", c: "ts-kw" },
+        { t: " " },
+        { t: "\"react-router\"", c: "ts-str" },
+        { t: ";" }
+      ], 0, 1.92, 0.01);
+      var l3 = typeLine("#f02r-l3", "#f02r-c3", [
+        { t: "const", c: "ts-kw" },
+        { t: " router = " },
+        { id: "f02r-hl-cbr", parts: [{ t: "createBrowserRouter", c: "ts-fn" }] },
+        { t: "(" },
+        { id: "f02r-hl-open", parts: [{ t: "[" }] }
+      ], 0, e.end + 0.02, 0.012, 0.03);
+      washOn("#f02r-hl-cbr", Math.max(2.6, l3.marks["f02r-hl-cbr"] + 0.1));
+
+      // ---- 4.3-5.9: "array" (4.40): line 7; wash moves to [ and ] ----
+      var l7 = typeLine("#f02r-l7", "#f02r-c7", [
+        { id: "f02r-hl-close", parts: [{ t: "]" }] },
+        { t: ");" }
+      ], 0, 4.4, 0.03);
+      washOff("#f02r-hl-cbr", 4.4);
+      washOn(["#f02r-hl-open", "#f02r-hl-close"], 4.46);
+      // "routes" (5.04): the route-table label appears
+      tl.fromTo("#f02r-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 5.04);
+
+      // ---- 5.9-10.2: "Elke route" (5.92): line 4; "object" (6.88); "path" (7.92); "de URL" (8.88) ----
+      washOff(["#f02r-hl-open", "#f02r-hl-close"], 5.92);
+      var l4 = typeLine("#f02r-l4", "#f02r-c4", [
+        { t: "  " },
+        { t: "{ " },
+        { id: "f02r-hl-path", parts: [
+          { t: "path: " },
+          { t: "\"/\"", c: "ts-str" }
+        ] },
+        { t: ", " },
+        { id: "f02r-hl-el", parts: [
+          { t: "element: " },
+          { t: "<", c: "ts-punct" },
+          { t: "Home", c: "ts-fn" },
+          { t: " />", c: "ts-punct" }
+        ] },
+        { t: " }" },
+        { t: "," }
+      ], 0, 5.92, 0.02);
+      // wrap the whole object `{ ... }` (cols 2-33) in its own wash span
+      (function () {
+        var line = q("#f02r-l4");
+        var kids = Array.prototype.slice.call(line.childNodes);
+        // kids: ' ', ' ', '{', ' ', [path], ',', ' ', [element], ' ', '}', ','
+        var objStart = kids[2], objEnd = kids[kids.length - 2];
+        var wrap = document.createElement("span");
+        wrap.className = "ts-hl";
+        wrap.id = "f02r-hl-obj";
+        line.insertBefore(wrap, objStart);
+        var n = objStart;
+        while (n) {
+          var next = n.nextSibling;
+          wrap.appendChild(n);
+          if (n === objEnd) break;
+          n = next;
+        }
+      })();
+      washOn("#f02r-hl-obj", 6.88);
+      washOff("#f02r-hl-obj", 7.92);
+      washOn("#f02r-hl-path", 7.92);
+      pop("#f02r-p1", 7.92);
+      tl.fromTo("#f02r-col-url", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 8.88);
+
+      // ---- 10.2-12.5: "element" (10.24): wash moves; arrow + <Home /> chip; "component" (11.52) ----
+      washOff("#f02r-hl-path", 10.24);
+      washOn("#f02r-hl-el", 10.24);
+      arrow(1, 10.24);
+      pop("#f02r-e1", 10.4);
+      tl.fromTo("#f02r-col-comp", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 11.52);
+
+      // ---- 12.5-end: "op die URL wil zien" (12.56): lines 5 and 6; rows 2 and 3; wash off 13.2 ----
+      e = typeLine("#f02r-l5", "#f02r-c5", [
+        { t: "  { path: " },
+        { t: "\"/about\"", c: "ts-str" },
+        { t: ", element: " },
+        { t: "<", c: "ts-punct" },
+        { t: "About", c: "ts-fn" },
+        { t: " />", c: "ts-punct" },
+        { t: " }," }
+      ], 0, 12.56, 0.01);
+      typeLine("#f02r-l6", "#f02r-c6", [
+        { t: "  { path: " },
+        { t: "\"/contact\"", c: "ts-str" },
+        { t: ", element: " },
+        { t: "<", c: "ts-punct" },
+        { t: "Contact", c: "ts-fn" },
+        { t: " />", c: "ts-punct" },
+        { t: " }," }
+      ], 0, 12.8, 0.01, 0.03);
+
+      pop("#f02r-p2", 12.8);
+      arrow(2, 12.8);
+      pop("#f02r-e2", 12.88);
+      pop("#f02r-p3", 13.05);
+      arrow(3, 13.05);
+      pop("#f02r-e3", 13.13);
+      washOff("#f02r-hl-el", 13.2);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["02-routes"] = tl;
+    })();
+  </script>
+</template>
