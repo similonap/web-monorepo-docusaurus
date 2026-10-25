@@ -2,7 +2,11 @@
 sidebar_position: 4
 ---
 
+import YouTubeVideo from '@site/src/components/YouTubeVideo';
+
 # Image
+
+<YouTubeVideo src="https://youtu.be/_pWcHrrCLzk" title="React Native - Image" />
 
 Een Image is een react component om verschillende types van afbeeldingen te laten zien:
 - Afbeeldingen van het internet

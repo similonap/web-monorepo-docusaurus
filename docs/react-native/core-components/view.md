@@ -2,7 +2,11 @@
 sidebar_position: 1
 ---
 
+import YouTubeVideo from '@site/src/components/YouTubeVideo';
+
 # View
+
+<YouTubeVideo src="https://youtu.be/vPdnuQXVVLo" title="React Native - View" />
 
 De `View` component is het meest gebruikte component in React Native. Het is een container component die andere componenten kan bevatten. De `View` component is vergelijkbaar met de `div` tag in HTML.
 

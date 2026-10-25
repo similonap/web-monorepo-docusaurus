@@ -2,7 +2,11 @@
 sidebar_position: 5
 ---
 
+import YouTubeVideo from '@site/src/components/YouTubeVideo';
+
 # TextInput
+
+<YouTubeVideo src="https://youtu.be/IEJtZvK8Xug" title="React Native - TextInput" />
 
 De `TextInput` component is een component die gebruikt kan worden om tekst in te voeren. De `TextInput` component is vergelijkbaar met de `input` tag in HTML.
 

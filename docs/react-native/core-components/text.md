@@ -2,7 +2,11 @@
 sidebar_position: 3
 ---
 
+import YouTubeVideo from '@site/src/components/YouTubeVideo';
+
 # Text
+
+<YouTubeVideo src="https://youtu.be/Uq5mmiYDKoY" title="React Native - Text" />
 
 De `Text` component is een component die tekst kan weergeven. De `Text` component is vergelijkbaar met de `p` of `span` tag in HTML.
 

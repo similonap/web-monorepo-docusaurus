@@ -1,0 +1,1190 @@
+{
+ "bgm": null,
+ "bgm_pending": false,
+ "voices": [
+  {
+   "frame": 1,
+   "path": "audio/vo-01.mp3",
+   "duration_s": 8.83,
+   "words": [
+    {
+     "id": "w0",
+     "text": "Wil",
+     "start": 0.0,
+     "end": 0.24
+    },
+    {
+     "id": "w1",
+     "text": "je",
+     "start": 0.28,
+     "end": 0.32
+    },
+    {
+     "id": "w2",
+     "text": "dat",
+     "start": 0.4,
+     "end": 0.48
+    },
+    {
+     "id": "w3",
+     "text": "de",
+     "start": 0.52,
+     "end": 0.56
+    },
+    {
+     "id": "w4",
+     "text": "gebruiker",
+     "start": 0.64,
+     "end": 1.12
+    },
+    {
+     "id": "w5",
+     "text": "iets",
+     "start": 1.24,
+     "end": 1.36
+    },
+    {
+     "id": "w6",
+     "text": "intypt,",
+     "start": 1.44,
+     "end": 2.16
+    },
+    {
+     "id": "w7",
+     "text": "dan",
+     "start": 2.24,
+     "end": 2.32
+    },
+    {
+     "id": "w8",
+     "text": "gebruik",
+     "start": 2.4,
+     "end": 2.72
+    },
+    {
+     "id": "w9",
+     "text": "je",
+     "start": 2.76,
+     "end": 2.8
+    },
+    {
+     "id": "w10",
+     "text": "een",
+     "start": 2.88,
+     "end": 3.04
+    },
+    {
+     "id": "w11",
+     "text": "text",
+     "start": 3.12,
+     "end": 3.36
+    },
+    {
+     "id": "w12",
+     "text": "input.",
+     "start": 3.44,
+     "end": 4.12
+    },
+    {
+     "id": "w13",
+     "text": "Dat",
+     "start": 4.32,
+     "end": 4.4
+    },
+    {
+     "id": "w14",
+     "text": "is",
+     "start": 4.48,
+     "end": 4.56
+    },
+    {
+     "id": "w15",
+     "text": "het",
+     "start": 4.64,
+     "end": 4.72
+    },
+    {
+     "id": "w16",
+     "text": "invoerveld",
+     "start": 4.8,
+     "end": 5.44
+    },
+    {
+     "id": "w17",
+     "text": "van",
+     "start": 5.52,
+     "end": 5.6
+    },
+    {
+     "id": "w18",
+     "text": "React",
+     "start": 5.68,
+     "end": 5.92
+    },
+    {
+     "id": "w19",
+     "text": "Native,",
+     "start": 6.0,
+     "end": 6.56
+    },
+    {
+     "id": "w20",
+     "text": "zoals",
+     "start": 6.64,
+     "end": 7.04
+    },
+    {
+     "id": "w21",
+     "text": "een",
+     "start": 7.16,
+     "end": 7.28
+    },
+    {
+     "id": "w22",
+     "text": "input",
+     "start": 7.44,
+     "end": 7.6
+    },
+    {
+     "id": "w23",
+     "text": "element",
+     "start": 7.68,
+     "end": 8.08
+    },
+    {
+     "id": "w24",
+     "text": "op",
+     "start": 8.12,
+     "end": 8.16
+    },
+    {
+     "id": "w25",
+     "text": "het",
+     "start": 8.24,
+     "end": 8.32
+    },
+    {
+     "id": "w26",
+     "text": "web.",
+     "start": 8.4,
+     "end": 8.88
+    }
+   ]
+  },
+  {
+   "frame": 2,
+   "path": "audio/vo-02.mp3",
+   "duration_s": 9.64,
+   "words": [
+    {
+     "id": "w0",
+     "text": "Met",
+     "start": 0.0,
+     "end": 0.16
+    },
+    {
+     "id": "w1",
+     "text": "placeholder",
+     "start": 0.24,
+     "end": 0.88
+    },
+    {
+     "id": "w2",
+     "text": "toon",
+     "start": 1.04,
+     "end": 1.2
+    },
+    {
+     "id": "w3",
+     "text": "je",
+     "start": 1.24,
+     "end": 1.28
+    },
+    {
+     "id": "w4",
+     "text": "een",
+     "start": 1.36,
+     "end": 1.44
+    },
+    {
+     "id": "w5",
+     "text": "hint",
+     "start": 1.52,
+     "end": 1.84
+    },
+    {
+     "id": "w6",
+     "text": "zolang",
+     "start": 1.92,
+     "end": 2.24
+    },
+    {
+     "id": "w7",
+     "text": "het",
+     "start": 2.28,
+     "end": 2.32
+    },
+    {
+     "id": "w8",
+     "text": "veld",
+     "start": 2.4,
+     "end": 2.64
+    },
+    {
+     "id": "w9",
+     "text": "leeg",
+     "start": 2.72,
+     "end": 2.96
+    },
+    {
+     "id": "w10",
+     "text": "is.",
+     "start": 3.04,
+     "end": 3.52
+    },
+    {
+     "id": "w11",
+     "text": "Let",
+     "start": 3.76,
+     "end": 3.92
+    },
+    {
+     "id": "w12",
+     "text": "op:",
+     "start": 4.04,
+     "end": 4.56
+    },
+    {
+     "id": "w13",
+     "text": "een",
+     "start": 4.64,
+     "end": 4.72
+    },
+    {
+     "id": "w14",
+     "text": "text",
+     "start": 4.8,
+     "end": 5.04
+    },
+    {
+     "id": "w15",
+     "text": "input",
+     "start": 5.12,
+     "end": 5.44
+    },
+    {
+     "id": "w16",
+     "text": "heeft",
+     "start": 5.48,
+     "end": 5.68
+    },
+    {
+     "id": "w17",
+     "text": "standaard",
+     "start": 5.84,
+     "end": 6.24
+    },
+    {
+     "id": "w18",
+     "text": "geen",
+     "start": 6.4,
+     "end": 6.72
+    },
+    {
+     "id": "w19",
+     "text": "rand,",
+     "start": 6.92,
+     "end": 7.36
+    },
+    {
+     "id": "w20",
+     "text": "die",
+     "start": 7.44,
+     "end": 7.52
+    },
+    {
+     "id": "w21",
+     "text": "geef",
+     "start": 7.6,
+     "end": 7.76
+    },
+    {
+     "id": "w22",
+     "text": "je",
+     "start": 7.84,
+     "end": 7.92
+    },
+    {
+     "id": "w23",
+     "text": "zelf",
+     "start": 8.12,
+     "end": 8.32
+    },
+    {
+     "id": "w24",
+     "text": "met",
+     "start": 8.4,
+     "end": 8.56
+    },
+    {
+     "id": "w25",
+     "text": "border",
+     "start": 8.72,
+     "end": 9.04
+    },
+    {
+     "id": "w26",
+     "text": "width.",
+     "start": 9.12,
+     "end": 9.68
+    }
+   ]
+  },
+  {
+   "frame": 3,
+   "path": "audio/vo-03.mp3",
+   "duration_s": 9.8,
+   "words": [
+    {
+     "id": "w0",
+     "text": "Keyboard",
+     "start": 0.0,
+     "end": 0.48
+    },
+    {
+     "id": "w1",
+     "text": "type",
+     "start": 0.64,
+     "end": 0.8
+    },
+    {
+     "id": "w2",
+     "text": "kiest",
+     "start": 0.88,
+     "end": 1.2
+    },
+    {
+     "id": "w3",
+     "text": "welk",
+     "start": 1.32,
+     "end": 1.52
+    },
+    {
+     "id": "w4",
+     "text": "toetsenbord",
+     "start": 1.6,
+     "end": 2.16
+    },
+    {
+     "id": "w5",
+     "text": "er",
+     "start": 2.2,
+     "end": 2.24
+    },
+    {
+     "id": "w6",
+     "text": "verschijnt,",
+     "start": 2.36,
+     "end": 3.12
+    },
+    {
+     "id": "w7",
+     "text": "bijvoorbeeld",
+     "start": 3.2,
+     "end": 3.68
+    },
+    {
+     "id": "w8",
+     "text": "enkel",
+     "start": 3.84,
+     "end": 4.16
+    },
+    {
+     "id": "w9",
+     "text": "cijfers.",
+     "start": 4.2,
+     "end": 5.12
+    },
+    {
+     "id": "w10",
+     "text": "Secure",
+     "start": 5.44,
+     "end": 5.84
+    },
+    {
+     "id": "w11",
+     "text": "text",
+     "start": 5.92,
+     "end": 6.24
+    },
+    {
+     "id": "w12",
+     "text": "entry",
+     "start": 6.32,
+     "end": 6.72
+    },
+    {
+     "id": "w13",
+     "text": "verbergt",
+     "start": 6.8,
+     "end": 7.36
+    },
+    {
+     "id": "w14",
+     "text": "wat",
+     "start": 7.44,
+     "end": 7.52
+    },
+    {
+     "id": "w15",
+     "text": "je",
+     "start": 7.6,
+     "end": 7.68
+    },
+    {
+     "id": "w16",
+     "text": "typt,",
+     "start": 7.72,
+     "end": 8.32
+    },
+    {
+     "id": "w17",
+     "text": "handig",
+     "start": 8.44,
+     "end": 8.72
+    },
+    {
+     "id": "w18",
+     "text": "voor",
+     "start": 8.8,
+     "end": 8.88
+    },
+    {
+     "id": "w19",
+     "text": "een",
+     "start": 8.92,
+     "end": 8.96
+    },
+    {
+     "id": "w20",
+     "text": "wachtwoord.",
+     "start": 9.04,
+     "end": 9.84
+    }
+   ]
+  },
+  {
+   "frame": 4,
+   "path": "audio/vo-04.mp3",
+   "duration_s": 10.68,
+   "words": [
+    {
+     "id": "w0",
+     "text": "Om",
+     "start": 0.0,
+     "end": 0.16
+    },
+    {
+     "id": "w1",
+     "text": "te",
+     "start": 0.24,
+     "end": 0.32
+    },
+    {
+     "id": "w2",
+     "text": "weten",
+     "start": 0.36,
+     "end": 0.64
+    },
+    {
+     "id": "w3",
+     "text": "wat",
+     "start": 0.72,
+     "end": 0.88
+    },
+    {
+     "id": "w4",
+     "text": "er",
+     "start": 0.92,
+     "end": 0.96
+    },
+    {
+     "id": "w5",
+     "text": "getypt",
+     "start": 1.04,
+     "end": 1.44
+    },
+    {
+     "id": "w6",
+     "text": "wordt,",
+     "start": 1.52,
+     "end": 1.84
+    },
+    {
+     "id": "w7",
+     "text": "gebruik",
+     "start": 1.92,
+     "end": 2.24
+    },
+    {
+     "id": "w8",
+     "text": "je",
+     "start": 2.32,
+     "end": 2.56
+    },
+    {
+     "id": "w9",
+     "text": "on",
+     "start": 2.68,
+     "end": 2.8
+    },
+    {
+     "id": "w10",
+     "text": "change",
+     "start": 2.88,
+     "end": 3.28
+    },
+    {
+     "id": "w11",
+     "text": "text.",
+     "start": 3.52,
+     "end": 4.0
+    },
+    {
+     "id": "w12",
+     "text": "Die",
+     "start": 4.24,
+     "end": 4.32
+    },
+    {
+     "id": "w13",
+     "text": "functie",
+     "start": 4.4,
+     "end": 4.8
+    },
+    {
+     "id": "w14",
+     "text": "krijgt",
+     "start": 4.88,
+     "end": 5.12
+    },
+    {
+     "id": "w15",
+     "text": "bij",
+     "start": 5.24,
+     "end": 5.36
+    },
+    {
+     "id": "w16",
+     "text": "elke",
+     "start": 5.44,
+     "end": 5.6
+    },
+    {
+     "id": "w17",
+     "text": "toets",
+     "start": 5.68,
+     "end": 6.0
+    },
+    {
+     "id": "w18",
+     "text": "de",
+     "start": 6.08,
+     "end": 6.24
+    },
+    {
+     "id": "w19",
+     "text": "nieuwe",
+     "start": 6.28,
+     "end": 6.48
+    },
+    {
+     "id": "w20",
+     "text": "tekst",
+     "start": 6.56,
+     "end": 6.8
+    },
+    {
+     "id": "w21",
+     "text": "mee.",
+     "start": 6.88,
+     "end": 7.28
+    },
+    {
+     "id": "w22",
+     "text": "Bewaar",
+     "start": 7.52,
+     "end": 7.84
+    },
+    {
+     "id": "w23",
+     "text": "je",
+     "start": 7.88,
+     "end": 7.92
+    },
+    {
+     "id": "w24",
+     "text": "die",
+     "start": 8.0,
+     "end": 8.08
+    },
+    {
+     "id": "w25",
+     "text": "in",
+     "start": 8.16,
+     "end": 8.24
+    },
+    {
+     "id": "w26",
+     "text": "state,",
+     "start": 8.4,
+     "end": 9.04
+    },
+    {
+     "id": "w27",
+     "text": "dan",
+     "start": 9.12,
+     "end": 9.2
+    },
+    {
+     "id": "w28",
+     "text": "kan",
+     "start": 9.28,
+     "end": 9.36
+    },
+    {
+     "id": "w29",
+     "text": "je",
+     "start": 9.4,
+     "end": 9.44
+    },
+    {
+     "id": "w30",
+     "text": "ze",
+     "start": 9.52,
+     "end": 9.6
+    },
+    {
+     "id": "w31",
+     "text": "meteen",
+     "start": 9.72,
+     "end": 10.0
+    },
+    {
+     "id": "w32",
+     "text": "tonen.",
+     "start": 10.08,
+     "end": 10.72
+    }
+   ]
+  },
+  {
+   "frame": 5,
+   "path": "audio/vo-05.mp3",
+   "duration_s": 8.83,
+   "words": [
+    {
+     "id": "w0",
+     "text": "On",
+     "start": 0.0,
+     "end": 0.16
+    },
+    {
+     "id": "w1",
+     "text": "submit",
+     "start": 0.24,
+     "end": 0.64
+    },
+    {
+     "id": "w2",
+     "text": "editing",
+     "start": 0.72,
+     "end": 1.2
+    },
+    {
+     "id": "w3",
+     "text": "wordt",
+     "start": 1.36,
+     "end": 1.6
+    },
+    {
+     "id": "w4",
+     "text": "opgeroepen",
+     "start": 1.68,
+     "end": 2.16
+    },
+    {
+     "id": "w5",
+     "text": "als",
+     "start": 2.24,
+     "end": 2.4
+    },
+    {
+     "id": "w6",
+     "text": "de",
+     "start": 2.44,
+     "end": 2.48
+    },
+    {
+     "id": "w7",
+     "text": "gebruiker",
+     "start": 2.56,
+     "end": 3.04
+    },
+    {
+     "id": "w8",
+     "text": "op",
+     "start": 3.12,
+     "end": 3.2
+    },
+    {
+     "id": "w9",
+     "text": "enter",
+     "start": 3.28,
+     "end": 3.68
+    },
+    {
+     "id": "w10",
+     "text": "of",
+     "start": 3.76,
+     "end": 3.92
+    },
+    {
+     "id": "w11",
+     "text": "gereed",
+     "start": 4.0,
+     "end": 4.56
+    },
+    {
+     "id": "w12",
+     "text": "drukt.",
+     "start": 4.6,
+     "end": 5.24
+    },
+    {
+     "id": "w13",
+     "text": "On",
+     "start": 5.52,
+     "end": 5.68
+    },
+    {
+     "id": "w14",
+     "text": "focus",
+     "start": 5.84,
+     "end": 6.32
+    },
+    {
+     "id": "w15",
+     "text": "komt",
+     "start": 6.48,
+     "end": 6.8
+    },
+    {
+     "id": "w16",
+     "text": "zodra",
+     "start": 6.88,
+     "end": 7.2
+    },
+    {
+     "id": "w17",
+     "text": "het",
+     "start": 7.28,
+     "end": 7.36
+    },
+    {
+     "id": "w18",
+     "text": "veld",
+     "start": 7.44,
+     "end": 7.6
+    },
+    {
+     "id": "w19",
+     "text": "geselecteerd",
+     "start": 7.64,
+     "end": 8.32
+    },
+    {
+     "id": "w20",
+     "text": "wordt.",
+     "start": 8.4,
+     "end": 8.88
+    }
+   ]
+  },
+  {
+   "frame": 6,
+   "path": "audio/vo-06.mp3",
+   "duration_s": 6.61,
+   "words": [
+    {
+     "id": "w0",
+     "text": "Zo",
+     "start": 0.0,
+     "end": 0.24
+    },
+    {
+     "id": "w1",
+     "text": "is",
+     "start": 0.32,
+     "end": 0.4
+    },
+    {
+     "id": "w2",
+     "text": "een",
+     "start": 0.48,
+     "end": 0.64
+    },
+    {
+     "id": "w3",
+     "text": "text",
+     "start": 0.8,
+     "end": 0.96
+    },
+    {
+     "id": "w4",
+     "text": "input",
+     "start": 1.2,
+     "end": 1.44
+    },
+    {
+     "id": "w5",
+     "text": "de",
+     "start": 1.56,
+     "end": 1.68
+    },
+    {
+     "id": "w6",
+     "text": "basis",
+     "start": 1.88,
+     "end": 2.08
+    },
+    {
+     "id": "w7",
+     "text": "van",
+     "start": 2.2,
+     "end": 2.32
+    },
+    {
+     "id": "w8",
+     "text": "elk",
+     "start": 2.4,
+     "end": 2.56
+    },
+    {
+     "id": "w9",
+     "text": "formulier:",
+     "start": 2.64,
+     "end": 3.6
+    },
+    {
+     "id": "w10",
+     "text": "een",
+     "start": 3.68,
+     "end": 3.76
+    },
+    {
+     "id": "w11",
+     "text": "zoekveld,",
+     "start": 3.88,
+     "end": 4.56
+    },
+    {
+     "id": "w12",
+     "text": "een",
+     "start": 4.6,
+     "end": 4.64
+    },
+    {
+     "id": "w13",
+     "text": "login",
+     "start": 4.72,
+     "end": 5.12
+    },
+    {
+     "id": "w14",
+     "text": "of",
+     "start": 5.36,
+     "end": 5.52
+    },
+    {
+     "id": "w15",
+     "text": "een",
+     "start": 5.6,
+     "end": 5.68
+    },
+    {
+     "id": "w16",
+     "text": "chatbericht.",
+     "start": 5.76,
+     "end": 6.64
+    }
+   ]
+  }
+ ],
+ "sfx": [
+  {
+   "frame": 1,
+   "file": "assets/sfx/click-soft.mp3",
+   "offset_s": 0.64,
+   "duration_s": 0.36,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 1,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 1.3,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 1,
+   "file": "assets/sfx/whoosh-short.mp3",
+   "offset_s": 3.12,
+   "duration_s": 0.57,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 1,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 4.8,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 1,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 7.44,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 2,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 0.34,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 2,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 1.21,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 2,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 6.4,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 2,
+   "file": "assets/sfx/whoosh-short.mp3",
+   "offset_s": 7.44,
+   "duration_s": 0.57,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 2,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 8.82,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 3,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 0.4,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 3,
+   "file": "assets/sfx/click-soft.mp3",
+   "offset_s": 1.6,
+   "duration_s": 0.36,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 3,
+   "file": "assets/sfx/whoosh-short.mp3",
+   "offset_s": 3.84,
+   "duration_s": 0.57,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 3,
+   "file": "assets/sfx/key-press.mp3",
+   "offset_s": 4.4,
+   "duration_s": 0.12,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 3,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 5.7,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 3,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 6.8,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 4,
+   "file": "assets/sfx/click-soft.mp3",
+   "offset_s": 1.04,
+   "duration_s": 0.36,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 4,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 2.78,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 4,
+   "file": "assets/sfx/key-press.mp3",
+   "offset_s": 5.3,
+   "duration_s": 0.12,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 4,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 7.62,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 4,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 9.2,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 4,
+   "file": "assets/sfx/key-press.mp3",
+   "offset_s": 10.2,
+   "duration_s": 0.12,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 5,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 0.3,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 5,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 1.68,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 5,
+   "file": "assets/sfx/click-soft.mp3",
+   "offset_s": 4.0,
+   "duration_s": 0.36,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 5,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 4.3,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 5,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 5.62,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 5,
+   "file": "assets/sfx/click-soft.mp3",
+   "offset_s": 7.64,
+   "duration_s": 0.36,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 6,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 0.8,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 6,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 3.88,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 6,
+   "file": "assets/sfx/typing.mp3",
+   "offset_s": 4.1,
+   "duration_s": 1.5,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 6,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 4.72,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  },
+  {
+   "frame": 6,
+   "file": "assets/sfx/pop.mp3",
+   "offset_s": 5.76,
+   "duration_s": 0.72,
+   "volume": 0.35,
+   "source": "host"
+  }
+ ]
+}

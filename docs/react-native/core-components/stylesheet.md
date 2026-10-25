@@ -2,7 +2,11 @@
 sidebar_position: 2
 ---
 
+import YouTubeVideo from '@site/src/components/YouTubeVideo';
+
 # StyleSheet en inline styles
+
+<YouTubeVideo src="https://youtu.be/6HRbcnR9qGI" title="React Native - StyleSheet" />
 
 `StyleSheet` is geen component, maar een API waarmee je je styling definieert. In React.js gebruik je hiervoor meestal CSS. In React Native schrijf je de styling in JavaScript: met `StyleSheet.create` maak je een object aan dat alle stijlen van je component bevat.
 

@@ -1,0 +1,1144 @@
+{
+ "total_duration_s": 56.06,
+ "width": 1920,
+ "height": 1080,
+ "groups": [
+  {
+   "id": "caption-group-0",
+   "frame": 1,
+   "start": 0.0,
+   "end": 2.24,
+   "text": "Wil je tekst tonen in React Native,",
+   "words": [
+    {
+     "id": "caption-word-0-0",
+     "text": "Wil",
+     "start": 0.0,
+     "end": 0.16
+    },
+    {
+     "id": "caption-word-0-1",
+     "text": "je",
+     "start": 0.24,
+     "end": 0.4
+    },
+    {
+     "id": "caption-word-0-2",
+     "text": "tekst",
+     "start": 0.48,
+     "end": 0.72
+    },
+    {
+     "id": "caption-word-0-3",
+     "text": "tonen",
+     "start": 0.84,
+     "end": 1.04
+    },
+    {
+     "id": "caption-word-0-4",
+     "text": "in",
+     "start": 1.12,
+     "end": 1.2
+    },
+    {
+     "id": "caption-word-0-5",
+     "text": "React",
+     "start": 1.36,
+     "end": 1.52
+    },
+    {
+     "id": "caption-word-0-6",
+     "text": "Native,",
+     "start": 1.76,
+     "end": 2.24
+    }
+   ]
+  },
+  {
+   "id": "caption-group-1",
+   "frame": 1,
+   "start": 2.32,
+   "end": 4.2,
+   "text": "dan gebruik je de Text component.",
+   "words": [
+    {
+     "id": "caption-word-1-0",
+     "text": "dan",
+     "start": 2.32,
+     "end": 2.4
+    },
+    {
+     "id": "caption-word-1-1",
+     "text": "gebruik",
+     "start": 2.44,
+     "end": 2.72
+    },
+    {
+     "id": "caption-word-1-2",
+     "text": "je",
+     "start": 2.8,
+     "end": 2.88
+    },
+    {
+     "id": "caption-word-1-3",
+     "text": "de",
+     "start": 2.92,
+     "end": 2.96
+    },
+    {
+     "id": "caption-word-1-4",
+     "text": "Text",
+     "start": 3.12,
+     "end": 3.36
+    },
+    {
+     "id": "caption-word-1-5",
+     "text": "component.",
+     "start": 3.44,
+     "end": 4.2
+    }
+   ]
+  },
+  {
+   "id": "caption-group-2",
+   "frame": 1,
+   "start": 4.4,
+   "end": 5.76,
+   "text": "Hij is te vergelijken met een",
+   "words": [
+    {
+     "id": "caption-word-2-0",
+     "text": "Hij",
+     "start": 4.4,
+     "end": 4.56
+    },
+    {
+     "id": "caption-word-2-1",
+     "text": "is",
+     "start": 4.6,
+     "end": 4.64
+    },
+    {
+     "id": "caption-word-2-2",
+     "text": "te",
+     "start": 4.72,
+     "end": 4.8
+    },
+    {
+     "id": "caption-word-2-3",
+     "text": "vergelijken",
+     "start": 4.88,
+     "end": 5.36
+    },
+    {
+     "id": "caption-word-2-4",
+     "text": "met",
+     "start": 5.44,
+     "end": 5.52
+    },
+    {
+     "id": "caption-word-2-5",
+     "text": "een",
+     "start": 5.64,
+     "end": 5.76
+    }
+   ]
+  },
+  {
+   "id": "caption-group-3",
+   "frame": 1,
+   "start": 5.92,
+   "end": 7.76,
+   "text": "p of een span op het web.",
+   "words": [
+    {
+     "id": "caption-word-3-0",
+     "text": "p",
+     "start": 5.92,
+     "end": 6.08
+    },
+    {
+     "id": "caption-word-3-1",
+     "text": "of",
+     "start": 6.16,
+     "end": 6.32
+    },
+    {
+     "id": "caption-word-3-2",
+     "text": "een",
+     "start": 6.36,
+     "end": 6.4
+    },
+    {
+     "id": "caption-word-3-3",
+     "text": "span",
+     "start": 6.48,
+     "end": 6.88
+    },
+    {
+     "id": "caption-word-3-4",
+     "text": "op",
+     "start": 6.96,
+     "end": 7.04
+    },
+    {
+     "id": "caption-word-3-5",
+     "text": "het",
+     "start": 7.12,
+     "end": 7.2
+    },
+    {
+     "id": "caption-word-3-6",
+     "text": "web.",
+     "start": 7.32,
+     "end": 7.76
+    }
+   ]
+  },
+  {
+   "id": "caption-group-4",
+   "frame": 2,
+   "start": 8.21,
+   "end": 10.45,
+   "text": "Alle tekst moet in een Text staan.",
+   "words": [
+    {
+     "id": "caption-word-4-0",
+     "text": "Alle",
+     "start": 8.21,
+     "end": 8.53
+    },
+    {
+     "id": "caption-word-4-1",
+     "text": "tekst",
+     "start": 8.65,
+     "end": 8.93
+    },
+    {
+     "id": "caption-word-4-2",
+     "text": "moet",
+     "start": 8.97,
+     "end": 9.09
+    },
+    {
+     "id": "caption-word-4-3",
+     "text": "in",
+     "start": 9.13,
+     "end": 9.17
+    },
+    {
+     "id": "caption-word-4-4",
+     "text": "een",
+     "start": 9.25,
+     "end": 9.41
+    },
+    {
+     "id": "caption-word-4-5",
+     "text": "Text",
+     "start": 9.61,
+     "end": 9.81
+    },
+    {
+     "id": "caption-word-4-6",
+     "text": "staan.",
+     "start": 9.89,
+     "end": 10.45
+    }
+   ]
+  },
+  {
+   "id": "caption-group-5",
+   "frame": 2,
+   "start": 10.69,
+   "end": 12.85,
+   "text": "Zet je tekst rechtstreeks in een View,",
+   "words": [
+    {
+     "id": "caption-word-5-0",
+     "text": "Zet",
+     "start": 10.69,
+     "end": 10.85
+    },
+    {
+     "id": "caption-word-5-1",
+     "text": "je",
+     "start": 10.93,
+     "end": 11.01
+    },
+    {
+     "id": "caption-word-5-2",
+     "text": "tekst",
+     "start": 11.09,
+     "end": 11.41
+    },
+    {
+     "id": "caption-word-5-3",
+     "text": "rechtstreeks",
+     "start": 11.53,
+     "end": 11.97
+    },
+    {
+     "id": "caption-word-5-4",
+     "text": "in",
+     "start": 12.01,
+     "end": 12.05
+    },
+    {
+     "id": "caption-word-5-5",
+     "text": "een",
+     "start": 12.13,
+     "end": 12.21
+    },
+    {
+     "id": "caption-word-5-6",
+     "text": "View,",
+     "start": 12.29,
+     "end": 12.85
+    }
+   ]
+  },
+  {
+   "id": "caption-group-6",
+   "frame": 2,
+   "start": 12.93,
+   "end": 14.61,
+   "text": "dan krijg je een foutmelding:",
+   "words": [
+    {
+     "id": "caption-word-6-0",
+     "text": "dan",
+     "start": 12.93,
+     "end": 13.01
+    },
+    {
+     "id": "caption-word-6-1",
+     "text": "krijg",
+     "start": 13.063,
+     "end": 13.25
+    },
+    {
+     "id": "caption-word-6-2",
+     "text": "je",
+     "start": 13.29,
+     "end": 13.33
+    },
+    {
+     "id": "caption-word-6-3",
+     "text": "een",
+     "start": 13.41,
+     "end": 13.49
+    },
+    {
+     "id": "caption-word-6-4",
+     "text": "foutmelding:",
+     "start": 13.65,
+     "end": 14.61
+    }
+   ]
+  },
+  {
+   "id": "caption-group-7",
+   "frame": 2,
+   "start": 14.77,
+   "end": 16.21,
+   "text": "text strings must be rendered",
+   "words": [
+    {
+     "id": "caption-word-7-0",
+     "text": "text",
+     "start": 14.77,
+     "end": 14.93
+    },
+    {
+     "id": "caption-word-7-1",
+     "text": "strings",
+     "start": 15.13,
+     "end": 15.33
+    },
+    {
+     "id": "caption-word-7-2",
+     "text": "must",
+     "start": 15.41,
+     "end": 15.65
+    },
+    {
+     "id": "caption-word-7-3",
+     "text": "be",
+     "start": 15.69,
+     "end": 15.73
+    },
+    {
+     "id": "caption-word-7-4",
+     "text": "rendered",
+     "start": 15.81,
+     "end": 16.21
+    }
+   ]
+  },
+  {
+   "id": "caption-group-8",
+   "frame": 2,
+   "start": 16.37,
+   "end": 17.89,
+   "text": "within a Text component.",
+   "words": [
+    {
+     "id": "caption-word-8-0",
+     "text": "within",
+     "start": 16.37,
+     "end": 16.53
+    },
+    {
+     "id": "caption-word-8-1",
+     "text": "a",
+     "start": 16.61,
+     "end": 16.69
+    },
+    {
+     "id": "caption-word-8-2",
+     "text": "Text",
+     "start": 16.77,
+     "end": 17.01
+    },
+    {
+     "id": "caption-word-8-3",
+     "text": "component.",
+     "start": 17.09,
+     "end": 17.89
+    }
+   ]
+  },
+  {
+   "id": "caption-group-9",
+   "frame": 3,
+   "start": 18.34,
+   "end": 20.58,
+   "text": "Met style kies je de fontSize,",
+   "words": [
+    {
+     "id": "caption-word-9-0",
+     "text": "Met",
+     "start": 18.34,
+     "end": 18.58
+    },
+    {
+     "id": "caption-word-9-1",
+     "text": "style",
+     "start": 18.82,
+     "end": 19.06
+    },
+    {
+     "id": "caption-word-9-2",
+     "text": "kies",
+     "start": 19.22,
+     "end": 19.38
+    },
+    {
+     "id": "caption-word-9-3",
+     "text": "je",
+     "start": 19.42,
+     "end": 19.46
+    },
+    {
+     "id": "caption-word-9-4",
+     "text": "de",
+     "start": 19.54,
+     "end": 19.62
+    },
+    {
+     "id": "caption-word-9-5",
+     "text": "fontSize,",
+     "start": 19.7,
+     "end": 20.58
+    }
+   ]
+  },
+  {
+   "id": "caption-group-10",
+   "frame": 3,
+   "start": 20.62,
+   "end": 23.22,
+   "text": "de fontWeight en de kleur van je tekst.",
+   "words": [
+    {
+     "id": "caption-word-10-0",
+     "text": "de",
+     "start": 20.62,
+     "end": 20.66
+    },
+    {
+     "id": "caption-word-10-1",
+     "text": "fontWeight",
+     "start": 20.74,
+     "end": 21.46
+    },
+    {
+     "id": "caption-word-10-2",
+     "text": "en",
+     "start": 21.62,
+     "end": 21.7
+    },
+    {
+     "id": "caption-word-10-3",
+     "text": "de",
+     "start": 21.78,
+     "end": 21.86
+    },
+    {
+     "id": "caption-word-10-4",
+     "text": "kleur",
+     "start": 21.94,
+     "end": 22.26
+    },
+    {
+     "id": "caption-word-10-5",
+     "text": "van",
+     "start": 22.34,
+     "end": 22.42
+    },
+    {
+     "id": "caption-word-10-6",
+     "text": "je",
+     "start": 22.46,
+     "end": 22.5
+    },
+    {
+     "id": "caption-word-10-7",
+     "text": "tekst.",
+     "start": 22.58,
+     "end": 23.22
+    }
+   ]
+  },
+  {
+   "id": "caption-group-11",
+   "frame": 3,
+   "start": 23.46,
+   "end": 25.62,
+   "text": "textAlign zet de tekst links,",
+   "words": [
+    {
+     "id": "caption-word-11-0",
+     "text": "textAlign",
+     "start": 23.46,
+     "end": 24.18
+    },
+    {
+     "id": "caption-word-11-1",
+     "text": "zet",
+     "start": 24.26,
+     "end": 24.42
+    },
+    {
+     "id": "caption-word-11-2",
+     "text": "de",
+     "start": 24.5,
+     "end": 24.58
+    },
+    {
+     "id": "caption-word-11-3",
+     "text": "tekst",
+     "start": 24.66,
+     "end": 24.9
+    },
+    {
+     "id": "caption-word-11-4",
+     "text": "links,",
+     "start": 24.98,
+     "end": 25.62
+    }
+   ]
+  },
+  {
+   "id": "caption-group-12",
+   "frame": 3,
+   "start": 25.66,
+   "end": 27.46,
+   "text": "in het midden of rechts.",
+   "words": [
+    {
+     "id": "caption-word-12-0",
+     "text": "in",
+     "start": 25.66,
+     "end": 25.7
+    },
+    {
+     "id": "caption-word-12-1",
+     "text": "het",
+     "start": 25.78,
+     "end": 25.86
+    },
+    {
+     "id": "caption-word-12-2",
+     "text": "midden",
+     "start": 25.94,
+     "end": 26.18
+    },
+    {
+     "id": "caption-word-12-3",
+     "text": "of",
+     "start": 26.5,
+     "end": 26.66
+    },
+    {
+     "id": "caption-word-12-4",
+     "text": "rechts.",
+     "start": 26.74,
+     "end": 27.46
+    }
+   ]
+  },
+  {
+   "id": "caption-group-13",
+   "frame": 4,
+   "start": 27.91,
+   "end": 29.43,
+   "text": "Je kan een Text ook in een",
+   "words": [
+    {
+     "id": "caption-word-13-0",
+     "text": "Je",
+     "start": 27.91,
+     "end": 28.07
+    },
+    {
+     "id": "caption-word-13-1",
+     "text": "kan",
+     "start": 28.15,
+     "end": 28.23
+    },
+    {
+     "id": "caption-word-13-2",
+     "text": "een",
+     "start": 28.31,
+     "end": 28.39
+    },
+    {
+     "id": "caption-word-13-3",
+     "text": "Text",
+     "start": 28.59,
+     "end": 28.79
+    },
+    {
+     "id": "caption-word-13-4",
+     "text": "ook",
+     "start": 28.87,
+     "end": 29.11
+    },
+    {
+     "id": "caption-word-13-5",
+     "text": "in",
+     "start": 29.15,
+     "end": 29.19
+    },
+    {
+     "id": "caption-word-13-6",
+     "text": "een",
+     "start": 29.27,
+     "end": 29.43
+    }
+   ]
+  },
+  {
+   "id": "caption-group-14",
+   "frame": 4,
+   "start": 29.51,
+   "end": 31.03,
+   "text": "andere Text nesten.",
+   "words": [
+    {
+     "id": "caption-word-14-0",
+     "text": "andere",
+     "start": 29.51,
+     "end": 29.75
+    },
+    {
+     "id": "caption-word-14-1",
+     "text": "Text",
+     "start": 29.83,
+     "end": 30.15
+    },
+    {
+     "id": "caption-word-14-2",
+     "text": "nesten.",
+     "start": 30.31,
+     "end": 31.03
+    }
+   ]
+  },
+  {
+   "id": "caption-group-15",
+   "frame": 4,
+   "start": 31.11,
+   "end": 32.63,
+   "text": "De binnenste neemt de stijl van",
+   "words": [
+    {
+     "id": "caption-word-15-0",
+     "text": "De",
+     "start": 31.11,
+     "end": 31.19
+    },
+    {
+     "id": "caption-word-15-1",
+     "text": "binnenste",
+     "start": 31.23,
+     "end": 31.75
+    },
+    {
+     "id": "caption-word-15-2",
+     "text": "neemt",
+     "start": 31.83,
+     "end": 31.99
+    },
+    {
+     "id": "caption-word-15-3",
+     "text": "de",
+     "start": 32.07,
+     "end": 32.15
+    },
+    {
+     "id": "caption-word-15-4",
+     "text": "stijl",
+     "start": 32.23,
+     "end": 32.47
+    },
+    {
+     "id": "caption-word-15-5",
+     "text": "van",
+     "start": 32.55,
+     "end": 32.63
+    }
+   ]
+  },
+  {
+   "id": "caption-group-16",
+   "frame": 4,
+   "start": 32.71,
+   "end": 33.91,
+   "text": "de buitenste over,",
+   "words": [
+    {
+     "id": "caption-word-16-0",
+     "text": "de",
+     "start": 32.71,
+     "end": 32.79
+    },
+    {
+     "id": "caption-word-16-1",
+     "text": "buitenste",
+     "start": 32.83,
+     "end": 33.35
+    },
+    {
+     "id": "caption-word-16-2",
+     "text": "over,",
+     "start": 33.55,
+     "end": 33.91
+    }
+   ]
+  },
+  {
+   "id": "caption-group-17",
+   "frame": 4,
+   "start": 34.03,
+   "end": 36.39,
+   "text": "en kan die aanvullen of overschrijven.",
+   "words": [
+    {
+     "id": "caption-word-17-0",
+     "text": "en",
+     "start": 34.03,
+     "end": 34.15
+    },
+    {
+     "id": "caption-word-17-1",
+     "text": "kan",
+     "start": 34.23,
+     "end": 34.31
+    },
+    {
+     "id": "caption-word-17-2",
+     "text": "die",
+     "start": 34.39,
+     "end": 34.47
+    },
+    {
+     "id": "caption-word-17-3",
+     "text": "aanvullen",
+     "start": 34.55,
+     "end": 35.11
+    },
+    {
+     "id": "caption-word-17-4",
+     "text": "of",
+     "start": 35.23,
+     "end": 35.35
+    },
+    {
+     "id": "caption-word-17-5",
+     "text": "overschrijven.",
+     "start": 35.43,
+     "end": 36.39
+    }
+   ]
+  },
+  {
+   "id": "caption-group-18",
+   "frame": 5,
+   "start": 36.84,
+   "end": 37.48,
+   "text": "Maar let op:",
+   "words": [
+    {
+     "id": "caption-word-18-0",
+     "text": "Maar",
+     "start": 36.84,
+     "end": 37.0
+    },
+    {
+     "id": "caption-word-18-1",
+     "text": "let",
+     "start": 37.08,
+     "end": 37.16
+    },
+    {
+     "id": "caption-word-18-2",
+     "text": "op:",
+     "start": 37.24,
+     "end": 37.48
+    }
+   ]
+  },
+  {
+   "id": "caption-group-19",
+   "frame": 5,
+   "start": 37.88,
+   "end": 39.72,
+   "text": "anders dan in CSS erft een",
+   "words": [
+    {
+     "id": "caption-word-19-0",
+     "text": "anders",
+     "start": 37.88,
+     "end": 38.2
+    },
+    {
+     "id": "caption-word-19-1",
+     "text": "dan",
+     "start": 38.28,
+     "end": 38.36
+    },
+    {
+     "id": "caption-word-19-2",
+     "text": "in",
+     "start": 38.44,
+     "end": 38.52
+    },
+    {
+     "id": "caption-word-19-3",
+     "text": "CSS",
+     "start": 38.6,
+     "end": 39.16
+    },
+    {
+     "id": "caption-word-19-4",
+     "text": "erft",
+     "start": 39.32,
+     "end": 39.56
+    },
+    {
+     "id": "caption-word-19-5",
+     "text": "een",
+     "start": 39.64,
+     "end": 39.72
+    }
+   ]
+  },
+  {
+   "id": "caption-group-20",
+   "frame": 5,
+   "start": 39.8,
+   "end": 41.32,
+   "text": "Text niets van een View.",
+   "words": [
+    {
+     "id": "caption-word-20-0",
+     "text": "Text",
+     "start": 39.8,
+     "end": 40.12
+    },
+    {
+     "id": "caption-word-20-1",
+     "text": "niets",
+     "start": 40.36,
+     "end": 40.6
+    },
+    {
+     "id": "caption-word-20-2",
+     "text": "van",
+     "start": 40.68,
+     "end": 40.76
+    },
+    {
+     "id": "caption-word-20-3",
+     "text": "een",
+     "start": 40.84,
+     "end": 40.92
+    },
+    {
+     "id": "caption-word-20-4",
+     "text": "View.",
+     "start": 41.08,
+     "end": 41.32
+    }
+   ]
+  },
+  {
+   "id": "caption-group-21",
+   "frame": 5,
+   "start": 41.72,
+   "end": 43.68,
+   "text": "Een View heeft zelfs geen color.",
+   "words": [
+    {
+     "id": "caption-word-21-0",
+     "text": "Een",
+     "start": 41.72,
+     "end": 41.84
+    },
+    {
+     "id": "caption-word-21-1",
+     "text": "View",
+     "start": 41.88,
+     "end": 42.2
+    },
+    {
+     "id": "caption-word-21-2",
+     "text": "heeft",
+     "start": 42.28,
+     "end": 42.44
+    },
+    {
+     "id": "caption-word-21-3",
+     "text": "zelfs",
+     "start": 42.52,
+     "end": 42.76
+    },
+    {
+     "id": "caption-word-21-4",
+     "text": "geen",
+     "start": 42.8,
+     "end": 42.92
+    },
+    {
+     "id": "caption-word-21-5",
+     "text": "color.",
+     "start": 43.0,
+     "end": 43.68
+    }
+   ]
+  },
+  {
+   "id": "caption-group-22",
+   "frame": 5,
+   "start": 43.96,
+   "end": 45.56,
+   "text": "Tekststijlen gaan enkel van een",
+   "words": [
+    {
+     "id": "caption-word-22-0",
+     "text": "Tekststijlen",
+     "start": 43.96,
+     "end": 44.6
+    },
+    {
+     "id": "caption-word-22-1",
+     "text": "gaan",
+     "start": 44.64,
+     "end": 44.92
+    },
+    {
+     "id": "caption-word-22-2",
+     "text": "enkel",
+     "start": 45.0,
+     "end": 45.24
+    },
+    {
+     "id": "caption-word-22-3",
+     "text": "van",
+     "start": 45.32,
+     "end": 45.4
+    },
+    {
+     "id": "caption-word-22-4",
+     "text": "een",
+     "start": 45.48,
+     "end": 45.56
+    }
+   ]
+  },
+  {
+   "id": "caption-group-23",
+   "frame": 5,
+   "start": 45.76,
+   "end": 47.8,
+   "text": "Text naar een geneste Text.",
+   "words": [
+    {
+     "id": "caption-word-23-0",
+     "text": "Text",
+     "start": 45.76,
+     "end": 45.96
+    },
+    {
+     "id": "caption-word-23-1",
+     "text": "naar",
+     "start": 46.12,
+     "end": 46.28
+    },
+    {
+     "id": "caption-word-23-2",
+     "text": "een",
+     "start": 46.36,
+     "end": 46.44
+    },
+    {
+     "id": "caption-word-23-3",
+     "text": "geneste",
+     "start": 46.52,
+     "end": 47.08
+    },
+    {
+     "id": "caption-word-23-4",
+     "text": "Text.",
+     "start": 47.16,
+     "end": 47.8
+    }
+   ]
+  },
+  {
+   "id": "caption-group-24",
+   "frame": 6,
+   "start": 48.25,
+   "end": 50.25,
+   "text": "Kort samengevat: alle tekst",
+   "words": [
+    {
+     "id": "caption-word-24-0",
+     "text": "Kort",
+     "start": 48.25,
+     "end": 48.49
+    },
+    {
+     "id": "caption-word-24-1",
+     "text": "samengevat:",
+     "start": 48.57,
+     "end": 49.69
+    },
+    {
+     "id": "caption-word-24-2",
+     "text": "alle",
+     "start": 49.81,
+     "end": 49.93
+    },
+    {
+     "id": "caption-word-24-3",
+     "text": "tekst",
+     "start": 50.05,
+     "end": 50.25
+    }
+   ]
+  },
+  {
+   "id": "caption-group-25",
+   "frame": 6,
+   "start": 50.33,
+   "end": 52.41,
+   "text": "in een Text, en de tekststijl",
+   "words": [
+    {
+     "id": "caption-word-25-0",
+     "text": "in",
+     "start": 50.33,
+     "end": 50.41
+    },
+    {
+     "id": "caption-word-25-1",
+     "text": "een",
+     "start": 50.49,
+     "end": 50.57
+    },
+    {
+     "id": "caption-word-25-2",
+     "text": "Text,",
+     "start": 50.65,
+     "end": 51.29
+    },
+    {
+     "id": "caption-word-25-3",
+     "text": "en",
+     "start": 51.41,
+     "end": 51.53
+    },
+    {
+     "id": "caption-word-25-4",
+     "text": "de",
+     "start": 51.57,
+     "end": 51.61
+    },
+    {
+     "id": "caption-word-25-5",
+     "text": "tekststijl",
+     "start": 51.77,
+     "end": 52.41
+    }
+   ]
+  },
+  {
+   "id": "caption-group-26",
+   "frame": 6,
+   "start": 52.65,
+   "end": 54.41,
+   "text": "zet je op die Text zelf.",
+   "words": [
+    {
+     "id": "caption-word-26-0",
+     "text": "zet",
+     "start": 52.65,
+     "end": 52.81
+    },
+    {
+     "id": "caption-word-26-1",
+     "text": "je",
+     "start": 52.89,
+     "end": 52.97
+    },
+    {
+     "id": "caption-word-26-2",
+     "text": "op",
+     "start": 53.05,
+     "end": 53.13
+    },
+    {
+     "id": "caption-word-26-3",
+     "text": "die",
+     "start": 53.21,
+     "end": 53.29
+    },
+    {
+     "id": "caption-word-26-4",
+     "text": "Text",
+     "start": 53.37,
+     "end": 53.69
+    },
+    {
+     "id": "caption-word-26-5",
+     "text": "zelf.",
+     "start": 53.77,
+     "end": 54.41
+    }
+   ]
+  }
+ ]
+}
