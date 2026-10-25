@@ -8,11 +8,13 @@ Toch kan het interessant zijn om een CSS Framework te gebruiken om een consisten
 
 ### Nativewind configureren
 
-In dit voorbeeld vertrekken we vanuit een expo-router project. Dit project werd aangemaakt met behulp van volgend commando:
+In dit voorbeeld vertrekken we vanuit een nieuw Expo project. Dit project werd aangemaakt met behulp van volgend commando:
 
 ```bash
-npx create-expo-app -t expo-template-typescript-router nativewind-voorbeeld
+npx create-expo-app@latest nativewind-voorbeeld
 ```
+
+Kies bij de vraag naar de SDK-versie **For learning with Expo Go** en verwijder daarna de voorbeeldcode met `npm run reset-project` (antwoord `n`).
 
 Wanneer je een project hebt aangemaakt, kan je Nativewind installeren.
 
@@ -63,7 +65,7 @@ Pas de inhoud van het bestand aan, zodat je content en presets ingevuld zijn.
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // NOTE: Update this to include the paths to all of your component files.
-  content: ["./app/**/*.{js,jsx,ts,tsx}"],
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {},
@@ -112,7 +114,7 @@ Nativewind zorgt ervoor dat je het `classname` attribute terug kunt gebruiken (d
 Open het bestand `index.tsx`. Voeg daarin het volgende `Text` element toe aan het return-statement:
 
 ```html
-<Text className="bg-black text-white font-bold italic">Edit app/index.tsx to edit this screen.</Text>
+<Text className="bg-black text-white font-bold italic">Edit src/app/index.tsx to edit this screen.</Text>
 ```
 
 Je kan nog steeds gebruik maken van inline styles en eigen styles, net zoals ervoor.
@@ -127,7 +129,7 @@ function Index() {
                 alignItems: "center",
             }}
         >
-            <Text className="bg-black text-white font-bold italic">Edit app/index.tsx to edit this screen.</Text>
+            <Text className="bg-black text-white font-bold italic">Edit src/app/index.tsx to edit this screen.</Text>
         </View>
     );
 }

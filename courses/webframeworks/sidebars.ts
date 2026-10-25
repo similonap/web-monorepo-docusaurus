@@ -88,19 +88,7 @@ const sidebars: SidebarsConfig = {
         'react-native/lists-and-keys/index',
         'react-native/controlled-components/index',
         'react-native/expo-router/index',
-        {
-          type: 'category', label: 'Extra', link: {type: 'doc', id: 'react-native/extra/index'},
-          items: [
-            'react-native/extra/async-storage',
-            'react-native/extra/camera',
-            'react-native/extra/location',
-            'react-native/extra/map-view',
-            'react-native/extra/platform-specific-code',
-            'react-native/extra/Nativewind',
-            'react-native/extra/eas',
-            'react-native/extra/voorbeelden',
-          ],
-        },
+        'react-native/async-storage/index',
       ],
     },
     {

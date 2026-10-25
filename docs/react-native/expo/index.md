@@ -48,16 +48,43 @@ Na de installatie kan je via de app met dezelfde account inloggen. Als je ingelo
 Om een nieuwe app aan te maken, kan je het volgende commando gebruiken:
 
 ```bash
-npx create-expo-app <project-name> --template expo-template-blank-typescript
+npx create-expo-app@latest <project-name>
 ```
 
-of korter:
+Je hoeft geen `--template` mee te geven: de standaard template gebruikt al TypeScript en [Expo Router](../expo-router/index.md).
+
+Daarna vraagt `create-expo-app` welke Expo SDK-versie je wil gebruiken:
 
 ```bash
-npx create-expo-app -t expo-template-blank-typescript <project-name>
+? Select an Expo SDK version: › - Use arrow-keys. Return to submit.
+    Latest (SDK 58)
+❯   For learning with Expo Go (SDK 57)
+    Other SDK version…
 ```
 
-Omdat we typescript gaan gebruiken in deze cursus, gebruiken we het `--template` argument. Als je geen typescript wil gebruiken, kan je het argument weglaten.
+:::warning Kies altijd "For learning with Expo Go"
+Kies in deze cursus **altijd** de optie **For learning with Expo Go**. Die SDK-versie is compatibel met de Expo Go app uit de App Store en de Play Store. De optie `Latest` gebruikt een nieuwere SDK die Expo Go op je toestel nog niet ondersteunt, waardoor je je app niet kan openen via de QR code.
+:::
+
+### Voorbeeldcode verwijderen
+
+Een nieuw project bevat wat voorbeeldcode. Die heb je niet nodig, dus verwijder je ze. Ga eerst naar de map van je project en voer daarna het `reset-project` script uit:
+
+```bash
+cd <project-name>
+npm run reset-project
+```
+
+Het script vraagt of je de bestaande bestanden wil verplaatsen naar een map `/example` in plaats van ze te verwijderen:
+
+```bash
+Do you want to move existing files to /example instead of deleting them? (Y/n):
+```
+
+Antwoord hier met **`n`**: we willen deze voorbeeldcode niet bijhouden. Je houdt een leeg project over met twee bestanden in `src/app`:
+
+- `src/app/index.tsx`: het eerste scherm van je app. Hier begin je te programmeren.
+- `src/app/_layout.tsx`: de layout rond al je schermen (zie [Expo Router](../expo-router/index.md)).
 
 ## Development server
 
@@ -89,20 +116,21 @@ npx expo start --tunnel
 
 De bundler zal nu een tunnel opzetten en een url genereren. Je kan deze url gebruiken om je app te openen op je smartphone of tablet.
 
-Het kan zijn dat je nog een extra dependency moet installeren. Je kan dit doen met het volgende commando:
+De eerste keer dat je een tunnel gebruikt, vraagt Expo om het package `@expo/ngrok` te installeren:
 
 ```bash
-npm install --save-dev @expo/ngrok@^4.1.1
-npm install --global @expo/ngrok@^4.1.1
+? The package @expo/ngrok@^4.1.0 is required to use tunnels, would you like to install it globally? › (Y/n)
 ```
 
-Ook kan het gebeuren dat het `npx create-expo-app` command niet de nieuwste versie van expo installeert. De volgende commando's verhelpen dit probleem:
+Antwoord met **`Y`**. Expo installeert dan zelf de juiste versie.
+
+Ook kan het gebeuren dat de versies van je packages niet overeenkomen met de Expo SDK van je project. Het volgende commando zet ze terug gelijk:
 
 ```bash
-npm install expo@latest
 npx expo install --fix
 ```
-In het bestand `babel.config.json` moet je dan vervolgens de plugin `expo-router/babel` verwijderen.
+
+Upgrade Expo **niet** met `npm install expo@latest`: dan kom je op een SDK-versie die de Expo Go app nog niet ondersteunt.
 
 ## De app openen in de browser
 
@@ -114,26 +142,9 @@ npx expo start --web
 
 of je kan de w toets indrukken in de terminal als je opgestart bent met `npx expo start`.
 
-Het kan zijn dat je de volgende foutmelding krijgt:
-
-```bash
-CommandError: It looks like you're trying to use web support but don't have the required
-dependencies installed.
-
-Please install react-native-web@~0.19.10, react-dom@18.2.0,
-@expo/metro-runtime@~3.2.3 by running:
-
-npx expo install react-native-web react-dom @expo/metro-runtime
-
-If you're not using web, please ensure you remove the "web" string from the platforms
-array in the project Expo config.
-```
-
-Zoals de instructies zeggen moet je zelf deze dependencies installeren. Als je daarna opnieuw `npx expo start --web` uitvoert, dan zou het moeten werken.
-
 ## Eerste wijziging aanbrengen
 
-Open de `App.tsx` file in de `src` folder. Verander de tekst in de `Text` component naar "Hello World". Als je de app nu opnieuw laadt, dan zal je de tekst zien veranderen.
+Open het bestand `src/app/index.tsx`. Verander de tekst in de `Text` component naar "Hello World". Als je de app nu opnieuw laadt, dan zal je de tekst zien veranderen.
 
 ```tsx expo={}
 import * as React from 'react';

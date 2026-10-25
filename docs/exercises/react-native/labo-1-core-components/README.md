@@ -6,7 +6,7 @@ sidebar_label: "Core Components"
 
 ### Maak een nieuw project aan
 
-Maak een nieuw project `CoreComponents` aan met expo. Vervang de inhoud van `App.tsx` door de volgende code:
+Maak een nieuw project `CoreComponents` aan met expo. Vervang de inhoud van `src/app/index.tsx` door de volgende code:
 
 ```typescript expo={}
 import React from "react";

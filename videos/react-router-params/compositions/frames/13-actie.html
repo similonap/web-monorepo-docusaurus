@@ -1,0 +1,613 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 13 positions ---- */
+    /* code surface: 11 rows at 24px / 35px */
+    #f13a-panel { left: 80px; top: 170px; width: 1060px; height: 520px; }
+    #f13a-panel .ts-code { font-size: 24px; line-height: 35px; }
+    #f13a-panel .ts-row { height: 35px; }
+    #f13a-panel .ts-ln { font-size: 18px; }
+    #f13a-panel .ts-caret { top: 5px; height: 25px; }
+
+    /* scherm: demo shop card, list variant, standard position */
+    #f13a-label { left: 1236px; top: 166px; opacity: 0; }
+    #f13a-card { left: 1236px; top: 200px; width: 604px; height: 436px; overflow: hidden; opacity: 0; }
+    .f13a-addr {
+      position: absolute; left: 0; right: 0; top: 0; height: 44px; box-sizing: border-box;
+      background: var(--ts-ground-subtle); border-bottom: 1px solid var(--ts-hairline); padding-left: 18px;
+      display: flex; align-items: center; font-family: var(--ts-mono); font-size: 18px; line-height: 1;
+      white-space: pre; font-variant-ligatures: none;
+    }
+    .f13a-host { color: var(--ts-muted); }
+    .f13a-urlbox { position: relative; flex: 1 1 auto; height: 44px; }
+    .f13a-url { position: absolute; left: 0; top: 0; height: 44px; display: flex; align-items: center; color: var(--ts-ink); white-space: pre; }
+    .f13a-q { color: var(--ts-blue-dark); border-radius: 4px; }
+    .f13a-ctrls {
+      position: absolute; left: 0; right: 0; top: 44px; height: 72px; box-sizing: border-box;
+      padding: 16px 20px; border-bottom: 1px solid var(--ts-hairline); display: flex; gap: 12px;
+    }
+    .f13a-box {
+      position: relative; height: 40px; box-sizing: border-box; border: 1px solid var(--ts-hairline); border-radius: 6px;
+      background: #FFFFFF; font-family: var(--ts-sans); font-size: 18px; line-height: 1; color: var(--ts-ink);
+    }
+    #f13a-search { width: 230px; }
+    #f13a-sort { width: 110px; }
+    #f13a-order { width: 150px; }
+    .f13a-ph, .f13a-typed, .f13a-opt {
+      position: absolute; left: 12px; top: 0; height: 38px; display: flex; align-items: center; white-space: pre;
+    }
+    .f13a-ph { color: var(--ts-muted); }
+    .f13a-typed { color: var(--ts-ink); opacity: 0; }
+    .f13a-icaret { display: inline-block; width: 2px; height: 22px; margin-left: 1px; background: var(--ts-blue); }
+    .f13a-valbox { position: absolute; left: 0; top: 0; right: 28px; bottom: 0; overflow: hidden; }
+    .f13a-chev {
+      position: absolute; right: 14px; top: 13px; width: 7px; height: 7px; box-sizing: border-box;
+      border-right: 2px solid var(--ts-muted); border-bottom: 2px solid var(--ts-muted); transform: rotate(45deg);
+    }
+    .f13a-focus {
+      position: absolute; left: -1px; top: -1px; right: -1px; bottom: -1px; box-sizing: border-box;
+      border: 2px solid var(--ts-blue); border-radius: 6px; opacity: 0; pointer-events: none;
+    }
+    .f13a-list { position: absolute; left: 0; right: 0; top: 116px; height: 276px; opacity: 0; }
+    .f13a-row {
+      height: 46px; box-sizing: border-box; padding: 0 20px; border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; justify-content: space-between; white-space: nowrap;
+    }
+    .f13a-row:last-child { border-bottom: none; }
+    .f13a-name { font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink); }
+    .f13a-price { font-family: var(--ts-mono); font-size: 18px; color: var(--ts-ink-soft); }
+    .f13a-short {
+      position: absolute; left: 0; right: 0; top: 392px; bottom: 0; box-sizing: border-box; padding: 0 20px;
+      background: var(--ts-ground-subtle); border-top: 1px solid var(--ts-hairline); display: flex; align-items: center; gap: 8px;
+      font-family: var(--ts-sans); font-size: 18px; color: var(--ts-ink-soft); white-space: nowrap;
+    }
+    #f13a-link {
+      position: relative; display: inline-block; color: var(--ts-blue); text-decoration: underline;
+      text-decoration-thickness: 1px; text-underline-offset: 3px;
+    }
+    #f13a-linkwash { position: absolute; left: -4px; right: -4px; top: -4px; bottom: -4px; border-radius: 4px; background: var(--ts-wash); opacity: 0; }
+    /* browser back button under the card */
+    #f13a-back {
+      position: absolute; left: 1236px; top: 670px; height: 40px; box-sizing: border-box; padding: 0 16px;
+      background: #FFFFFF; border: 1px solid var(--ts-hairline); border-radius: 6px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; line-height: 1; color: var(--ts-ink-soft); opacity: 0;
+    }
+    #f13a-u1, #f13a-u2, #f13a-u3, #f13a-u4, #f13a-u5 { opacity: 0; }
+    #f13a-sort-price, #f13a-order-desc, #f13a-order-asc2 { opacity: 0; }
+    #f13a-listA { opacity: 1; }
+
+    /* cursor (same as ../react-router 08-link) */
+    .f13a-ripple { position: absolute; left: 50%; top: 50%; width: 80px; height: 80px; margin: -40px 0 0 -40px; border-radius: 50%; background: rgba(49, 120, 198, 0.2); opacity: 0; pointer-events: none; }
+    #f13a-cursor { position: absolute; left: 0; top: 0; width: 224px; height: 224px; pointer-events: none; z-index: 20; opacity: 0; }
+    #f13a-cursor svg {
+      display: block; width: 100%; height: 100%;
+      fill: #1E293B; stroke: #FFFFFF; stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round;
+    }
+  </style>
+
+  <div data-hf-id="hf-r836" id="root" data-composition-id="13-actie" data-width="1920" data-height="1080" data-duration="20.71">
+    <div data-hf-id="hf-ci84" class="ts-bg clip" id="f13a-bg" data-start="0" data-duration="20.71" data-track-index="0"></div>
+
+    <div data-hf-id="hf-ef6h" class="ts-stage clip" id="f13a-stage" data-start="0" data-duration="20.71" data-track-index="1">
+      <div data-hf-id="hf-iil0" class="ts-kicker" id="f13a-kicker"><div data-hf-id="hf-bdg1" class="ts-kicker-bar" id="f13a-kbar"></div><span data-hf-id="hf-t1kx" class="ts-kicker-text" id="f13a-ktext">In actie</span></div>
+
+      <!-- code surface -->
+      <div data-hf-id="hf-3vi1" class="ts-code-surface" id="f13a-panel">
+        <div data-hf-id="hf-lswk" class="ts-code-title">ProductList.tsx</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-el44" class="ts-txt" id="f13a-l1"></span><span data-hf-id="hf-ws62" class="ts-caret" id="f13a-c1"></span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-pglr" class="ts-txt" id="f13a-l2"></span><span data-hf-id="hf-su21" class="ts-caret" id="f13a-c2"></span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-lihq" class="ts-txt" id="f13a-l3"></span><span data-hf-id="hf-s2e8" class="ts-caret" id="f13a-c3"></span></div>
+          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-u6dl" class="ts-txt" id="f13a-l4"></span><span data-hf-id="hf-o4a7" class="ts-caret" id="f13a-c4"></span></div>
+          <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-teps" class="ts-txt" id="f13a-l5"></span><span data-hf-id="hf-hyke" class="ts-caret" id="f13a-c5"></span></div>
+          <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-22ln" class="ts-txt" id="f13a-l6"></span><span data-hf-id="hf-e0gd" class="ts-caret" id="f13a-c6"></span></div>
+          <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><span data-hf-id="hf-y4hm" class="ts-txt" id="f13a-l7"></span><span data-hf-id="hf-d8sk" class="ts-caret" id="f13a-c7"></span></div>
+          <div data-hf-id="hf-du2u" class="ts-row"><span data-hf-id="hf-hcwz" class="ts-ln">8</span><span data-hf-id="hf-8zz9" class="ts-txt" id="f13a-l8"></span><span data-hf-id="hf-s5vn" class="ts-caret" id="f13a-c8"></span></div>
+          <div data-hf-id="hf-9gpj" class="ts-row"><span data-hf-id="hf-hr80" class="ts-ln">9</span><span data-hf-id="hf-88bg" class="ts-txt" id="f13a-l9"></span><span data-hf-id="hf-o7rm" class="ts-caret" id="f13a-c9"></span></div>
+          <div data-hf-id="hf-9v0k" class="ts-row"><span data-hf-id="hf-h360" class="ts-ln">10</span><span data-hf-id="hf-joe1" class="ts-txt"></span></div>
+          <div data-hf-id="hf-rmvo" class="ts-row"><span data-hf-id="hf-gouz" class="ts-ln">11</span><span data-hf-id="hf-bhj1" class="ts-txt" id="f13a-l11"></span><span data-hf-id="hf-fnlb" class="ts-caret" id="f13a-c11"></span></div>
+        </div>
+        <div data-hf-id="hf-ahcz" class="ts-code-status">ProductList.tsx · visibleProducts</div>
+      </div>
+
+      <!-- right column: scherm (demo shop, list variant) -->
+      <div data-hf-id="hf-djhi" class="ts-label" id="f13a-label">scherm</div>
+      <div data-hf-id="hf-36eq" class="ts-card" id="f13a-card">
+        <div data-hf-id="hf-2oht" class="f13a-addr"><span data-hf-id="hf-uimk" class="f13a-host">localhost:5173</span><span data-hf-id="hf-ycdl" class="f13a-urlbox">
+          <span data-hf-id="hf-kd64" class="f13a-url" id="f13a-u0">/products</span>
+          <span data-hf-id="hf-w3dv" class="f13a-url" id="f13a-u1">/products<span data-hf-id="hf-276q" class="f13a-q">?q=mouse</span></span>
+          <span data-hf-id="hf-qk9u" class="f13a-url" id="f13a-u2">/products<span data-hf-id="hf-7tmg" class="f13a-q">?q=mouse&amp;sort=price</span></span>
+          <span data-hf-id="hf-ml35" class="f13a-url" id="f13a-u3">/products<span data-hf-id="hf-ah8q" class="f13a-q" id="f13a-q3">?q=mouse&amp;sort=price&amp;order=desc</span></span>
+          <span data-hf-id="hf-f2fc" class="f13a-url" id="f13a-u4">/products<span data-hf-id="hf-6tu8" class="f13a-q">?q=mouse&amp;sort=price</span></span>
+          <span data-hf-id="hf-3hcf" class="f13a-url" id="f13a-u5">/products<span data-hf-id="hf-k2gt" class="f13a-q">?sort=price</span></span>
+        </span></div>
+
+        <div data-hf-id="hf-ktki" class="f13a-ctrls">
+          <div data-hf-id="hf-226b" class="f13a-box" id="f13a-search">
+            <span data-hf-id="hf-ktmb" class="f13a-ph" id="f13a-ph">Search a product...</span>
+            <span data-hf-id="hf-njh7" class="f13a-typed" id="f13a-t1">m<span data-hf-id="hf-zaw1" class="f13a-icaret"></span></span>
+            <span data-hf-id="hf-rxcr" class="f13a-typed" id="f13a-t2">mo<span data-hf-id="hf-2sc5" class="f13a-icaret"></span></span>
+            <span data-hf-id="hf-lnp1" class="f13a-typed" id="f13a-t3">mou<span data-hf-id="hf-3z98" class="f13a-icaret"></span></span>
+            <span data-hf-id="hf-nk79" class="f13a-typed" id="f13a-t4">mous<span data-hf-id="hf-3ky7" class="f13a-icaret"></span></span>
+            <span data-hf-id="hf-gc3v" class="f13a-typed" id="f13a-t5">mouse<span data-hf-id="hf-ycgc" class="f13a-icaret" id="f13a-icaret5"></span></span>
+            <div data-hf-id="hf-j259" class="f13a-focus" id="f13a-search-focus"></div>
+            <span data-hf-id="hf-wadj" class="f13a-ripple" id="f13a-rip-search"></span>
+          </div>
+          <div data-hf-id="hf-qro3" class="f13a-box" id="f13a-sort">
+            <div data-hf-id="hf-g1uo" class="f13a-valbox">
+              <span data-hf-id="hf-69lr" class="f13a-opt" id="f13a-sort-name">Name</span>
+              <span data-hf-id="hf-kzid" class="f13a-opt" id="f13a-sort-price">Price</span>
+            </div>
+            <span data-hf-id="hf-d3uf" class="f13a-chev"></span>
+            <div data-hf-id="hf-bzw5" class="f13a-focus" id="f13a-sort-focus"></div>
+            <span data-hf-id="hf-5i0f" class="f13a-ripple" id="f13a-rip-sort"></span>
+          </div>
+          <div data-hf-id="hf-t5hp" class="f13a-box" id="f13a-order">
+            <div data-hf-id="hf-mct4" class="f13a-valbox">
+              <span data-hf-id="hf-bf3q" class="f13a-opt" id="f13a-order-asc">Ascending</span>
+              <span data-hf-id="hf-1yj4" class="f13a-opt" id="f13a-order-desc">Descending</span>
+              <span data-hf-id="hf-2lkg" class="f13a-opt" id="f13a-order-asc2">Ascending</span>
+            </div>
+            <span data-hf-id="hf-0lh3" class="f13a-chev"></span>
+            <div data-hf-id="hf-3q0d" class="f13a-focus" id="f13a-order-focus"></div>
+            <span data-hf-id="hf-dgqh" class="f13a-ripple" id="f13a-rip-order"></span>
+          </div>
+        </div>
+
+        <!-- A: default (name, asc) -->
+        <div data-hf-id="hf-wv37" class="f13a-list" id="f13a-listA">
+          <div data-hf-id="hf-bmv8" class="f13a-row"><span data-hf-id="hf-e6dw" class="f13a-name">Headset</span><span data-hf-id="hf-8fys" class="f13a-price">€ 79.00</span></div>
+          <div data-hf-id="hf-49mk" class="f13a-row"><span data-hf-id="hf-lp8n" class="f13a-name">Keyboard</span><span data-hf-id="hf-gxrz" class="f13a-price">€ 49.99</span></div>
+          <div data-hf-id="hf-32ph" class="f13a-row"><span data-hf-id="hf-ljf8" class="f13a-name">Monitor</span><span data-hf-id="hf-szf4" class="f13a-price">€ 189.00</span></div>
+          <div data-hf-id="hf-3h0i" class="f13a-row"><span data-hf-id="hf-wuj5" class="f13a-name">Mouse</span><span data-hf-id="hf-1e18" class="f13a-price">€ 24.99</span></div>
+          <div data-hf-id="hf-5gjn" class="f13a-row"><span data-hf-id="hf-xv1w" class="f13a-name">Mouse pad</span><span data-hf-id="hf-rdbz" class="f13a-price">€ 9.99</span></div>
+          <div data-hf-id="hf-5uuo" class="f13a-row"><span data-hf-id="hf-bsb7" class="f13a-name">Webcam</span><span data-hf-id="hf-y70j" class="f13a-price">€ 59.50</span></div>
+        </div>
+        <!-- B: q=mouse (name, asc) -->
+        <div data-hf-id="hf-lzlk" class="f13a-list" id="f13a-listB">
+          <div data-hf-id="hf-4nxl" class="f13a-row"><span data-hf-id="hf-w939" class="f13a-name">Mouse</span><span data-hf-id="hf-ur1g" class="f13a-price">€ 24.99</span></div>
+          <div data-hf-id="hf-528m" class="f13a-row"><span data-hf-id="hf-6ljg" class="f13a-name">Mouse pad</span><span data-hf-id="hf-own3" class="f13a-price">€ 9.99</span></div>
+        </div>
+        <!-- C: q=mouse, price asc -->
+        <div data-hf-id="hf-mr9d" class="f13a-list" id="f13a-listC">
+          <div data-hf-id="hf-0ovb" class="f13a-row"><span data-hf-id="hf-5emd" class="f13a-name">Mouse pad</span><span data-hf-id="hf-oic2" class="f13a-price">€ 9.99</span></div>
+          <div data-hf-id="hf-136c" class="f13a-row"><span data-hf-id="hf-xg0c" class="f13a-name">Mouse</span><span data-hf-id="hf-tk4d" class="f13a-price">€ 24.99</span></div>
+        </div>
+        <!-- D: q=mouse, price desc -->
+        <div data-hf-id="hf-e3di" class="f13a-list" id="f13a-listD">
+          <div data-hf-id="hf-omec" class="f13a-row"><span data-hf-id="hf-x1pb" class="f13a-name">Mouse</span><span data-hf-id="hf-tyfe" class="f13a-price">€ 24.99</span></div>
+          <div data-hf-id="hf-o83b" class="f13a-row"><span data-hf-id="hf-5sxe" class="f13a-name">Mouse pad</span><span data-hf-id="hf-o411" class="f13a-price">€ 9.99</span></div>
+        </div>
+        <!-- E: back to C -->
+        <div data-hf-id="hf-i1hj" class="f13a-list" id="f13a-listE">
+          <div data-hf-id="hf-ntsa" class="f13a-row"><span data-hf-id="hf-7sgj" class="f13a-name">Mouse pad</span><span data-hf-id="hf-qw68" class="f13a-price">€ 9.99</span></div>
+          <div data-hf-id="hf-nfh9" class="f13a-row"><span data-hf-id="hf-y8me" class="f13a-name">Mouse</span><span data-hf-id="hf-vxyj" class="f13a-price">€ 24.99</span></div>
+        </div>
+        <!-- F: ?sort=price -->
+        <div data-hf-id="hf-9dlo" class="f13a-list" id="f13a-listF">
+          <div data-hf-id="hf-q7mg" class="f13a-row"><span data-hf-id="hf-86rk" class="f13a-name">Mouse pad</span><span data-hf-id="hf-qhv7" class="f13a-price">€ 9.99</span></div>
+          <div data-hf-id="hf-ptbf" class="f13a-row"><span data-hf-id="hf-xubd" class="f13a-name">Mouse</span><span data-hf-id="hf-wc9k" class="f13a-price">€ 24.99</span></div>
+          <div data-hf-id="hf-pf0e" class="f13a-row"><span data-hf-id="hf-kfmv" class="f13a-name">Keyboard</span><span data-hf-id="hf-rklb" class="f13a-price">€ 49.99</span></div>
+          <div data-hf-id="hf-p0pd" class="f13a-row"><span data-hf-id="hf-u9v7" class="f13a-name">Webcam</span><span data-hf-id="hf-d18j" class="f13a-price">€ 59.50</span></div>
+          <div data-hf-id="hf-rsuk" class="f13a-row"><span data-hf-id="hf-lucs" class="f13a-name">Headset</span><span data-hf-id="hf-1ip8" class="f13a-price">€ 79.00</span></div>
+          <div data-hf-id="hf-rejj" class="f13a-row"><span data-hf-id="hf-ayzw" class="f13a-name">Monitor</span><span data-hf-id="hf-ep0o" class="f13a-price">€ 189.00</span></div>
+        </div>
+
+        <div data-hf-id="hf-cvax" class="f13a-short">Shortcuts:<span data-hf-id="hf-jwdt" id="f13a-link"><span data-hf-id="hf-jhuf" id="f13a-linkwash"></span>Cheapest first<span data-hf-id="hf-lgwn" class="f13a-ripple" id="f13a-rip-link"></span></span></div>
+      </div>
+
+      <!-- browser back button -->
+      <div data-hf-id="hf-8x3d" id="f13a-back">terug<span data-hf-id="hf-a7si" class="f13a-ripple" id="f13a-rip-back"></span></div>
+
+      <div data-hf-id="hf-8khr" id="f13a-cursor" aria-hidden="true" data-layout-allow-overflow="">
+        <svg data-hf-id="hf-ulu9" viewBox="0 0 24 24"><path data-hf-id="hf-fueh" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 20.71;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 24;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="13-actie"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // demo helpers
+      var SWAP = 0.25;
+      function swapIn(sel, at) { tl.fromTo(sel, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: SWAP, ease: "power2.out", immediateRender: false }, at); }
+      function swapOut(sel, at) { tl.to(sel, { opacity: 0, y: -12, duration: SWAP, ease: "power2.out" }, at); }
+      function fadeList(fromSel, toSel, at) {
+        tl.to(fromSel, { opacity: 0, duration: SWAP, ease: "power1.inOut" }, at);
+        tl.fromTo(toSel, { opacity: 0 }, { opacity: 1, duration: SWAP, ease: "power1.inOut", immediateRender: false }, at);
+      }
+      var cursor = "#f13a-cursor";
+      var TIP_ORIGIN = "20.83% 12.5%";
+      function moveTo(x, y, at, d) { tl.to(cursor, { x: x, y: y, duration: d || 0.5, ease: "power3.out" }, at); }
+      function click(targetSel, ripSel, at) {
+        tl.to(cursor, { scale: 0.96, duration: 0.075, ease: "power2.in", transformOrigin: TIP_ORIGIN }, at);
+        tl.to(cursor, { scale: 1, duration: 0.075, ease: "power2.out", transformOrigin: TIP_ORIGIN }, at + 0.075);
+        tl.to(targetSel, { scale: 0.96, duration: 0.075, ease: "power1.in" }, at);
+        tl.to(targetSel, { scale: 1, duration: 0.3, ease: "power3.out" }, at + 0.075);
+        tl.fromTo(ripSel, { scale: 0.5, opacity: 0.9 }, { scale: 3, opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, at + 0.02);
+      }
+
+      // ---- 0.0-6.9: kicker; panel + card at 0.1; "zichtbare lijst" (0.24) lines 1-9 type; "parameters" (5.76) wash ----
+      tl.fromTo("#f13a-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f13a-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f13a-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f13a-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 0.1);
+      tl.fromTo("#f13a-card", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", immediateRender: false }, 0.1);
+      tl.fromTo("#f13a-back", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 0.2);
+
+      var P = 0.0105, G = 0.02, LEAD = 0.03;
+      var e = typeLine("#f13a-l1", "#f13a-c1", [
+        { t: "const", c: "ts-kw" },
+        { t: " " },
+        { id: "f13a-hl-vis", parts: [{ t: "visibleProducts" }] },
+        { t: " = products" }
+      ], 0, 0.24, P);
+      var visAt = e.marks["f13a-hl-vis"];
+      e = typeLine("#f13a-l2", "#f13a-c2", [
+        { t: "  ." },
+        { t: "filter", c: "ts-fn" },
+        { t: "((product) " },
+        { t: "=>", c: "ts-kw" }
+      ], 0, e.end + G, P, LEAD);
+      e = typeLine("#f13a-l3", "#f13a-c3", [
+        { t: "    product.name." },
+        { t: "toLowerCase", c: "ts-fn" },
+        { t: "()." },
+        { t: "includes", c: "ts-fn" },
+        { t: "(" },
+        { id: "f13a-hl-search", parts: [{ t: "search" }] },
+        { t: "." },
+        { t: "toLowerCase", c: "ts-fn" },
+        { t: "()))" }
+      ], 0, e.end + G, P, LEAD);
+      e = typeLine("#f13a-l4", "#f13a-c4", [
+        { t: "  ." },
+        { t: "sort", c: "ts-fn" },
+        { t: "((a, b) " },
+        { t: "=>", c: "ts-kw" },
+        { t: " {" }
+      ], 0, e.end + G, P, LEAD);
+      e = typeLine("#f13a-l5", "#f13a-c5", [
+        { t: "    " },
+        { t: "const", c: "ts-kw" },
+        { t: " result = " },
+        { id: "f13a-hl-sort", parts: [{ t: "sort" }] },
+        { t: " === " },
+        { t: "\"name\"", c: "ts-str" }
+      ], 0, e.end + G, P, LEAD);
+      e = typeLine("#f13a-l6", "#f13a-c6", [
+        { t: "      ? a.name." },
+        { t: "localeCompare", c: "ts-fn" },
+        { t: "(b.name)" }
+      ], 0, e.end + G, P, LEAD);
+      e = typeLine("#f13a-l7", "#f13a-c7", [
+        { t: "      : a.price - b.price;" }
+      ], 0, e.end + G, P, LEAD);
+      e = typeLine("#f13a-l8", "#f13a-c8", [
+        { t: "    " },
+        { t: "return", c: "ts-kw" },
+        { t: " " },
+        { id: "f13a-hl-order", parts: [{ t: "order" }] },
+        { t: " === " },
+        { t: "\"asc\"", c: "ts-str" },
+        { t: " ? result : -result;" }
+      ], 0, e.end + G, P, LEAD);
+      typeLine("#f13a-l9", "#f13a-c9", [
+        { t: "  });" }
+      ], 0, e.end + G, P, LEAD);
+
+      washOn("#f13a-hl-vis", Math.max(0.72, visAt + 0.2));
+      washOff("#f13a-hl-vis", 5.76);
+      washOn(["#f13a-hl-search", "#f13a-hl-sort", "#f13a-hl-order"], 5.76);
+      washOff(["#f13a-hl-search", "#f13a-hl-sort", "#f13a-hl-order"], 6.8);
+
+      // ---- 6.9-12.1: "Typ mouse" (6.96) click input, type 7.28-7.9; "prijs" (8.48); "aflopend" (9.40); "URL" (10.64) ----
+      tl.fromTo(cursor,
+        { xPercent: -20.83, yPercent: -12.5, x: 1700, y: 780, scale: 1, opacity: 0 },
+        { xPercent: -20.83, yPercent: -12.5, x: 1345, y: 284, opacity: 1, duration: 0.45, ease: "power3.out" },
+        6.48);
+      click("#f13a-search", "#f13a-rip-search", 6.96);
+      tl.to("#f13a-search-focus", { opacity: 1, duration: 0.15, ease: "power2.out" }, 6.98);
+      // drift aside towards the sort select so the typed text and list stay visible
+      moveTo(1578, 286, 7.2, 0.6);
+
+      tl.set("#f13a-ph", { opacity: 0 }, 7.28);
+      var TSTART = 7.28, TPER = 0.12;
+      for (var i = 1; i <= 5; i++) {
+        tl.set("#f13a-t" + i, { opacity: 1 }, TSTART + (i - 1) * TPER);
+        if (i > 1) tl.set("#f13a-t" + (i - 1), { opacity: 0 }, TSTART + (i - 1) * TPER);
+      }
+      // B: path + list at 7.9
+      swapOut("#f13a-u0", 7.9);
+      swapIn("#f13a-u1", 7.9);
+      fadeList("#f13a-listA", "#f13a-listB", 7.9);
+
+      // C: "op prijs" (8.48) sort select -> Price
+      click("#f13a-sort", "#f13a-rip-sort", 8.48);
+      tl.to("#f13a-search-focus", { opacity: 0, duration: 0.15, ease: "power2.out" }, 8.48);
+      tl.set("#f13a-icaret5", { opacity: 0 }, 8.48);
+      swapOut("#f13a-sort-name", 8.5);
+      swapIn("#f13a-sort-price", 8.5);
+      swapOut("#f13a-u1", 8.5);
+      swapIn("#f13a-u2", 8.5);
+      fadeList("#f13a-listB", "#f13a-listC", 8.5);
+      moveTo(1752, 286, 8.78, 0.45);
+
+      // D: "aflopend" (9.40) order select -> Descending
+      click("#f13a-order", "#f13a-rip-order", 9.40);
+      swapOut("#f13a-order-asc", 9.42);
+      swapIn("#f13a-order-desc", 9.42);
+      swapOut("#f13a-u2", 9.42);
+      swapIn("#f13a-u3", 9.42);
+      fadeList("#f13a-listC", "#f13a-listD", 9.42);
+      // park aside, below the card
+      moveTo(1680, 676, 9.62, 0.6);
+
+      // "de URL groeit mee" (10.64): wash on the query part
+      washOn("#f13a-q3", 10.64);
+      washOff("#f13a-q3", 11.9);
+
+      // ---- 12.1-15.4: "Druk op terug" (12.16/12.56); "vorige sortering" (13.76) ----
+      moveTo(1284, 692, 12.06, 0.45);
+      click("#f13a-back", "#f13a-rip-back", 12.56);
+      swapOut("#f13a-order-desc", 12.58);
+      swapIn("#f13a-order-asc2", 12.58);
+      swapOut("#f13a-u3", 12.58);
+      swapIn("#f13a-u4", 12.58);
+      fadeList("#f13a-listD", "#f13a-listE", 12.58);
+      moveTo(1680, 676, 12.9, 0.6);
+
+      tl.to(["#f13a-sort-focus", "#f13a-order-focus"], { opacity: 1, duration: 0.25, ease: "power2.out" }, 13.76);
+      tl.to(["#f13a-sort-focus", "#f13a-order-focus"], { opacity: 0, duration: 0.35, ease: "power2.inOut" }, 14.8);
+
+      // ---- 15.4-end: "Link" (15.44/16.36) line 11; "vraagteken sort is price" click at 18.08 ----
+      var l11 = typeLine("#f13a-l11", "#f13a-c11", [
+        { id: "f13a-hl-link", parts: [
+          { t: "<", c: "ts-punct" },
+          { t: "Link", c: "ts-fn" },
+          { t: " to=" },
+          { t: "\"?sort=price\"", c: "ts-str" },
+          { t: ">", c: "ts-punct" }
+        ] },
+        { t: "Cheapest first" },
+        { t: "</", c: "ts-punct" },
+        { t: "Link", c: "ts-fn" },
+        { t: ">", c: "ts-punct" }
+      ], 0, 15.44, 0.012);
+      washOn("#f13a-hl-link", 16.36);
+      tl.to("#f13a-linkwash", { opacity: 1, duration: 0.35, ease: "power1.out" }, 16.36);
+
+      moveTo(1424, 618, 17.2, 0.55);
+      click("#f13a-link", "#f13a-rip-link", 18.08);
+      // F: ?sort=price, empty search, Price, Ascending, full list by price
+      swapOut("#f13a-u4", 18.1);
+      swapIn("#f13a-u5", 18.1);
+      tl.to("#f13a-t5", { opacity: 0, duration: SWAP, ease: "power1.inOut" }, 18.1);
+      tl.fromTo("#f13a-ph", { opacity: 0 }, { opacity: 1, duration: SWAP, ease: "power1.inOut", immediateRender: false }, 18.1);
+      fadeList("#f13a-listE", "#f13a-listF", 18.1);
+      tl.to("#f13a-linkwash", { opacity: 0, duration: 0.4, ease: "power1.inOut" }, 18.5);
+      moveTo(1680, 676, 18.45, 0.6);
+      tl.to(cursor, { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 19.6);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["13-actie"] = tl;
+    })();
+  </script>
+</template>

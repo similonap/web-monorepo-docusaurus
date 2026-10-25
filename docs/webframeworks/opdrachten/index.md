@@ -17,6 +17,6 @@ Lees eerst minstens de volgende theorie:
 - [React: componentcommunicatie](../../react/child-parent/index.md)
 - [React Native](../../react-native/index.md)
 - [Expo Router](../../react-native/expo-router/index.md)
-- [AsyncStorage](../../react-native/extra/async-storage.md)
+- [AsyncStorage](../../react-native/async-storage/index.md)
 
 Ga daarna naar de [projectopdracht](../../exercises/react-native/project-webframeworks/README.md).

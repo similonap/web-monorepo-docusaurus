@@ -6,7 +6,7 @@ import YouTubeVideo from '@site/src/components/YouTubeVideo';
 
 # Rainbows
 
-Maak een nieuw project `Rainbows` aan met expo. Vervang de inhoud van `App.tsx` door de volgende code:
+Maak een nieuw project `Rainbows` aan met expo. Vervang de inhoud van `src/app/index.tsx` door de volgende code:
 
 ```typescript expo={"dependencies": "rainbow-colors-array-ts"}
 import * as React from "react";

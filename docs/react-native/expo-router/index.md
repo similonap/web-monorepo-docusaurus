@@ -10,77 +10,11 @@ Het is gebouwd op [React Navigation](https://reactnavigation.org/), een populair
 
 ## Installatie
 
-Als je expo-router wil gebruiken in je project moet je eerst enkele packages installeren en een aantal bestanden aanpassen. Deze stappen worden hieronder uitgelegd. 
-
-### Nieuw project
-
-Als je nog geen project hebt kan je een nieuw project aanmaken met een template en hoef je geen ingewikkelde installatie te doen. 
-
-```bash
-npx create-expo-app <my-project> --template expo-template-typescript-router
-```
-of korter:
-```bash
-npx create-expo-app -t expo-template-typescript-router <my-project>
-```
-
-Je moet nog wel de `scheme` property aanpassen in je `app.json` (zie verder).
-
-### Bestaand project
-
-#### Packages installeren
-
-Installeer de library in je project:
-
-```bash
-npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar react-native-gesture-handler react-native-web react-dom @react-navigation/drawer react-native-reanimated
-```
-
-#### Package.json aanpassen
-
-Pas de `main` property in je `package.json` aan:
-
-```json
-{
-  "main": "expo-router/entry"
-}
-```
-
-#### app.json aanpassen
-
-Pas je `app.json` aan:
-
-```jsx
-{
-  ...
-  "scheme": "your-app-scheme"
-  ...
-  "web": {
-    ...
-    "bundler": "metro"
-  }
-}
-```
-
-Je moet de `scheme` property aanpassen naar een unieke naam voor je app. Dit is nodig voor deep linking. Je kan hier bijvoorbeeld de naam van je app voor gebruiken. Je moet er wel voor zorgen dat deze naam uniek is. 
-
-#### babel.config.js aanpassen
-
-Je moet de `babel.config.js` aanpassen zodat `expo-router` en `react-native-reanimated` correct werken. 
-
-```
-module.exports = function (api) {
-  ...
-  return {
-    ...
-    plugins: ['expo-router/babel','react-native-reanimated/plugin'],
-  };
-};
-```
+Je hoeft Expo Router niet apart te installeren. Een nieuw project dat je aanmaakt met `npx create-expo-app@latest` gebruikt standaard al Expo Router. Kies bij de vraag naar de SDK-versie altijd **For learning with Expo Go** en verwijder daarna de voorbeeldcode met `npm run reset-project` (antwoord `n`). Zie [Nieuwe app aanmaken](../expo/index.md#nieuwe-app-aanmaken).
 
 ## Schermen toevoegen
 
-Als een bestand wordt aangemaakt in de `app` directory, wordt het automatisch een route in de app. Bijvoorbeeld, de volgende bestanden zullen de volgende routes maken:
+Als een bestand wordt aangemaakt in de `app` directory (in een nieuw project is dat `src/app`), wordt het automatisch een route in de app. In de voorbeelden hieronder schrijven we kortweg `app/...`. Bijvoorbeeld, de volgende bestanden zullen de volgende routes maken:
 - `app/index.tsx` komt overeen met `/`
 - `app/home.tsx` komt overeen met `/home`
 - `app/settings/index.tsx` komt overeen met `/settings`
@@ -90,11 +24,7 @@ Deze paden kunnen worden gebruikt in de `Link` component om te navigeren naar ee
 
 ### Het eerste scherm
 
-Als je nu de applicatie opstart met `expo start` dan krijg je de volgende pagina te zien:
-
-![Alt text](./img/initial.png)
-
-Zoals de melding aangeeft moet je een directory `app` aanmaken met daarin een bestand `index.tsx`. Dit bestand wordt gebruikt als eerste scherm van je applicatie. 
+In een nieuw project staan de schermen in de map `src/app`. Na `npm run reset-project` vind je daar het bestand `index.tsx`. Dit bestand wordt gebruikt als eerste scherm van je applicatie, op de route `/`.
 
 ```tsx
 import React from "react";
@@ -119,7 +49,7 @@ const styles = StyleSheet.create({
 export default App;
 ```
 
-Als je dan de applicatie opnieuw opstart zal de home pagina getoond worden.
+Als je de applicatie opstart met `npx expo start`, dan zie je dit scherm.
 
 ### Nog een scherm toevoegen
 

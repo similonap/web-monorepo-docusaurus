@@ -63,7 +63,7 @@ Je app moet werken op een smartphone en voldoen aan de volgende vereisten.
 
 - [ ] Je gebruikt Expo Router om tussen schermen te navigeren.
 - [ ] Je app bevat minstens 4 schermen.
-- [ ] Je gebruikt minstens één dynamische route (bv. `app/items/[id].tsx`) of geeft parameters door tussen schermen.
+- [ ] Je gebruikt minstens één dynamische route (bv. `src/app/items/[id].tsx`) of geeft parameters door tussen schermen.
 
 ### Lijsten
 

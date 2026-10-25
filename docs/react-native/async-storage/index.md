@@ -1,3 +1,7 @@
+---
+sidebar_position: 10
+---
+
 # AsyncStorage
 
 AsyncStorage is een manier om data op te slaan op de telefoon. Dit is een soort van lokale database. We kunnen hiermee data opslaan die we nodig hebben voor de app. Dit is zeer gelijkaardig aan de `localStorage` in een web browser.
@@ -63,7 +67,7 @@ const storeData = async () => {
 };
 
 const getData = async () => {
-  const value : string = await AsyncStorage.getItem("randomNumber");
+  const value : string | null = await AsyncStorage.getItem("randomNumber");
   if (value !== null) {
     alert(parseInt(value));
   } else {
@@ -107,7 +111,7 @@ const storeData = async () => {
 };
 
 const getData = async () => {
-  const value : string = await AsyncStorage.getItem("randomStudent");
+  const value : string | null = await AsyncStorage.getItem("randomStudent");
   if (value !== null) {
     let student : Student = JSON.parse(value);
     alert(student.name + " is " + student.age + " years old");
@@ -177,4 +181,4 @@ De tweede `useEffect` hook wordt uitgevoerd als de state van `counter` verandert
 
 ## Meer informatie
 
-Voor meer informatie over de `AsyncStorage` package kan je de [documentatie](https://reactnative.dev/docs/asyncstorage) raadplegen.
+Voor meer informatie over de `AsyncStorage` package kan je de [documentatie](https://docs.expo.dev/versions/latest/sdk/async-storage/) raadplegen.

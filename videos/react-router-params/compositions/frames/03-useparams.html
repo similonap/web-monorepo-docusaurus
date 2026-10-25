@@ -1,0 +1,538 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 03 positions ---- */
+    #f03u-panel { left: 80px; top: 170px; width: 1060px; height: 652px; opacity: 0; }
+    /* this frame: 15 rows at 24px / 35px */
+    #f03u-panel .ts-code { font-size: 24px; line-height: 35px; }
+    #f03u-panel .ts-row { height: 35px; }
+    #f03u-panel .ts-caret { top: 5px; height: 25px; }
+    /* key box around `{ id }` on line 2 (col 8, 6 chars, 14.4px per char) */
+    #f03u-mark { left: 186px; top: 99px; width: 97px; height: 39px; opacity: 0; }
+
+    /* scherm: demo shop card, standard position (x 1236-1840, y 200-636) */
+    #f03u-label { left: 1236px; top: 166px; opacity: 0; }
+    #f03u-card { left: 1236px; top: 200px; width: 604px; height: 436px; overflow: hidden; opacity: 0; }
+    .f03u-addr {
+      position: absolute; left: 0; right: 0; top: 0; height: 44px; box-sizing: border-box;
+      background: var(--ts-ground-subtle); border-bottom: 1px solid var(--ts-hairline); padding-left: 18px;
+      display: flex; align-items: center; font-family: var(--ts-mono); font-size: 18px; line-height: 1; white-space: nowrap;
+    }
+    .f03u-host { color: var(--ts-muted); }
+    .f03u-pathbox { position: relative; width: 300px; height: 44px; }
+    .f03u-path { position: absolute; left: 0; top: 0; height: 44px; display: flex; align-items: center; color: var(--ts-ink); white-space: pre; }
+    #f03u-path-b, #f03u-path-c { opacity: 0; }
+    .f03u-pwash { background: var(--ts-wash-clear); border-radius: 3px; }
+
+    /* detail variant */
+    .f03u-view { position: absolute; left: 0; right: 0; top: 44px; bottom: 0; background: var(--ts-ground); }
+    #f03u-detail { box-sizing: border-box; padding: 28px; }
+    #f03u-dlabel {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 16px; line-height: 1; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ts-muted); opacity: 0;
+    }
+    #f03u-dh {
+      margin-top: 14px; font-family: var(--ts-sans); font-weight: 700; font-size: 36px; line-height: 1.2;
+      color: var(--ts-ink); white-space: nowrap; opacity: 0;
+    }
+    .f03u-num { position: relative; display: inline-block; }
+    #f03u-uline { position: absolute; left: -1px; right: -1px; bottom: 0; height: 2px; border-radius: 1px; background: var(--ts-blue); transform-origin: left center; opacity: 0; }
+
+    /* list variant (link variant: names are links, controls show only the search input) */
+    #f03u-list { opacity: 0; }
+    .f03u-controls {
+      position: absolute; left: 0; right: 0; top: 0; height: 72px; box-sizing: border-box; padding: 16px 20px;
+      border-bottom: 1px solid var(--ts-hairline); display: flex; align-items: center; gap: 12px;
+    }
+    .f03u-input {
+      width: 230px; height: 40px; box-sizing: border-box; padding: 0 12px; border: 1px solid var(--ts-hairline); border-radius: 6px;
+      display: flex; align-items: center; font-family: var(--ts-sans); font-size: 18px; line-height: 1; color: var(--ts-muted); white-space: nowrap;
+    }
+    .f03u-rows { position: absolute; left: 0; right: 0; top: 72px; height: 276px; }
+    .f03u-row {
+      position: relative; height: 46px; box-sizing: border-box; padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .f03u-row + .f03u-row { border-top: 1px solid var(--ts-hairline); }
+    .f03u-name {
+      position: relative; display: inline-block; font-family: var(--ts-sans); font-weight: 500; font-size: 20px; line-height: 1.2;
+      color: var(--ts-blue); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; white-space: nowrap;
+    }
+    .f03u-price { font-family: var(--ts-mono); font-size: 18px; line-height: 1; color: var(--ts-ink-soft); white-space: nowrap; }
+    .f03u-short {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 44px; box-sizing: border-box; padding: 0 20px;
+      background: var(--ts-ground-subtle); border-top: 1px solid var(--ts-hairline); display: flex; align-items: center; gap: 10px;
+      font-family: var(--ts-sans); font-size: 18px; line-height: 1; color: var(--ts-ink-soft); white-space: nowrap;
+    }
+    .f03u-shortlink { color: var(--ts-blue); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+    /* chips under the card */
+    #f03u-row1 { position: absolute; left: 1236px; top: 670px; height: 44px; display: flex; align-items: center; gap: 16px; }
+    #f03u-row1 .ts-chip { position: relative; height: 44px; padding: 0 16px; font-size: 22px; opacity: 0; }
+    .f03u-arrow { width: 40px; height: 16px; overflow: visible; }
+    #f03u-shaft { fill: none; stroke: #94A3B8; stroke-width: 2; stroke-dasharray: 31; stroke-dashoffset: 31; }
+    #f03u-head { fill: #94A3B8; opacity: 0; }
+    #f03u-row2 { position: absolute; left: 1236px; top: 740px; height: 44px; }
+    #f03u-idchip { left: 0; top: 0; height: 44px; padding: 0 16px; gap: 12px; font-size: 22px; opacity: 0; }
+    #f03u-idchip .ts-chip-key { font-size: 16px; }
+
+    /* cursor (same as react-router 08-link) */
+    .f03u-ripple { position: absolute; left: 50%; top: 50%; width: 80px; height: 80px; margin: -40px 0 0 -40px; border-radius: 50%; background: rgba(49, 120, 198, 0.2); opacity: 0; pointer-events: none; }
+    #f03u-cursor { position: absolute; left: 0; top: 0; width: 224px; height: 224px; pointer-events: none; z-index: 20; opacity: 0; }
+    #f03u-cursor svg {
+      display: block; width: 100%; height: 100%;
+      fill: #1E293B; stroke: #FFFFFF; stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round;
+    }
+  </style>
+
+  <div data-hf-id="hf-3mk8" id="root" data-composition-id="03-useparams" data-width="1920" data-height="1080" data-duration="18.07">
+    <div data-hf-id="hf-izcj" class="ts-bg clip" id="f03u-bg" data-start="0" data-duration="18.07" data-track-index="0"></div>
+
+    <div data-hf-id="hf-thl0" class="ts-stage clip" id="f03u-stage" data-start="0" data-duration="18.07" data-track-index="1">
+      <div data-hf-id="hf-zw8f" class="ts-kicker" id="f03u-kicker"><div data-hf-id="hf-u9ta" class="ts-kicker-bar" id="f03u-kbar"></div><span data-hf-id="hf-he5y" class="ts-kicker-text" id="f03u-ktext">useParams</span></div>
+
+      <!-- code surface: App.tsx, 15 rows at 24px -->
+      <div data-hf-id="hf-vycg" class="ts-code-surface" id="f03u-panel">
+        <div data-hf-id="hf-x5y0" class="ts-code-title">App.tsx</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-09wr" class="ts-txt" id="f03u-l1"></span><span data-hf-id="hf-xog1" class="ts-caret" id="f03u-c1"></span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-rm0w" class="ts-txt" id="f03u-l2"></span><span data-hf-id="hf-1mk2" class="ts-caret" id="f03u-c2"></span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-joe1" class="ts-txt"></span></div>
+          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-jpsu" class="ts-txt" id="f03u-l4"></span><span data-hf-id="hf-kasc" class="ts-caret" id="f03u-c4"></span></div>
+          <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-nnwv" class="ts-txt" id="f03u-l5"></span><span data-hf-id="hf-l2g5" class="ts-caret" id="f03u-c5"></span></div>
+          <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-5edp" class="ts-txt"></span></div>
+          <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><span data-hf-id="hf-frot" class="ts-txt" id="f03u-l7"></span><span data-hf-id="hf-syo7" class="ts-caret" id="f03u-c7"></span></div>
+          <div data-hf-id="hf-du2u" class="ts-row"><span data-hf-id="hf-hcwz" class="ts-ln">8</span><span data-hf-id="hf-nrea" class="ts-txt" id="f03u-l8"></span><span data-hf-id="hf-5h6o" class="ts-caret" id="f03u-c8"></span></div>
+          <div data-hf-id="hf-9gpj" class="ts-row"><span data-hf-id="hf-hr80" class="ts-ln">9</span><span data-hf-id="hf-tx43" class="ts-txt" id="f03u-l9"></span><span data-hf-id="hf-68uh" class="ts-caret" id="f03u-c9"></span></div>
+          <div data-hf-id="hf-9v0k" class="ts-row"><span data-hf-id="hf-h360" class="ts-ln">10</span><span data-hf-id="hf-wz89" class="ts-txt" id="f03u-l10"></span><span data-hf-id="hf-dctn" class="ts-caret" id="f03u-c10"></span></div>
+          <div data-hf-id="hf-rmvo" class="ts-row"><span data-hf-id="hf-gouz" class="ts-ln">11</span><span data-hf-id="hf-w7kg" class="ts-txt" id="f03u-l11"></span><span data-hf-id="hf-9epm" class="ts-caret" id="f03u-c11"></span></div>
+          <div data-hf-id="hf-r8kn" class="ts-row"><span data-hf-id="hf-gajy" class="ts-ln">12</span><span data-hf-id="hf-4vgb" class="ts-txt" id="f03u-l12"></span><span data-hf-id="hf-5gll" class="ts-caret" id="f03u-c12"></span></div>
+          <div data-hf-id="hf-qu9m" class="ts-row"><span data-hf-id="hf-fw8x" class="ts-ln">13</span><span data-hf-id="hf-0xca" class="ts-txt" id="f03u-l13"></span><span data-hf-id="hf-4oxs" class="ts-caret" id="f03u-c13"></span></div>
+          <div data-hf-id="hf-qfyl" class="ts-row"><span data-hf-id="hf-fhxw" class="ts-ln">14</span><span data-hf-id="hf-i5ml" class="ts-txt" id="f03u-l14"></span><span data-hf-id="hf-0qtr" class="ts-caret" id="f03u-c14"></span></div>
+          <div data-hf-id="hf-t83s" class="ts-row"><span data-hf-id="hf-f3mv" class="ts-ln">15</span><span data-hf-id="hf-hdys" class="ts-txt" id="f03u-l15"></span><span data-hf-id="hf-wspq" class="ts-caret" id="f03u-c15"></span></div>
+        </div>
+        <div data-hf-id="hf-1gov" class="ts-mark" id="f03u-mark"></div>
+        <div data-hf-id="hf-1eg8" class="ts-code-status">App.tsx · useParams</div>
+      </div>
+
+      <!-- right column: scherm (demo shop) -->
+      <div data-hf-id="hf-zanj" class="ts-label" id="f03u-label">scherm</div>
+      <div data-hf-id="hf-scq1" class="ts-card" id="f03u-card">
+        <div data-hf-id="hf-ofka" class="f03u-addr"><span data-hf-id="hf-tphf" class="f03u-host">localhost:5173</span><span data-hf-id="hf-8rlg" class="f03u-pathbox"><span data-hf-id="hf-hfvr" class="f03u-path" id="f03u-path-a">/products/<span data-hf-id="hf-byyq" class="f03u-pwash" id="f03u-p2">2</span></span><span data-hf-id="hf-u5ir" class="f03u-path" id="f03u-path-b">/products</span><span data-hf-id="hf-22kh" class="f03u-path" id="f03u-path-c">/products/2</span></span></div>
+
+        <div data-hf-id="hf-sxse" class="f03u-view" id="f03u-detail">
+          <div data-hf-id="hf-hoio" id="f03u-dlabel">ProductDetail</div>
+          <div data-hf-id="hf-bv0f" id="f03u-dh">Product <span data-hf-id="hf-0ouy" class="f03u-num">2<span data-hf-id="hf-gy2s" id="f03u-uline"></span></span></div>
+        </div>
+
+        <div data-hf-id="hf-y4a1" class="f03u-view" id="f03u-list">
+          <div data-hf-id="hf-x7ht" class="f03u-controls"><div data-hf-id="hf-jvbx" class="f03u-input">Search a product...</div></div>
+          <div data-hf-id="hf-5mek" class="f03u-rows">
+            <div data-hf-id="hf-ofd1" class="f03u-row"><span data-hf-id="hf-vjo1" class="f03u-name">Headset</span><span data-hf-id="hf-b40v" class="f03u-price">€ 79.00</span></div>
+            <div data-hf-id="hf-7ymx" class="f03u-row"><span data-hf-id="hf-763o" class="f03u-name">Keyboard</span><span data-hf-id="hf-uug8" class="f03u-price">€ 49.99</span></div>
+            <div data-hf-id="hf-95k0" class="f03u-row"><span data-hf-id="hf-8p7t" class="f03u-name">Monitor</span><span data-hf-id="hf-wt8x" class="f03u-price">€ 189.00</span></div>
+            <div data-hf-id="hf-8r8z" class="f03u-row"><span data-hf-id="hf-29uq" class="f03u-name" id="f03u-mouse">Mouse<span data-hf-id="hf-oirc" class="f03u-ripple" id="f03u-rip"></span></span><span data-hf-id="hf-rag7" class="f03u-price">€ 24.99</span></div>
+            <div data-hf-id="hf-6rpu" class="f03u-row"><span data-hf-id="hf-h43l" class="f03u-name">Mouse pad</span><span data-hf-id="hf-z1be" class="f03u-price">€ 9.99</span></div>
+            <div data-hf-id="hf-6det" class="f03u-row"><span data-hf-id="hf-7jo8" class="f03u-name">Webcam</span><span data-hf-id="hf-r7sk" class="f03u-price">€ 59.50</span></div>
+          </div>
+          <div data-hf-id="hf-rdm4" class="f03u-short">Shortcuts:<span data-hf-id="hf-rtqx" class="f03u-shortlink">Cheapest first</span></div>
+        </div>
+      </div>
+
+      <!-- chips under the card -->
+      <div data-hf-id="hf-gfex" id="f03u-row1">
+        <div data-hf-id="hf-2fby" class="ts-chip" id="f03u-chip-fn"><span data-hf-id="hf-uckh"><span data-hf-id="hf-sz60" class="ts-fn">useParams</span><span data-hf-id="hf-a4au" class="ts-punct">()</span></span></div>
+        <svg data-hf-id="hf-o8cp" class="f03u-arrow" id="f03u-arrow" viewBox="0 0 40 16" xmlns="http://www.w3.org/2000/svg"><path data-hf-id="hf-kubi" id="f03u-shaft" d="M0 8 H31" /><polygon data-hf-id="hf-ff5s" id="f03u-head" points="30,2 40,8 30,14" /></svg>
+        <div data-hf-id="hf-ccrt" class="ts-chip" id="f03u-chip-obj"><span data-hf-id="hf-dfg4"><span data-hf-id="hf-uzbi" class="ts-punct">{</span> id<span data-hf-id="hf-55ep" class="ts-punct">:</span> <span data-hf-id="hf-4a9i" class="ts-str">"2"</span> <span data-hf-id="hf-u6pg" class="ts-punct">}</span></span></div>
+      </div>
+      <div data-hf-id="hf-kdiy" id="f03u-row2">
+        <div data-hf-id="hf-kqgc" class="ts-chip ts-chip--new" id="f03u-idchip"><span data-hf-id="hf-d366" class="ts-chip-key">id</span><span data-hf-id="hf-oqca" class="ts-str">"2"</span></div>
+      </div>
+
+      <div data-hf-id="hf-t13g" id="f03u-cursor" aria-hidden="true" data-layout-allow-overflow="">
+        <svg data-hf-id="hf-ulu9" viewBox="0 0 24 24"><path data-hf-id="hf-fueh" d="M5 3 L5 19 L9 15 L12 22 L15 20.5 L11.5 14 L18 14 Z" /></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 18.07;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 24;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="03-useparams"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      // (as in 02-fetch; a segment with `id` may itself contain `{ id, parts }` for a nested highlight)
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        function emit(host, list) {
+          list.forEach(function (seg) {
+            var h = host;
+            if (seg.id) {
+              h = document.createElement("span");
+              h.className = "ts-hl";
+              h.id = seg.id;
+              host.appendChild(h);
+              marks[seg.id] = start + chars.length * per;
+            }
+            if (seg.parts) { emit(h, seg.parts); return; }
+            for (var i = 0; i < seg.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (seg.c ? " " + seg.c : "");
+              s.textContent = seg.t[i];
+              h.appendChild(s);
+              chars.push(s);
+            }
+          });
+        }
+        emit(line, segments);
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // ---- 0.0-3.5: kicker; panel in (empty); "plaatshouder" (1.40) card with /products/2, wash on the 2 ----
+      tl.fromTo("#f03u-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f03u-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f03u-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.1);
+
+      tl.fromTo("#f03u-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 1.40);
+      tl.fromTo("#f03u-card", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 1.40);
+      washOn("#f03u-p2", 1.55);
+
+      // ---- 3.5-9.3: "use params" (4.00 / 4.32): lines 1, 2, 4, 5 type; "object" (5.76) chip row ----
+      var P1 = 0.012;
+      var e = typeLine("#f03u-l1", "#f03u-c1", [
+        { t: "const", c: "ts-kw" },
+        { t: " " },
+        { t: "ProductDetail", c: "ts-fn" },
+        { t: " = () " },
+        { t: "=>", c: "ts-kw" },
+        { t: " {" }
+      ], 0, 3.60, P1);
+      var l2 = typeLine("#f03u-l2", "#f03u-c2", [
+        { t: "  " },
+        { t: "const", c: "ts-kw" },
+        { t: " " },
+        { id: "f03u-hl-destr", parts: [{ t: "{ id }" }] },
+        { t: " = " },
+        { id: "f03u-hl-up", parts: [{ t: "useParams", c: "ts-fn" }, { t: "()" }] },
+        { t: ";" }
+      ], 0, e.end + 0.02, P1, 0.03);
+      e = typeLine("#f03u-l4", "#f03u-c4", [
+        { t: "  " },
+        { t: "return", c: "ts-kw" },
+        { t: " " },
+        { t: "<h1>", c: "ts-punct" },
+        { t: "Product {id}" },
+        { t: "</h1>", c: "ts-punct" },
+        { t: ";" }
+      ], 0, l2.end + 0.02, P1, 0.03);
+      typeLine("#f03u-l5", "#f03u-c5", [{ t: "};" }], 0, e.end + 0.02, P1, 0.03);
+
+      washOff("#f03u-p2", 4.32);
+      washOn("#f03u-hl-up", Math.max(4.32, l2.marks["f03u-hl-up"] + 0.13));
+      tl.fromTo("#f03u-dlabel", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 4.32);
+      tl.fromTo("#f03u-dh", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 4.40);
+
+      tl.fromTo("#f03u-chip-fn", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 5.76);
+      tl.to("#f03u-shaft", { strokeDashoffset: 0, duration: 0.3, ease: "power2.out" }, 5.92);
+      tl.to("#f03u-head", { opacity: 1, duration: 0.15, ease: "power1.out" }, 6.14);
+      tl.fromTo("#f03u-chip-obj", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 6.10);
+
+      // ---- 9.3-12.0: "destructuring" (9.76) wash + key box on { id }; "id eruit" (10.80) id chip + underline ----
+      washOff("#f03u-hl-up", 9.76);
+      washOn("#f03u-hl-destr", 9.76);
+      tl.fromTo("#f03u-mark", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power3.out", immediateRender: false }, 9.76);
+
+      tl.fromTo("#f03u-idchip", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 10.80);
+      tl.fromTo("#f03u-uline", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, 10.86);
+
+      // ---- 12.0-end: "Vanuit de lijst" (12.00): ProductList types, card -> link variant, chips out ----
+      washOff("#f03u-hl-destr", 12.0);
+      tl.to("#f03u-mark", { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 12.0);
+      tl.to(["#f03u-row1", "#f03u-row2"], { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 12.0);
+      tl.to("#f03u-detail", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 12.0);
+      tl.to("#f03u-uline", { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 12.1);
+      tl.to("#f03u-list", { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 12.0);
+      tl.to("#f03u-path-a", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 12.0);
+      tl.to("#f03u-path-b", { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 12.0);
+
+      var P2 = 0.006;
+      var L2 = 0.03;
+      e = typeLine("#f03u-l7", "#f03u-c7", [
+        { t: "const", c: "ts-kw" },
+        { t: " " },
+        { t: "ProductList", c: "ts-fn" },
+        { t: " = () " },
+        { t: "=>", c: "ts-kw" },
+        { t: " (" }
+      ], 0, 12.0, P2);
+      e = typeLine("#f03u-l8", "#f03u-c8", [
+        { t: "  " },
+        { t: "<ul>", c: "ts-punct" }
+      ], 0, e.end + 0.02, P2, L2);
+      e = typeLine("#f03u-l9", "#f03u-c9", [
+        { t: "    {products." },
+        { t: "map", c: "ts-fn" },
+        { t: "((product) " },
+        { t: "=>", c: "ts-kw" },
+        { t: " (" }
+      ], 0, e.end + 0.02, P2, L2);
+      e = typeLine("#f03u-l10", "#f03u-c10", [
+        { t: "      " },
+        { t: "<li", c: "ts-punct" },
+        { t: " key={product.id}" },
+        { t: ">", c: "ts-punct" }
+      ], 0, e.end + 0.02, P2, L2);
+      var l11 = typeLine("#f03u-l11", "#f03u-c11", [
+        { t: "        " },
+        { id: "f03u-hl-link", parts: [
+          { t: "<", c: "ts-punct" },
+          { t: "Link", c: "ts-fn" },
+          { t: " to={" },
+          { id: "f03u-hl-tpl", parts: [
+            { t: "`/products/", c: "ts-str" },
+            { t: "${", c: "ts-punct" },
+            { t: "product.id" },
+            { t: "}", c: "ts-punct" },
+            { t: "`", c: "ts-str" }
+          ] },
+          { t: "}" },
+          { t: ">", c: "ts-punct" }
+        ] },
+        { t: "{product.name}" },
+        { t: "</", c: "ts-punct" },
+        { t: "Link", c: "ts-fn" },
+        { t: ">", c: "ts-punct" }
+      ], 0, e.end + 0.02, P2, L2);
+      e = typeLine("#f03u-l12", "#f03u-c12", [
+        { t: "      " },
+        { t: "</li>", c: "ts-punct" }
+      ], 0, l11.end + 0.02, P2, L2);
+      e = typeLine("#f03u-l13", "#f03u-c13", [{ t: "    ))}" }], 0, e.end + 0.02, P2, L2);
+      e = typeLine("#f03u-l14", "#f03u-c14", [
+        { t: "  " },
+        { t: "</ul>", c: "ts-punct" }
+      ], 0, e.end + 0.02, P2, L2);
+      typeLine("#f03u-l15", "#f03u-c15", [{ t: ");" }], 0, e.end + 0.02, P2, L2);
+
+      // "link" (12.88): wash on the opening <Link to={...}> tag
+      washOn("#f03u-hl-link", Math.max(12.88, l11.marks["f03u-hl-link"] + 0.1));
+      // "slash products slash het id" (14.08): wash moves to the template literal
+      washOff("#f03u-hl-link", 14.08);
+      washOn("#f03u-hl-tpl", 14.08);
+
+      // cursor enters at 15.0, clicks Mouse at 15.90, parks aside, fades at 17.2
+      var cursor = "#f03u-cursor";
+      var TIP_ORIGIN = "20.83% 12.5%";
+      var TX = 1288, TY = 480; // the Mouse link (row 4 of the list)
+      tl.fromTo(cursor,
+        { xPercent: -20.83, yPercent: -12.5, x: 1700, y: 790, scale: 1, opacity: 0 },
+        { xPercent: -20.83, yPercent: -12.5, x: TX, y: TY, opacity: 1, duration: 0.5, ease: "power3.out" },
+        15.0);
+      tl.to(cursor, { scale: 0.96, duration: 0.075, ease: "power2.in", transformOrigin: TIP_ORIGIN }, 15.90);
+      tl.to(cursor, { scale: 1, duration: 0.075, ease: "power2.out", transformOrigin: TIP_ORIGIN }, 15.975);
+      tl.to("#f03u-mouse", { scale: 0.96, duration: 0.075, ease: "power1.in" }, 15.90);
+      tl.to("#f03u-mouse", { scale: 1, duration: 0.3, ease: "power3.out" }, 15.975);
+      tl.fromTo("#f03u-rip", { scale: 0.5, opacity: 0.9 }, { scale: 3, opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, 15.92);
+      tl.to(cursor, { x: 1700, y: 690, duration: 0.6, ease: "power3.out" }, 16.2);
+      tl.to(cursor, { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 17.2);
+
+      // 16.30: back to the detail variant, path slides /products -> /products/2
+      tl.to("#f03u-path-b", { y: -12, opacity: 0, duration: 0.25, ease: "power2.out" }, 16.30);
+      tl.fromTo("#f03u-path-c", { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, 16.30);
+      tl.to("#f03u-list", { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 16.30);
+      tl.fromTo("#f03u-detail", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 16.36);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["03-useparams"] = tl;
+    })();
+  </script>
+</template>

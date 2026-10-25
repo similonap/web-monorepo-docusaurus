@@ -6,9 +6,7 @@ Herlees voor het labo aan te vangen minstens de volgende topics:
 
 - [Expo Router](../../../react-native/expo-router/index.md)
 - [Lijsten en keys](../../../react-native/lists-and-keys/index.md)
-- [AsyncStorage](../../../react-native/extra/async-storage.md)
-- [Camera](../../../react-native/extra/camera.md)
-- [Location](../../../react-native/extra/location.md)
+- [AsyncStorage](../../../react-native/async-storage/index.md)
 
 ## Oefeningen
 

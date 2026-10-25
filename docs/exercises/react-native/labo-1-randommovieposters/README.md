@@ -4,7 +4,7 @@ sidebar_label: "RandomMoviePosters"
 
 # RandomMoviePosters
 
-Maak een nieuw expo project aan met de naam `RandomMoviePosters`. Deze app toont 6 posters van films. Je mag zelf kiezen waar je deze filmposters vandaan haalt.
+Maak een nieuw expo project aan met de naam `RandomMoviePosters` (kies bij de SDK-versie **For learning with Expo Go** en verwijder de voorbeeldcode met `npm run reset-project`, antwoord `n`). Deze app toont 6 posters van films. Je mag zelf kiezen waar je deze filmposters vandaan haalt.
 
 Zorg dat de app
 - de 6 posters onder mekaar toont

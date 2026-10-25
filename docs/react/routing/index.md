@@ -241,6 +241,8 @@ const router = createBrowserRouter([
 
 ### URL parameters
 
+<YouTubeVideo src="https://youtu.be/6UOGzipELa8" title="React Router: URL parameters, query parameters en de URL als state" />
+
 Tot nu toe hebben we altijd routes gebruikt die exacte paden voorstellen. Soms wil je ook aan de hand van de URL bepaalde parameters meegeven. Dat kan bijvoorbeeld een ID zijn: een uniek stukje informatie dat verwijst naar één specifieke user, één bestelling, één event op de kalender,... Als deze zaken voortdurend worden toegevoegd aan het systeem, is het niet mogelijk een route per user, per bestelling of per event te voorzien. Het is echter wel mogelijk een pad zoals `/detail/:id` te gebruiken, waarbij `:id` een **parameter** is: een algemene plaatshouder in de URL waaraan een concrete waarde gegeven kan worden. Zo kan bijvoorbeeld `/detail/1` of `/detail/2` gebruikt worden, waarbij in beide gevallen dezelfde component wordt gerenderd, maar met andere data.
 
 Om dit te laten werken, moet de applicatie de precieze waarde kunnen opvragen die de parameter heeft gekregen. Dit kan met de **`useParams`** hook. Deze geeft je de URL parameters van de huidige pagina.

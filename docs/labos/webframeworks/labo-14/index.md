@@ -4,7 +4,7 @@
 
 Bekijk voor het labo aan te vangen eerst de volgende topics:
 
-- [AsyncStorage](../../../react-native/extra/async-storage.md)
+- [AsyncStorage](../../../react-native/async-storage/index.md)
 - [Lijsten en keys](../../../react-native/lists-and-keys/index.md)
 - [Custom hooks](../../../react/hooks/custom-hooks.md)
 

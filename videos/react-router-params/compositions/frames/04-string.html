@@ -1,0 +1,412 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- frame 04 positions ---- */
+    #f04s-panel { left: 80px; top: 170px; width: 1060px; height: 510px; }
+
+    /* scherm: demo card, detail variant, standard position (x 1236-1840, y 200-636) */
+    #f04s-label { left: 1236px; top: 166px; }
+    #f04s-card { left: 1236px; top: 200px; width: 604px; height: 436px; overflow: hidden; }
+    .f04s-addr {
+      position: absolute; left: 0; right: 0; top: 0; height: 44px; box-sizing: border-box;
+      background: var(--ts-ground-subtle); border-bottom: 1px solid var(--ts-hairline);
+      padding-left: 18px; display: flex; align-items: center;
+      font-family: var(--ts-mono); font-size: 18px; line-height: 1; white-space: pre; font-variant-ligatures: none;
+    }
+    .f04s-host { color: var(--ts-muted); }
+    #f04s-path { position: relative; color: var(--ts-ink); background: var(--ts-wash-clear); border-radius: 4px; }
+    #f04s-acaret { position: absolute; left: 0; top: -2px; width: 2px; height: 22px; background: var(--ts-blue); opacity: 0; }
+    .f04s-abc { display: none; opacity: 0; }
+    #f04s-body { position: absolute; left: 0; right: 0; top: 44px; bottom: 0; box-sizing: border-box; padding: 28px; }
+    .f04s-comp {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 16px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted);
+    }
+    #f04s-h { position: absolute; left: 28px; top: 62px; font-family: var(--ts-sans); font-weight: 700; font-size: 36px; line-height: 1.2; color: var(--ts-ink); white-space: nowrap; }
+    #f04s-err { position: absolute; left: 28px; top: 66px; line-height: 1.4; white-space: nowrap; opacity: 0; }
+
+    /* chip rows under the card */
+    .f04s-row { position: absolute; left: 1236px; height: 44px; display: flex; align-items: center; gap: 16px; opacity: 0; }
+    #f04s-row1 { top: 670px; }
+    #f04s-row2 { top: 740px; }
+    .f04s-row .ts-chip { position: relative; height: 44px; padding: 0 16px; gap: 12px; font-size: 22px; }
+    .f04s-row .ts-chip-key { font-size: 16px; }
+    .f04s-val { position: relative; display: inline-block; height: 44px; overflow: hidden; }
+    .f04s-v { position: absolute; left: 0; top: 0; line-height: 44px; white-space: pre; }
+    .f04s-str { color: var(--ts-code-str); }
+    .f04s-num { color: var(--ts-code-fn); }
+    .f04s-type { font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted); white-space: nowrap; }
+    #f04s-ghost { position: relative; opacity: 0; }
+    .f04s-ghost-v { color: var(--ts-code-fn); text-decoration: line-through; }
+    #f04s-bad { position: absolute; left: -1px; top: -1px; right: -1px; bottom: -1px; border: 2px solid var(--ts-error); border-radius: 8px; opacity: 0; }
+  </style>
+
+  <div data-hf-id="hf-r4s0" id="root" data-composition-id="04-string" data-width="1920" data-height="1080" data-duration="20.79">
+    <div data-hf-id="hf-r4s1" class="ts-bg clip" id="f04s-bg" data-start="0" data-duration="20.79" data-track-index="0"></div>
+
+    <div data-hf-id="hf-r4s2" class="ts-stage clip" id="f04s-stage" data-start="0" data-duration="20.79" data-track-index="1">
+      <div data-hf-id="hf-r4s3" class="ts-kicker" id="f04s-kicker"><div data-hf-id="hf-r4s4" class="ts-kicker-bar" id="f04s-kbar"></div><span data-hf-id="hf-r4s5" class="ts-kicker-text" id="f04s-ktext">Altijd een string</span></div>
+
+      <!-- code surface: App.tsx, 10 rows -->
+      <div data-hf-id="hf-r4c0" class="ts-code-surface" id="f04s-panel">
+        <div data-hf-id="hf-r4c1" class="ts-code-title">App.tsx</div>
+        <div data-hf-id="hf-r4c2" class="ts-code">
+          <div data-hf-id="hf-r4l1" class="ts-row"><span data-hf-id="hf-r4n1" class="ts-ln">1</span><span data-hf-id="hf-r4t1" class="ts-txt"><span data-hf-id="hf-r4k1" class="ts-kw">const</span> <span data-hf-id="hf-r4f1" class="ts-fn">ProductDetail</span> = () <span data-hf-id="hf-r4k2" class="ts-kw">=&gt;</span> {</span></div>
+          <div data-hf-id="hf-r4l2" class="ts-row"><span data-hf-id="hf-r4n2" class="ts-ln">2</span><span data-hf-id="hf-r4t2" class="ts-txt">  <span data-hf-id="hf-r4k3" class="ts-kw">const</span> <span data-hf-id="hf-r4h1" class="ts-hl" id="f04s-hl-id">{ id }</span> = <span data-hf-id="hf-r4f2" class="ts-fn">useParams</span>();</span></div>
+          <div data-hf-id="hf-r4l3" class="ts-row"><span data-hf-id="hf-r4n3" class="ts-ln">3</span><span data-hf-id="hf-r4t3" class="ts-txt" id="f04s-l3"></span><span data-hf-id="hf-r4a3" class="ts-caret" id="f04s-c3"></span></div>
+          <div data-hf-id="hf-r4l4" class="ts-row"><span data-hf-id="hf-r4n4" class="ts-ln">4</span><span data-hf-id="hf-r4t4" class="ts-txt"></span></div>
+          <div data-hf-id="hf-r4l5" class="ts-row"><span data-hf-id="hf-r4n5" class="ts-ln">5</span><span data-hf-id="hf-r4t5" class="ts-txt" id="f04s-l5"></span><span data-hf-id="hf-r4a5" class="ts-caret" id="f04s-c5"></span></div>
+          <div data-hf-id="hf-r4l6" class="ts-row"><span data-hf-id="hf-r4n6" class="ts-ln">6</span><span data-hf-id="hf-r4t6" class="ts-txt" id="f04s-l6"></span><span data-hf-id="hf-r4a6" class="ts-caret" id="f04s-c6"></span></div>
+          <div data-hf-id="hf-r4l7" class="ts-row"><span data-hf-id="hf-r4n7" class="ts-ln">7</span><span data-hf-id="hf-r4t7" class="ts-txt" id="f04s-l7"></span><span data-hf-id="hf-r4a7" class="ts-caret" id="f04s-c7"></span></div>
+          <div data-hf-id="hf-r4l8" class="ts-row"><span data-hf-id="hf-r4n8" class="ts-ln">8</span><span data-hf-id="hf-r4t8" class="ts-txt"></span></div>
+          <div data-hf-id="hf-r4l9" class="ts-row"><span data-hf-id="hf-r4n9" class="ts-ln">9</span><span data-hf-id="hf-r4t9" class="ts-txt">  <span data-hf-id="hf-r4k4" class="ts-kw">return</span> <span data-hf-id="hf-r4p1" class="ts-punct">&lt;h1&gt;</span>Product {productId}<span data-hf-id="hf-r4p2" class="ts-punct">&lt;/h1&gt;</span>;</span></div>
+          <div data-hf-id="hf-r4la" class="ts-row"><span data-hf-id="hf-r4na" class="ts-ln">10</span><span data-hf-id="hf-r4ta" class="ts-txt">};</span></div>
+        </div>
+        <div data-hf-id="hf-r4c3" class="ts-code-status">App.tsx · ProductDetail</div>
+      </div>
+
+      <!-- right column: demo card, detail variant (present from the start) -->
+      <div data-hf-id="hf-r4d0" class="ts-label" id="f04s-label">scherm</div>
+      <div data-hf-id="hf-r4d1" class="ts-card" id="f04s-card">
+        <div data-hf-id="hf-r4d2" class="f04s-addr"><span data-hf-id="hf-r4d3" class="f04s-host">localhost:5173</span><span data-hf-id="hf-r4d4" id="f04s-path">/products/<span data-hf-id="hf-r4d5" id="f04s-two">2</span><span data-hf-id="hf-r4d6" class="f04s-abc">a</span><span data-hf-id="hf-r4d7" class="f04s-abc">b</span><span data-hf-id="hf-r4d8" class="f04s-abc">c</span><span data-hf-id="hf-r4d9" id="f04s-acaret"></span></span></div>
+        <div data-hf-id="hf-r4e0" id="f04s-body">
+          <div data-hf-id="hf-r4e1" class="f04s-comp">ProductDetail</div>
+          <div data-hf-id="hf-r4e2" id="f04s-h">Product 2</div>
+          <div data-hf-id="hf-r4e3" class="ts-error" id="f04s-err">Invalid product id</div>
+        </div>
+      </div>
+
+      <!-- chip row 1: id -->
+      <div data-hf-id="hf-r4g0" class="f04s-row" id="f04s-row1">
+        <div data-hf-id="hf-r4g1" class="ts-chip"><span data-hf-id="hf-r4g2" class="ts-chip-key">id</span><span data-hf-id="hf-r4g3" class="f04s-val" id="f04s-val1" style="width: 39.6px;"><span data-hf-id="hf-r4g4" class="f04s-v f04s-str" id="f04s-v1a">"2"</span><span data-hf-id="hf-r4g5" class="f04s-v f04s-str" id="f04s-v1b" style="opacity: 0;">"abc"</span></span></div>
+        <span data-hf-id="hf-r4g6" class="f04s-type">string</span>
+        <div data-hf-id="hf-r4g7" class="ts-chip" id="f04s-ghost"><span data-hf-id="hf-r4g8" class="f04s-ghost-v">2</span></div>
+      </div>
+
+      <!-- chip row 2: productId -->
+      <div data-hf-id="hf-r4h0" class="f04s-row" id="f04s-row2">
+        <div data-hf-id="hf-r4h2" class="ts-chip"><span data-hf-id="hf-r4h3" class="ts-chip-key">productId</span><span data-hf-id="hf-r4h4" class="f04s-val" id="f04s-val2" style="width: 13.2px;"><span data-hf-id="hf-r4h5" class="f04s-v f04s-num" id="f04s-v2a">2</span><span data-hf-id="hf-r4h6" class="f04s-v f04s-num" id="f04s-v2b" style="opacity: 0;">NaN</span></span><div data-hf-id="hf-r4h7" id="f04s-bad"></div></div>
+        <span data-hf-id="hf-r4h8" class="f04s-type">number</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 20.79;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="04-string"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper: appends to a line from column `col`, caret steps per char ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // value swap inside a chip: old slides up and out, new slides in, wrapper width follows (0.25s)
+      function swapVal(oldSel, newSel, wrapSel, width, at) {
+        tl.to(oldSel, { y: -14, opacity: 0, duration: 0.25, ease: "power2.out" }, at);
+        tl.fromTo(newSel, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, at);
+        tl.to(wrapSel, { width: width, duration: 0.25, ease: "power2.out" }, at);
+      }
+
+      var ACW = 10.8; // mono 18px advance in the address row
+
+      // ---- 0.0-3.7: kicker; panel in with the static lines; "string" (2.92): wash on { id } ----
+      tl.fromTo("#f04s-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f04s-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f04s-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1);
+      washOn("#f04s-hl-id", 2.92);
+
+      // ---- 3.7-8.3: "slash products slash twee" (3.80): wash on the path; "de string twee" (6.20): row 1; "niet het getal" (7.64): ghost chip ----
+      washOn("#f04s-path", 3.8);
+      tl.fromTo("#f04s-row1", { opacity: 0, y: 10, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, 6.2);
+      tl.fromTo("#f04s-ghost", { opacity: 0, x: -8 }, { opacity: 0.35, x: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 7.64);
+      washOff("#f04s-path", 8.44);
+
+      // ---- 8.3-11.8: "met Number" (10.76 / 10.96): line 3 types; row 2 pops in; ghost fades ----
+      washOff("#f04s-hl-id", 10.76);
+      var l3 = typeLine("#f04s-l3", "#f04s-c3", [
+        { t: "  " },
+        { t: "const", c: "ts-kw" },
+        { t: " productId = " },
+        { id: "f04s-hl-num", parts: [
+          { t: "Number", c: "ts-fn" },
+          { t: "(id)" }
+        ] },
+        { t: ";" }
+      ], 0, 10.76, 0.015);
+      washOn("#f04s-hl-num", Math.max(10.96, l3.marks["f04s-hl-num"] + 0.1));
+      tl.fromTo("#f04s-row2", { opacity: 0, y: 10, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, 10.96);
+      tl.to("#f04s-ghost", { opacity: 0, duration: 0.35, ease: "power2.inOut" }, 10.96);
+
+      // ---- 11.8-17.8: "controleer het resultaat" (12.16): lines 5-7 type fast ----
+      washOff("#f04s-hl-num", 12.16);
+      var P = 0.012;
+      var e = typeLine("#f04s-l5", "#f04s-c5", [
+        { t: "  " },
+        { t: "if", c: "ts-kw" },
+        { t: " (" },
+        { id: "f04s-hl-nan", parts: [
+          { t: "Number", c: "ts-fn" },
+          { t: "." },
+          { t: "isNaN", c: "ts-fn" },
+          { t: "(productId)" }
+        ] },
+        { t: ") {" }
+      ], 0, 12.16, P);
+      e = typeLine("#f04s-l6", "#f04s-c6", [
+        { t: "    " },
+        { id: "f04s-hl-ret", parts: [
+          { t: "return", c: "ts-kw" },
+          { t: " " },
+          { t: "<p>", c: "ts-punct" },
+          { t: "Invalid product id" },
+          { t: "</p>", c: "ts-punct" },
+          { t: ";" }
+        ] }
+      ], 0, e.end + 0.02, P, 0.03);
+      typeLine("#f04s-l7", "#f04s-c7", [
+        { t: "  }" }
+      ], 0, e.end + 0.02, P, 0.03);
+
+      // "slash products slash abc" (13.92-15.12): wash on the path, caret after the 2;
+      // "slash" (14.72): the 2 is deleted; "abc" (15.12): a, b, c type on
+      var abc = root.querySelectorAll("#f04s-path .f04s-abc");
+      washOn("#f04s-path", 13.92);
+      tl.set("#f04s-acaret", { opacity: 1, x: 11 * ACW }, 13.92);
+      tl.set("#f04s-two", { display: "none" }, 14.72);
+      tl.set("#f04s-acaret", { x: 10 * ACW }, 14.72);
+      for (var i = 0; i < abc.length; i++) {
+        tl.set(abc[i], { display: "inline", opacity: 1 }, 15.12 + i * 0.09);
+        tl.set("#f04s-acaret", { x: (11 + i) * ACW }, 15.12 + i * 0.09);
+      }
+      tl.set("#f04s-acaret", { opacity: 0 }, 15.12 + abc.length * 0.09 + 0.1);
+      // row 1 value becomes "abc"; the old heading leaves the card body
+      swapVal("#f04s-v1a", "#f04s-v1b", "#f04s-val1", 66, 15.12);
+      tl.to("#f04s-h", { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 15.4);
+      washOff("#f04s-path", 16.0);
+
+      // "not a number" (17.12): row 2 value becomes NaN with a red border; wash on Number.isNaN(productId)
+      swapVal("#f04s-v2a", "#f04s-v2b", "#f04s-val2", 39.6, 17.12);
+      tl.fromTo("#f04s-bad", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out", immediateRender: false }, 17.12);
+      washOn("#f04s-hl-nan", 17.12);
+
+      // ---- 17.8-end: "duidelijke melding" (19.12): error state in the card; wash moves to line 6 ----
+      tl.fromTo("#f04s-err", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, 19.12);
+      washOff("#f04s-hl-nan", 19.12);
+      washOn("#f04s-hl-ret", 19.12);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["04-string"] = tl;
+    })();
+  </script>
+</template>
