@@ -2,11 +2,24 @@
 sidebar_position: 2
 ---
 
+import ExpoQrScan from '@site/src/components/ExpoQrScan';
+
 # Expo
 
-Expo is een tool die het ontwikkelen van React Native apps makkelijker maakt. Het is een bundel van tools die je kan gebruiken om je app te testen op je smartphone of tablet. Je kan ook een app bouwen zonder Expo, maar dan moet je de app eerst bundelen en dan op je smartphone installeren. Dat is een stuk moeilijker.
+Expo is een verzameling tools bovenop React Native die het ontwikkelen van apps een stuk makkelijker maakt. Je maakt er een nieuw project mee aan, je start er een development server mee en je test je app meteen op je eigen smartphone of tablet via de Expo Go app. Zonder Expo moet je je app eerst bundelen en installeren op je toestel voor je ze kan testen, en dat is een stuk moeilijker.
 
-## Node.js lokaal installeren
+Op deze pagina zet je alles klaar in deze volgorde:
+
+1. Je installeert wat je nodig hebt: Node.js op je computer en Expo Go op je telefoon.
+2. Je maakt een nieuwe app aan en ruimt de voorbeeldcode op.
+3. Je start de development server en opent de app op je telefoon of in de browser.
+4. Je brengt een eerste wijziging aan.
+
+Loopt er iets mis, kijk dan bij [Problemen oplossen](#problemen-oplossen) onderaan.
+
+## Wat heb je nodig?
+
+### Node.js lokaal installeren
 
 :::warning Geen dev container voor React Native
 Een [dev container](../../webframeworks/tools/devcontainers.md) geeft een minder goede development experience voor mobile development. Vooral emulators en een rechtstreekse verbinding met je telefoon worden nog niet goed ondersteund.
@@ -18,52 +31,43 @@ Daarom raden we in dit onderdeel aan om de laatste **LTS-versie** van Node.js lo
 node --version
 ```
 
-## Expo CLI
+Meer hoef je op je computer niet te installeren. De Expo-commando's voer je uit met `npx`, zo gebruik je altijd de juiste versie zonder iets globaal te installeren.
 
-Expo CLI is een command line interface die je kan gebruiken om een nieuwe React Native app aan te maken. 
+### Expo Go op je telefoon of tablet
 
-### Hoe Expo CLI gebruiken
+Om je app te testen op je smartphone of tablet, installeer je de Expo Go app:
 
-Je kan de Expo CLI gebruiken zonder het eerst te installeren. Je kan het gewoon gebruiken met `npx`. Zo heb je ook altijd de laatste versie.
+- [Expo Go in de Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) (Android)
+- [Expo Go in de App Store](https://apps.apple.com/app/expo-go/id982107779) (iOS)
 
-Je kan zien welke commando's je kan gebruiken met `npx expo --help`.
+:::tip Andere opties
+Je kan je app ook laten draaien in een Android Emulator, de iOS Simulator of via scrcpy. Zie [Development omgeving](./development-omgeving.md).
+:::
 
-Het wordt aangeraden om eerst een Expo account aan te maken. Je kan zien of je al een account hebt door het volgende commando uit te voeren:
+### Expo account (aangeraden)
 
-```bash
-npx expo whoami
-```
+Een Expo account is niet verplicht, maar wel handig: als je op je computer en in Expo Go met hetzelfde account inlogt, verschijnen je projecten automatisch onder "Projects" in de app.
 
-Als je nog geen account hebt, kan je er een aanmaken met het volgende commando:
+Maak een account aan op [expo.dev](https://expo.dev/signup) of via de terminal, en log daarna in:
 
 ```bash
 npx expo register
-```
-
-Als je een account hebt, kan je inloggen met het volgende commando:
-
-```bash
 npx expo login
 ```
 
-### Expo Go App voor iOS en Android
-
-Om je app te testen op je smartphone of tablet, moet je de Expo Go app installeren. Deze app kan je vinden in de App Store en de Play Store.
-
-[Android Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) - Android Lollipop (5) and greater
-[iOS App Store](https://apps.apple.com/app/expo-go/id982107779) - iOS 11 and greater
-
-Na de installatie kan je via de app met dezelfde account inloggen. Als je ingelogd bent is het veel eenvoudiger om projecten te openen. Ze zullen automatisch onder het "Projects" onderdeel staan.
+Met `npx expo whoami` kan je controleren met welk account je ingelogd bent. Log daarna ook in de Expo Go app in met hetzelfde account.
 
 ## Nieuwe app aanmaken
 
-Om een nieuwe app aan te maken, kan je het volgende commando gebruiken:
+Een nieuwe app maak je aan met `create-expo-app`:
 
 ```bash
 npx create-expo-app@latest <project-name>
 ```
 
 Je hoeft geen `--template` mee te geven: de standaard template gebruikt al TypeScript en [Expo Router](../expo-router/index.md).
+
+### De SDK-versie kiezen
 
 Daarna vraagt `create-expo-app` welke Expo SDK-versie je wil gebruiken:
 
@@ -124,35 +128,104 @@ export default RootLayout;
 
 Zo ziet je app er hetzelfde uit als de voorbeelden in de volgende onderdelen. Zodra we Expo Router behandelen, zetten we hier opnieuw een `Stack` (of een andere layout).
 
-## Development server
+## De app starten
 
-Je kan de development server starten met het volgende commando:
+Start de development server vanuit de map van je project:
 
 ```bash
 npx expo start
 ```
 
-Als je dit commando uitvoert dan wordt de Metro bundler gestart. Deze bundler is een http server die de javascript code compileert en bundelt. De bundler is ook verantwoordelijk voor het hot reloading. Als je een bestand aanpast, dan zal de bundler de code opnieuw compileren en de app opnieuw laden.
+Dit start de Metro bundler. Metro is een server die je TypeScript-code omzet naar JavaScript en bundelt, zodat Expo Go ze kan uitvoeren. In de terminal verschijnt een QR code en een lijst met sneltoetsen, bijvoorbeeld `w` om de app in de browser te openen en `r` om de app te herladen. Met `Ctrl+C` stop je de server.
 
-## De app openen op je telefoon of tablet
+Laat deze terminal openstaan zolang je aan je app werkt. Wil je later verder werken, dan ga je opnieuw naar de map van je project en voer je opnieuw `npx expo start` uit.
 
-Om de app te openen:
-- Op android devices druk je op de "Scan QR Code" knop en scan je de QR code die in de terminal verschijnt.
-- Op een iPhone of iPad moet je de default camera app gebruiken om de QR code te scannen. Als je de QR code scant, dan zal de Expo Go app automatisch geopend worden.
+### Op je telefoon of tablet
+
+- Op een Android-toestel open je Expo Go, druk je op "Scan QR code" en scan je de QR code uit de terminal.
+- Op een iPhone of iPad scan je de QR code met de standaard Camera-app. Expo Go opent dan automatisch.
+
+Klik hieronder stap voor stap door hoe dat eruitziet. Kies eerst je toestel:
+
+<ExpoQrScan />
+
+Ben je ingelogd met hetzelfde Expo account, dan kan je het project ook rechtstreeks openen onder "Projects" in Expo Go.
 
 :::warning
-Zorg ervoor dat je op hetzelfde netwerk zit als je telefoon of tablet. Als je op een ander netwerk zit, dan zal de bundler niet kunnen verbinden met je telefoon of tablet. Gebruik desnoods een hotspot van je telefoon.
+Zorg ervoor dat je computer en je telefoon of tablet op hetzelfde netwerk zitten. Anders kan Expo Go geen verbinding maken met de bundler. Gebruik desnoods de hotspot van je telefoon, of start Expo [via een tunnel](#geen-verbinding-met-je-telefoon-tunnel).
 :::
 
-### Expo gebruiken via een tunnel
+### In de browser
 
-Op sommige netwerken kan het zijn dat je geen verbinding kan maken met je telefoon of tablet. In dat geval kan je een tunnel gebruiken. Je kan dit doen met het volgende commando:
+Druk op `w` in de terminal waar `npx expo start` draait, of start de server meteen met:
+
+```bash
+npx expo start --web
+```
+
+De browser is handig om snel iets te controleren, maar test je app altijd ook op een echte telefoon: niet alles werkt of ziet er hetzelfde uit op het web.
+
+## Eerste wijziging aanbrengen
+
+Open `src/app/index.tsx`. Na `reset-project` ziet dat bestand er zo uit:
+
+```tsx
+import { Text, View, StyleSheet } from "react-native";
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      <Text>Edit src/app/index.tsx to edit this screen.</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+```
+
+Verander de tekst in de `Text` component naar "Hello World" en sla het bestand op. Je hoeft niets opnieuw te starten: Metro merkt de wijziging op en je app toont meteen de nieuwe tekst (Fast Refresh).
+
+In deze cursus schrijven we componenten als arrow function. Je eerste scherm ziet er dan zo uit:
+
+```tsx expo={}
+import { Text, View, StyleSheet } from "react-native";
+
+const Index = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Hello World</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
+export default Index;
+```
+
+## Problemen oplossen
+
+### Geen verbinding met je telefoon: tunnel
+
+Op sommige netwerken (bv. het schoolnetwerk) kan Expo Go geen verbinding maken met je computer, ook al zitten ze op hetzelfde netwerk. Start Expo dan via een tunnel:
 
 ```bash
 npx expo start --tunnel
 ```
 
-De bundler zal nu een tunnel opzetten en een url genereren. Je kan deze url gebruiken om je app te openen op je smartphone of tablet.
+De bundler is nu bereikbaar via een publieke url, zodat je de QR code van overal kan scannen.
 
 De eerste keer dat je een tunnel gebruikt, vraagt Expo om het package `@expo/ngrok` te installeren:
 
@@ -162,64 +235,31 @@ De eerste keer dat je een tunnel gebruikt, vraagt Expo om het package `@expo/ngr
 
 Antwoord met **`Y`**. Expo installeert dan zelf de juiste versie.
 
-Ook kan het gebeuren dat de versies van je packages niet overeenkomen met de Expo SDK van je project. Het volgende commando zet ze terug gelijk:
+### Versies van packages passen niet bij de SDK
+
+Krijg je een waarschuwing dat de versies van je packages niet overeenkomen met de Expo SDK van je project, zet ze dan terug gelijk met:
 
 ```bash
 npx expo install --fix
 ```
 
-Werkt je project nog met een oudere SDK-versie en opent Expo Go het niet meer, upgrade dan naar de nieuwste versie:
+### Expo Go opent een ouder project niet
+
+Werkt een (ouder) project nog met een oudere SDK-versie en opent Expo Go het niet meer, upgrade het project dan naar de nieuwste versie:
 
 ```bash
 npx expo install expo@latest
 npx expo install --fix
 ```
 
-## De app openen in de browser
-
-Als je de app in de browser wil openen, dan kan je het volgende commando gebruiken:
+## Samengevat
 
 ```bash
-npx expo start --web
-```
+# eenmalig: nieuw project aanmaken (kies "Latest")
+npx create-expo-app@latest <project-name>
+cd <project-name>
+npm run reset-project        # antwoord n, en zet Stack om naar Slot in _layout.tsx
 
-of je kan de w toets indrukken in de terminal als je opgestart bent met `npx expo start`.
-
-## Eerste wijziging aanbrengen
-
-Open het bestand `src/app/index.tsx`. Verander de tekst in de `Text` component naar "Hello World". Als je de app nu opnieuw laadt, dan zal je de tekst zien veranderen.
-
-```tsx expo={}
-import * as React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import Constants from 'expo-constants';
-
-const Index = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.paragraph}>
-        Change this code
-      </Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#ecf0f1',
-    padding: 8,
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
-
-export default Index;
+# telkens je aan je app werkt
+npx expo start               # of: npx expo start --tunnel
 ```

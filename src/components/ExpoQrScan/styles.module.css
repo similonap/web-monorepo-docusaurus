@@ -1,0 +1,572 @@
+/* ============================================================
+   ExpoQrScan — CSS Module
+   ============================================================ */
+
+.container {
+    --eqs-accent: var(--ifm-color-primary);
+    --eqs-accent-dim: color-mix(in srgb, var(--ifm-color-primary) 14%, transparent);
+    --eqs-border: var(--ifm-color-emphasis-300);
+    --eqs-muted: var(--ifm-color-emphasis-600);
+
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem 1.5rem;
+    background: var(--ifm-color-emphasis-100);
+    border: 1px solid var(--ifm-color-emphasis-200);
+    border-radius: var(--ifm-global-radius);
+    font-size: 0.85rem;
+}
+
+/* ---- Tabs ---- */
+
+.tabs {
+    display: inline-flex;
+    gap: 0.25rem;
+    margin-bottom: 1.25rem;
+    padding: 0.2rem;
+    background: var(--ifm-background-color);
+    border: 1px solid var(--eqs-border);
+    border-radius: 8px;
+}
+
+.tab {
+    padding: 0.35rem 0.9rem;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--eqs-muted);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.tabActive {
+    background: var(--eqs-accent);
+    color: #ffffff;
+}
+
+.layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+/* ============================================================
+   Terminal
+   ============================================================ */
+
+.terminalColumn {
+    flex: 1 1 340px;
+    min-width: 0;
+}
+
+.terminal {
+    overflow: hidden;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.terminalBar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.45rem 0.7rem;
+    background: #1e293b;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #475569;
+}
+
+.terminalTitle {
+    margin-left: 0.5rem;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.72rem;
+    color: #94a3b8;
+}
+
+.terminalBody {
+    padding: 0.8rem 0.9rem 1rem;
+    overflow-x: auto;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.74rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+    white-space: nowrap;
+}
+
+.prompt {
+    color: #7dd3fc;
+}
+
+.dim {
+    color: #94a3b8;
+}
+
+.url {
+    color: #7dd3fc;
+    text-decoration: underline;
+}
+
+.gap {
+    height: 0.6rem;
+}
+
+.qrWrap {
+    display: inline-block;
+    margin: 0.6rem 0;
+    padding: 4px;
+    border-radius: 6px;
+    outline: 3px solid transparent;
+    transition: outline-color 0.3s ease;
+}
+
+.qrActive {
+    outline-color: var(--eqs-accent);
+    animation: qrPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes qrPulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ifm-color-primary) 45%, transparent); }
+    50% { box-shadow: 0 0 0 8px transparent; }
+}
+
+.qr {
+    display: block;
+    width: 120px;
+    height: 120px;
+    border-radius: 2px;
+}
+
+.bundled {
+    margin-top: 0.6rem;
+    color: #86efac;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.network {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    color: var(--eqs-muted);
+    font-weight: 600;
+}
+
+.wifi {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--eqs-accent);
+    box-shadow: 0 0 0 4px var(--eqs-accent-dim);
+}
+
+/* ============================================================
+   Phone
+   ============================================================ */
+
+.phoneColumn {
+    flex: 0 0 auto;
+    margin: 0 auto;
+}
+
+.phone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 9px;
+    background: #1f2937;
+    border-radius: 32px;
+    box-shadow: 0 0 0 2px #374151, 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.speaker {
+    width: 50px;
+    height: 5px;
+    margin: 13px 0 10px;
+    border-radius: 3px;
+    background: #4b5563;
+}
+
+.phoneIos .speaker {
+    width: 70px;
+    height: 16px;
+    border-radius: 10px;
+    background: #0b0f17;
+    margin: 10px 0 4px;
+}
+
+.homeBar {
+    width: 80px;
+    height: 5px;
+    margin: 10px 0 13px;
+    border-radius: 3px;
+    background: #4b5563;
+}
+
+.screen {
+    position: relative;
+    width: 220px;
+    height: 400px;
+    overflow: hidden;
+    background: #ffffff;
+    border-radius: 6px;
+    color: #1e293b;
+}
+
+.screen > * {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ---- Expo Go startscherm ---- */
+
+.expoGo {
+    height: 100%;
+    padding: 0.8rem 0.7rem;
+    background: #f1f5f9;
+    font-size: 0.72rem;
+}
+
+.expoGoHeader {
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.sectionLabel {
+    margin: 0.7rem 0 0.35rem;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.card {
+    margin-bottom: 0.35rem;
+    padding: 0.5rem 0.6rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.cardRow {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 600;
+}
+
+.cardMuted {
+    color: #64748b;
+}
+
+.cardCode {
+    display: inline-block;
+    margin-top: 0.25rem;
+    padding: 0.05rem 0.3rem;
+    font-size: 0.68rem;
+}
+
+.plus {
+    width: 16px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.scanButton {
+    border-color: var(--eqs-accent);
+    color: var(--eqs-accent);
+    box-shadow: 0 0 0 3px var(--eqs-accent-dim);
+    animation: tapHint 1.6s ease-in-out infinite;
+}
+
+@keyframes tapHint {
+    0%, 100% { box-shadow: 0 0 0 3px var(--eqs-accent-dim); }
+    50% { box-shadow: 0 0 0 6px var(--eqs-accent-dim); }
+}
+
+.scanIcon {
+    width: 14px;
+    height: 14px;
+    margin: 0 1px;
+    border: 2px solid currentColor;
+    border-radius: 3px;
+    background:
+        linear-gradient(currentColor, currentColor) center / 4px 4px no-repeat;
+}
+
+/* ---- Camera / scanner ---- */
+
+.viewfinder {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: radial-gradient(circle at 50% 40%, #3f4a5c, #111827 75%);
+}
+
+.target {
+    position: relative;
+    padding: 10px;
+    transform: rotate(-4deg);
+}
+
+/* Hoekjes van het kader */
+.target::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 3px solid #ffffff;
+    border-radius: 10px;
+    -webkit-mask:
+        linear-gradient(#000, #000) top left / 24px 24px no-repeat,
+        linear-gradient(#000, #000) top right / 24px 24px no-repeat,
+        linear-gradient(#000, #000) bottom left / 24px 24px no-repeat,
+        linear-gradient(#000, #000) bottom right / 24px 24px no-repeat;
+    mask:
+        linear-gradient(#000, #000) top left / 24px 24px no-repeat,
+        linear-gradient(#000, #000) top right / 24px 24px no-repeat,
+        linear-gradient(#000, #000) bottom left / 24px 24px no-repeat,
+        linear-gradient(#000, #000) bottom right / 24px 24px no-repeat;
+}
+
+.targetDetected::before {
+    border-color: #facc15;
+}
+
+.viewfinderQr {
+    display: block;
+    width: 120px;
+    height: 120px;
+    opacity: 0.92;
+}
+
+.scanLine {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 10px;
+    height: 2px;
+    background: var(--eqs-accent);
+    box-shadow: 0 0 8px var(--eqs-accent);
+    animation: scan 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes scan {
+    from { top: 10px; }
+    to { top: calc(100% - 12px); }
+}
+
+.openPill {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: #facc15;
+    color: #1e293b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    animation: fadeIn 0.3s ease-out, tapHintYellow 1.6s ease-in-out 0.3s infinite;
+}
+
+@keyframes tapHintYellow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.5); }
+    50% { box-shadow: 0 0 0 6px rgba(250, 204, 21, 0); }
+}
+
+.pillIcon {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    background: #111827;
+}
+
+.scannerHint {
+    position: absolute;
+    top: 0.8rem;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.cameraControls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0 0.8rem;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.cameraMode {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #facc15;
+}
+
+.shutter {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px #111827, 0 0 0 5px #ffffff;
+}
+
+/* ---- Bundelen ---- */
+
+.bundling {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    height: 100%;
+    padding: 0 1.4rem;
+}
+
+.bundlingLabel {
+    font-weight: 600;
+}
+
+.progress {
+    width: 100%;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: #e2e8f0;
+}
+
+.progressFill {
+    height: 100%;
+    background: var(--eqs-accent);
+    animation: fill 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fill {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+.bundlingUrl {
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.65rem;
+    color: #64748b;
+}
+
+/* ---- App ---- */
+
+.app {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+/* ============================================================
+   Stappen
+   ============================================================ */
+
+.footer {
+    margin-top: 1.25rem;
+}
+
+.stepList {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0 0 0.6rem;
+    padding: 0;
+    list-style: none;
+}
+
+.stepDot {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--eqs-border);
+    border-radius: 50%;
+    background: var(--ifm-background-color);
+    color: var(--eqs-muted);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.stepDotDone {
+    border-color: var(--eqs-accent);
+    color: var(--eqs-accent);
+}
+
+.stepDotActive {
+    border-color: var(--eqs-accent);
+    background: var(--eqs-accent);
+    color: #ffffff;
+}
+
+.caption {
+    min-height: 2.8em;
+    margin: 0 0 0.8rem;
+    font-size: 0.95rem;
+}
+
+.controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.button {
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--eqs-border);
+    border-radius: 6px;
+    background: var(--ifm-background-color);
+    color: var(--ifm-font-color-base);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.buttonPrimary {
+    border-color: var(--eqs-accent);
+    background: var(--eqs-accent);
+    color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .qrActive,
+    .scanButton,
+    .openPill,
+    .scanLine {
+        animation: none;
+    }
+
+    .progressFill {
+        animation-duration: 0.01s;
+    }
+}

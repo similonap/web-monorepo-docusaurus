@@ -79,7 +79,23 @@ const sidebars: SidebarsConfig = {
       link: {type: 'doc', id: 'react-native/index'},
       items: [
         'react-native/expo/index',
-        'react-native/core-components/index',
+        'react-native/expo/development-omgeving',
+        {
+          type: 'category', label: 'Core Components', link: {type: 'doc', id: 'react-native/core-components/index'},
+          items: [
+            'react-native/core-components/view',
+            'react-native/core-components/stylesheet',
+            'react-native/core-components/text',
+            'react-native/core-components/image',
+            'react-native/core-components/textinput',
+            'react-native/core-components/button',
+            'react-native/core-components/pressable',
+          ],
+        },
+        {
+          type: 'category', label: 'Expo Components', link: {type: 'doc', id: 'react-native/expo-components/index'},
+          items: ['react-native/expo-components/status-bar'],
+        },
         'react-native/custom-components/index',
         'react-native/flexbox/index',
         'react-native/lists-and-keys/index',
