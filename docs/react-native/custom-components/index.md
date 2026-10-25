@@ -31,7 +31,7 @@ const Box = ({color, size}: BoxProps) => {
   );
 };
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Box size={40} color="red"/>
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     container: {flexDirection: "column", flex: 1, paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 ## Styles doorgeven als props
@@ -68,7 +68,7 @@ const Box = ({boxStyle}: BoxProps) => {
   );
 };
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Box boxStyle={{backgroundColor: "red", width: 40, height: 40}}/>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     container: {flexDirection: "column", flex: 1, paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 ## Default styles
@@ -105,7 +105,7 @@ const Box = ({boxStyle = {backgroundColor: "red", width: 40, height: 40}}: BoxPr
   );
 };
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Box/>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     container: {flexDirection: "column", flex: 1, paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 # Style array
@@ -150,7 +150,7 @@ const Box = ({boxStyle}: BoxProps) => {
   );
 };
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Box/>
@@ -164,5 +164,5 @@ const styles = StyleSheet.create({
     container: {flexDirection: "column", flex: 1, paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```

@@ -15,7 +15,7 @@ import React from "react";
 import Constants from "expo-constants";
 import {View, Text,StyleSheet} from "react-native";
 
-const App = () => {
+const Index = () => {
     const names = ["Andie","Lotte","Liene","Hanna"];
     let nameTexts : JSX.Element[] = [];
 
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     container: {flexDirection: "column", flex: 1, paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 :::note
@@ -54,7 +54,7 @@ import {View, Text,StyleSheet} from "react-native";
 
 const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             {colors.map(color => (
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     container: {flexDirection: "column", alignItems: "stretch", flex: 1, paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 Je moet uiteraard niet altijd mappen naar views. Je kan ook mappen naar andere componenten. Hieronder een voorbeeld dat een lijst van kleuren naar `Text` componenten mapt.
@@ -80,7 +80,7 @@ import {View, Text,StyleSheet} from "react-native";
 
 const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             {colors.map(color => (
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     container: {flexDirection: "column", alignItems: "stretch", flex: 1, paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 Een extra voorbeeld:
@@ -105,7 +105,7 @@ import React from "react";
 import Constants from "expo-constants";
 import {View, Text,StyleSheet} from "react-native";
 
-const App = () => {
+const Index = () => {
     const word = "Hello";
     return (
         <View style={styles.container}>
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     container: {flex: 1, flexDirection: "row", paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 ## ScrollView
@@ -136,7 +136,7 @@ import {View, Text,StyleSheet} from "react-native";
 
 const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
           {colors.map(color => (
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     container: {flex: 1, alignItems: "stretch", paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 We kunnen hier eenvoudig een ScrollView rondzetten om dit probleem op te lossen:
@@ -162,7 +162,7 @@ import {View, Text, ScrollView,StyleSheet} from "react-native";
 
 const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <ScrollView>
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     container: {paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 
@@ -219,7 +219,7 @@ const PersonComponent = ({item} : {item: Person}) => {
     )
 }
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <FlatList
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     container: {flex: 1, flexDirection: "column", paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 We herdoen ook nog het voorbeeld van de kleuren maar dan met het `FlatList` component.
@@ -247,7 +247,7 @@ import {View, Text, FlatList,StyleSheet} from "react-native";
 
 const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>       
             <FlatList
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     container: {flexDirection: "column", alignItems: "stretch", flex: 1, paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 ### ListFooterComponent
@@ -279,7 +279,7 @@ import {View, Text, FlatList,StyleSheet, ActivityIndicator} from "react-native";
 
 const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>       
             <FlatList
@@ -298,5 +298,5 @@ const styles = StyleSheet.create({
     container: {flexDirection: "column", alignItems: "stretch", flex: 1, paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```

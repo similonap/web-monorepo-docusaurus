@@ -12,7 +12,7 @@ Maak een nieuw project `CoreComponents` aan met expo. Vervang de inhoud van `src
 import React from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
 
-const App = () => {
+const Index = () => {
   return (
     <View style={styles.container}>
     </View>
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default Index;
 ```
 
 Verwijder alle styles in container maar laat backgroundColor staan.
@@ -34,7 +34,7 @@ Verwijder alle styles in container maar laat backgroundColor staan.
 ### Tekst toevoegen
 
 - Maak een functie die een willekeurig getal tussen 0 en 10 teruggeeft. Noem deze functie `random0To10`.
-- Voeg een Text component toe aan de View van de App functie component. Als tekst toon je het getal dat `random0To10` teruggeeft.
+- Voeg een Text component toe aan de View van de `Index` component. Als tekst toon je het getal dat `random0To10` teruggeeft.
 - Voeg daarna ook de tekst `Het getal is` toe aan deze Text component met daarachter het getal (zonder extra Text component te gebruiken)
 - Gebruik nu een tweede Text component om het getal in drukletters te tonen. Maak hiervoor een style `boldText` aan die je gebruikt via het `styles` attribuut.
 

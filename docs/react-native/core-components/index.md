@@ -15,7 +15,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Text>Hello World</Text>
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     },
 });
 
-export default App;
+export default Index;
 ```
 
 Dezelfde app zou er in React.js als volgt uitzien:
@@ -77,7 +77,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <View style={styles.box}/>
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     }
 });
 
-export default App;
+export default Index;
 ```
 
 We maken hier een vierkant aan met een rode achtergrond. De `borderWidth` property geeft aan hoe dik de rand van het vierkant moet zijn. De `borderColor` property geeft aan welke kleur de rand moet hebben. De `borderRadius` property geeft aan hoeveel de hoeken van het vierkant afgerond moeten worden. 
@@ -117,7 +117,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={{paddingTop: Constants.statusBarHeight}}>
             <View style={{width: 100,height: 100, backgroundColor: "red",borderWidth: 1,borderColor: "black",borderRadius: 10}}/>
@@ -125,7 +125,7 @@ const App = () => {
     );
 }
 
-export default App;
+export default Index;
 ```
 
 
@@ -140,7 +140,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.hello}>Hello World</Text>
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     }
 });
 
-export default App;
+export default Index;
 ```
 
 Meer informatie over de styling props van het `Text` component kan je hier vinden:
@@ -175,7 +175,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Text>Hello<Text style={styles.world}> World</Text></Text>
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     world: { color: "blue", fontWeight: "bold" }
 });
 
-export default App;
+export default Index;
 ```
 
 ## Image
@@ -215,7 +215,7 @@ import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Image
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     image: { width: 100, height: 100 }
 });
 
-export default App;
+export default Index;
 ```
 
 ### Styling
@@ -258,7 +258,7 @@ import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Image
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     image: { width: 150, height: 200, resizeMode: "center" }
 });
 
-export default App;
+export default Index;
 ```
 
 ## TextInput
@@ -288,7 +288,7 @@ import React from "react";
 import { StyleSheet, Text, View, TextInput } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <TextInput
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     textinput: { borderColor: "red", borderWidth: 1}
 });
 
-export default App;
+export default Index;
 ```
 
 Meer informatie over de props van het `TextInput` component kan je hier vinden:
@@ -324,7 +324,7 @@ import React from "react";
 import { StyleSheet, Button, View} from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Button title="Hello World" color="green" disabled={false}/>
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     container: { paddingTop: Constants.statusBarHeight }
 });
 
-export default App;
+export default Index;
 ```
 
 ## Pressable
@@ -350,7 +350,7 @@ import React from "react";
 import { StyleSheet, Text, View, Pressable, Alert } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Pressable
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     pressable: { backgroundColor: "red" }
 });
 
-export default App;
+export default Index;
 ```
 
 Je kan de stijl van de `Pressable` laten aanpassen afhankelijk hij ingedrukt is of niet. Dit doe je door in plaats van een style object mee te geven een functie mee te geven die een style object teruggeeft.
@@ -380,7 +380,7 @@ import React from "react";
 import { StyleSheet, Text, View, Pressable, Alert } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Pressable
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     pressedFalse: { backgroundColor: "blue", padding: 10, borderRadius: 5}
 });
 
-export default App;
+export default Index;
 ```
 
 ## Handling events
@@ -415,7 +415,7 @@ import React from "react";
 import { StyleSheet, Button, View, Alert } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Button
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     container: { paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 ### TextInput
@@ -449,7 +449,7 @@ import React from "react";
 import { StyleSheet, View, TextInput, Alert } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <TextInput
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
     container: { paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```
 
 ### Pressable
@@ -494,7 +494,7 @@ import React from "react";
 import { StyleSheet, View, Pressable, Alert, Text } from "react-native";
 import Constants from "expo-constants";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Pressable
@@ -522,5 +522,5 @@ const styles = StyleSheet.create({
     container: { paddingTop: Constants.statusBarHeight}
 });
 
-export default App;
+export default Index;
 ```

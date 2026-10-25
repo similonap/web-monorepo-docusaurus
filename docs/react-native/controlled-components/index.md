@@ -20,7 +20,7 @@ Om een TextInput een controlled component te maken, moeten we de `value` propert
 import React, {useState} from "react";
 import {View, TextInput, Button, Alert, Text} from "react-native";
 
-const App = () => {
+const Index = () => {
     const [text, setText] = useState("");
 
     return (
@@ -36,7 +36,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 Het is ook mogelijk om meerdere componenten aan 1 state te binden. In dit voorbeeld binden we 2 `TextInput` componenten aan 1 state. Beide zullen up to date blijven bij de huidige waarde van de state.
@@ -45,7 +45,7 @@ Het is ook mogelijk om meerdere componenten aan 1 state te binden. In dit voorbe
 import React, {useState} from "react";
 import {View, TextInput, Button, Alert, Text} from "react-native";
 
-const App = () => {
+const Index = () => {
     const [text, setText] = useState("");
 
     return (
@@ -64,7 +64,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 ## TextInput met getallen
@@ -77,7 +77,7 @@ De beste manier om dit op te lossen is toch een string als state te gebruiken en
 import React, {useState} from "react";
 import {View, TextInput, Button, Alert, Text} from "react-native";
 
-const App = () => {
+const Index = () => {
     const [number, setNumber] = useState("0");
 
     const validateAndMultiply = () => {
@@ -102,7 +102,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 ## Button
@@ -115,7 +115,7 @@ We zullen in het onderstaande voorbeeld een teller tonen die we aan de hand van 
 import React, {useState} from "react";
 import {View, Button, Text} from "react-native";
 
-const App = () => {
+const Index = () => {
     const [counter, setCounter] = useState(0);
 
     return (
@@ -126,7 +126,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 ## Switch
@@ -138,7 +138,7 @@ import React, {useState} from "react";
 
 import {View, Switch, Text} from "react-native";
 
-const App = () => {
+const Index = () => {
     const [isEnabled, setIsEnabled] = useState(false);
 
     return (
@@ -152,7 +152,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 ## Conditioneel renderen
@@ -164,7 +164,7 @@ import React, {useState} from "react";
 
 import {View, Switch, Text, Image} from "react-native";
 
-const App = () => {
+const Index = () => {
     const [isEnabled, setIsEnabled] = useState(false);
 
     return (
@@ -181,7 +181,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 ## ActivityIndicator
@@ -197,7 +197,7 @@ interface TimezoneInterface {
     datetime: string;
 }
 
-const App = () => {
+const Index = () => {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState("");
 
@@ -222,7 +222,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 ## FlatList refreshing
@@ -242,7 +242,7 @@ const generateRandomColors = (amount: number) => {
     return colors;
 }
 
-const App = () => {
+const Index = () => {
     const [colors, setColors] = useState(generateRandomColors(10));
     const [refreshing, setRefreshing] = useState(false);
 
@@ -267,5 +267,5 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```

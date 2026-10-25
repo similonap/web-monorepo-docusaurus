@@ -14,7 +14,7 @@ import { rainbow } from "rainbow-colors-array-ts";
 import {View, StyleSheet} from "react-native";
 import Constants from 'expo-constants';
 
-export default function App() {
+export default function Index() {
 
   return (
     <View style={styles.container}>

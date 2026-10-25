@@ -31,7 +31,7 @@ By **default** is de flexDirection **column**, maar bij web is dat row. Mobile a
 ```typescript expo={"dependencies":"expo-constants"}
 import {View} from "react-native";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={{flexDirection: "row", flex: 1}}>
             <View style={{width: 40, height: 40, backgroundColor: "red"}}/>
@@ -41,7 +41,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 Andere mogelijkheden zijn: `column-reverse` en `row-reverse`. Deze werken hetzelfde als `column` en `row`, maar de items worden dan in omgekeerde volgorde geplaatst.
@@ -65,7 +65,7 @@ Hier is een voorbeeld van een container met 3 items. De eerste heeft flex: 1, de
 ```typescript expo={"dependencies":"expo-constants"}
 import {View} from "react-native";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={{flexDirection: "column", flex: 1}}>
             <View style={{flex: 1, backgroundColor: "red"}}/>
@@ -75,7 +75,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 ### justifyContent
@@ -94,7 +94,7 @@ Default: `flex-start`
 ```typescript expo={"dependencies":"expo-constants"}
 import {View} from "react-native";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={{flexDirection: "column", flex: 1, justifyContent: "center"}}>
             <View style={{width: 40, height: 40, backgroundColor: "red"}}/>
@@ -104,7 +104,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 <div style={{display: "flex", flexDirection: "row", width: "100%", flexWrap: "wrap"}}>
@@ -131,7 +131,7 @@ Default: `stretch`
 ```typescript expo={"dependencies":"expo-constants"}
 import {View} from "react-native";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={{flexDirection: "column", flex: 1, justifyContent: "flex-start", alignItems: "center"}}>
             <View style={{width: 40, height: 40, backgroundColor: "red"}}/>
@@ -141,7 +141,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 <div style={{display: "flex", flexDirection: "row", width: "100%"}}>
@@ -159,7 +159,7 @@ Als je een item wilt uitlijnen op een andere manier dan de rest van de items, da
 ```typescript expo={"dependencies":"expo-constants"}
 import {View} from "react-native";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={{flexDirection: "column", flex: 1, justifyContent: "flex-start", alignItems: "center"}}>
             <View style={{width: 40, height: 40, backgroundColor: "red"}}/>
@@ -169,7 +169,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 <div style={{display: "flex", flexDirection: "row", width: "100%"}}>
@@ -192,7 +192,7 @@ Default: `nowrap`
 ```typescript expo={"dependencies":"expo-constants"}
 import {View} from "react-native";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={{flexDirection: "row", flex: 1, justifyContent: "flex-start", alignItems: "flex-start", flexWrap:"wrap", alignContent: "flex-start"}}>
             <View style={{width: 40, height: 40, backgroundColor: "red"}}/>
@@ -209,7 +209,7 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```
 
 alignContent bepaalt hoe de regels worden uitgelijnd als er meerdere regels zijn. Dit werkt enkel als flexWrap op wrap staat.
@@ -223,7 +223,7 @@ Je gebruikt hier de properties `top`, `bottom`, `left` en `right` om de positie 
 ```typescript expo={"dependencies":"expo-constants"}
 import {View} from "react-native";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={{flexDirection: "column", flex: 1, justifyContent: "flex-start", alignItems: "center"}}>
             <View style={{width: 40, height: 40, backgroundColor: "red", position: "absolute", top: 0, left: 0}}/>
@@ -234,5 +234,5 @@ const App = () => {
     )
 }
 
-export default App;
+export default Index;
 ```

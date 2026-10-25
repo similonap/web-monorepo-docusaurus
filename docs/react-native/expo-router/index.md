@@ -30,7 +30,7 @@ In een nieuw project staan de schermen in de map `src/app`. Na `npm run reset-pr
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Text>Home Screen</Text>
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     }
 })
 
-export default App;
+export default Index;
 ```
 
 Als je de applicatie opstart met `npx expo start`, dan zie je dit scherm.
@@ -301,7 +301,7 @@ Hierboven gaan we dus de titel van de header aanpassen voor de home pagina en de
 Het is ook mogelijk om het `Stack.Screen` component te gebruiken in het component zelf. Dus in plaats van de `Stack` component te gebruiken in het `_layout.tsx` bestand kan je het `Stack.Screen` component gebruiken in het `index.tsx` bestand. 
 
 ```tsx
-const App = () => {
+const Index = () => {
     return (
         <View style={styles.container}>
             <Stack.Screen options={{title: "Home"}}></Stack.Screen>

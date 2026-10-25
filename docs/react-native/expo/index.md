@@ -151,7 +151,7 @@ import * as React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 
-const App = () => {
+const Index = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.paragraph}>
@@ -178,5 +178,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default Index;
 ```

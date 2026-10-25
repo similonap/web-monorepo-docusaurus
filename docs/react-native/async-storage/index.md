@@ -38,7 +38,7 @@ const getData = async () => {
     alert("No Data found");
   }
 };
-const App = () => {
+const Index = () => {
   return (
     <View>
       <Text>AsyncStorage</Text>
@@ -48,7 +48,7 @@ const App = () => {
   );
 };
 
-export default App;
+export default Index;
 ```
 
 ## Opslaan/uitlezen van een getal
@@ -74,7 +74,7 @@ const getData = async () => {
     alert("No Data found");
   }
 };
-const App = () => {
+const Index = () => {
   return (
     <View>
       <Text>AsyncStorage</Text>
@@ -84,7 +84,7 @@ const App = () => {
   );
 };
 
-export default App;
+export default Index;
 ```
 
 ## Opslaan/uitlezen van een object
@@ -119,7 +119,7 @@ const getData = async () => {
     alert("No Data found");
   }
 };
-const App = () => {
+const Index = () => {
   return (
     <View>
       <Text>AsyncStorage</Text>
@@ -129,7 +129,7 @@ const App = () => {
   );
 };
 
-export default App;
+export default Index;
 ```
 
 Je kan ook een array van objecten opslaan in AsyncStorage. Dit werkt op dezelfde manier als een enkel object.
@@ -143,7 +143,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Button } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const App = () => {
+const Index = () => {
   const [counter, setCounter] = useState(0);
 
   useEffect(() => {
@@ -172,7 +172,7 @@ const App = () => {
   );
 };
 
-export default App;
+export default Index;
 ```
 
 We gebruiken hier twee `useEffect` hooks. De eerste `useEffect` hook wordt uitgevoerd als het component voor het eerst geladen wordt. In deze `useEffect` hook halen we de waarde van `counter` op uit AsyncStorage. Als er een waarde gevonden wordt dan zetten we deze waarde in de state van het component. Als er geen waarde gevonden wordt dan blijft de state op 0 staan.
