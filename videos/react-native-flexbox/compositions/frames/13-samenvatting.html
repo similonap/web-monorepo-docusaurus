@@ -1,0 +1,435 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ==========================================================================
+       FLEX KIT: code surface + phone, shared by every frame of this video.
+       Copy this block verbatim; frame-specific ids use the fNN- prefix.
+       ========================================================================== */
+    /* code surface: fixed position, 24px / 34px, separate static line-number column */
+    .fx-panel { left: 80px; top: 150px; width: 1290px; height: 730px; }
+    .fx-code { top: 66px; font-size: 24px; line-height: 34px; }
+    .fx-lns { position: absolute; left: 0; top: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 19px; }
+    .fx-lns > div { height: 34px; }
+    .fx-lines { position: absolute; left: 76px; top: 0; right: 0; }
+    .fx-row { position: relative; height: 34px; white-space: pre; }
+    .fx-row .ts-caret { top: 5px; height: 24px; }
+    /* a value that changes in place (stacked variants, old slides up, new slides in) */
+    .fx-val { position: relative; display: inline-block; height: 34px; overflow: hidden; vertical-align: top; }
+    .fx-v { position: absolute; left: 0; top: 0; white-space: pre; }
+
+    /* phone: light device at the right, x 1494-1840, y 150-880; screen 316 x 650 */
+    .ph-body {
+      position: absolute; left: 1494px; top: 150px; width: 346px; height: 730px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 48px; box-shadow: var(--ts-shadow);
+    }
+    .ph-speaker { position: absolute; left: 144px; top: 16px; width: 56px; height: 6px; border-radius: 3px; background: #CBD5E1; }
+    .ph-home { position: absolute; left: 122px; bottom: 15px; width: 100px; height: 6px; border-radius: 3px; background: #CBD5E1; }
+    .ph-screen {
+      position: absolute; left: 13px; top: 38px; width: 316px; height: 650px;
+      background: #FFFFFF; border: 1px solid var(--ts-hairline); border-radius: 12px; overflow: hidden; box-sizing: content-box;
+    }
+    .ph-svg { position: absolute; left: 0; top: 0; width: 316px; height: 650px; overflow: hidden; }
+    .ph-parent { fill: none; stroke: #94A3B8; stroke-width: 1.5; stroke-dasharray: 6 5; }
+    .ph-mark { fill: none; stroke: var(--ts-blue); stroke-width: 3; }
+    .ph-main { stroke: var(--ts-blue); stroke-width: 3; stroke-linecap: round; }
+    .ph-main-head { fill: var(--ts-blue); }
+    .ph-cross { stroke: #94A3B8; stroke-width: 2; stroke-dasharray: 7 6; }
+    .ph-cross-head { fill: #94A3B8; }
+    .ph-lbl {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 17px;
+      paint-order: stroke; stroke: #FFFFFF; stroke-width: 5px; stroke-linejoin: round;
+    }
+    .ph-lbl--main { fill: var(--ts-blue-dark); }
+    .ph-lbl--cross { fill: var(--ts-ink-soft); }
+    .ph-prop { font-family: var(--ts-mono); font-weight: 500; font-size: 15px; }
+    .ph-prop--main { fill: var(--ts-blue); }
+    .ph-prop--cross { fill: var(--ts-label); }
+
+    /* ---- frame 13 ---- */
+    /* six recap rows from top 190, 96px apart: chip (360 wide) at x 80, description at x 480 */
+    .f13-row { position: absolute; left: 80px; width: 1300px; height: 52px; opacity: 0; }
+    #f13-r1 { top: 190px; }
+    #f13-r2 { top: 286px; }
+    #f13-r3 { top: 382px; }
+    #f13-r4 { top: 478px; }
+    #f13-r5 { top: 574px; }
+    #f13-r6 { top: 670px; }
+    .f13-row .ts-chip { left: 0; top: 0; width: 360px; }
+    .f13-desc {
+      position: absolute; left: 400px; top: 0; height: 52px; display: flex; align-items: center; white-space: pre;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 32px; letter-spacing: -0.005em; color: var(--ts-ink);
+    }
+    #f13-cta {
+      position: absolute; left: 80px; top: 790px; white-space: nowrap; opacity: 0;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 32px; line-height: 40px; color: var(--ts-ink-soft);
+    }
+    .f13-cp { position: relative; display: inline-block; }
+    #f13-cbar { left: 0; width: 100%; bottom: -8px; height: 4px; border-radius: 2px; }
+  </style>
+
+  <div data-hf-id="hf-sm5n" id="root" data-composition-id="13-samenvatting" data-width="1920" data-height="1080" data-duration="24.53">
+    <div data-hf-id="hf-88vt" class="ts-bg clip" id="f13-bg" data-start="0" data-duration="24.53" data-track-index="0"></div>
+
+    <div data-hf-id="hf-fvzu" class="ts-stage clip" id="f13-stage" data-start="0" data-duration="24.53" data-track-index="1">
+      <div data-hf-id="hf-ab5x" class="ts-kicker" id="f13-kicker"><div data-hf-id="hf-4ork" class="ts-kicker-bar" id="f13-kbar"></div><span data-hf-id="hf-2dly" class="ts-kicker-text" id="f13-ktext">Samengevat</span></div>
+
+      <!-- recap rows -->
+      <div data-hf-id="hf-b05f" class="f13-row" id="f13-r1"><span data-hf-id="hf-xga0" class="ts-chip" id="f13-c1">flexDirection</span><span data-hf-id="hf-4ggz" class="f13-desc">kiest de main axis (<span data-hf-id="hf-bx3m" id="f13-std">standaard column</span>)</span></div>
+      <div data-hf-id="hf-04ns" class="f13-row" id="f13-r2"><span data-hf-id="hf-63hm" class="ts-chip" id="f13-c2">justifyContent</span><span data-hf-id="hf-krhn" class="f13-desc">verdeelt over de main axis</span></div>
+      <div data-hf-id="hf-33xd" class="f13-row" id="f13-r3"><span data-hf-id="hf-3zot" class="ts-chip" id="f13-c3">alignItems</span><span data-hf-id="hf-mibj" class="f13-desc">lijnt uit op de cross axis</span></div>
+      <div data-hf-id="hf-s8fq" class="f13-row" id="f13-r4"><span data-hf-id="hf-2awq" class="ts-chip" id="f13-c4">flex</span><span data-hf-id="hf-6jht" class="f13-desc">verdeelt de ruimte</span></div>
+      <div data-hf-id="hf-w6jr" class="f13-row" id="f13-r5"><span data-hf-id="hf-le5n" class="ts-chip" id="f13-c5">flexWrap</span><span data-hf-id="hf-uiq0" class="f13-desc">maakt nieuwe regels</span></div>
+      <div data-hf-id="hf-ninw" class="f13-row" id="f13-r6"><span data-hf-id="hf-l1ch" class="ts-chip" id="f13-c6">position: "absolute"</span><span data-hf-id="hf-6nsd" class="f13-desc">plaatst een element vrij</span></div>
+
+      <div data-hf-id="hf-t2bl" id="f13-cta">Probeer het zelf op de <span data-hf-id="hf-3tuq" class="f13-cp">cursuspagina<span data-hf-id="hf-cfcc" class="ts-hero-bar" id="f13-cbar"></span></span></div>
+
+      <!-- phone: the app, laid out with React Native's flex rules -->
+      <div data-hf-id="hf-vq28" class="ph-body" id="f13-phone">
+        <div data-hf-id="hf-9aks" class="ph-speaker"></div>
+        <div data-hf-id="hf-66w1" class="ph-screen">
+          <svg data-hf-id="hf-opyx" class="ph-svg" viewBox="0 0 316 650" aria-hidden="true">
+            <rect data-hf-id="hf-dp1k" class="ph-parent" id="f13-parent" x="0" y="0" width="316" height="650"></rect>
+            <rect data-hf-id="hf-mmpm" id="f13-b1" fill="lightblue" x="0" y="0" width="80" height="80"></rect>
+            <rect data-hf-id="hf-3sii" id="f13-b2" fill="skyblue" x="0" y="80" width="80" height="80"></rect>
+            <rect data-hf-id="hf-6dtc" id="f13-b3" fill="steelblue" x="0" y="160" width="80" height="80"></rect>
+            <rect data-hf-id="hf-es4e" id="f13-b4" fill="cadetblue" x="0" y="80" width="80" height="80" style="opacity: 0;"></rect>
+            <rect data-hf-id="hf-1b2f" id="f13-b5" fill="royalblue" x="80" y="80" width="80" height="80" style="opacity: 0;"></rect>
+
+            <!-- main axis: column (down) -->
+            <g data-hf-id="hf-cqgm" id="f13-ax-mc" style="opacity: 0;">
+              <line data-hf-id="hf-emnm" class="ph-main" x1="158" y1="26" x2="158" y2="610"></line>
+              <path data-hf-id="hf-ftso" class="ph-main-head" d="M158 626 L150 610 L166 610 Z"></path>
+              <text data-hf-id="hf-qiu8" class="ph-lbl ph-lbl--main" x="170" y="590">main axis</text>
+              <text data-hf-id="hf-g1lp" class="ph-lbl ph-prop ph-prop--main" x="170" y="609">justifyContent</text>
+            </g>
+            <!-- main axis: row (right) -->
+            <g data-hf-id="hf-cn1z" id="f13-ax-mr" style="opacity: 0;">
+              <line data-hf-id="hf-ik0k" class="ph-main" x1="13" y1="325" x2="289" y2="325"></line>
+              <path data-hf-id="hf-vk09" class="ph-main-head" d="M305 325 L289 317 L289 333 Z"></path>
+              <text data-hf-id="hf-qz1n" class="ph-lbl ph-lbl--main" x="303" y="293" text-anchor="end">main axis</text>
+              <text data-hf-id="hf-we5x" class="ph-lbl ph-prop ph-prop--main" x="303" y="312" text-anchor="end">justifyContent</text>
+            </g>
+            <!-- cross axis for column directions (right) -->
+            <g data-hf-id="hf-i43s" id="f13-ax-cc" style="opacity: 0;">
+              <line data-hf-id="hf-6jut" class="ph-cross" x1="13" y1="325" x2="289" y2="325"></line>
+              <path data-hf-id="hf-h7ao" class="ph-cross-head" d="M305 325 L289 317 L289 333 Z"></path>
+              <text data-hf-id="hf-cf49" class="ph-lbl ph-lbl--cross" x="303" y="293" text-anchor="end">cross axis</text>
+              <text data-hf-id="hf-34pi" class="ph-lbl ph-prop ph-prop--cross" x="303" y="312" text-anchor="end">alignItems</text>
+            </g>
+            <!-- cross axis for row directions (down) -->
+            <g data-hf-id="hf-qant" id="f13-ax-cr" style="opacity: 0;">
+              <line data-hf-id="hf-q9jz" class="ph-cross" x1="158" y1="26" x2="158" y2="610"></line>
+              <path data-hf-id="hf-mzal" class="ph-cross-head" d="M158 626 L150 610 L166 610 Z"></path>
+              <text data-hf-id="hf-q6g4" class="ph-lbl ph-lbl--cross" x="170" y="590">cross axis</text>
+              <text data-hf-id="hf-rc4y" class="ph-lbl ph-prop ph-prop--cross" x="170" y="609">alignItems</text>
+            </g>
+          </svg>
+        </div>
+        <div data-hf-id="hf-xjm4" class="ph-home"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 24.53;
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function fadeSwap(outSel, inSel, at) {
+        if (outSel) tl.to(outSel, { opacity: 0, duration: 0.35, ease: "power2.inOut" }, at);
+        if (inSel) tl.to(inSel, { opacity: 1, duration: 0.35, ease: "power2.inOut" }, at);
+      }
+
+      // ---- FLEX KIT: React Native layout in the phone ----
+      // The browser lays the Views out with React Native's defaults (Yoga): column, alignItems stretch,
+      // alignContent flex-start, flexShrink 0; flex: n means grow n, shrink 0, basis 0.
+      var PH_W = 316, PH_H = 650;
+      var RN_BASE = "display:flex;flex-direction:column;align-items:stretch;align-content:flex-start;flex-shrink:0;flex-basis:auto;position:relative;box-sizing:border-box;min-width:0;min-height:0;margin:0;padding:0;border:0 solid black;";
+      var RN_UNITLESS = { flexGrow: 1, flexShrink: 1, zIndex: 1, opacity: 1, aspectRatio: 1 };
+      function rnCss(el, style) {
+        for (var k in style) {
+          var v = style[k];
+          if (k === "backgroundColor") continue;
+          if (k === "flex") {
+            if (v > 0) { el.style.flexGrow = v; el.style.flexShrink = 0; el.style.flexBasis = "0px"; }
+            else if (v < 0) { el.style.flexShrink = -v; }
+            continue;
+          }
+          el.style[k] = typeof v === "number" && !RN_UNITLESS[k] ? v + "px" : v;
+        }
+      }
+      // state = { parent: {RN style}, children: [{RN style}, ...] } -> boxes in screen coordinates
+      function rnLayout(state) {
+        var screen = document.createElement("div");
+        screen.style.cssText = "position:absolute;left:-5000px;top:0;width:" + PH_W + "px;height:" + PH_H + "px;display:flex;flex-direction:column;align-items:stretch;";
+        var parent = document.createElement("div");
+        parent.style.cssText = RN_BASE;
+        rnCss(parent, state.parent);
+        var kids = state.children.map(function (c) {
+          var d = document.createElement("div");
+          d.style.cssText = RN_BASE;
+          rnCss(d, c);
+          parent.appendChild(d);
+          return d;
+        });
+        screen.appendChild(parent);
+        document.body.appendChild(screen);
+        var p = { x: parent.offsetLeft, y: parent.offsetTop, width: parent.offsetWidth, height: parent.offsetHeight };
+        var out = {
+          parent: p,
+          children: kids.map(function (k) { return { x: p.x + k.offsetLeft, y: p.y + k.offsetTop, width: k.offsetWidth, height: k.offsetHeight }; })
+        };
+        document.body.removeChild(screen);
+        return out;
+      }
+      // move the rects to layout L: set at `at` when dur is 0, else a calm tween
+      function rnShow(L, parentSel, childSels, at, dur) {
+        function go(sel, b) {
+          var v = { attr: { x: b.x, y: b.y, width: b.width, height: b.height } };
+          if (!dur) { tl.set(sel, v, at); return; }
+          v.duration = dur; v.ease = "power3.inOut";
+          tl.to(sel, v, at);
+        }
+        if (parentSel) go(parentSel, L.parent);
+        childSels.forEach(function (s, i) { if (s && L.children[i]) go(s, L.children[i]); });
+      }
+      // ---- end FLEX KIT ----
+
+      var BOX = { width: 80, height: 80 };
+      var ABS = { width: 80, height: 80, position: "absolute", right: 20, bottom: 20 };
+      var S1 = rnLayout({ parent: { flex: 1 }, children: [BOX, BOX, BOX] });
+      var S2 = rnLayout({ parent: { flex: 1, justifyContent: "center" }, children: [BOX, BOX, BOX] });
+      var S3 = rnLayout({ parent: { flex: 1, justifyContent: "center", alignItems: "center" }, children: [BOX, BOX, BOX] });
+      var S4 = rnLayout({ parent: { flex: 1, alignItems: "center" }, children: [{ flex: 1, width: 80 }, { flex: 2, width: 80 }, { flex: 3, width: 80 }] });
+      var S5 = rnLayout({ parent: { flex: 1, flexDirection: "row", flexWrap: "wrap" }, children: [BOX, BOX, BOX, BOX, BOX] });
+      var S6 = rnLayout({ parent: { flex: 1, flexDirection: "row", flexWrap: "wrap" }, children: [ABS, BOX, BOX, BOX, BOX] });
+      var BOXES = ["#f13-b1", "#f13-b2", "#f13-b3"];
+      var ALL = ["#f13-b1", "#f13-b2", "#f13-b3", "#f13-b4", "#f13-b5"];
+      rnShow(S1, "#f13-parent", BOXES, 0, 0);
+      rnShow(S5, null, [null, null, null, "#f13-b4", "#f13-b5"], 0, 0);
+
+      var CHIP_BG = "#F1F5F9", CHIP_LINE = "#E2E8F0", SEL_BG = "#EAF2FB", SEL_LINE = "#3178C6";
+      function rowIn(sel, at) {
+        tl.fromTo(sel, { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, at);
+      }
+      function select(sel, at) { tl.to(sel, { backgroundColor: SEL_BG, borderColor: SEL_LINE, duration: 0.3, ease: "power1.out" }, at); }
+      function unselect(sel, at) { tl.to(sel, { backgroundColor: CHIP_BG, borderColor: CHIP_LINE, duration: 0.3, ease: "power1.inOut" }, at); }
+      // a recap row arrives on its spoken word: row in, its chip selected, the previous chip back to normal
+      function step(n, at) {
+        rowIn("#f13-r" + n, at);
+        select("#f13-c" + n, at);
+        if (n > 1) unselect("#f13-c" + (n - 1), at);
+      }
+
+      // ---- 0.0-1.3: kicker; phone in ----
+      tl.fromTo("#f13-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f13-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f13-phone", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.2);
+
+      // ---- "flex direction" (1.28): row 1, axes in; "standaard column" (4.16) ----
+      step(1, 1.28);
+      fadeSwap(null, "#f13-ax-mc", 1.28);
+      fadeSwap(null, "#f13-ax-cc", 1.28);
+      tl.to("#f13-std", { color: "#235A97", duration: 0.35, ease: "power1.out" }, 4.16);
+
+      // ---- "Justify content" (4.96): row 2, justifyContent center ----
+      step(2, 4.96);
+      rnShow(S2, null, BOXES, 4.96, 0.8);
+
+      // ---- "align items" (8.96): row 3, + alignItems center ----
+      step(3, 8.96);
+      rnShow(S3, null, BOXES, 8.96, 0.8);
+
+      // ---- "Flex" (12.40): row 4, children flex 1 / 2 / 3 ----
+      step(4, 12.4);
+      rnShow(S4, null, BOXES, 12.4, 0.8);
+
+      // ---- "flex wrap" (14.16): row 5, row + wrap, five boxes, axes turn ----
+      step(5, 14.16);
+      rnShow(S5, null, BOXES, 14.16, 0.8);
+      tl.to(["#f13-b4", "#f13-b5"], { opacity: 1, duration: 0.45, ease: "power2.out" }, 14.5);
+      fadeSwap("#f13-ax-mc", "#f13-ax-mr", 14.16);
+      fadeSwap("#f13-ax-cc", "#f13-ax-cr", 14.16);
+
+      // ---- "position" (16.80): row 6, box 1 leaves the flow to the bottom-right corner ----
+      step(6, 16.8);
+      rnShow(S6, null, ALL, 16.8, 0.8);
+      // the absolute box ignores the axes: they step back so the corner reads cleanly
+      fadeSwap(["#f13-ax-mr", "#f13-ax-cr"], null, 16.8);
+
+      // ---- "Probeer" (19.76): last chip back to normal, call to action; bar on "cursuspagina" (21.81) ----
+      unselect("#f13-c6", 19.76);
+      tl.fromTo("#f13-cta", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 19.76);
+      tl.fromTo("#f13-cbar", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 21.81);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["13-samenvatting"] = tl;
+    })();
+  </script>
+</template>

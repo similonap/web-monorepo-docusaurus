@@ -2,7 +2,12 @@
 sidebar_position: 5
 ---
 
+import InteractiveFlexbox from '@site/src/components/InteractiveFlexbox';
+import YouTubeVideo from '@site/src/components/YouTubeVideo';
+
 # Flexbox
+
+<YouTubeVideo src="https://youtu.be/A1WUcSplXRY" title="React Native - Flexbox uitgelegd" />
 
 ## Flexbox in React Native
 
@@ -28,31 +33,11 @@ Als je flexDirection op **column** zet, dan zal de main axis vertikaal zijn. Dit
 
 By **default** is de flexDirection **column**, maar bij web is dat row. Mobile apps zijn meer verticaal gericht.
 
-```typescript expo={"dependencies":"expo-constants"}
-import {View} from "react-native";
-
-const Index = () => {
-    return (
-        <View style={{flexDirection: "row", flex: 1}}>
-            <View style={{width: 40, height: 40, backgroundColor: "red"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "green"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "blue"}}/>
-        </View>
-    )
-}
-
-export default Index;
-```
-
 Andere mogelijkheden zijn: `column-reverse` en `row-reverse`. Deze werken hetzelfde als `column` en `row`, maar de items worden dan in omgekeerde volgorde geplaatst.
 
-<div style={{display: "flex", flexDirection: "row", width: "100%"}}>
+In de voorbeelden op deze pagina pas je de code zelf aan: het scherm en de main en cross axis volgen meteen. Klik in een waarde zoals `"row"` om alle mogelijkheden te zien.
 
-<img src={require("../images/flexDirectionRow.png").default} style={{maxWidth: "25%", padding: "10px"}}/>
-<img src={require("../images/flexDirectionColumn.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-<img src={require("../images/flexDirectionRowReverse.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-<img src={require("../images/flexDirectionColumnReverse.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-</div>
+<InteractiveFlexbox preset="flexDirection" />
 
 ### Flex 
 
@@ -62,21 +47,7 @@ Meestal zetten we de hoofdcontainer op flex: 1. Dit zorgt ervoor dat de containe
 
 Hier is een voorbeeld van een container met 3 items. De eerste heeft flex: 1, de tweede heeft flex: 2 en de derde heeft flex: 3. De derde item zal dus 3 keer zo groot zijn als de eerste.
 
-```typescript expo={"dependencies":"expo-constants"}
-import {View} from "react-native";
-
-const Index = () => {
-    return (
-        <View style={{flexDirection: "column", flex: 1}}>
-            <View style={{flex: 1, backgroundColor: "red"}}/>
-            <View style={{flex: 2, backgroundColor: "green"}}/>
-            <View style={{flex: 3, backgroundColor: "blue"}}/>
-        </View>
-    )
-}
-
-export default Index;
-```
+<InteractiveFlexbox preset="flex" />
 
 ### justifyContent
 
@@ -87,34 +58,12 @@ De mogelijkheden zijn:
 - `flex-end`: de items worden aan het einde van de main axis geplaatst.
 - `center`: de items worden in het midden van de main axis geplaatst.
 - `space-between`: de items worden verspreid over de main axis. De eerste en laatste item staan aan de start en het einde van de main axis.
-- `space-around`: de items worden verspreid over de main axis. Er is evenveel ruimte tussen de items en de start en het einde van de main axis.
+- `space-around`: de items worden verspreid over de main axis. Elk item krijgt evenveel ruimte links en rechts (of boven en onder), waardoor de ruimte aan de randen half zo groot is als tussen de items.
+- `space-evenly`: de items worden verspreid over de main axis. Er is evenveel ruimte tussen de items en de start en het einde van de main axis.
 
 Default: `flex-start`
 
-```typescript expo={"dependencies":"expo-constants"}
-import {View} from "react-native";
-
-const Index = () => {
-    return (
-        <View style={{flexDirection: "column", flex: 1, justifyContent: "center"}}>
-            <View style={{width: 40, height: 40, backgroundColor: "red"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "green"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "blue"}}/>
-        </View>
-    )
-}
-
-export default Index;
-```
-
-<div style={{display: "flex", flexDirection: "row", width: "100%", flexWrap: "wrap"}}>
-
-<img src={require("../images/justifyContentCenter.png").default} style={{maxWidth: "25%", padding: "10px"}}/>
-<img src={require("../images/justifyContentFlexStart.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-<img src={require("../images/justifyContentFlexEnd.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-<img src={require("../images/justifyContentSpaceAround.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-<img src={require("../images/justifyContentSpaceBetween.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-</div>
+<InteractiveFlexbox preset="justifyContent" />
 
 # alignItems
 
@@ -128,56 +77,13 @@ De mogelijkheden zijn:
 
 Default: `stretch`
 
-```typescript expo={"dependencies":"expo-constants"}
-import {View} from "react-native";
-
-const Index = () => {
-    return (
-        <View style={{flexDirection: "column", flex: 1, justifyContent: "flex-start", alignItems: "center"}}>
-            <View style={{width: 40, height: 40, backgroundColor: "red"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "green"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "blue"}}/>
-        </View>
-    )
-}
-
-export default Index;
-```
-
-<div style={{display: "flex", flexDirection: "row", width: "100%"}}>
-
-<img src={require("../images/alignItemsCenter.png").default} style={{maxWidth: "25%", padding: "10px"}}/>
-<img src={require("../images/alignItemsFlexEnd.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-<img src={require("../images/alignItemsFlexStart.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-<img src={require("../images/alignItemsStretch.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-</div>
+<InteractiveFlexbox preset="alignItems" />
 
 # alignSelf
 
 Als je een item wilt uitlijnen op een andere manier dan de rest van de items, dan kan je align self gebruiken. 
 
-```typescript expo={"dependencies":"expo-constants"}
-import {View} from "react-native";
-
-const Index = () => {
-    return (
-        <View style={{flexDirection: "column", flex: 1, justifyContent: "flex-start", alignItems: "center"}}>
-            <View style={{width: 40, height: 40, backgroundColor: "red"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "green"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "blue", alignSelf: "flex-start"}}/>
-        </View>
-    )
-}
-
-export default Index;
-```
-
-<div style={{display: "flex", flexDirection: "row", width: "100%"}}>
-
-<img src={require("../images/alignSelfFlexEnd.png").default} style={{maxWidth: "25%", padding: "10px"}}/>
-<img src={require("../images/alignSelfMixed.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-<img src={require("../images/alignSelfStretch.png").default} style={{maxWidth: "25%", padding: "10px"}} />
-</div>
+<InteractiveFlexbox preset="alignSelf" />
 
 # flexWrap
 
@@ -186,33 +92,17 @@ Flex wrap bepaalt of de items op meerdere regels moeten worden weergegeven als z
 De mogelijkheden zijn:
 - `nowrap`: de items worden niet op meerdere regels weergegeven.
 - `wrap`: de items worden op meerdere regels weergegeven.
+- `wrap-reverse`: zoals `wrap`, maar de regels worden in omgekeerde volgorde over de cross axis geplaatst.
 
 Default: `nowrap`
 
-```typescript expo={"dependencies":"expo-constants"}
-import {View} from "react-native";
+alignContent bepaalt hoe de regels worden uitgelijnd over de cross axis als er meerdere regels zijn. Dit werkt enkel als flexWrap op `wrap` of `wrap-reverse` staat. De mogelijkheden zijn dezelfde als bij justifyContent, aangevuld met `stretch`.
 
-const Index = () => {
-    return (
-        <View style={{flexDirection: "row", flex: 1, justifyContent: "flex-start", alignItems: "flex-start", flexWrap:"wrap", alignContent: "flex-start"}}>
-            <View style={{width: 40, height: 40, backgroundColor: "red"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "green"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "blue"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "pink"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "black"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "yellow"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "brown"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "turquoise"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "indigo"}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "purple"}}/>
-        </View>
-    )
-}
+Default: `flex-start` (op het web is dat `stretch`)
 
-export default Index;
-```
+Voeg items toe of verwijder ze en kijk wanneer ze naar een nieuwe regel springen.
 
-alignContent bepaalt hoe de regels worden uitgelijnd als er meerdere regels zijn. Dit werkt enkel als flexWrap op wrap staat.
+<InteractiveFlexbox preset="flexWrap" />
 
 ## Absolute positioning
 
@@ -220,19 +110,10 @@ Absolute positioning is een manier om de positie van een element te bepalen. Je 
 
 Je gebruikt hier de properties `top`, `bottom`, `left` en `right` om de positie van het element te bepalen.
 
-```typescript expo={"dependencies":"expo-constants"}
-import {View} from "react-native";
+<InteractiveFlexbox preset="absolute" />
 
-const Index = () => {
-    return (
-        <View style={{flexDirection: "column", flex: 1, justifyContent: "flex-start", alignItems: "center"}}>
-            <View style={{width: 40, height: 40, backgroundColor: "red", position: "absolute", top: 0, left: 0}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "green", position: "absolute", top: 50, right: 50}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "blue", position: "absolute", bottom: 10, left: 10}}/>
-            <View style={{width: 40, height: 40, backgroundColor: "pink", position: "absolute", bottom: 50, right: 30}}/>
-        </View>
-    )
-}
+## Speeltuin
 
-export default Index;
-```
+Combineer alles: pas de parent aan, voeg Views toe of verwijder ze en geef elk kind zijn eigen flex, grootte en positie.
+
+<InteractiveFlexbox preset="playground" />

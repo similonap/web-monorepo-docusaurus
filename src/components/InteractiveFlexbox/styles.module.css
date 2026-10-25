@@ -1,0 +1,446 @@
+/* ============================================================
+   InteractiveFlexbox — CSS Module
+   ============================================================ */
+
+.container {
+    --ifb-accent: var(--ifm-color-primary);
+    --ifb-accent-dim: color-mix(in srgb, var(--ifm-color-primary) 12%, transparent);
+    --ifb-border: var(--ifm-color-emphasis-300);
+    --ifb-muted: var(--ifm-color-emphasis-600);
+    --ifb-surface: var(--ifm-background-color);
+
+    position: relative;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: var(--ifm-color-emphasis-100);
+    border: 1px solid var(--ifm-color-emphasis-200);
+    border-radius: var(--ifm-global-radius);
+    font-size: 0.85rem;
+}
+
+.layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+/* ============================================================
+   Phone
+   ============================================================ */
+
+.phoneColumn {
+    flex: 0 0 auto;
+    margin: 0 auto;
+    /* Het scherm blijft in beeld terwijl je door de code scrolt. */
+    position: sticky;
+    top: calc(var(--ifm-navbar-height) + 1rem);
+}
+
+@media (max-width: 700px) {
+    .phoneColumn {
+        position: static;
+    }
+}
+
+.phone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
+    background: #1f2937;
+    border-radius: 36px;
+    box-shadow: 0 0 0 2px #374151, 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.speaker {
+    width: 56px;
+    height: 5px;
+    margin: 14px 0 11px;
+    border-radius: 3px;
+    background: #4b5563;
+}
+
+.homeBar {
+    width: 90px;
+    height: 5px;
+    margin: 11px 0 14px;
+    border-radius: 3px;
+    background: #4b5563;
+}
+
+.screen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ffffff;
+    border-radius: 6px;
+}
+
+/* De standaardregels van een React Native View (Yoga), zoals react-native-web
+   ze naar CSS vertaalt. */
+.view {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-content: flex-start;
+    flex-shrink: 0;
+    flex-basis: auto;
+    position: relative;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0 solid black;
+}
+
+/* Stippellijn: zo zie je hoe groot de parent View is. */
+.root {
+    outline: 1px dashed rgba(100, 116, 139, 0.6);
+    outline-offset: -1px;
+}
+
+.item {
+    transform-origin: 0 0;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .item {
+        transition: none;
+    }
+}
+
+/* ---- Axis overlay ---- */
+
+.axes {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    overflow: visible;
+    pointer-events: none;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 10.5px;
+}
+
+.axisMain {
+    stroke: #0288d1;
+    stroke-width: 2;
+}
+
+.axisMainHead {
+    fill: #0288d1;
+}
+
+.axisCross {
+    stroke: #6b7280;
+    stroke-width: 1.5;
+    stroke-dasharray: 5 4;
+}
+
+.axisCrossHead {
+    fill: #6b7280;
+}
+
+.axisMainLabel,
+.axisCrossLabel {
+    paint-order: stroke;
+    stroke: #ffffff;
+    stroke-width: 3px;
+}
+
+.axisMainLabel {
+    fill: #0277bd;
+    font-weight: 700;
+}
+
+.axisCrossLabel {
+    fill: #4b5563;
+    font-weight: 700;
+}
+
+.axisProp {
+    font-weight: 400;
+}
+
+/* ============================================================
+   Editor
+   ============================================================ */
+
+.editorColumn {
+    flex: 1 1 340px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2rem;
+    padding-right: 2.5rem; /* ruimte voor de maximaliseerknop */
+    color: var(--ifb-muted);
+}
+
+.toolbar span {
+    flex: 1;
+}
+
+.pillButton {
+    padding: 0.15rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ifm-color-emphasis-800);
+    background: var(--ifb-surface);
+    border: 1px solid var(--ifb-border);
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.pillButton:hover:not(:disabled) {
+    border-color: var(--ifb-accent);
+    color: var(--ifb-accent);
+}
+
+.pillButton:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.codePanel {
+    --ifb-kw: #cf222e;
+    --ifb-fn: #8250df;
+    --ifb-tag: #116329;
+    --ifb-prop: #0550ae;
+    --ifb-str: #0a3069;
+    --ifb-num: #953800;
+    --ifb-punct: #57606a;
+    --ifb-comment: #6e7781;
+    --ifb-text: #24292f;
+
+    overflow: hidden;
+    background: var(--ifb-surface);
+    border: 1px solid var(--ifm-color-emphasis-200);
+    border-radius: 8px;
+    transition: border-color 0.15s ease;
+}
+
+.codePanel:focus-within {
+    border-color: var(--ifb-accent);
+}
+
+.codePanelError,
+.codePanelError:focus-within {
+    border-color: var(--ifm-color-danger);
+}
+
+:global([data-theme='dark']) .codePanel {
+    --ifb-kw: #ff7b72;
+    --ifb-fn: #d2a8ff;
+    --ifb-tag: #7ee787;
+    --ifb-prop: #79c0ff;
+    --ifb-str: #a5d6ff;
+    --ifb-num: #ffa657;
+    --ifb-punct: #8b949e;
+    --ifb-comment: #8b949e;
+    --ifb-text: #e6edf3;
+}
+
+.codeHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.35rem 0.5rem 0.35rem 0.8rem;
+    background: var(--ifm-color-emphasis-100);
+    border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.fileName {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.75rem;
+    color: var(--ifb-muted);
+}
+
+.fileName::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--ifb-accent);
+}
+
+/* ---- Textarea boven op de gekleurde code ---- */
+
+.editorScroll {
+    overflow-x: auto;
+}
+
+.editorInner {
+    position: relative;
+    width: max-content;
+    min-width: 100%;
+}
+
+.highlight,
+.textarea {
+    margin: 0;
+    padding: 0.7rem 0.9rem;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    letter-spacing: normal;
+    font-variant-ligatures: none;
+    tab-size: 4;
+    white-space: pre;
+}
+
+.highlight {
+    color: var(--ifb-text);
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
+}
+
+.textarea {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    resize: none;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    caret-color: var(--ifb-text);
+}
+
+.textarea::selection {
+    background: color-mix(in srgb, var(--ifm-color-primary) 30%, transparent);
+}
+
+.codeLine {
+    min-height: 1.6em;
+    margin: 0 -0.9rem;
+    padding: 0 0.9rem;
+}
+
+.codeLineError {
+    background: color-mix(in srgb, var(--ifm-color-danger) 14%, transparent);
+    box-shadow: inset 3px 0 0 var(--ifm-color-danger);
+}
+
+.comment { color: var(--ifb-comment); font-style: italic; }
+.kw      { color: var(--ifb-kw); }
+.fn      { color: var(--ifb-fn); }
+.tag     { color: var(--ifb-tag); }
+.prop    { color: var(--ifb-prop); }
+.str     { color: var(--ifb-str); }
+.num     { color: var(--ifb-num); }
+.punct   { color: var(--ifb-punct); }
+
+/* ---- Keuzewaarden van de property onder de cursor ---- */
+
+.valueBar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 2.6rem;
+    padding: 0.45rem 0.8rem;
+    background: var(--ifm-color-emphasis-100);
+    border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.valueKey {
+    margin-right: 0.15rem;
+    font-size: 0.75rem;
+}
+
+.valueChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.55rem;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.75rem;
+    color: var(--ifm-color-emphasis-800);
+    background: var(--ifb-surface);
+    border: 1px solid var(--ifb-border);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.valueChip:hover {
+    border-color: var(--ifb-accent);
+}
+
+.valueChipActive,
+.valueChipActive:hover {
+    color: #fff;
+    background: var(--ifb-accent);
+    border-color: var(--ifb-accent);
+}
+
+.defaultTag {
+    font-family: var(--ifm-font-family-base);
+    font-size: 0.65rem;
+    opacity: 0.7;
+}
+
+.valueHelp {
+    font-size: 0.78rem;
+    color: var(--ifb-muted);
+}
+
+/* ---- Fouten, waarschuwingen en uitleg ---- */
+
+.error,
+.warnings,
+.hints {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--ifm-color-emphasis-800);
+    border-radius: 4px;
+}
+
+.error {
+    padding: 0.6rem 0.8rem;
+    background: color-mix(in srgb, var(--ifm-color-danger) 12%, transparent);
+    border-left: 3px solid var(--ifm-color-danger);
+}
+
+.errorNote {
+    margin-top: 0.2rem;
+    color: var(--ifb-muted);
+}
+
+.warnings,
+.hints {
+    padding: 0.6rem 0.8rem 0.6rem 1.8rem;
+}
+
+.warnings {
+    background: color-mix(in srgb, var(--ifm-color-warning) 14%, transparent);
+    border-left: 3px solid var(--ifm-color-warning);
+}
+
+.hints {
+    background: var(--ifb-accent-dim);
+    border-left: 3px solid var(--ifb-accent);
+}
+
+.warnings li + li,
+.hints li + li {
+    margin-top: 0.25rem;
+}
