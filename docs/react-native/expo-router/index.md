@@ -10,7 +10,7 @@ Het is gebouwd op [React Navigation](https://reactnavigation.org/), een populair
 
 ## Installatie
 
-Je hoeft Expo Router niet apart te installeren. Een nieuw project dat je aanmaakt met `npx create-expo-app@latest` gebruikt standaard al Expo Router. Kies bij de vraag naar de SDK-versie altijd **For learning with Expo Go** en verwijder daarna de voorbeeldcode met `npm run reset-project` (antwoord `n`). Zie [Nieuwe app aanmaken](../expo/index.md#nieuwe-app-aanmaken).
+Je hoeft Expo Router niet apart te installeren. Een nieuw project dat je aanmaakt met `npx create-expo-app@latest` gebruikt standaard al Expo Router. Kies bij de vraag naar de SDK-versie altijd **Latest** en verwijder daarna de voorbeeldcode met `npm run reset-project` (antwoord `n`). Zie [Nieuwe app aanmaken](../expo/index.md#nieuwe-app-aanmaken).
 
 ## Schermen toevoegen
 

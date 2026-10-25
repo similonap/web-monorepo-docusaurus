@@ -78,10 +78,7 @@ const sidebars: SidebarsConfig = {
       label: 'React Native',
       link: {type: 'doc', id: 'react-native/index'},
       items: [
-        {
-          type: 'category', label: 'Expo', link: {type: 'doc', id: 'react-native/expo/index'},
-          items: ['react-native/expo/emulator'],
-        },
+        'react-native/expo/index',
         'react-native/core-components/index',
         'react-native/custom-components/index',
         'react-native/flexbox/index',

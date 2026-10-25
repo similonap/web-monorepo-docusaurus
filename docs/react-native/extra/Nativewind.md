@@ -14,7 +14,7 @@ In dit voorbeeld vertrekken we vanuit een nieuw Expo project. Dit project werd a
 npx create-expo-app@latest nativewind-voorbeeld
 ```
 
-Kies bij de vraag naar de SDK-versie **For learning with Expo Go** en verwijder daarna de voorbeeldcode met `npm run reset-project` (antwoord `n`).
+Kies bij de vraag naar de SDK-versie **Latest** en verwijder daarna de voorbeeldcode met `npm run reset-project` (antwoord `n`).
 
 Wanneer je een project hebt aangemaakt, kan je Nativewind installeren.
 

@@ -57,13 +57,13 @@ Daarna vraagt `create-expo-app` welke Expo SDK-versie je wil gebruiken:
 
 ```bash
 ? Select an Expo SDK version: › - Use arrow-keys. Return to submit.
-    Latest (SDK 58)
-❯   For learning with Expo Go (SDK 57)
+❯   Latest (SDK 58)
+    For learning with Expo Go (SDK 57)
     Other SDK version…
 ```
 
-:::warning Kies altijd "For learning with Expo Go"
-Kies in deze cursus **altijd** de optie **For learning with Expo Go**. Die SDK-versie is compatibel met de Expo Go app uit de App Store en de Play Store. De optie `Latest` gebruikt een nieuwere SDK die Expo Go op je toestel nog niet ondersteunt, waardoor je je app niet kan openen via de QR code.
+:::warning Kies altijd "Latest"
+Kies in deze cursus **altijd** de optie **Latest**. De Expo Go app uit de App Store en de Play Store ondersteunt de nieuwste SDK. Met een oudere SDK-versie kan je je app niet openen via de QR code.
 :::
 
 ### Voorbeeldcode verwijderen
@@ -130,7 +130,12 @@ Ook kan het gebeuren dat de versies van je packages niet overeenkomen met de Exp
 npx expo install --fix
 ```
 
-Upgrade Expo **niet** met `npm install expo@latest`: dan kom je op een SDK-versie die de Expo Go app nog niet ondersteunt.
+Werkt je project nog met een oudere SDK-versie en opent Expo Go het niet meer, upgrade dan naar de nieuwste versie:
+
+```bash
+npx expo install expo@latest
+npx expo install --fix
+```
 
 ## De app openen in de browser
 
