@@ -98,6 +98,32 @@ Antwoord hier met **`n`**: we willen deze voorbeeldcode niet bijhouden. Je houdt
 - `src/app/index.tsx`: het eerste scherm van je app. Hier begin je te programmeren.
 - `src/app/_layout.tsx`: de layout rond al je schermen (zie [Expo Router](../expo-router/index.md)).
 
+### Layout aanpassen naar `Slot`
+
+Standaard gebruikt `_layout.tsx` een `Stack`:
+
+```tsx
+import { Stack } from "expo-router";
+
+export default function RootLayout() {
+  return <Stack />;
+}
+```
+
+Een `Stack` zet automatisch een header met de naam van het scherm (`index`) bovenaan je app. Hoe dat werkt en hoe je die header instelt, zien we pas in het onderdeel [Expo Router](../expo-router/index.md). Tot dan vervang je de `Stack` best door een `Slot`. Die toont gewoon je scherm, zonder header of navigatie errond:
+
+```tsx
+import { Slot } from "expo-router";
+
+const RootLayout = () => {
+  return <Slot />;
+}
+
+export default RootLayout;
+```
+
+Zo ziet je app er hetzelfde uit als de voorbeelden in de volgende onderdelen. Zodra we Expo Router behandelen, zetten we hier opnieuw een `Stack` (of een andere layout).
+
 ## Development server
 
 Je kan de development server starten met het volgende commando:
