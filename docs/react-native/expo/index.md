@@ -6,6 +6,18 @@ sidebar_position: 2
 
 Expo is een tool die het ontwikkelen van React Native apps makkelijker maakt. Het is een bundel van tools die je kan gebruiken om je app te testen op je smartphone of tablet. Je kan ook een app bouwen zonder Expo, maar dan moet je de app eerst bundelen en dan op je smartphone installeren. Dat is een stuk moeilijker.
 
+## Node.js lokaal installeren
+
+:::warning Geen dev container voor React Native
+Een [dev container](../../webframeworks/tools/devcontainers.md) geeft een minder goede development experience voor mobile development. Vooral emulators en een rechtstreekse verbinding met je telefoon worden nog niet goed ondersteund.
+:::
+
+Daarom raden we in dit onderdeel aan om de laatste **LTS-versie** van Node.js lokaal op je systeem te installeren en die te gebruiken. Je kan Node.js downloaden op de [Node.js website](https://nodejs.org/en/download). Controleer daarna in een terminal of de installatie gelukt is:
+
+```bash
+node --version
+```
+
 ## Expo CLI
 
 Expo CLI is een command line interface die je kan gebruiken om een nieuwe React Native app aan te maken. 
