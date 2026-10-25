@@ -79,7 +79,6 @@ const sidebars: SidebarsConfig = {
       link: {type: 'doc', id: 'react-native/index'},
       items: [
         'react-native/expo/index',
-        'react-native/scrcpy/index',
         'react-native/core-components/index',
         'react-native/custom-components/index',
         'react-native/flexbox/index',

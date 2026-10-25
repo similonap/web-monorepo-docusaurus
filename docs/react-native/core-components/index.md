@@ -109,29 +109,6 @@ We maken hier een vierkant aan met een rode achtergrond. De `borderWidth` proper
 
 Merk op dat we hier gebruik maken van `Constants.statusBarHeight`. Dit is een variabele die de hoogte van de statusbalk bevat. Zo kunnen we ervoor zorgen dat de app niet onder de statusbalk komt te staan.
 
-### Hoogte van de header
-
-Later werk je met [Expo Router](../expo-router/index.md), en dan krijgen je schermen vaak een header bovenaan. Wil je weten hoe hoog die header is, dan gebruik je de hook `useHeaderHeight`. Die geeft de hoogte terug in pixels, inclusief de statusbalk. Dat is handig als je inhoud onder een transparante header doorloopt (`headerTransparent: true`) en je die inhoud net onder de header wil laten beginnen.
-
-```tsx
-import { View, Text } from "react-native";
-import { useHeaderHeight } from "expo-router/react-navigation";
-
-const Index = () => {
-    const headerHeight = useHeaderHeight();
-
-    return (
-        <View style={{ flex: 1, paddingTop: headerHeight }}>
-            <Text>De header is {headerHeight} pixels hoog</Text>
-        </View>
-    );
-}
-
-export default Index;
-```
-
-`useHeaderHeight` werkt enkel in een scherm dat in een navigator met een header staat, zoals een `Stack`. Gebruik je de hook daarbuiten, dan krijg je de foutmelding `Couldn't find the header height. Are you inside a screen in a navigator with a header?`. Daarom kan je dit voorbeeld niet in een preview op deze pagina uitproberen.
-
 Je kan nog meer styling properties toevoegen aan een View. Je kan deze hier vinden: 
 - https://reactnative.dev/docs/view-style-props
 
