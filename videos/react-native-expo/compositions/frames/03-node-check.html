@@ -1,0 +1,344 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ==========================================================================
+       EXPO KIT: realistic terminal, browser and phones holding real screenshots.
+       Shared by every frame of this video. Copy this block verbatim; frame-specific
+       positions and states go on fNN- ids.
+       ========================================================================== */
+    /* terminal window: macOS Terminal, "Basic" profile (white). x 80, y 150, 1180 x 730 */
+    .tm-win {
+      position: absolute; left: 80px; top: 150px; width: 1180px; height: 730px; box-sizing: border-box;
+      background: #FFFFFF; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 0 0 1px #D4D9E0, var(--ts-shadow);
+    }
+    .tm-bar {
+      position: absolute; left: 0; right: 0; top: 0; height: 44px; box-sizing: border-box;
+      background: #ECECEC; border-bottom: 1px solid #D4D4D4;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 17px; color: #4B5563;
+    }
+    .tm-lights { position: absolute; left: 18px; top: 15px; display: flex; gap: 9px; }
+    .tm-lights > i { display: block; width: 14px; height: 14px; border-radius: 50%; box-sizing: border-box; border: 1px solid rgba(0, 0, 0, 0.12); }
+    .tm-lights > i:nth-child(1) { background: #FF5F57; }
+    .tm-lights > i:nth-child(2) { background: #FEBC2E; }
+    .tm-lights > i:nth-child(3) { background: #28C840; }
+    .tm-body { position: absolute; left: 0; right: 0; top: 44px; bottom: 0; overflow: hidden; }
+    /* .tm-scroll holds the lines; scroll by tweening its y (0.3s power2.out, like a terminal) */
+    .tm-scroll { position: absolute; left: 28px; right: 28px; top: 16px; }
+    .tm-line {
+      position: relative; height: 30px; font-family: var(--ts-mono); font-size: 22px; line-height: 30px;
+      color: #1E1E1E; white-space: pre; font-variant-ligatures: none;
+    }
+    /* the real QR code from `npx expo start`, as printed (27 x 28 modules of 13.2 px = 2 rows per text line) */
+    .tm-qrbox { position: relative; height: 389.6px; padding-top: 10px; box-sizing: border-box; }
+    .tm-qrbox > img { display: block; width: 356.4px; height: 369.6px; }
+    .tm-prompt { color: #1E1E1E; }
+    .tm-dim { color: #6B7280; }
+    .tm-ok { color: #15803D; }
+    .tm-bold { font-weight: 500; }
+    .tm-url { color: #0E7490; text-decoration: underline; text-underline-offset: 3px; }
+    .tm-sel { color: #0E7490; }
+    /* block cursor, steps per character like the house caret */
+    .tm-caret { position: absolute; left: 0; top: 3px; width: 13px; height: 24px; background: #1E293B; opacity: 0; }
+    /* wash on a span inside a line (same blue wash as the code surface) */
+    .tm-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+
+    /* browser window (Chrome on macOS, light). x 160, y 130, 1600 x 750 */
+    .br-win {
+      position: absolute; left: 160px; top: 130px; width: 1600px; height: 750px; box-sizing: border-box;
+      background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px #D4D9E0, var(--ts-shadow);
+    }
+    .br-tabs { position: absolute; left: 0; right: 0; top: 0; height: 44px; background: #DFE3E8; }
+    .br-tabs .tm-lights { top: 15px; }
+    .br-tab {
+      position: absolute; left: 96px; top: 8px; width: 280px; height: 36px; box-sizing: border-box; padding: 0 16px;
+      background: #FFFFFF; border-radius: 10px 10px 0 0; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 15px; color: #1F2937; white-space: nowrap;
+    }
+    .br-bar { position: absolute; left: 0; right: 0; top: 44px; height: 48px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB; }
+    .br-url {
+      position: absolute; left: 132px; right: 132px; top: 8px; height: 32px; box-sizing: border-box; padding-left: 20px;
+      border-radius: 16px; background: #F1F3F4; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 17px; color: #1F2937;
+    }
+    .br-view { position: absolute; left: 0; right: 0; top: 92px; bottom: 0; overflow: hidden; }
+    /* the screenshot fills the width: assets/img/nodejs-download.jpg is 1920 x 1200, shown at 1600 x 1000 */
+    .br-shot { position: absolute; left: 0; top: 0; width: 1600px; height: 1000px; }
+
+    /* phone: dark bezel around a real screenshot. x 1462, y 140, 356 x 744; screen 332 x 720 */
+    .dv {
+      position: absolute; left: 1462px; top: 140px; width: 356px; height: 744px; box-sizing: border-box;
+      background: #15171C; border-radius: 58px; box-shadow: 0 0 0 2px #CBD5E1, var(--ts-shadow);
+    }
+    .dv-screen { position: absolute; left: 12px; top: 12px; width: 332px; height: 720px; border-radius: 46px; overflow: hidden; background: #FFFFFF; }
+    .dv--android { border-radius: 44px; }
+    .dv--android .dv-screen { border-radius: 32px; }
+    /* every screen state is a stacked .dv-shot; crossfade between them (0.3s) */
+    .dv-shot { position: absolute; left: 0; top: 0; width: 332px; height: 720px; object-fit: cover; object-position: center top; }
+    .dv-island { position: absolute; left: 114px; top: 11px; width: 104px; height: 30px; border-radius: 15px; background: #000000; z-index: 5; }
+    .dv-hole { position: absolute; left: 159px; top: 12px; width: 14px; height: 14px; border-radius: 50%; background: #000000; z-index: 5; }
+    /* finger press, positioned in screen px and centred on the target */
+    .dv-touch {
+      position: absolute; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; box-sizing: border-box;
+      background: rgba(30, 41, 59, 0.16); border: 2px solid rgba(30, 41, 59, 0.35); opacity: 0; z-index: 6;
+    }
+    /* ---- frame 03: right column chips ---- */
+    #f03-c-node { left: 1320px; top: 226px; }
+    #f03-c-npm { left: 1320px; top: 420px; }
+    #f03-c-npx { left: 1320px; top: 512px; }
+    #f03-c-npx .ts-chip-key { color: var(--ts-blue-dark); }
+    .f03-check { width: 26px; height: 26px; fill: none; stroke: var(--ts-blue); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+
+  <div data-hf-id="hf-nm3a" id="root" data-composition-id="03-node-check" data-width="1920" data-height="1080" data-duration="13.91">
+    <div data-hf-id="hf-xa5g" class="ts-bg clip" id="f03-bg" data-start="0" data-duration="13.91" data-track-index="0"></div>
+    <div data-hf-id="hf-345x" class="ts-stage clip" id="f03-stage" data-start="0" data-duration="13.91" data-track-index="1">
+      <div data-hf-id="hf-gxig" class="ts-kicker" id="f03-kicker"><div data-hf-id="hf-gjhv" class="ts-kicker-bar"></div><div data-hf-id="hf-f8ms" class="ts-kicker-text">Stap 1 · Node.js</div></div>
+
+      <div data-hf-id="hf-fg0a" class="tm-win" id="f03-term">
+        <div data-hf-id="hf-khop" class="tm-bar"><span data-hf-id="hf-sery" class="tm-lights"><i data-hf-id="hf-wt6k"></i><i data-hf-id="hf-zeb8"></i><i data-hf-id="hf-y7e5"></i></span>projecten · zsh</div>
+        <div data-hf-id="hf-de2q" class="tm-body">
+          <div data-hf-id="hf-81e6" class="tm-scroll" id="f03-scroll">
+            <div data-hf-id="hf-1cxq" class="tm-line" id="f03-r0"><span data-hf-id="hf-piaz" class="tm-prompt">student@laptop projecten % </span><span data-hf-id="hf-cm1k" id="f03-cmd"></span></div>
+            <div data-hf-id="hf-k704" class="tm-line" id="f03-o1"><span data-hf-id="hf-xa3i" class="tm-hl" id="f03-hl-ver">v24.22.1</span></div>
+            <div data-hf-id="hf-wn5w" class="tm-line" id="f03-r2"><span data-hf-id="hf-x9zf" class="tm-prompt">student@laptop projecten % </span></div>
+          </div>
+          <div data-hf-id="hf-us9c" class="tm-caret" id="f03-caret"></div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-o4y9" class="ts-chip ts-chip--new" id="f03-c-node"><svg data-hf-id="hf-cpgk" class="f03-check" viewBox="0 0 24 24"><path data-hf-id="hf-m2zl" d="M5 13l4 4L19 7" /></svg>Node.js</div>
+      <div data-hf-id="hf-sfu5" class="ts-chip" id="f03-c-npm">npm install -g expo</div>
+      <div data-hf-id="hf-eaxc" class="ts-chip ts-chip--new" id="f03-c-npx"><span data-hf-id="hf-5sui" class="ts-chip-key">Expo uitvoeren</span>npx</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 13.91;
+      var CH = 13.2; // JetBrains Mono 22px advance
+      var X0 = 28, Y0 = 16, ROW = 30; // .tm-scroll offset inside .tm-body
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var root = document.querySelector('[data-composition-id="03-node-check"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function show(sel, at) { tl.set(sel, { opacity: 1 }, at); }      // terminal output appears at once
+      function pop(sel, at) { tl.fromTo(sel, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, at); }
+
+      // type a command after the prompt: block caret steps per character
+      function typeCmd(hostSel, text, row, col, start, per) {
+        var host = q(hostSel), chars = [];
+        for (var i = 0; i < text.length; i++) {
+          var s = document.createElement("span"); s.textContent = text[i]; host.appendChild(s); chars.push(s);
+        }
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set("#f03-caret", { x: X0 + col * CH, y: Y0 + row * ROW, opacity: 1 }, 0);
+        chars.forEach(function (el, i) {
+          tl.set(el, { opacity: 1 }, start + i * per);
+          tl.set("#f03-caret", { x: X0 + (col + i + 1) * CH }, start + i * per);
+        });
+        return start + text.length * per;
+      }
+
+      // initial state: terminal hidden; inside it only the prompt with a resting caret
+      tl.set("#f03-term", { opacity: 0 }, 0);
+      tl.set("#f03-o1, #f03-r2", { opacity: 0 }, 0);
+      tl.set("#f03-c-node, #f03-c-npm, #f03-c-npx", { opacity: 0 }, 0);
+
+      // "Open daarna een terminal" (terminal 0.96)
+      tl.fromTo("#f03-term", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", immediateRender: false }, 0.96);
+
+      // "en typ node min min version" (typ 1.76 ... version 3.52)
+      typeCmd("#f03-cmd", "node --version", 0, 27, 1.76, 0.1);
+      tl.set("#f03-caret", { opacity: 0 }, 3.75);                         // enter
+
+      // "Zie je een versienummer" (4.96): output + next prompt, wash on the version
+      show("#f03-o1", 4.96);
+      show("#f03-r2", 4.96);
+      tl.set("#f03-caret", { x: X0 + 27 * CH, y: Y0 + 2 * ROW, opacity: 1 }, 4.96);
+      washOn("#f03-hl-ver", 4.96);
+
+      // "dan is de installatie gelukt" (gelukt 6.88)
+      pop("#f03-c-node", 6.88);
+
+      // "Expo zelf hoef je niet te installeren" (Expo 7.76, installeren 9.48)
+      pop("#f03-c-npm", 7.76);
+      tl.set("#f03-c-npm", { textDecoration: "line-through" }, 9.48);
+      tl.to("#f03-c-npm", { opacity: 0.35, duration: 0.35, ease: "power2.out" }, 9.48);
+
+      // "dat voer je telkens uit met N P X" (N 11.96)
+      pop("#f03-c-npx", 11.96);
+
+      tl.set({}, {}, DUR);
+      window.__timelines["03-node-check"] = tl;
+    })();
+  </script>
+</template>

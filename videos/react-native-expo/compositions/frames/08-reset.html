@@ -1,0 +1,419 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ==========================================================================
+       EXPO KIT: realistic terminal, browser and phones holding real screenshots.
+       Shared by every frame of this video. Copy this block verbatim; frame-specific
+       positions and states go on fNN- ids.
+       ========================================================================== */
+    /* terminal window: macOS Terminal, "Basic" profile (white). x 80, y 150, 1180 x 730 */
+    .tm-win {
+      position: absolute; left: 80px; top: 150px; width: 1180px; height: 730px; box-sizing: border-box;
+      background: #FFFFFF; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 0 0 1px #D4D9E0, var(--ts-shadow);
+    }
+    .tm-bar {
+      position: absolute; left: 0; right: 0; top: 0; height: 44px; box-sizing: border-box;
+      background: #ECECEC; border-bottom: 1px solid #D4D4D4;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 17px; color: #4B5563;
+    }
+    .tm-lights { position: absolute; left: 18px; top: 15px; display: flex; gap: 9px; }
+    .tm-lights > i { display: block; width: 14px; height: 14px; border-radius: 50%; box-sizing: border-box; border: 1px solid rgba(0, 0, 0, 0.12); }
+    .tm-lights > i:nth-child(1) { background: #FF5F57; }
+    .tm-lights > i:nth-child(2) { background: #FEBC2E; }
+    .tm-lights > i:nth-child(3) { background: #28C840; }
+    .tm-body { position: absolute; left: 0; right: 0; top: 44px; bottom: 0; overflow: hidden; }
+    /* .tm-scroll holds the lines; scroll by tweening its y (0.3s power2.out, like a terminal) */
+    .tm-scroll { position: absolute; left: 28px; right: 28px; top: 16px; }
+    .tm-line {
+      position: relative; height: 30px; font-family: var(--ts-mono); font-size: 22px; line-height: 30px;
+      color: #1E1E1E; white-space: pre; font-variant-ligatures: none;
+    }
+    /* the real QR code from `npx expo start`, as printed (27 x 28 modules of 13.2 px = 2 rows per text line) */
+    .tm-qrbox { position: relative; height: 389.6px; padding-top: 10px; box-sizing: border-box; }
+    .tm-qrbox > img { display: block; width: 356.4px; height: 369.6px; }
+    .tm-prompt { color: #1E1E1E; }
+    .tm-dim { color: #6B7280; }
+    .tm-ok { color: #15803D; }
+    .tm-bold { font-weight: 500; }
+    .tm-url { color: #0E7490; text-decoration: underline; text-underline-offset: 3px; }
+    .tm-sel { color: #0E7490; }
+    /* block cursor, steps per character like the house caret */
+    .tm-caret { position: absolute; left: 0; top: 3px; width: 13px; height: 24px; background: #1E293B; opacity: 0; }
+    /* wash on a span inside a line (same blue wash as the code surface) */
+    .tm-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+
+    /* browser window (Chrome on macOS, light). x 160, y 130, 1600 x 750 */
+    .br-win {
+      position: absolute; left: 160px; top: 130px; width: 1600px; height: 750px; box-sizing: border-box;
+      background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px #D4D9E0, var(--ts-shadow);
+    }
+    .br-tabs { position: absolute; left: 0; right: 0; top: 0; height: 44px; background: #DFE3E8; }
+    .br-tabs .tm-lights { top: 15px; }
+    .br-tab {
+      position: absolute; left: 96px; top: 8px; width: 280px; height: 36px; box-sizing: border-box; padding: 0 16px;
+      background: #FFFFFF; border-radius: 10px 10px 0 0; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 15px; color: #1F2937; white-space: nowrap;
+    }
+    .br-bar { position: absolute; left: 0; right: 0; top: 44px; height: 48px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB; }
+    .br-url {
+      position: absolute; left: 132px; right: 132px; top: 8px; height: 32px; box-sizing: border-box; padding-left: 20px;
+      border-radius: 16px; background: #F1F3F4; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 17px; color: #1F2937;
+    }
+    .br-view { position: absolute; left: 0; right: 0; top: 92px; bottom: 0; overflow: hidden; }
+    /* the screenshot fills the width: assets/img/nodejs-download.jpg is 1920 x 1200, shown at 1600 x 1000 */
+    .br-shot { position: absolute; left: 0; top: 0; width: 1600px; height: 1000px; }
+
+    /* phone: dark bezel around a real screenshot. x 1462, y 140, 356 x 744; screen 332 x 720 */
+    .dv {
+      position: absolute; left: 1462px; top: 140px; width: 356px; height: 744px; box-sizing: border-box;
+      background: #15171C; border-radius: 58px; box-shadow: 0 0 0 2px #CBD5E1, var(--ts-shadow);
+    }
+    .dv-screen { position: absolute; left: 12px; top: 12px; width: 332px; height: 720px; border-radius: 46px; overflow: hidden; background: #FFFFFF; }
+    .dv--android { border-radius: 44px; }
+    .dv--android .dv-screen { border-radius: 32px; }
+    /* every screen state is a stacked .dv-shot; crossfade between them (0.3s) */
+    .dv-shot { position: absolute; left: 0; top: 0; width: 332px; height: 720px; object-fit: cover; object-position: center top; }
+    .dv-island { position: absolute; left: 114px; top: 11px; width: 104px; height: 30px; border-radius: 15px; background: #000000; z-index: 5; }
+    .dv-hole { position: absolute; left: 159px; top: 12px; width: 14px; height: 14px; border-radius: 50%; background: #000000; z-index: 5; }
+    /* finger press, positioned in screen px and centred on the target */
+    .dv-touch {
+      position: absolute; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; box-sizing: border-box;
+      background: rgba(30, 41, 59, 0.16); border: 2px solid rgba(30, 41, 59, 0.35); opacity: 0; z-index: 6;
+    }
+    /* ---- frame 08: one terminal session (06 -> 07 -> 08, joined by cuts) ---- */
+    /* lines sit on a fixed grid; the body clips at the first line so scrolled-off rows vanish whole */
+    #f08-term .tm-body { top: 60px; }
+    #f08-scroll { top: 0; }
+    #f08-scroll > .tm-line { position: absolute; left: 0; right: 0; }
+    #f08-scroll > .tm-caret { top: 3px; left: 1px; }
+    .tm-u { text-decoration: underline; text-underline-offset: 3px; }
+    #f08-c-name { left: 1320px; top: 250px; }
+    #f08-c-sdk { left: 1320px; top: 340px; }
+    #f08-c-ans { left: 1320px; top: 430px; }
+    #f08-c-sdk .ts-chip-key { color: var(--ts-blue-dark); }
+    #f08-c-name .ts-chip-key, #f08-c-ans .ts-chip-key { color: var(--ts-ink-soft); }
+    .f08-tt { position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; }
+
+  </style>
+
+  <div data-hf-id="hf-kmq0" id="root" data-composition-id="08-reset" data-width="1920" data-height="1080" data-duration="12.31">
+    <div data-hf-id="hf-2a2w" class="ts-bg clip" id="f08-bg" data-start="0" data-duration="12.31" data-track-index="0"></div>
+    <div data-hf-id="hf-bhy1" class="ts-stage clip" id="f08-stage" data-start="0" data-duration="12.31" data-track-index="1">
+      <div data-hf-id="hf-6ae9" class="ts-kicker" id="f08-kicker"><div data-hf-id="hf-gjhv" class="ts-kicker-bar"></div><div data-hf-id="hf-gzah" class="ts-kicker-text">Stap 3 · Nieuwe app</div></div>
+
+      <div data-hf-id="hf-4tcn" class="tm-win" id="f08-term">
+        <div data-hf-id="hf-luh5" class="tm-bar"><span data-hf-id="hf-sery" class="tm-lights"><i data-hf-id="hf-wt6k"></i><i data-hf-id="hf-zeb8"></i><i data-hf-id="hf-y7e5"></i></span><span data-hf-id="hf-18cs" class="f08-tt" id="f08-t1">projecten · zsh</span><span data-hf-id="hf-pgdp" class="f08-tt" id="f08-t2">mijn-app · zsh</span></div>
+        <div data-hf-id="hf-de2q" class="tm-body">
+          <div data-hf-id="hf-rokz" class="tm-scroll" id="f08-scroll">
+            <div data-hf-id="hf-2y38" class="tm-line" id="f08-r0" style="top: 0px"><span data-hf-id="hf-piaz" class="tm-prompt">student@laptop projecten % </span><span data-hf-id="hf-uckh"><span data-hf-id="hf-tjdp">n</span><span data-hf-id="hf-sqrn">p</span><span data-hf-id="hf-pkbf">x</span><span data-hf-id="hf-l73p"> </span><span data-hf-id="hf-ypd2">c</span><span data-hf-id="hf-ry5l">r</span><span data-hf-id="hf-xwr0">e</span><span data-hf-id="hf-zhz4">a</span><span data-hf-id="hf-r5jj">t</span><span data-hf-id="hf-pn38">e</span><span data-hf-id="hf-k5wk">-</span><span data-hf-id="hf-og65">e</span><span data-hf-id="hf-84m3">x</span><span data-hf-id="hf-16gz">p</span><span data-hf-id="hf-txoq">o</span><span data-hf-id="hf-k1i4">-</span><span data-hf-id="hf-wqew">a</span><span data-hf-id="hf-0s5y">p</span><span data-hf-id="hf-0dux">p</span><span data-hf-id="hf-mdv7">@</span><span data-hf-id="hf-ubzr">l</span><span data-hf-id="hf-vjht">a</span><span data-hf-id="hf-b5yn">t</span><span data-hf-id="hf-ouh6">e</span><span data-hf-id="hf-scgm">s</span><span data-hf-id="hf-arnm">t</span></span><span data-hf-id="hf-me0s"><span data-hf-id="hf-lzpr"> </span></span><span data-hf-id="hf-z4qc" class="tm-hl" id="f08-hl-name" style="background-color: rgba(49, 120, 198, 0.12)"><span data-hf-id="hf-n6mu"><span data-hf-id="hf-uqas">m</span><span data-hf-id="hf-wbiw">i</span><span data-hf-id="hf-v4lt">j</span><span data-hf-id="hf-mult">n</span><span data-hf-id="hf-iul1">-</span><span data-hf-id="hf-vxsu">a</span><span data-hf-id="hf-vxks">p</span><span data-hf-id="hf-vj9r">p</span></span></span></div>
+            <div data-hf-id="hf-p4su" class="tm-line" id="f08-c1" style="top: 30px">Need to install the following packages:</div>
+            <div data-hf-id="hf-v227" class="tm-line" id="f08-c2" style="top: 60px">create-expo-app@5.0.0</div>
+            <div data-hf-id="hf-zyv0" class="tm-line" id="f08-c3" style="top: 90px">Ok to proceed? (y) y</div>
+            <div data-hf-id="hf-z6cf" class="tm-line" id="f08-s4" style="top: 120px"><span data-hf-id="hf-bj1t" class="tm-ok">✔</span> <span data-hf-id="hf-sfe1" class="tm-bold">Select an Expo SDK version:</span> <span data-hf-id="hf-nu1d" class="tm-dim">›</span> Latest (SDK 58)</div>
+            <div data-hf-id="hf-xtm2" class="tm-line" id="f08-s5" style="top: 150px">Creating <span data-hf-id="hf-nzp7" class="tm-sel">mijn-app</span> using the <span data-hf-id="hf-pd1o" class="tm-sel">default</span> template.</div>
+            <div data-hf-id="hf-od8l" class="tm-line" id="f08-s7" style="top: 210px"><span data-hf-id="hf-k344" class="tm-dim">Tip:</span></div>
+            <div data-hf-id="hf-ygyz" class="tm-line" id="f08-s8" style="top: 240px">  <span data-hf-id="hf-knl5" class="tm-dim">•</span> <span data-hf-id="hf-dj2q" class="tm-dim">npx create-expo</span> <span data-hf-id="hf-a6eb" class="tm-sel">--template</span>  <span data-hf-id="hf-uryy" class="tm-dim">to pick from other templates</span></div>
+            <div data-hf-id="hf-6hat" class="tm-line" id="f08-s9" style="top: 270px">  <span data-hf-id="hf-ut0d" class="tm-dim">•</span> <span data-hf-id="hf-4846" class="tm-dim">npx create-expo</span> <span data-hf-id="hf-aztl" class="tm-sel">--example</span>   <span data-hf-id="hf-rdlr" class="tm-dim">to explore</span> <span data-hf-id="hf-ft4i" class="tm-dim tm-u">https://github.com/expo/examples</span></div>
+            <div data-hf-id="hf-2z9v" class="tm-line" id="f08-s11" style="top: 330px"><span data-hf-id="hf-b2n9" class="tm-ok">✔</span> Downloaded and extracted project files.</div>
+            <div data-hf-id="hf-cdg1" class="tm-line" id="f08-s12" style="top: 360px">&gt; npm install</div>
+            <div data-hf-id="hf-bdiu" class="tm-line" id="f08-s13" style="top: 390px">added 544 packages, and audited 545 packages in 16s</div>
+            <div data-hf-id="hf-sdnz" class="tm-line" id="f08-s15" style="top: 450px">47 packages are looking for funding</div>
+            <div data-hf-id="hf-z0d8" class="tm-line" id="f08-s16" style="top: 480px">  run `npm fund` for details</div>
+            <div data-hf-id="hf-v9g5" class="tm-line" id="f08-s18" style="top: 540px"><span data-hf-id="hf-mras" class="tm-bold"><span data-hf-id="hf-mph3" class="tm-hl" id="f08-hl-ready" style="background-color: rgba(49, 120, 198, 0.12)">✅ Your project is ready!</span></span></div>
+            <div data-hf-id="hf-wb4w" class="tm-line" id="f08-s20" style="top: 600px">- <span data-hf-id="hf-tyzd" class="tm-bold">cd mijn-app</span></div>
+            <div data-hf-id="hf-pv0a" class="tm-line" id="f08-s21" style="top: 630px">- <span data-hf-id="hf-57in" class="tm-bold">npm run android</span></div>
+            <div data-hf-id="hf-f32s" class="tm-line" id="f08-s22" style="top: 660px">- <span data-hf-id="hf-28wl" class="tm-bold">npm run ios</span></div>
+            <div data-hf-id="hf-9jmi" class="tm-line" id="f08-s23" style="top: 690px">- <span data-hf-id="hf-pohq" class="tm-bold">npm run web</span></div>
+            <div data-hf-id="hf-h083" class="tm-line" id="f08-p24" style="top: 720px"><span data-hf-id="hf-x9zf" class="tm-prompt">student@laptop projecten % </span><span data-hf-id="hf-tf0s" id="f08-cd"></span></div>
+            <div data-hf-id="hf-yl59" class="tm-line" id="f08-p25" style="top: 750px"><span data-hf-id="hf-xeb1" class="tm-prompt">student@laptop mijn-app % </span><span data-hf-id="hf-xzu0" id="f08-npm"></span></div>
+            <div data-hf-id="hf-jy58" class="tm-line" id="f08-r27" style="top: 810px">&gt; mijn-app@1.0.0 reset-project</div>
+            <div data-hf-id="hf-4plw" class="tm-line" id="f08-r28" style="top: 840px">&gt; node ./scripts/reset-project.js</div>
+            <div data-hf-id="hf-gqgh" class="tm-line" id="f08-r30" style="top: 900px">Do you want to move existing files to /example instead of deleting them? (Y/n): <span data-hf-id="hf-y18p" class="tm-hl" id="f08-hl-n"><span data-hf-id="hf-0ww1" id="f08-n">n</span></span></div>
+            <div data-hf-id="hf-la12" class="tm-line" id="f08-d31" style="top: 930px">❌ /src deleted.</div>
+            <div data-hf-id="hf-iriu" class="tm-line" id="f08-d32" style="top: 960px">❌ /scripts deleted.</div>
+            <div data-hf-id="hf-dee4" class="tm-line" id="f08-d33" style="top: 990px">❌ /assets/images/expo-badge.png deleted.</div>
+            <div data-hf-id="hf-k7r4" class="tm-line" id="f08-d34" style="top: 1020px">❌ /assets/images/expo-badge-white.png deleted.</div>
+            <div data-hf-id="hf-28va" class="tm-line" id="f08-d35" style="top: 1050px">❌ /assets/images/expo-logo.png deleted.</div>
+            <div data-hf-id="hf-037f" class="tm-line" id="f08-d36" style="top: 1080px">❌ /assets/images/logo-glow.png deleted.</div>
+            <div data-hf-id="hf-gxza" class="tm-line" id="f08-d37" style="top: 1110px">❌ /assets/images/react-logo.png deleted.</div>
+            <div data-hf-id="hf-feqc" class="tm-line" id="f08-d38" style="top: 1140px">❌ /assets/images/react-logo@2x.png deleted.</div>
+            <div data-hf-id="hf-przb" class="tm-line" id="f08-d39" style="top: 1170px">❌ /assets/images/react-logo@3x.png deleted.</div>
+            <div data-hf-id="hf-stqo" class="tm-line" id="f08-d40" style="top: 1200px">❌ /assets/images/tutorial-web.png deleted.</div>
+            <div data-hf-id="hf-3eph" class="tm-line" id="f08-d41" style="top: 1230px">❌ /assets/images/tabIcons deleted.</div>
+            <div data-hf-id="hf-b94l" class="tm-line" id="f08-d43" style="top: 1290px">📁 New /src/app directory created.</div>
+            <div data-hf-id="hf-p8uf" class="tm-line" id="f08-d44" style="top: 1320px">📄 src/app/index.tsx created.</div>
+            <div data-hf-id="hf-j0qu" class="tm-line" id="f08-d45" style="top: 1350px">📄 src/app/_layout.tsx created.</div>
+            <div data-hf-id="hf-oy2j" class="tm-line" id="f08-d47" style="top: 1410px">✅ Project reset complete. Next steps:</div>
+            <div data-hf-id="hf-an97" class="tm-line" id="f08-d48" style="top: 1440px">1. Run `npx expo start` to start a development server.</div>
+            <div data-hf-id="hf-wpi0" class="tm-line" id="f08-d49" style="top: 1470px">2. Edit src/app/index.tsx to edit the main screen.</div>
+            <div data-hf-id="hf-nhph" class="tm-line" id="f08-p50" style="top: 1500px"><span data-hf-id="hf-g6zl" class="tm-prompt">student@laptop mijn-app % </span></div>
+
+            <div data-hf-id="hf-9n5v" class="tm-caret" id="f08-caret"></div>
+          </div>
+        </div>
+      </div>
+
+        <div data-hf-id="hf-o42q" class="ts-chip" id="f08-c-name"><span data-hf-id="hf-cd8g" class="ts-chip-key">project</span>mijn-app</div>
+        <div data-hf-id="hf-2wqk" class="ts-chip ts-chip--new" id="f08-c-sdk"><span data-hf-id="hf-kwwl" class="ts-chip-key">sdk</span>Latest (SDK 58)</div>
+        <div data-hf-id="hf-4gdx" class="ts-chip" id="f08-c-ans"><span data-hf-id="hf-gyi9" class="ts-chip-key">antwoord</span>n</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 12.31;
+      var CH = 13.2, ROW = 30; // JetBrains Mono 22px advance, line height
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var root = document.querySelector('[data-composition-id="08-reset"]');
+      var q = function (s) { return root.querySelector(s); };
+      var CARET = "#f08-caret", SCROLL = "#f08-scroll";
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function show(sel, at) { tl.set(sel, { opacity: 1 }, at); }      // terminal output appears at once
+      function hide(sel, at) { tl.set(sel, { opacity: 0 }, at); }
+      function pop(sel, at) { tl.fromTo(sel, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, at); }
+      function caretAt(row, col, at) { tl.set(CARET, { x: col * CH, y: row * ROW, opacity: 1 }, at); }
+      var LINES = Array.prototype.slice.call(root.querySelectorAll(SCROLL + " > .tm-line"));
+      function offRows(rows) { return LINES.filter(function (el) { return parseFloat(el.style.top) < rows * ROW; }); }
+      // scroll like a terminal; rows that left the window are hidden once the scroll settles
+      function scrollTo(rows, at) {
+        tl.to(SCROLL, { y: -rows * ROW, duration: 0.3, ease: "power2.out" }, at);
+        tl.set(offRows(rows), { opacity: 0 }, at + 0.3);
+      }
+
+      // type text into a host span: block caret steps per character (caret lives inside .tm-scroll)
+      function typeInto(hostSel, text, row, col, start, per) {
+        var host = q(hostSel), chars = [];
+        for (var i = 0; i < text.length; i++) {
+          var s = document.createElement("span"); s.textContent = text[i]; host.appendChild(s); chars.push(s);
+        }
+        tl.set(chars, { opacity: 0 }, 0);
+        chars.forEach(function (el, i) {
+          tl.set(el, { opacity: 1 }, start + i * per);
+          tl.set(CARET, { x: (col + i + 1) * CH, y: row * ROW, opacity: 1 }, start + i * per);
+        });
+        return col + text.length;
+      }
+
+
+      // initial state = last state of 07-sdk: scrolled 3 rows, resting caret after the prompt
+      tl.set(SCROLL, { y: -3 * ROW }, 0);
+      tl.set(offRows(3), { opacity: 0 }, 0);
+      tl.set("#f08-t2, #f08-p25, #f08-r27, #f08-r28, #f08-r30, #f08-n, #f08-p50, #f08-c-ans", { opacity: 0 }, 0);
+      tl.set("#f08-scroll > .tm-line[id*='-d']", { opacity: 0 }, 0);
+      caretAt(24, 27, 0);
+
+      // "Ga met C D naar de map van je project" (C 0.56, D 0.88)
+      var c = 27;
+      c = typeInto("#f08-cd", "c", 24, c, 0.56, 0.08);
+      c = typeInto("#f08-cd", "d", 24, c, 0.88, 0.08);
+      c = typeInto("#f08-cd", " mijn-app", 24, c, 1.0, 0.08);
+      // enter: new prompt in mijn-app, the window title follows the folder
+      show("#f08-p25", 1.95);
+      tl.set("#f08-t1", { opacity: 0 }, 1.95);
+      show("#f08-t2", 1.95);
+      scrollTo(4, 1.95);
+      caretAt(25, 26, 1.95);
+
+      // "met N P M run reset project" (N 4.72, P 4.96, M 5.20, run 5.68, reset 6.16, project 6.64)
+      c = 26;
+      c = typeInto("#f08-npm", "n", 25, c, 4.72, 0.08);
+      c = typeInto("#f08-npm", "p", 25, c, 4.96, 0.08);
+      c = typeInto("#f08-npm", "m ", 25, c, 5.20, 0.08);
+      c = typeInto("#f08-npm", "run ", 25, c, 5.68, 0.08);
+      c = typeInto("#f08-npm", "reset-", 25, c, 6.16, 0.07);
+      c = typeInto("#f08-npm", "project", 25, c, 6.64, 0.07);
+      // enter
+      hide(CARET, 7.35);
+      show("#f08-r27, #f08-r28", 7.4);
+      scrollTo(8, 7.4);
+      // "Op de vraag of je de bestanden wil bewaren" (vraag 7.92)
+      show("#f08-r30", 7.92);
+      scrollTo(9, 7.92);
+      caretAt(30, 80, 7.92);
+
+      // "antwoord je met N." (N 10.80)
+      show("#f08-n", 10.80);
+      tl.set(CARET, { x: 81 * CH }, 10.80);
+      washOn("#f08-hl-n", 10.80);
+      pop("#f08-c-ans", 10.80);
+      // enter: the example code is removed, a clean src/app is created
+      hide(CARET, 11.15);
+      show("#f08-scroll > .tm-line[id*='-d'], #f08-p50", 11.2);
+      scrollTo(29, 11.2);
+      caretAt(50, 26, 11.2);
+
+      tl.set({}, {}, DUR);
+      window.__timelines["08-reset"] = tl;
+    })();
+  </script>
+</template>

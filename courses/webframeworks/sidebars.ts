@@ -102,6 +102,7 @@ const sidebars: SidebarsConfig = {
         'react-native/controlled-components/index',
         'react-native/expo-router/index',
         'react-native/async-storage/index',
+        'react-native/supabase/index',
       ],
     },
     {

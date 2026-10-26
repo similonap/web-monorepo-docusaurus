@@ -1,0 +1,372 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ==========================================================================
+       EXPO KIT: realistic terminal, browser and phones holding real screenshots.
+       Shared by every frame of this video. Copy this block verbatim; frame-specific
+       positions and states go on fNN- ids.
+       ========================================================================== */
+    /* terminal window: macOS Terminal, "Basic" profile (white). x 80, y 150, 1180 x 730 */
+    .tm-win {
+      position: absolute; left: 80px; top: 150px; width: 1180px; height: 730px; box-sizing: border-box;
+      background: #FFFFFF; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 0 0 1px #D4D9E0, var(--ts-shadow);
+    }
+    .tm-bar {
+      position: absolute; left: 0; right: 0; top: 0; height: 44px; box-sizing: border-box;
+      background: #ECECEC; border-bottom: 1px solid #D4D4D4;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 17px; color: #4B5563;
+    }
+    .tm-lights { position: absolute; left: 18px; top: 15px; display: flex; gap: 9px; }
+    .tm-lights > i { display: block; width: 14px; height: 14px; border-radius: 50%; box-sizing: border-box; border: 1px solid rgba(0, 0, 0, 0.12); }
+    .tm-lights > i:nth-child(1) { background: #FF5F57; }
+    .tm-lights > i:nth-child(2) { background: #FEBC2E; }
+    .tm-lights > i:nth-child(3) { background: #28C840; }
+    .tm-body { position: absolute; left: 0; right: 0; top: 44px; bottom: 0; overflow: hidden; }
+    /* .tm-scroll holds the lines; scroll by tweening its y (0.3s power2.out, like a terminal) */
+    .tm-scroll { position: absolute; left: 28px; right: 28px; top: 16px; }
+    .tm-line {
+      position: relative; height: 30px; font-family: var(--ts-mono); font-size: 22px; line-height: 30px;
+      color: #1E1E1E; white-space: pre; font-variant-ligatures: none;
+    }
+    /* the real QR code from `npx expo start`, as printed (27 x 28 modules of 13.2 px = 2 rows per text line) */
+    .tm-qrbox { position: relative; height: 389.6px; padding-top: 10px; box-sizing: border-box; }
+    .tm-qrbox > img { display: block; width: 356.4px; height: 369.6px; }
+    .tm-prompt { color: #1E1E1E; }
+    .tm-dim { color: #6B7280; }
+    .tm-ok { color: #15803D; }
+    .tm-bold { font-weight: 500; }
+    .tm-url { color: #0E7490; text-decoration: underline; text-underline-offset: 3px; }
+    .tm-sel { color: #0E7490; }
+    /* block cursor, steps per character like the house caret */
+    .tm-caret { position: absolute; left: 0; top: 3px; width: 13px; height: 24px; background: #1E293B; opacity: 0; }
+    /* wash on a span inside a line (same blue wash as the code surface) */
+    .tm-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+
+    /* browser window (Chrome on macOS, light). x 160, y 130, 1600 x 750 */
+    .br-win {
+      position: absolute; left: 160px; top: 130px; width: 1600px; height: 750px; box-sizing: border-box;
+      background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px #D4D9E0, var(--ts-shadow);
+    }
+    .br-tabs { position: absolute; left: 0; right: 0; top: 0; height: 44px; background: #DFE3E8; }
+    .br-tabs .tm-lights { top: 15px; }
+    .br-tab {
+      position: absolute; left: 96px; top: 8px; width: 280px; height: 36px; box-sizing: border-box; padding: 0 16px;
+      background: #FFFFFF; border-radius: 10px 10px 0 0; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 15px; color: #1F2937; white-space: nowrap;
+    }
+    .br-bar { position: absolute; left: 0; right: 0; top: 44px; height: 48px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB; }
+    .br-url {
+      position: absolute; left: 132px; right: 132px; top: 8px; height: 32px; box-sizing: border-box; padding-left: 20px;
+      border-radius: 16px; background: #F1F3F4; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 17px; color: #1F2937;
+    }
+    .br-view { position: absolute; left: 0; right: 0; top: 92px; bottom: 0; overflow: hidden; }
+    /* the screenshot fills the width: assets/img/nodejs-download.jpg is 1920 x 1200, shown at 1600 x 1000 */
+    .br-shot { position: absolute; left: 0; top: 0; width: 1600px; height: 1000px; }
+
+    /* phone: dark bezel around a real screenshot. x 1462, y 140, 356 x 744; screen 332 x 720 */
+    .dv {
+      position: absolute; left: 1462px; top: 140px; width: 356px; height: 744px; box-sizing: border-box;
+      background: #15171C; border-radius: 58px; box-shadow: 0 0 0 2px #CBD5E1, var(--ts-shadow);
+    }
+    .dv-screen { position: absolute; left: 12px; top: 12px; width: 332px; height: 720px; border-radius: 46px; overflow: hidden; background: #FFFFFF; }
+    .dv--android { border-radius: 44px; }
+    .dv--android .dv-screen { border-radius: 32px; }
+    /* every screen state is a stacked .dv-shot; crossfade between them (0.3s) */
+    .dv-shot { position: absolute; left: 0; top: 0; width: 332px; height: 720px; object-fit: cover; object-position: center top; }
+    .dv-island { position: absolute; left: 114px; top: 11px; width: 104px; height: 30px; border-radius: 15px; background: #000000; z-index: 5; }
+    .dv-hole { position: absolute; left: 159px; top: 12px; width: 14px; height: 14px; border-radius: 50%; background: #000000; z-index: 5; }
+    /* finger press, positioned in screen px and centred on the target */
+    .dv-touch {
+      position: absolute; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; box-sizing: border-box;
+      background: rgba(30, 41, 59, 0.16); border: 2px solid rgba(30, 41, 59, 0.35); opacity: 0; z-index: 6;
+    }
+    /* ---- frame 14: reload on the phone ---- */
+    #f14-title { position: absolute; left: 80px; top: 196px; white-space: nowrap; }
+    .f14-card { left: 80px; width: 860px; height: 168px; }
+    #f14-c1 { top: 330px; }
+    #f14-c2 { top: 538px; }
+    .f14-vis {
+      position: absolute; left: 28px; top: 27px; width: 112px; height: 112px; box-sizing: border-box;
+      border: 1px solid var(--ts-hairline); border-radius: 8px; background: #FFFFFF; overflow: hidden;
+    }
+    /* sim-gear.jpg crop: x 640-780, y 101-241 at 0.8 (gear centre 710,171 -> 56,56) */
+    #f14-gearcrop { background: url("assets/img/sim-gear.jpg") -512px -80.8px / 624px 1356.8px no-repeat; }
+    .f14-ct { position: absolute; left: 172px; top: 42px; font-family: var(--ts-sans); font-weight: 600; font-size: 40px; line-height: 1.1; letter-spacing: -0.01em; color: var(--ts-ink); white-space: nowrap; }
+    .f14-cs { position: absolute; left: 172px; top: 98px; font-family: var(--ts-sans); font-weight: 400; font-size: 26px; line-height: 1.2; color: var(--ts-ink-soft); white-space: nowrap; }
+    /* small phone pictogram with two shake arcs */
+    #f14-mini { position: absolute; left: 36px; top: 20px; width: 40px; height: 70px; transform: rotate(-12deg); }
+    #f14-mini-body { position: absolute; inset: 0; box-sizing: border-box; border: 4px solid var(--ts-ink-soft); border-radius: 10px; }
+    #f14-mini-body::after { content: ""; position: absolute; left: 11px; top: 5px; width: 10px; height: 4px; border-radius: 2px; background: var(--ts-ink-soft); }
+    .f14-arc { position: absolute; top: 36px; width: 20px; height: 40px; box-sizing: border-box; border: 3px solid transparent; border-radius: 50%; }
+    .f14-arc.l { left: 14px; border-left-color: var(--ts-blue); }
+    .f14-arc.r { right: 14px; border-right-color: var(--ts-blue); }
+    /* sim-gear.jpg gear centre 710,171 -> screen 302,73 */
+    #f14-t-gear { left: 302px; top: 73px; }
+    /* sim-devmenu.jpg Reload button x 45-382, y 920-1023 -> screen 19-163, 392-435 */
+    #f14-t-reload { left: 91px; top: 414px; }
+    #f14-rmark { left: 16px; top: 389px; width: 150px; height: 50px; border-radius: 14px; z-index: 6; }
+    /* label for the dev menu sheet (sheet top at screen y 318 = page y 470, left edge page x 1481) */
+    #f14-menu { left: auto; right: 520px; top: 474px; }
+    #f14-link { position: absolute; left: 1400px; top: 499px; width: 80px; height: 2px; background: var(--ts-blue); transform-origin: left center; z-index: 7; }
+    #f14-link-dot { position: absolute; left: 1476px; top: 495px; width: 10px; height: 10px; border-radius: 50%; background: var(--ts-blue); z-index: 7; }
+  </style>
+
+  <div id="root" data-composition-id="14-herladen" data-width="1920" data-height="1080" data-duration="12.71">
+    <div class="ts-bg clip" id="f14-bg" data-start="0" data-duration="12.71" data-track-index="0"></div>
+    <div class="ts-stage clip" id="f14-stage" data-start="0" data-duration="12.71" data-track-index="1">
+      <div class="ts-kicker" id="f14-kicker"><div class="ts-kicker-bar"></div><div class="ts-kicker-text">Tip · Herladen</div></div>
+
+      <div class="ts-statement" id="f14-title">Je app opnieuw laden</div>
+
+      <div class="ts-card f14-card" id="f14-c1">
+        <div class="f14-vis" id="f14-gearcrop"></div>
+        <div class="f14-ct">Tik op het tandwiel</div>
+        <div class="f14-cs">De blauwe knop rechtsboven in je app</div>
+      </div>
+      <div class="ts-card f14-card" id="f14-c2">
+        <div class="f14-vis">
+          <div class="f14-arc l"></div><div class="f14-arc r"></div>
+          <div id="f14-mini"><div id="f14-mini-body"></div></div>
+        </div>
+        <div class="f14-ct">Schud je telefoon</div>
+        <div class="f14-cs">Werkt op een echt toestel</div>
+      </div>
+
+      <div class="ts-chip ts-chip--new" id="f14-menu">ontwikkelmenu</div>
+      <div id="f14-link"></div>
+      <div id="f14-link-dot"></div>
+
+      <div class="dv" id="f14-phone">
+        <div class="dv-screen">
+          <img class="dv-shot" id="f14-s-gear" src="assets/img/sim-gear.jpg" alt="">
+          <img class="dv-shot" id="f14-s-menu" src="assets/img/sim-devmenu.jpg" alt="">
+          <img class="dv-shot" id="f14-s-load" src="assets/img/sim-reloading.jpg" alt="">
+          <div class="dv-island"></div>
+          <div class="ts-mark" id="f14-rmark"></div>
+          <div class="dv-touch" id="f14-t-gear"></div>
+          <div class="dv-touch" id="f14-t-reload"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 12.71;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function pop(sel, at) { tl.fromTo(sel, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, at); }
+      function touch(sel, at) {
+        tl.fromTo(sel, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.15, ease: "power2.out", immediateRender: false }, at);
+        tl.to(sel, { opacity: 0, duration: 0.25, ease: "power1.out" }, at + 0.35);
+      }
+      function fadeIn(sel, at) { tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.inOut", immediateRender: false }, at); }
+
+      tl.set("#f14-title, #f14-c1, #f14-c2, #f14-menu, #f14-link-dot, #f14-rmark", { opacity: 0 }, 0);
+      tl.set("#f14-s-menu, #f14-s-load", { opacity: 0 }, 0);
+      tl.set("#f14-link", { scaleX: 0 }, 0);
+
+      // "helemaal opnieuw laden" (2.56)
+      pop("#f14-title", 2.56);
+
+      // "het blauwe tandwiel" (4.40): press the gear; card on "tandwiel" (4.80)
+      touch("#f14-t-gear", 4.40);
+      pop("#f14-c1", 4.80);
+
+      // "schud met je telefoon" (6.40): card + a short shake (the one non-settle motion)
+      pop("#f14-c2", 6.40);
+      tl.set("#f14-phone", { transformOrigin: "50% 50%" }, 6.40);
+      var wig = [[4, 0.07], [-4, 0.13], [4, 0.13], [-4, 0.13], [4, 0.13], [-2, 0.12], [0, 0.09]];
+      var t = 6.40;
+      wig.forEach(function (w) { tl.to("#f14-phone", { rotation: w[0], duration: w[1], ease: "sine.inOut" }, t); t += w[1]; });
+
+      // "Het ontwikkelmenu gaat open" (8.08)
+      fadeIn("#f14-s-menu", 8.08);
+      pop("#f14-menu", 8.08);
+      tl.to("#f14-link", { scaleX: 1, duration: 0.4, ease: "power3.out" }, 8.30);
+      tl.to("#f14-link-dot", { opacity: 1, duration: 0.2, ease: "power1.out" }, 8.55);
+
+      // "tik je op reload" (10.96): press Reload, mark + wash
+      touch("#f14-t-reload", 10.96);
+      tl.to("#f14-rmark", { opacity: 1, duration: 0.2, ease: "power1.out" }, 10.96);
+      tl.to("#f14-rmark", { backgroundColor: WASH, duration: 0.3, ease: "power1.out" }, 10.96);
+
+      // the app reloads (11.30) and is back (12.00)
+      fadeIn("#f14-s-load", 11.30);
+      tl.to("#f14-rmark, #f14-menu, #f14-link, #f14-link-dot", { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 11.30);
+      tl.set("#f14-s-menu", { opacity: 0 }, 11.60);
+      tl.to("#f14-s-load", { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 12.00);
+
+      tl.set({}, {}, DUR);
+      window.__timelines["14-herladen"] = tl;
+    })();
+  </script>
+</template>

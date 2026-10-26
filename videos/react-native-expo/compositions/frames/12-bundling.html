@@ -1,0 +1,356 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ==========================================================================
+       EXPO KIT: realistic terminal, browser and phones holding real screenshots.
+       Shared by every frame of this video. Copy this block verbatim; frame-specific
+       positions and states go on fNN- ids.
+       ========================================================================== */
+    /* terminal window: macOS Terminal, "Basic" profile (white). x 80, y 150, 1180 x 730 */
+    .tm-win {
+      position: absolute; left: 80px; top: 150px; width: 1180px; height: 730px; box-sizing: border-box;
+      background: #FFFFFF; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 0 0 1px #D4D9E0, var(--ts-shadow);
+    }
+    .tm-bar {
+      position: absolute; left: 0; right: 0; top: 0; height: 44px; box-sizing: border-box;
+      background: #ECECEC; border-bottom: 1px solid #D4D4D4;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 17px; color: #4B5563;
+    }
+    .tm-lights { position: absolute; left: 18px; top: 15px; display: flex; gap: 9px; }
+    .tm-lights > i { display: block; width: 14px; height: 14px; border-radius: 50%; box-sizing: border-box; border: 1px solid rgba(0, 0, 0, 0.12); }
+    .tm-lights > i:nth-child(1) { background: #FF5F57; }
+    .tm-lights > i:nth-child(2) { background: #FEBC2E; }
+    .tm-lights > i:nth-child(3) { background: #28C840; }
+    .tm-body { position: absolute; left: 0; right: 0; top: 44px; bottom: 0; overflow: hidden; }
+    /* .tm-scroll holds the lines; scroll by tweening its y (0.3s power2.out, like a terminal) */
+    .tm-scroll { position: absolute; left: 28px; right: 28px; top: 16px; }
+    .tm-line {
+      position: relative; height: 30px; font-family: var(--ts-mono); font-size: 22px; line-height: 30px;
+      color: #1E1E1E; white-space: pre; font-variant-ligatures: none;
+    }
+    /* the real QR code from `npx expo start`, as printed (27 x 28 modules of 13.2 px = 2 rows per text line) */
+    .tm-qrbox { position: relative; height: 389.6px; padding-top: 10px; box-sizing: border-box; }
+    .tm-qrbox > img { display: block; width: 356.4px; height: 369.6px; }
+    .tm-prompt { color: #1E1E1E; }
+    .tm-dim { color: #6B7280; }
+    .tm-ok { color: #15803D; }
+    .tm-bold { font-weight: 500; }
+    .tm-url { color: #0E7490; text-decoration: underline; text-underline-offset: 3px; }
+    .tm-sel { color: #0E7490; }
+    /* block cursor, steps per character like the house caret */
+    .tm-caret { position: absolute; left: 0; top: 3px; width: 13px; height: 24px; background: #1E293B; opacity: 0; }
+    /* wash on a span inside a line (same blue wash as the code surface) */
+    .tm-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+
+    /* browser window (Chrome on macOS, light). x 160, y 130, 1600 x 750 */
+    .br-win {
+      position: absolute; left: 160px; top: 130px; width: 1600px; height: 750px; box-sizing: border-box;
+      background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px #D4D9E0, var(--ts-shadow);
+    }
+    .br-tabs { position: absolute; left: 0; right: 0; top: 0; height: 44px; background: #DFE3E8; }
+    .br-tabs .tm-lights { top: 15px; }
+    .br-tab {
+      position: absolute; left: 96px; top: 8px; width: 280px; height: 36px; box-sizing: border-box; padding: 0 16px;
+      background: #FFFFFF; border-radius: 10px 10px 0 0; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 15px; color: #1F2937; white-space: nowrap;
+    }
+    .br-bar { position: absolute; left: 0; right: 0; top: 44px; height: 48px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB; }
+    .br-url {
+      position: absolute; left: 132px; right: 132px; top: 8px; height: 32px; box-sizing: border-box; padding-left: 20px;
+      border-radius: 16px; background: #F1F3F4; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 17px; color: #1F2937;
+    }
+    .br-view { position: absolute; left: 0; right: 0; top: 92px; bottom: 0; overflow: hidden; }
+    /* the screenshot fills the width: assets/img/nodejs-download.jpg is 1920 x 1200, shown at 1600 x 1000 */
+    .br-shot { position: absolute; left: 0; top: 0; width: 1600px; height: 1000px; }
+
+    /* phone: dark bezel around a real screenshot. x 1462, y 140, 356 x 744; screen 332 x 720 */
+    .dv {
+      position: absolute; left: 1462px; top: 140px; width: 356px; height: 744px; box-sizing: border-box;
+      background: #15171C; border-radius: 58px; box-shadow: 0 0 0 2px #CBD5E1, var(--ts-shadow);
+    }
+    .dv-screen { position: absolute; left: 12px; top: 12px; width: 332px; height: 720px; border-radius: 46px; overflow: hidden; background: #FFFFFF; }
+    .dv--android { border-radius: 44px; }
+    .dv--android .dv-screen { border-radius: 32px; }
+    /* every screen state is a stacked .dv-shot; crossfade between them (0.3s) */
+    .dv-shot { position: absolute; left: 0; top: 0; width: 332px; height: 720px; object-fit: cover; object-position: center top; }
+    .dv-island { position: absolute; left: 114px; top: 11px; width: 104px; height: 30px; border-radius: 15px; background: #000000; z-index: 5; }
+    .dv-hole { position: absolute; left: 159px; top: 12px; width: 14px; height: 14px; border-radius: 50%; background: #000000; z-index: 5; }
+    /* finger press, positioned in screen px and centred on the target */
+    .dv-touch {
+      position: absolute; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; box-sizing: border-box;
+      background: rgba(30, 41, 59, 0.16); border: 2px solid rgba(30, 41, 59, 0.35); opacity: 0; z-index: 6;
+    }
+    /* ---- frame 12: bundling ---- */
+    .f12-v { position: absolute; left: 0; top: 0; white-space: pre; opacity: 0; }
+    .f12-done { background: #15803D; color: #15803D; }
+    .f12-todo { background: #E4E4E7; color: #D4D4D8; }
+    /* the washed Bundled line stays readable on the wash */
+    #f12-hl-done .tm-ok { color: #166534; }
+    #f12-hl-done .tm-dim { color: #4B5563; }
+  </style>
+
+  <div data-hf-id="hf-95v0" id="root" data-composition-id="12-bundling" data-width="1920" data-height="1080" data-duration="8.79">
+    <div data-hf-id="hf-exf6" class="ts-bg clip" id="f12-bg" data-start="0" data-duration="8.79" data-track-index="0"></div>
+    <div data-hf-id="hf-fr7x" class="ts-stage clip" id="f12-stage" data-start="0" data-duration="8.79" data-track-index="1">
+      <div data-hf-id="hf-ewdi" class="ts-kicker" id="f12-kicker"><div data-hf-id="hf-gjhv" class="ts-kicker-bar"></div><div data-hf-id="hf-rent" class="ts-kicker-text">Stap 4 · De app starten</div></div>
+
+      <div data-hf-id="hf-6s3k" class="tm-win" id="f12-term">
+        <div data-hf-id="hf-b7xd" class="tm-bar"><span data-hf-id="hf-sery" class="tm-lights"><i data-hf-id="hf-wt6k"></i><i data-hf-id="hf-zeb8"></i><i data-hf-id="hf-y7e5"></i></span>mijn-app · zsh</div>
+        <div data-hf-id="hf-de2q" class="tm-body">
+          <div data-hf-id="hf-qpfo" class="tm-scroll" id="f12-scroll">
+            <div data-hf-id="hf-fdl2" class="tm-line"><span data-hf-id="hf-xeb1" class="tm-prompt">student@laptop mijn-app % </span>npx expo start</div>
+            <div data-hf-id="hf-p0hs" class="tm-line"><span data-hf-id="hf-1rtb" class="tm-dim">Starting project at ~/projecten/mijn-app</span></div>
+            <div data-hf-id="hf-w39s" class="tm-line">Using src/app as the root directory for Expo Router.</div>
+            <div data-hf-id="hf-xxth" class="tm-line">React Compiler enabled</div>
+            <div data-hf-id="hf-ruhb" class="tm-line">Starting Metro Bundler</div>
+            <div data-hf-id="hf-rhei" class="tm-qrbox"><img data-hf-id="hf-ojyl" src="assets/img/expo-start-qr.svg" alt=""></div>
+            <div data-hf-id="hf-u20j" class="tm-line">› Scan the QR code above to open in Expo Go.</div>
+            <div data-hf-id="hf-ada7" class="tm-line">› Metro: <span data-hf-id="hf-2wq6" class="tm-url">exp://192.168.129.5:8081</span></div>
+            <div data-hf-id="hf-wxwi" class="tm-line">› Web: <span data-hf-id="hf-n1l6" class="tm-url">http://localhost:8081</span></div>
+            <div data-hf-id="hf-fqvs" class="tm-line">› Using Expo Go</div>
+            <div data-hf-id="hf-ve4x" class="tm-line">› Press <span data-hf-id="hf-96x1" class="tm-bold">s</span> <span data-hf-id="hf-wvrd" class="tm-dim">│</span> switch to development build</div>
+            <div data-hf-id="hf-u8xk" class="tm-line"></div>
+            <div data-hf-id="hf-ldp0" class="tm-line">› Press <span data-hf-id="hf-3mmn" class="tm-bold">a</span> <span data-hf-id="hf-3wl9" class="tm-dim">│</span> open Android</div>
+            <div data-hf-id="hf-0u1w" class="tm-line">› Press <span data-hf-id="hf-0g6f" class="tm-bold">i</span> <span data-hf-id="hf-53ic" class="tm-dim">│</span> open iOS simulator</div>
+            <div data-hf-id="hf-qm6h" class="tm-line">› Press <span data-hf-id="hf-as55" class="tm-bold">w</span> <span data-hf-id="hf-4p7b" class="tm-dim">│</span> open web</div>
+            <div data-hf-id="hf-t20h" class="tm-line"></div>
+            <div data-hf-id="hf-yoo6" class="tm-line">› Press <span data-hf-id="hf-01ve" class="tm-bold">j</span> <span data-hf-id="hf-5w4e" class="tm-dim">│</span> open debugger</div>
+            <div data-hf-id="hf-2gp1" class="tm-line">› Press <span data-hf-id="hf-9l82" class="tm-bold">r</span> <span data-hf-id="hf-5htd" class="tm-dim">│</span> reload app</div>
+            <div data-hf-id="hf-svuy" class="tm-line">› Press <span data-hf-id="hf-21ej" class="tm-bold">m</span> <span data-hf-id="hf-6oqg" class="tm-dim">│</span> toggle menu</div>
+            <div data-hf-id="hf-1t1k" class="tm-line">› <span data-hf-id="hf-11uc" class="tm-bold">shift+m</span> <span data-hf-id="hf-6aff" class="tm-dim">│</span> more tools</div>
+            <div data-hf-id="hf-li22" class="tm-line">› Press <span data-hf-id="hf-18sh" class="tm-bold">o</span> <span data-hf-id="hf-7hci" class="tm-dim">│</span> open project code in your editor</div>
+            <div data-hf-id="hf-tgbi" class="tm-line"></div>
+            <div data-hf-id="hf-9cyp" class="tm-line">› Press <span data-hf-id="hf-x1ap" class="tm-bold">?</span> <span data-hf-id="hf-731h" class="tm-dim">│</span> show all commands</div>
+            <div data-hf-id="hf-s9ef" class="tm-line"></div>
+            <div data-hf-id="hf-nhvs" class="tm-line">Logs for your project will appear below.<span data-hf-id="hf-bt3i" class="tm-dim"> Press Ctrl+C to exit.</span></div>
+            <!-- one terminal row: the progress line rewrites itself, then becomes the Bundled line -->
+            <div data-hf-id="hf-gdhe" class="tm-line" id="f12-prog">
+              <div data-hf-id="hf-jrme" class="f12-v" id="f12-v0"><span data-hf-id="hf-it9t" class="tm-bold">iOS</span> <span data-hf-id="hf-bi3r" class="tm-dim">node_modules/expo-router/</span><span data-hf-id="hf-6lld" class="tm-bold">entry.js</span> <span data-hf-id="hf-cez5" class="f12-todo">░░░░░░░░░░░░░░░░</span><span data-hf-id="hf-t2xx" class="tm-bold">  0.0% </span><span data-hf-id="hf-n5ew" class="tm-dim">(0/1)</span></div>
+              <div data-hf-id="hf-npqf" class="f12-v" id="f12-v1"><span data-hf-id="hf-dig5" class="tm-bold">iOS</span> <span data-hf-id="hf-6j9j" class="tm-dim">node_modules/expo-router/</span><span data-hf-id="hf-7mf9" class="tm-bold">entry.js</span> <span data-hf-id="hf-55wr" class="f12-done">▓▓</span><span data-hf-id="hf-ztwv" class="f12-todo">░░░░░░░░░░░░░░</span><span data-hf-id="hf-gkcp" class="tm-bold"> 17.0% </span><span data-hf-id="hf-uj7q" class="tm-dim">(137/332)</span></div>
+              <div data-hf-id="hf-f1uk" class="f12-v" id="f12-v2"><span data-hf-id="hf-epd8" class="tm-bold">iOS</span> <span data-hf-id="hf-64yi" class="tm-dim">node_modules/expo-router/</span><span data-hf-id="hf-8tcc" class="tm-bold">entry.js</span> <span data-hf-id="hf-cnhd" class="f12-done">▓▓▓▓</span><span data-hf-id="hf-7zj1" class="f12-todo">░░░░░░░░░░░░</span><span data-hf-id="hf-pa5d" class="tm-bold"> 30.9% </span><span data-hf-id="hf-rba4" class="tm-dim">(380/684)</span></div>
+              <div data-hf-id="hf-ftid" class="f12-v" id="f12-v3"><span data-hf-id="hf-eb27" class="tm-bold">iOS</span> <span data-hf-id="hf-5qnh" class="tm-dim">node_modules/expo-router/</span><span data-hf-id="hf-8f1b" class="tm-bold">entry.js</span> <span data-hf-id="hf-dakz" class="f12-done">▓▓▓▓▓▓▓▓▓▓</span><span data-hf-id="hf-txpj" class="f12-todo">░░░░░░</span><span data-hf-id="hf-j0lg" class="tm-bold"> 65.6% </span><span data-hf-id="hf-u83f" class="tm-dim">(787/972)</span></div>
+              <div data-hf-id="hf-wdma" class="f12-v" id="f12-v4"><span data-hf-id="hf-fhza" class="tm-bold">iOS</span> <span data-hf-id="hf-8iso" class="tm-dim">node_modules/expo-router/</span><span data-hf-id="hf-9lye" class="tm-bold">entry.js</span> <span data-hf-id="hf-g3oc" class="f12-done">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</span><span data-hf-id="hf-0c28" class="f12-todo">░</span><span data-hf-id="hf-7fg1" class="tm-bold"> 98.3% </span><span data-hf-id="hf-tpdf" class="tm-dim">(1263/1274)</span></div>
+              <div data-hf-id="hf-2jc3" class="f12-v" id="f12-v5"><span data-hf-id="hf-pymw" class="tm-hl" id="f12-hl-done"><span data-hf-id="hf-spx5" class="tm-ok"><span data-hf-id="hf-f3o9" class="tm-bold">iOS</span> Bundled </span><span data-hf-id="hf-c477" class="tm-dim">456ms node_modules/expo-router/entry.js (1274 modules)</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-xpm8" class="dv" id="f12-phone">
+        <div data-hf-id="hf-g247" class="dv-screen">
+          <img data-hf-id="hf-4v3v" class="dv-shot" id="f12-s-home" src="assets/img/sim-home.jpg" alt="">
+          <img data-hf-id="hf-v7rj" class="dv-shot" id="f12-s-bund" src="assets/img/sim-bundling.jpg" alt="">
+          <img data-hf-id="hf-aje3" class="dv-shot" id="f12-s-app" src="assets/img/sim-app.jpg" alt="">
+          <div data-hf-id="hf-ukls" class="dv-island"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 8.79;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var Y_LOGS = -451.6;  // "Logs for your project..." is the bottom line
+      var ROW = 30;
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function show(sel, at) { tl.set(sel, { opacity: 1 }, at); }
+      function hide(sel, at) { tl.set(sel, { opacity: 0 }, at); }
+      function shot(outSel, inSel, at) {
+        tl.fromTo(inSel, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.inOut", immediateRender: false }, at);
+        tl.set(outSel, { opacity: 0 }, at + 0.3);
+      }
+
+      tl.set("#f12-scroll", { y: Y_LOGS }, 0);
+      tl.set("#f12-s-bund, #f12-s-app", { opacity: 0 }, 0);
+
+      // "Metro bundelt nu je code" (0.56): the progress line appears, the terminal scrolls one row
+      show("#f12-v0", 0.56);
+      tl.to("#f12-scroll", { y: Y_LOGS - ROW, duration: 0.3, ease: "power2.out" }, 0.56);
+      hide("#f12-v0", 1.40); show("#f12-v1", 1.40);
+      hide("#f12-v1", 2.28); show("#f12-v2", 2.28);
+      // "naar je telefoon" (2.76)
+      shot("#f12-s-home", "#f12-s-bund", 2.76);
+      hide("#f12-v2", 3.30); show("#f12-v3", 3.30);
+      hide("#f12-v3", 4.20); show("#f12-v4", 4.20);
+      // "verschijnt bundled" (4.96)
+      hide("#f12-v4", 4.96); show("#f12-v5", 4.96);
+      washOn("#f12-hl-done", 4.96);
+      // "draait je app" (6.88)
+      shot("#f12-s-bund", "#f12-s-app", 6.88);
+
+      tl.set({}, {}, DUR);
+      window.__timelines["12-bundling"] = tl;
+    })();
+  </script>
+</template>
