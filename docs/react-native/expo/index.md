@@ -58,6 +58,14 @@ npx expo register
 npx expo login
 ```
 
+:::tip Lukt inloggen niet?
+Geraak je niet ingelogd via de browser, gebruik dan de `--no-browser` optie. Dan log je rechtstreeks in de terminal in met je gebruikersnaam en wachtwoord, zonder browser:
+
+```bash
+npx expo login --no-browser
+```
+:::
+
 Met `npx expo whoami` kan je controleren met welk account je ingelogd bent. Log daarna ook in de Expo Go app in met hetzelfde account.
 
 ## Nieuwe app aanmaken
