@@ -813,7 +813,15 @@ const addItem = async (item: Omit<Item, "id">) => {
 };
 ```
 
-Vergeet dan ook de bijhorende policy niet (`for insert to authenticated with check (true)`), anders weigert RLS de insert.
+Vergeet dan ook de bijhorende policy niet, anders weigert RLS de insert. Voer dit uit in de SQL Editor (met de naam van jouw tabel in plaats van `animals`):
+
+```sql
+-- Ingelogde gebruikers mogen dieren toevoegen
+create policy "Dieren toevoegen" on animals
+  for insert to authenticated with check (true);
+```
+
+Wil je ook rijen aanpassen of verwijderen, dan heb je daar telkens een eigen policy voor nodig (`for update` of `for delete`).
 
 Andere bewerkingen volgen hetzelfde patroon:
 
