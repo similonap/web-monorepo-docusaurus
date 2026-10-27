@@ -3,7 +3,7 @@
   "framework": null,
   "installCommand": "cd ../.. && npm ci --include=dev",
   "buildCommand": "cd ../.. && node scripts/course.cjs --course courses/webontwikkeling build",
-  "ignoreCommand": "cd ../.. && git diff --quiet HEAD^ HEAD -- courses/webontwikkeling docs src static codesandbox scripts package.json package-lock.json",
+  "ignoreCommand": "cd ../.. && git diff --quiet ${VERCEL_GIT_PREVIOUS_SHA:-HEAD^} HEAD -- courses/webontwikkeling docs src static codesandbox scripts package.json package-lock.json",
   "outputDirectory": ".course/build",
   "cleanUrls": true,
   "trailingSlash": false,
