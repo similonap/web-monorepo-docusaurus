@@ -138,7 +138,8 @@ over als vertrekpunt.
 - **Cursor**: de oversized-cursor-component voor elke klik; klik = kleine dip
   (scale 0.96 → 1) + ink-rimpel op het doel, met `click-soft`.
 - Hook (frame 1): klein interactief voorbeeld + het kernwoord als groot Inter 700
-  hero-woord met blauwe onderlijn. Laatste frame: samenvatting.
+  hero-woord met blauwe onderlijn. Laatste frame: samenvatting, maar enkel bij grote
+  lesfilmpjes (zie "Lengte" hieronder). Kennisclips eindigen op het laatste voorbeeld.
 
 **Beweging**
 
@@ -173,8 +174,13 @@ over als vertrekpunt.
 - Toon: rustige, vriendelijke docent, helder en niet gehaast. Code-termen in het Engels,
   uitgesproken als woorden ("use state", "set count", "on change").
 - Didactische opbouw: probleem tonen (wat gaat er mis en waarom) → oplossing → varianten
-  → samenvatting. Volg de volgorde die de docent opgeeft.
-- Lengte: ongeveer 2 tot 3,5 minuten, 10 à 14 scènes.
+  → samenvatting (enkel bij grote lesfilmpjes). Volg de volgorde die de docent opgeeft.
+- Lengte:
+  - **Grote lesfilmpjes** (bv. `react-usestate`, `react-native-flexbox`): ongeveer 2 tot
+    3,5 minuten, 10 à 14 scènes, met een samenvatting als laatste scène.
+  - **Kennisclips** (één onderwerp of component, bv. `react-native-pressable`): ongeveer
+    1 minuut, rond de 6 scènes, **geen** samenvatting. De clip volgt de voorbeelden van de
+    cursuspagina en stopt na het laatste.
 
 ### Projectstructuur (`videos/<naam>/`)
 

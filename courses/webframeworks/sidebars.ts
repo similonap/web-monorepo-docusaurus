@@ -90,6 +90,7 @@ const sidebars: SidebarsConfig = {
             'react-native/core-components/textinput',
             'react-native/core-components/button',
             'react-native/core-components/pressable',
+            'react-native/core-components/keyboardavoidingview',
           ],
         },
         {
@@ -99,7 +100,14 @@ const sidebars: SidebarsConfig = {
         'react-native/custom-components/index',
         'react-native/flexbox/index',
         'react-native/hooks/index',
-        'react-native/lists-and-keys/index',
+        {
+          type: 'category', label: 'Lijsten en scrollen',
+          items: [
+            'react-native/lists-and-keys/index',
+            'react-native/lists-and-keys/scrollview',
+            'react-native/lists-and-keys/flatlist',
+          ],
+        },
         'react-native/controlled-components/index',
         'react-native/expo-router/index',
         'react-native/async-storage/index',

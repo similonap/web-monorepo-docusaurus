@@ -15,6 +15,7 @@ Veel core components zijn wel *vergelijkbaar* met een HTML element (een `View` m
 - [TextInput](./textinput.md): een invoerveld, vergelijkbaar met een `input`.
 - [Button](./button.md): een eenvoudige knop met een native uitzicht.
 - [Pressable](./pressable.md): maakt van eender welke component een knop.
+- [KeyboardAvoidingView](./keyboardavoidingview.md): zorgt dat het toetsenbord je invoervelden niet bedekt.
 
 ## Events afhandelen
 
