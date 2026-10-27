@@ -279,8 +279,11 @@ function program(parent: string[], children: string[][]): string {
 }
 
 const box = (color: string, ...extra: string[]) => ['width: 40', 'height: 40', `backgroundColor: "${color}"`, ...extra];
-const RGB = ['red', 'green', 'blue'];
-const WRAP_COLORS = ['red', 'green', 'blue', 'pink', 'black', 'yellow', 'brown', 'turquoise', 'indigo', 'purple'];
+const RGB = ['lightblue', 'skyblue', 'steelblue'];
+const WRAP_COLORS = [
+    'lightblue', 'skyblue', 'steelblue', 'cadetblue', 'royalblue',
+    'powderblue', 'lightskyblue', 'cornflowerblue', 'lightsteelblue', 'slategray',
+];
 
 const PRESETS: Record<Preset, string> = {
     flexDirection: program(['flex: 1', 'flexDirection: "row"'], RGB.map(c => box(c))),
@@ -291,11 +294,11 @@ const PRESETS: Record<Preset, string> = {
     justifyContent: program(['flex: 1', 'flexDirection: "column"', 'justifyContent: "center"'], RGB.map(c => box(c))),
     alignItems: program(
         ['flex: 1', 'flexDirection: "column"', 'justifyContent: "flex-start"', 'alignItems: "center"'],
-        [box('red'), box('green'), ['height: 40', 'backgroundColor: "blue"']],
+        [box('lightblue'), box('skyblue'), ['height: 40', 'backgroundColor: "steelblue"']],
     ),
     alignSelf: program(
         ['flex: 1', 'flexDirection: "column"', 'alignItems: "center"'],
-        [box('red'), box('green'), box('blue', 'alignSelf: "flex-start"')],
+        [box('lightblue'), box('skyblue'), box('steelblue', 'alignSelf: "flex-start"')],
     ),
     flexWrap: program(
         ['flex: 1', 'flexDirection: "row"', 'alignItems: "flex-start"', 'flexWrap: "wrap"', 'alignContent: "flex-start"'],
@@ -304,10 +307,10 @@ const PRESETS: Record<Preset, string> = {
     absolute: program(
         ['flex: 1', 'justifyContent: "flex-start"', 'alignItems: "center"'],
         [
-            box('red', 'position: "absolute"', 'top: 0', 'left: 0'),
-            box('green', 'position: "absolute"', 'top: 50', 'right: 50'),
-            box('blue', 'position: "absolute"', 'bottom: 10', 'left: 10'),
-            box('pink', 'position: "absolute"', 'bottom: 50', 'right: 30'),
+            box('lightblue', 'position: "absolute"', 'top: 0', 'left: 0'),
+            box('skyblue', 'position: "absolute"', 'top: 50', 'right: 50'),
+            box('steelblue', 'position: "absolute"', 'bottom: 10', 'left: 10'),
+            box('cadetblue', 'position: "absolute"', 'bottom: 50', 'right: 30'),
         ],
     ),
     playground: program(

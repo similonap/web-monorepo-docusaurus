@@ -128,22 +128,22 @@
 }
 
 .axisMain {
-    stroke: #0288d1;
+    stroke: #3178c6;
     stroke-width: 2;
 }
 
 .axisMainHead {
-    fill: #0288d1;
+    fill: #3178c6;
 }
 
 .axisCross {
-    stroke: #6b7280;
+    stroke: #94a3b8;
     stroke-width: 1.5;
     stroke-dasharray: 5 4;
 }
 
 .axisCrossHead {
-    fill: #6b7280;
+    fill: #94a3b8;
 }
 
 .axisMainLabel,
@@ -154,12 +154,12 @@
 }
 
 .axisMainLabel {
-    fill: #0277bd;
+    fill: #235a97;
     font-weight: 700;
 }
 
 .axisCrossLabel {
-    fill: #4b5563;
+    fill: #475569;
     font-weight: 700;
 }
 
