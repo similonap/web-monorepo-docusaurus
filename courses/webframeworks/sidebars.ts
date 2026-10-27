@@ -98,6 +98,7 @@ const sidebars: SidebarsConfig = {
         },
         'react-native/custom-components/index',
         'react-native/flexbox/index',
+        'react-native/hooks/index',
         'react-native/lists-and-keys/index',
         'react-native/controlled-components/index',
         'react-native/expo-router/index',

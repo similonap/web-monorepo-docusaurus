@@ -89,7 +89,7 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 
 const User = () => {
-    const { name } = useLocalSearchParams<{name: string}();
+    const { name } = useLocalSearchParams<{name: string}>();
     return (
         <View style={styles.container}>
             <Text>User : { name }</Text>
@@ -570,4 +570,81 @@ const Page1 = () => {
     );
 }
 export default Page1;
+```
+
+## useFocusEffect
+
+Bij een Stack of Tab Navigation blijven schermen bestaan als je naar een ander scherm navigeert. Ga je bijvoorbeeld naar een ander tabblad en kom je daarna terug, dan wordt het eerste scherm niet opnieuw aangemaakt. Het was gewoon even niet zichtbaar.
+
+Dat heeft een gevolg voor `useEffect`. Een `useEffect` met een lege dependency array wordt maar één keer uitgevoerd: de eerste keer dat het scherm getoond wordt. Keer je later terug naar het scherm, dan wordt die niet opnieuw uitgevoerd.
+
+Meestal is dat precies wat je wil, maar niet altijd. Stel dat je op het ene scherm een lijst toont en op een ander scherm een item aan die lijst toevoegt. Als je terugkeert naar de lijst, wil je die opnieuw ophalen zodat het nieuwe item erbij staat.
+
+Hiervoor heeft Expo Router de `useFocusEffect` hook. Deze werkt zoals `useEffect`, maar wordt uitgevoerd telkens het scherm in beeld komt (de focus krijgt). Net zoals bij `useEffect` kan je een cleanup functie teruggeven. Die wordt uitgevoerd telkens het scherm uit beeld gaat. Dat is handig om bijvoorbeeld een timer te stoppen.
+
+```tsx
+import React, { useCallback, useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { useFocusEffect } from "expo-router";
+
+const Index = () => {
+    useEffect(() => {
+        console.log("useEffect: scherm aangemaakt");
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            console.log("useFocusEffect: scherm in beeld");
+
+            return () => {
+                console.log("useFocusEffect: scherm uit beeld");
+            };
+        }, [])
+    );
+
+    return (
+        <View style={styles.container}>
+            <Text>Home Screen</Text>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center"
+    }
+})
+
+export default Index;
+```
+
+Zet dit scherm in een Tab Navigation met nog een tweede tabblad en wissel een paar keer van tabblad. In de terminal waar je `npx expo start` uitvoerde zie je dat `useEffect` maar één keer iets logt, terwijl `useFocusEffect` dat telkens opnieuw doet als je terugkeert.
+
+### useCallback
+
+Misschien viel het je op dat we de functie niet rechtstreeks aan `useFocusEffect` meegeven, maar eerst in `useCallback` wikkelen. Dat is nodig omdat `useFocusEffect` de functie opnieuw uitvoert telkens hij een **andere** functie binnenkrijgt.
+
+Bij elke render van je component wordt een arrow function opnieuw aangemaakt. Voor JavaScript is dat telkens een nieuwe functie, ook al staat er exact dezelfde code in. Zonder `useCallback` zou het effect dus na elke render opnieuw uitgevoerd worden in plaats van enkel wanneer het scherm in beeld komt. Pas je in het effect de state aan, dan krijg je zelfs een oneindige lus.
+
+`useCallback` lost dat op: het onthoudt de functie tussen de renders door en geeft telkens dezelfde functie terug. Enkel als een waarde in de dependency array verandert, wordt er een nieuwe functie gemaakt. Die dependency array werkt dus net zoals bij `useEffect`: gebruik je in de functie een waarde die kan veranderen (bv. een parameter uit `useLocalSearchParams`), dan zet je die in de array.
+
+### Data opnieuw ophalen
+
+Het meest gebruikte voorbeeld van `useFocusEffect` is data opnieuw ophalen als je terugkeert naar een scherm. Net zoals bij `useEffect` mag de functie zelf niet `async` zijn. Daarom maken we binnenin een aparte async functie die we meteen oproepen.
+
+```tsx
+const [todos, setTodos] = useState<Todo[]>([]);
+
+useFocusEffect(
+    useCallback(() => {
+        const loadTodos = async () => {
+            // haal hier de todos opnieuw op (bv. uit AsyncStorage of Supabase)
+            // en zet ze in de state met setTodos(...)
+        };
+
+        loadTodos();
+    }, [])
+);
 ```
