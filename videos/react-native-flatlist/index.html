@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #FFFFFF;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-t6yo" id="root" data-composition-id="main" data-start="0" data-duration="52.03" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-l4wp" id="el-01-hook" class="scene" data-composition-id="01-hook" data-composition-src="compositions/frames/01-hook.html" data-start="0.0" data-duration="8.63" data-track-index="0"></div>
+      <audio data-hf-id="hf-wbyz" id="el-01-hook-voice" src="audio/vo-01.mp3" data-start="0.0" data-duration="7.63" data-track-index="10" data-volume="1"></audio>
+
+      <div data-hf-id="hf-6agb" id="el-02-data" class="scene" data-composition-id="02-data" data-composition-src="compositions/frames/02-data.html" data-start="8.13" data-duration="8.84" data-track-index="1"></div>
+      <audio data-hf-id="hf-432s" id="el-02-data-voice" src="audio/vo-02.mp3" data-start="8.13" data-duration="7.89" data-track-index="10" data-volume="1"></audio>
+
+      <div data-hf-id="hf-3l57" id="el-03-renderitem" class="scene" data-composition-id="03-renderitem" data-composition-src="compositions/frames/03-renderitem.html" data-start="16.47" data-duration="9.51" data-track-index="0"></div>
+      <audio data-hf-id="hf-e6xc" id="el-03-renderitem-voice" src="audio/vo-03.mp3" data-start="16.47" data-duration="8.52" data-track-index="10" data-volume="1"></audio>
+
+      <div data-hf-id="hf-g5tz" id="el-04-keyextractor" class="scene" data-composition-id="04-keyextractor" data-composition-src="compositions/frames/04-keyextractor.html" data-start="25.48" data-duration="8.15" data-track-index="1"></div>
+      <audio data-hf-id="hf-tuba" id="el-04-keyextractor-voice" src="audio/vo-04.mp3" data-start="25.48" data-duration="7.16" data-track-index="10" data-volume="1"></audio>
+
+      <div data-hf-id="hf-ktle" id="el-05-kleuren" class="scene" data-composition-id="05-kleuren" data-composition-src="compositions/frames/05-kleuren.html" data-start="33.13" data-duration="9.91" data-track-index="0"></div>
+      <audio data-hf-id="hf-y448" id="el-05-kleuren-voice" src="audio/vo-05.mp3" data-start="33.13" data-duration="8.91" data-track-index="10" data-volume="1"></audio>
+
+      <div data-hf-id="hf-0coz" id="el-06-footer" class="scene" data-composition-id="06-footer" data-composition-src="compositions/frames/06-footer.html" data-start="42.54" data-duration="9.49" data-track-index="1"></div>
+      <audio data-hf-id="hf-cxpc" id="el-06-footer-voice" src="audio/vo-06.mp3" data-start="42.54" data-duration="7.81" data-track-index="10" data-volume="1"></audio>
+
+      <!-- captions -->
+      <div data-hf-id="hf-rqi4" id="el-captions" data-track-kind="captions" class="scene" data-composition-id="captions" data-composition-src="compositions/captions.html" data-start="0" data-duration="52.03" data-track-index="2"></div>
+
+      <!-- SFX -->
+      <audio data-hf-id="hf-wtwt" id="el-sfx-0" src="assets/sfx/pop.mp3" data-start="0.28" data-duration="0.72" data-track-index="20" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-mph0" id="el-sfx-1" src="assets/sfx/whoosh-short.mp3" data-start="2.4" data-duration="0.57" data-track-index="21" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-pxhx" id="el-sfx-2" src="assets/sfx/whoosh-short.mp3" data-start="3.68" data-duration="0.57" data-track-index="22" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-xfxc" id="el-sfx-3" src="assets/sfx/pop.mp3" data-start="4.96" data-duration="0.72" data-track-index="23" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-wr4v" id="el-sfx-4" src="assets/sfx/typing.mp3" data-start="9.88" data-duration="1.5" data-track-index="24" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-ihdi" id="el-sfx-5" src="assets/sfx/whoosh-short.mp3" data-start="12.21" data-duration="0.57" data-track-index="25" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-7k0j" id="el-sfx-6" src="assets/sfx/pop.mp3" data-start="12.23" data-duration="0.72" data-track-index="26" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-wncx" id="el-sfx-7" src="assets/sfx/typing.mp3" data-start="16.57" data-duration="1.5" data-track-index="27" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-gcyd" id="el-sfx-8" src="assets/sfx/pop.mp3" data-start="19.95" data-duration="0.72" data-track-index="28" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-t0wy" id="el-sfx-9" src="assets/sfx/pop.mp3" data-start="23.59" data-duration="0.72" data-track-index="29" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-vrbb" id="el-sfx-10" src="assets/sfx/typing.mp3" data-start="25.88" data-duration="1.5" data-track-index="30" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-23un" id="el-sfx-11" src="assets/sfx/pop.mp3" data-start="30.36" data-duration="0.72" data-track-index="31" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-7pmw" id="el-sfx-12" src="assets/sfx/pop.mp3" data-start="31.96" data-duration="0.72" data-track-index="32" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-5zkm" id="el-sfx-13" src="assets/sfx/whoosh-short.mp3" data-start="39.73" data-duration="0.57" data-track-index="33" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-z9ab" id="el-sfx-14" src="assets/sfx/typing.mp3" data-start="42.94" data-duration="1.5" data-track-index="34" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-86zp" id="el-sfx-15" src="assets/sfx/whoosh-short.mp3" data-start="44.74" data-duration="0.57" data-track-index="35" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-nzy6" id="el-sfx-16" src="assets/sfx/typing.mp3" data-start="47.34" data-duration="1.5" data-track-index="36" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-5y1v" id="el-sfx-17" src="assets/sfx/pop.mp3" data-start="47.74" data-duration="0.72" data-track-index="37" data-volume="0.35"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+      // ── frame transitions ──
+      (function () { var tl = window.__timelines["main"];
+        tl.to("#el-01-hook", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.6, ease: "power2.inOut" }, 8.13);
+        tl.fromTo("#el-02-data", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.6, ease: "power2.inOut" }, 8.13);
+        tl.addLabel("hf:transition:01-hook:02-data:blur-crossfade", 8.13);
+        tl.to("#el-02-data", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 16.47);
+        tl.fromTo("#el-03-renderitem", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 16.47);
+        tl.addLabel("hf:transition:02-data:03-renderitem:crossfade", 16.47);
+        tl.to("#el-03-renderitem", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 25.48);
+        tl.fromTo("#el-04-keyextractor", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 25.48);
+        tl.addLabel("hf:transition:03-renderitem:04-keyextractor:crossfade", 25.48);
+        tl.to("#el-04-keyextractor", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 33.13);
+        tl.fromTo("#el-05-kleuren", { x: 1920, opacity: 1 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.inOut" }, 33.13);
+        tl.addLabel("hf:transition:04-keyextractor:05-kleuren:push-slide", 33.13);
+        tl.to("#el-05-kleuren", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 42.54);
+        tl.fromTo("#el-06-footer", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 42.54);
+        tl.addLabel("hf:transition:05-kleuren:06-footer:crossfade", 42.54);
+        tl.to({}, { duration: 52.03 }, 0); // full-span anchor
+      })();
+    </script>
+  </body>
+</html>
