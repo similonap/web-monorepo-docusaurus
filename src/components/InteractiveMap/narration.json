@@ -1,0 +1,18 @@
+{
+    "name": "map",
+    "clips": {
+        "highlight-element-0": "We starten bij het eerste element van numbers: de waarde één.",
+        "move-to-param-0": "Map geeft die waarde door aan de callback, als de parameter element.",
+        "enter-body-0": "In de body vullen we element in. Dat wordt één maal twee.",
+        "show-result-0": "Dat geeft twee. De callback returnt dat getal.",
+        "push-to-dest-0": "Map zet die waarde op dezelfde positie in de nieuwe array doubled.",
+        "highlight-element-1": "Dan het tweede element: twee.",
+        "show-result-1": "Twee maal twee is vier. Ook dat getal wordt gereturnd.",
+        "push-to-dest-1": "Ook dat resultaat komt in doubled.",
+        "show-result-2": "Drie maal twee is zes.",
+        "show-result-3": "Vier maal twee is acht.",
+        "highlight-element-4": "En het laatste element: vijf.",
+        "show-result-4": "Vijf maal twee is tien.",
+        "done": "Klaar! Map geeft een nieuwe array terug met evenveel elementen als numbers: twee, vier, zes, acht en tien. De originele array numbers blijft ongewijzigd."
+    }
+}

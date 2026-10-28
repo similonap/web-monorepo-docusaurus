@@ -288,14 +288,13 @@ function InteractiveFindNames() {
                                     </span>
                                 </span>
                             ) : (
+                                <span className={styles.paramName}>name</span>
+                            )}
+                            {/* Het type blijft staan, ook als de waarde ingevuld is. */}
+                            {!typeInference && (
                                 <>
-                                    <span className={styles.paramName}>name</span>
-                                    {!typeInference && (
-                                        <>
-                                            <span className={styles.punct}>: </span>
-                                            <span className={styles.typeName}>string</span>
-                                        </>
-                                    )}
+                                    <span className={styles.punct}>: </span>
+                                    <span className={styles.typeName}>string</span>
                                 </>
                             )}
                             <span className={styles.punct}>)</span>

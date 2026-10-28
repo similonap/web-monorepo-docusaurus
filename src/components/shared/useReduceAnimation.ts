@@ -1,6 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import type { RefObject } from 'react';
 import type { FlyingBadge } from './types';
+import { useNarration } from './useNarration';
+import type { NarrationConfig } from './useNarration';
+
+// Pauze na een ingesproken fragment voor de volgende stap begint.
+const NARRATION_GAP = 300;
 
 export interface AnimationRefs {
     containerRef: RefObject<HTMLDivElement | null>;
@@ -19,12 +24,15 @@ interface Config<TStep extends { type: string }> {
     steps: TStep[];
     stepDuration: Record<string, number>;
     getBadgeAnimation: (step: TStep, refs: AnimationRefs) => BadgeAnimation | null;
+    /** Optionele vertelstem: auto-play wacht tot het fragment van een stap gedaan is. */
+    narration?: NarrationConfig;
 }
 
 export function useReduceAnimation<TStep extends { type: string }>({
     steps,
     stepDuration,
     getBadgeAnimation,
+    narration,
 }: Config<TStep>) {
     const [stepIndex, setStepIndex] = useState(-1);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -40,6 +48,17 @@ export function useReduceAnimation<TStep extends { type: string }>({
 
     const isDone = stepIndex === steps.length - 1;
     const isRunning = stepIndex >= 0 && !isDone;
+
+    const { hasClip, pending: narrationPending, subtitle } = useNarration(narration, stepIndex, isPlaying, isDone);
+
+    // Bij een stap met een vliegende badge landt de waarde pas in de volgende stap.
+    // Die mag dus al komen terwijl de stem nog praat (anders hoor je "Map zet die
+    // waarde in doubled" bij een leeg vakje), tenzij die stap zelf iets te zeggen heeft.
+    const currentStep = stepIndex >= 0 ? steps[stepIndex] : null;
+    const narrationRunsOn = currentStep !== null
+        && getBadgeAnimation(currentStep, refs) !== null
+        && !(narration && (narration.voice || narration.subtitles)
+            && stepIndex + 1 < steps.length && narration.clipFor(stepIndex + 1));
 
     // ------------------------------------------------------------------
     // Flying badge
@@ -108,16 +127,18 @@ export function useReduceAnimation<TStep extends { type: string }>({
     useEffect(() => {
         if (!isPlaying) return;
         if (isDone) { setIsPlaying(false); return; }
+        // Wacht tot de vertelstem uitgesproken is.
+        if (narrationPending && !narrationRunsOn) return;
 
-        const currentStep = stepIndex >= 0 ? steps[stepIndex] : null;
-        const delay = currentStep ? stepDuration[currentStep.type] : 200;
+        const stepDelay = currentStep ? stepDuration[currentStep.type] : 200;
+        const delay = hasClip && !narrationRunsOn ? Math.min(stepDelay, NARRATION_GAP) : stepDelay;
 
         const timer = setTimeout(() => {
             advanceStep(stepIndex);
         }, delay);
 
         return () => clearTimeout(timer);
-    }, [isPlaying, stepIndex, isDone, advanceStep, steps, stepDuration]);
+    }, [isPlaying, stepIndex, isDone, advanceStep, currentStep, stepDuration, hasClip, narrationPending, narrationRunsOn]);
 
     // ------------------------------------------------------------------
     // Handlers
@@ -164,5 +185,6 @@ export function useReduceAnimation<TStep extends { type: string }>({
         handleStart,
         handleStep,
         reset,
+        subtitle,
     };
 }

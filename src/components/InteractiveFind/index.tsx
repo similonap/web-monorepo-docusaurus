@@ -285,14 +285,13 @@ function InteractiveFind() {
                                     </span>
                                 </span>
                             ) : (
+                                <span className={styles.paramName}>element</span>
+                            )}
+                            {/* Het type blijft staan, ook als de waarde ingevuld is. */}
+                            {!typeInference && (
                                 <>
-                                    <span className={styles.paramName}>element</span>
-                                    {!typeInference && (
-                                        <>
-                                            <span className={styles.punct}>: </span>
-                                            <span className={styles.typeName}>number</span>
-                                        </>
-                                    )}
+                                    <span className={styles.punct}>: </span>
+                                    <span className={styles.typeName}>number</span>
                                 </>
                             )}
                             <span className={styles.punct}>)</span>

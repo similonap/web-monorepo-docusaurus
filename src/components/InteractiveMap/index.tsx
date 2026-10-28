@@ -5,6 +5,9 @@ import { useReduceAnimation } from '../shared/useReduceAnimation';
 import type { AnimationRefs, BadgeAnimation } from '../shared/useReduceAnimation';
 import ReduceControls from '../shared/ReduceControls';
 import FlyingBadgeDisplay from '../shared/FlyingBadgeDisplay';
+import { useNarrationScript } from '../shared/useNarration';
+import { NarrationToggles, NarrationSubtitle } from '../shared/NarrationControls';
+import narrationScript from './narration.json';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -13,8 +16,8 @@ import FlyingBadgeDisplay from '../shared/FlyingBadgeDisplay';
 type MapStep =
     | { type: 'highlight-element'; index: number }
     | { type: 'move-to-param'; index: number; value: number }
-    | { type: 'enter-body'; value: number }
-    | { type: 'show-result'; result: number }
+    | { type: 'enter-body'; index: number; value: number }
+    | { type: 'show-result'; index: number; result: number }
     | { type: 'push-to-dest'; index: number; result: number }
     | { type: 'add-to-dest'; index: number; result: number }
     | { type: 'done'; result: number[] };
@@ -60,8 +63,8 @@ function generateSteps(): MapStep[] {
         const result = value * 2;
         steps.push({ type: 'highlight-element', index: i });
         steps.push({ type: 'move-to-param', index: i, value });
-        steps.push({ type: 'enter-body', value });
-        steps.push({ type: 'show-result', result });
+        steps.push({ type: 'enter-body', index: i, value });
+        steps.push({ type: 'show-result', index: i, result });
         steps.push({ type: 'push-to-dest', index: i, result });
         steps.push({ type: 'add-to-dest', index: i, result });
     }
@@ -70,6 +73,11 @@ function generateSteps(): MapStep[] {
 }
 
 const STEPS = generateSteps();
+
+// Fragment-id per stap, bv. "show-result-2" (zie narration.json).
+function clipId(step: MapStep): string {
+    return step.type === 'done' ? 'done' : `${step.type}-${step.index}`;
+}
 
 // ---------------------------------------------------------------------------
 // Visual state derivation
@@ -101,8 +109,10 @@ function deriveVisualState(stepIndex: number): VisualState {
                 state.bodyResult = null;
                 break;
             case 'move-to-param':
-                // badge is flying — don't replace "element" yet
+                // De waarde staat in de parameter zodra de badge geland is (zie paramValue
+                // in de component), dus tijdens de uitleg en niet pas bij de volgende stap.
                 state.paramHighlighted = true;
+                state.paramValue = step.value;
                 state.valueArriveKey = i;
                 break;
             case 'enter-body':
@@ -142,6 +152,7 @@ function deriveVisualState(stepIndex: number): VisualState {
 function InteractiveMap() {
     const [typeInference, setTypeInference] = useState(false);
     const [returnStatement, setReturnStatement] = useState(false);
+    const narration = useNarrationScript(narrationScript, STEPS, clipId);
 
     const calcResultRef = useRef<HTMLSpanElement>(null);
     // One ref per dest slot so the badge can fly to the exact target block
@@ -167,12 +178,19 @@ function InteractiveMap() {
     }, []);
 
     const {
-        stepIndex, isPlaying, badge, isDone, isRunning,
+        stepIndex, isPlaying, badge, isDone, isRunning, subtitle,
         containerRef, accBoxRef, arrayElementRefs,
         handleStart, handleStep, reset,
-    } = useReduceAnimation({ steps: STEPS, stepDuration: STEP_DURATION, getBadgeAnimation });
+    } = useReduceAnimation({
+        steps: STEPS,
+        stepDuration: STEP_DURATION,
+        getBadgeAnimation,
+        narration: narration.config,
+    });
 
     const vis = deriveVisualState(stepIndex);
+    // Zolang de badge naar de parameter vliegt, blijft "element" staan.
+    const paramValue = STEPS[stepIndex]?.type === 'move-to-param' && badge ? null : vis.paramValue;
 
     function renderBody() {
         if (vis.bodyValue === null) {
@@ -221,6 +239,7 @@ function InteractiveMap() {
                     />
                     gebruik return statement
                 </label>
+                <NarrationToggles {...narration} styles={styles} />
             </div>
 
             {/* ---- Code Panel ---- */}
@@ -253,21 +272,20 @@ function InteractiveMap() {
                             className={`${styles.paramArea} ${vis.paramHighlighted ? styles.tokenHighlight : ''}`}
                         >
                             <span className={styles.punct}>(</span>
-                            {vis.paramValue !== null ? (
+                            {paramValue !== null ? (
                                 <span className={styles.substituted}>
                                     <span key={`param-${vis.valueArriveKey}`} className={styles.substitutedValue}>
-                                        {vis.paramValue}
+                                        {paramValue}
                                     </span>
                                 </span>
                             ) : (
+                                <span className={styles.paramName}>element</span>
+                            )}
+                            {/* Het type blijft staan, ook als de waarde ingevuld is. */}
+                            {!typeInference && (
                                 <>
-                                    <span className={styles.paramName}>element</span>
-                                    {!typeInference && (
-                                        <>
-                                            <span className={styles.punct}>: </span>
-                                            <span className={styles.typeName}>number</span>
-                                        </>
-                                    )}
+                                    <span className={styles.punct}>: </span>
+                                    <span className={styles.typeName}>number</span>
                                 </>
                             )}
                             <span className={styles.punct}>)</span>
@@ -345,6 +363,8 @@ function InteractiveMap() {
                     </span>
                 </div>
             )}
+
+            <NarrationSubtitle enabled={narration.subtitles} text={subtitle} />
 
             <ReduceControls
                 isDone={isDone}

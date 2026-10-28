@@ -5,6 +5,9 @@ import { useReduceAnimation } from '../shared/useReduceAnimation';
 import type { AnimationRefs, BadgeAnimation } from '../shared/useReduceAnimation';
 import ReduceControls from '../shared/ReduceControls';
 import FlyingBadgeDisplay from '../shared/FlyingBadgeDisplay';
+import { useNarrationScript } from '../shared/useNarration';
+import { NarrationToggles, NarrationSubtitle } from '../shared/NarrationControls';
+import narrationScript from './narration.json';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -13,10 +16,10 @@ import FlyingBadgeDisplay from '../shared/FlyingBadgeDisplay';
 type FilterStep =
     | { type: 'highlight-element'; index: number }
     | { type: 'move-to-param'; index: number; value: number }
-    | { type: 'enter-body'; value: number }
-    | { type: 'show-result'; value: number; passes: boolean }
-    | { type: 'push-to-dest'; value: number }
-    | { type: 'add-to-dest'; results: number[] }
+    | { type: 'enter-body'; index: number; value: number }
+    | { type: 'show-result'; index: number; value: number; passes: boolean }
+    | { type: 'push-to-dest'; index: number; value: number }
+    | { type: 'add-to-dest'; index: number; results: number[] }
     | { type: 'reject-element'; index: number }
     | { type: 'done'; result: number[] };
 
@@ -63,12 +66,12 @@ function generateSteps(): FilterStep[] {
         const passes = value % 2 === 0;
         steps.push({ type: 'highlight-element', index: i });
         steps.push({ type: 'move-to-param', index: i, value });
-        steps.push({ type: 'enter-body', value });
-        steps.push({ type: 'show-result', value, passes });
+        steps.push({ type: 'enter-body', index: i, value });
+        steps.push({ type: 'show-result', index: i, value, passes });
         if (passes) {
-            steps.push({ type: 'push-to-dest', value });
+            steps.push({ type: 'push-to-dest', index: i, value });
             results.push(value);
-            steps.push({ type: 'add-to-dest', results: [...results] });
+            steps.push({ type: 'add-to-dest', index: i, results: [...results] });
         } else {
             steps.push({ type: 'reject-element', index: i });
         }
@@ -78,6 +81,11 @@ function generateSteps(): FilterStep[] {
 }
 
 const STEPS = generateSteps();
+
+// Fragment-id per stap, bv. "show-result-2" (zie narration.json).
+function clipId(step: FilterStep): string {
+    return step.type === 'done' ? 'done' : `${step.type}-${step.index}`;
+}
 
 // ---------------------------------------------------------------------------
 // Visual state derivation
@@ -109,7 +117,10 @@ function deriveVisualState(stepIndex: number): VisualState {
                 state.bodyPasses = null;
                 break;
             case 'move-to-param':
+                // De waarde staat in de parameter zodra de badge geland is (zie paramValue
+                // in de component), dus tijdens de uitleg en niet pas bij de volgende stap.
                 state.paramHighlighted = true;
+                state.paramValue = step.value;
                 state.valueArriveKey = i;
                 break;
             case 'enter-body':
@@ -150,6 +161,7 @@ function deriveVisualState(stepIndex: number): VisualState {
 function InteractiveFilter() {
     const [typeInference, setTypeInference] = useState(false);
     const [returnStatement, setReturnStatement] = useState(false);
+    const narration = useNarrationScript(narrationScript, STEPS, clipId);
 
     const calcResultRef = useRef<HTMLSpanElement>(null);
 
@@ -173,22 +185,30 @@ function InteractiveFilter() {
     }, []);
 
     const {
-        stepIndex, isPlaying, badge, isDone, isRunning,
+        stepIndex, isPlaying, badge, isDone, isRunning, subtitle,
         containerRef, accBoxRef, curBoxRef, arrayElementRefs,
         handleStart, handleStep, reset,
-    } = useReduceAnimation({ steps: STEPS, stepDuration: STEP_DURATION, getBadgeAnimation });
+    } = useReduceAnimation({
+        steps: STEPS,
+        stepDuration: STEP_DURATION,
+        getBadgeAnimation,
+        narration: narration.config,
+    });
 
     const vis = deriveVisualState(stepIndex);
+    // Zolang de badge naar de parameter vliegt, blijft "element" staan.
+    const paramValue = STEPS[stepIndex]?.type === 'move-to-param' && badge ? null : vis.paramValue;
 
     function getSourceClass(i: number) {
         const isHighlighted = vis.highlightedSourceIndex === i;
         const isRejected = vis.rejectedIndices.includes(i);
         const isProcessed = vis.isDone || (isRunning && vis.highlightedSourceIndex !== null && i < vis.highlightedSourceIndex);
 
+        // Een afgewezen element wordt meteen rood, niet pas bij het volgende element.
         return [
             styles.arrayElement,
-            isHighlighted ? styles.arrayElementHighlighted : '',
-            isProcessed && isRejected ? styles.arrayElementRejected : '',
+            isHighlighted && !isRejected ? styles.arrayElementHighlighted : '',
+            isRejected ? styles.arrayElementRejected : '',
             isProcessed && !isRejected ? styles.arrayElementUsed : '',
         ].join(' ');
     }
@@ -246,6 +266,7 @@ function InteractiveFilter() {
                     />
                     gebruik return statement
                 </label>
+                <NarrationToggles {...narration} styles={styles} />
             </div>
 
             {/* ---- Code Panel ---- */}
@@ -275,21 +296,20 @@ function InteractiveFilter() {
                             className={`${styles.paramArea} ${vis.paramHighlighted ? styles.tokenHighlight : ''}`}
                         >
                             <span className={styles.punct}>(</span>
-                            {vis.paramValue !== null ? (
+                            {paramValue !== null ? (
                                 <span className={styles.substituted}>
                                     <span key={`param-${vis.valueArriveKey}`} className={styles.substitutedValue}>
-                                        {vis.paramValue}
+                                        {paramValue}
                                     </span>
                                 </span>
                             ) : (
+                                <span className={styles.paramName}>element</span>
+                            )}
+                            {/* Het type blijft staan, ook als de waarde ingevuld is. */}
+                            {!typeInference && (
                                 <>
-                                    <span className={styles.paramName}>element</span>
-                                    {!typeInference && (
-                                        <>
-                                            <span className={styles.punct}>: </span>
-                                            <span className={styles.typeName}>number</span>
-                                        </>
-                                    )}
+                                    <span className={styles.punct}>: </span>
+                                    <span className={styles.typeName}>number</span>
                                 </>
                             )}
                             <span className={styles.punct}>)</span>
@@ -357,6 +377,8 @@ function InteractiveFilter() {
                     </span>
                 </div>
             )}
+
+            <NarrationSubtitle enabled={narration.subtitles} text={subtitle} />
 
             <ReduceControls
                 isDone={isDone}

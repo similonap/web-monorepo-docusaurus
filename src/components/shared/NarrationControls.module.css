@@ -1,0 +1,25 @@
+/* Ondertitel zoals bij YouTube: wit op halfdoorzichtig zwart, onderaan het scherm. */
+
+.subtitle {
+    position: fixed;
+    left: 50%;
+    bottom: 8vh;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: min(80vw, 56rem);
+    z-index: 10000; /* boven de gemaximaliseerde weergave (9999) */
+    pointer-events: none;
+    text-align: center;
+}
+
+.subtitleText {
+    padding: 0.1em 0.45em;
+    background: rgba(8, 8, 8, 0.75);
+    color: #fff;
+    font-family: Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: clamp(1.05rem, 1.6vw, 1.6rem);
+    line-height: 1.5;
+    /* Elke regel krijgt zijn eigen zwarte balk, zoals bij YouTube. */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}

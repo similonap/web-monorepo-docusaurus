@@ -1,0 +1,21 @@
+{
+    "name": "filter",
+    "clips": {
+        "highlight-element-0": "We starten bij het eerste element van numbers: de waarde één.",
+        "move-to-param-0": "Filter geeft die waarde door aan de callback, als de parameter element.",
+        "enter-body-0": "In de body vullen we element in. Is één modulo twee gelijk aan nul?",
+        "show-result-0": "Nee, de rest is één. De callback returnt dus false.",
+        "reject-element-0": "Bij false laat filter het element weg. Het komt niet in de nieuwe array.",
+        "highlight-element-1": "Dan het tweede element: twee.",
+        "show-result-1": "Twee modulo twee is nul. De callback returnt true.",
+        "push-to-dest-1": "Bij true neemt filter het element over in de nieuwe array even.",
+        "show-result-2": "Drie is oneven, dus de callback returnt false.",
+        "reject-element-2": "Drie valt weg.",
+        "show-result-3": "Vier is even, dus true.",
+        "push-to-dest-3": "Vier komt erbij.",
+        "highlight-element-4": "En het laatste element: vijf.",
+        "show-result-4": "Vijf is oneven, dus false.",
+        "reject-element-4": "Ook vijf valt weg.",
+        "done": "Klaar! Filter geeft een nieuwe array terug met enkel de elementen waarvoor de callback true returnde: twee en vier. De originele array numbers blijft ongewijzigd."
+    }
+}
