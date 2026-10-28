@@ -2,11 +2,11 @@
 sidebar_position: 15
 ---
 
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # Child-Parent communicatie
 
-<YouTubeVideo src="https://youtu.be/S8lI-AdOKF0" title="React - Child-parent communicatie met callbacks" />
+<HyperframesVideo name="react-child-parent" title="React - Child-parent communicatie met callbacks" />
 
 Tot nu toe hebben we altijd gezien dat je data kan doorgeven aan een component via properties (props). Dit is een manier om data van een parent component naar een child component door te geven. 
 
@@ -183,7 +183,7 @@ export default App;
 
 ## Voorbeelden
 
-<YouTubeVideo src="https://youtu.be/fmw4dOy_oTk" title="React - Todo App: child-parent communicatie met callbacks" />
+<HyperframesVideo name="react-todo-callbacks" title="React - Todo App: child-parent communicatie met callbacks" />
 
 ### Todo App met InputView
 

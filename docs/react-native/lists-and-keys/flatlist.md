@@ -1,8 +1,8 @@
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # FlatList
 
-<YouTubeVideo src="https://youtu.be/-alM70xggpk" title="React Native - FlatList" />
+<HyperframesVideo name="react-native-flatlist" title="React Native - FlatList" />
 
 Een andere manier om een lijst te maken is door gebruik te maken van de `FlatList` component. Deze component heeft een aantal voordelen ten opzichte van de map functie. De `FlatList` component is een native component en zal dus sneller zijn dan een lijst die gemaakt wordt met de map functie. Daarnaast zal de `FlatList` component alleen de elementen renderen die op het scherm zichtbaar zijn. Dit is handig als je een lijst hebt met veel elementen. 
 

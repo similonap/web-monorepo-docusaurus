@@ -2,11 +2,11 @@
 sidebar_position: 6
 ---
 
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # Button
 
-<YouTubeVideo src="https://youtu.be/mo3cba0yKew" title="React Native - Button" />
+<HyperframesVideo name="react-native-button" title="React Native - Button" />
 
 De `Button` component is een component die gebruikt kan worden om een button te maken. De `Button` component is vergelijkbaar met de `button` tag in HTML.
 

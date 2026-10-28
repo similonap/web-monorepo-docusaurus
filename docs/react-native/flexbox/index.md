@@ -3,11 +3,11 @@ sidebar_position: 5
 ---
 
 import InteractiveFlexbox from '@site/src/components/InteractiveFlexbox';
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # Flexbox
 
-<YouTubeVideo src="https://youtu.be/A1WUcSplXRY" title="React Native - Flexbox uitgelegd" />
+<HyperframesVideo name="react-native-flexbox" title="React Native - Flexbox uitgelegd" />
 
 ## Flexbox in React Native
 

@@ -2,11 +2,11 @@
 sidebar_position: 1
 ---
 
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # StatusBar
 
-<YouTubeVideo src="https://youtu.be/Zo63P9LnpbQ" title="React Native - StatusBar" />
+<HyperframesVideo name="react-native-statusbar" title="React Native - StatusBar" />
 
 De statusbalk is de balk helemaal bovenaan je scherm, met de klok, het batterijniveau en het netwerk. Die balk hoort bij het besturingssysteem en niet bij je app, maar je kan wel instellen hoe hij eruitziet. Daarvoor gebruik je de `StatusBar` component uit het package `expo-status-bar`.
 

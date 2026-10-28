@@ -1,8 +1,8 @@
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # Scrollable
 
-<YouTubeVideo src="https://youtu.be/slXU8CIJNcI" title="React Native - ScrollView" />
+<HyperframesVideo name="react-native-scrollview" title="React Native - ScrollView" />
 
 Tot nu toe konden we alleen maar lijsten tonen die in de lengte van het scherm passen. Als we een lijst hebben die langer is dan het scherm, dan kunnen we deze niet tonen. We kunnen dit oplossen door een `ScrollView` te gebruiken. Een `ScrollView` is een component die een lijst kan tonen die langer is dan het scherm.
 

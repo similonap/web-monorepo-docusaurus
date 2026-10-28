@@ -2,11 +2,11 @@
 sidebar_position: 6
 ---
 
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # Lijsten met map
 
-<YouTubeVideo src="https://youtu.be/R22NixoQvsY" title="React Native - Lijsten met map" />
+<HyperframesVideo name="react-native-lists" title="React Native - Lijsten met map" />
 
 Net zoals in React.js kunnen we ook in React Native lijsten maken. We kunnen dit doen door een array te maken en deze te mappen naar een component. We moeten wel een key meegeven aan elk element in de lijst. Deze key moet uniek zijn voor elk element in de lijst.
 

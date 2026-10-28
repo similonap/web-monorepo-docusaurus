@@ -2,11 +2,11 @@
 sidebar_position: 7
 ---
 
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # Pressable
 
-<YouTubeVideo src="https://youtu.be/KyUEPtYaqtk" title="React Native - Pressable" />
+<HyperframesVideo name="react-native-pressable" title="React Native - Pressable" />
 
 Zoals we hiervoor hebben vermeld is de `Button` component beperkt in styling mogelijkheden. Het Pressable component maakt het mogelijk andere Views te gebruiken als button. 
 

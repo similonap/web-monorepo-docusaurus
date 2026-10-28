@@ -2,11 +2,11 @@
 sidebar_position: 1
 ---
 
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # useEffect
 
-<YouTubeVideo src="https://youtu.be/9I2erYzD8T0" title="React - useEffect uitgelegd" />
+<HyperframesVideo name="react-useeffect" title="React - useEffect uitgelegd" />
 
 ## Side effects
 Een React component gebruikt props en/of state en bepaalt hiermee een output van het component (renderen van het component). Als het react component lijnen code bevat die niet rechtstreeks bijdragen aan deze output, dan noemen we deze side-effects.

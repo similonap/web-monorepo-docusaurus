@@ -1,8 +1,8 @@
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # Context
 
-<YouTubeVideo src="https://youtu.be/m7eBzfpWvoE" title="React - Context uitgelegd" />
+<HyperframesVideo name="react-context" title="React - Context uitgelegd" />
 
 ## Delen van data via context
 
@@ -236,7 +236,7 @@ export default App;
 
 ## Data Context
 
-<YouTubeVideo src="https://youtu.be/DYxdvXnme7Y" title="React - DataContext: data delen met een provider" />
+<HyperframesVideo name="react-datacontext" title="React - DataContext: data delen met een provider" />
 
 Een veel voorkomend patroon is dat je data vanuit een API ophaalt en deze data dan doorgeeft aan verschillende componenten. Dit kan je doen door de data in de state van de bovenste component te plaatsen en deze dan door te geven aan de onderliggende componenten. Je zou dit kunnen doen aan de hand van props, maar dit is niet altijd even handig. Dit wordt meestal gedaan aan de hand van de Context API.
 

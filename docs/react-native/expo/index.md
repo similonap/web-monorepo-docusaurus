@@ -3,11 +3,11 @@ sidebar_position: 2
 ---
 
 import ExpoQrScan from '@site/src/components/ExpoQrScan';
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # Expo
 
-<YouTubeVideo src="https://youtu.be/PyF_-u38qVE" title="React Native - Expo Setup" />
+<HyperframesVideo name="react-native-expo" title="React Native - Expo Setup" />
 
 Expo is een verzameling tools bovenop React Native die het ontwikkelen van apps een stuk makkelijker maakt. Je maakt er een nieuw project mee aan, je start er een development server mee en je test je app meteen op je eigen smartphone of tablet via de Expo Go app. Zonder Expo moet je je app eerst bundelen en installeren op je toestel voor je ze kan testen, en dat is een stuk moeilijker.
 

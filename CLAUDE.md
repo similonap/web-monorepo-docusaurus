@@ -196,11 +196,18 @@ over als vertrekpunt.
 
 ### Renderen en publiceren
 
-- `npm run videos` (of `npm run videos -- <naam>`) rendert `videos/<naam>/` naar
-  `static/videos/<naam>.mp4` + poster `<naam>.jpg` (zie `scripts/render-videos.cjs`).
-  Vraagt Chrome en ffmpeg, dus enkel lokaal.
-- `static/videos/` en `videos/*/renders/` staan **niet** in git. De broncode in `videos/`
-  wel. De MP4 gaat naar YouTube en wordt in de docs ingebed met
-  `<YouTubeVideo src='https://youtu.be/…'/>`. Lokaal tonen kan met
-  `<HyperframesVideo name="<naam>" />`.
-- Render pas na akkoord van de docent op de preview.
+- Lesfilmpjes worden **niet** gerenderd: embed ze in de docs met
+  `<HyperframesVideo name="<naam>" title="…" />`
+  (`import HyperframesVideo from '@site/src/components/HyperframesVideo';`). De
+  course-build (`scripts/bundle-hyperframes.cjs`) zet enkel de video's die een geselecteerde
+  pagina gebruikt klaar onder `/hyperframes/<naam>/`: de bestanden waarnaar `index.html`
+  verwijst, met de HyperFrames-runtime en `<hyperframes-player>` van jsDelivr in de versie
+  uit de `package.json` van het project. De browser speelt de compositie live af.
+- Gepauzeerd kan een student tekst uit de video selecteren en kopiëren (bv. code). Enkel
+  zichtbare tekst gaat mee; lijnnummers worden herkend aan een klasse op `-ln` (bv.
+  `ts-ln`, `f02t-ln`). Hou die naamgeving aan in nieuwe codevlakken.
+- Voice-over als MP3 (`audio/`), niet als WAV: elke kijker downloadt de audio.
+- `npm run videos` (of `npm run videos -- <naam>`) rendert toch een MP4 naar
+  `static/videos/<naam>.mp4` + poster `<naam>.jpg`, bv. voor YouTube. Vraagt Chrome en
+  ffmpeg, dus enkel lokaal. `static/videos/` en `videos/*/renders/` staan **niet** in git.
+- Zet een video pas in de docs na akkoord van de docent op de preview.

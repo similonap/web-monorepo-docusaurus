@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Rendert de HyperFrames-video's uit videos/<naam>/ naar static/videos/<naam>.mp4
 // (+ een poster <naam>.jpg). Manuele stap: renderen vraagt Chrome en ffmpeg en
-// kan dus niet in CI. De output staat niet in git: upload de video naar YouTube
-// en embed hem met <YouTubeVideo>.
+// kan dus niet in CI. De output staat niet in git. Voor de cursussite is dit
+// niet nodig (<HyperframesVideo> speelt de compositie live af); enkel voor een
+// MP4, bv. om naar YouTube te uploaden.
 //
 //   npm run videos                       alle video's
 //   npm run videos -- react-useeffect    enkel de opgegeven video's

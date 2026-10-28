@@ -7,6 +7,7 @@ const {
 // Use the same sidebar normalization and document IDs as our pinned Docusaurus version.
 const { normalizeSidebars } = require('@docusaurus/plugin-content-docs/lib/sidebars/normalization.js');
 const { DefaultNumberPrefixParser } = require('@docusaurus/plugin-content-docs/lib/numberPrefix.js');
+const { bundleHyperframes } = require('./bundle-hyperframes.cjs');
 
 const SOURCE_DIR = path.resolve(__dirname, '..');
 const OUTPUT_NAME = '.course';
@@ -273,6 +274,14 @@ async function assembleCourse({ courseDir, sourceDir = SOURCE_DIR }) {
         (file) => directory !== 'static' ||
           (!file.startsWith('exercises/') && !file.startsWith('exercise-files/')));
     }
+    // Only the HyperFrames videos embedded in the selected pages.
+    const videos = new Set();
+    for (const file of await filesIn(path.join(staging, 'docs'))) {
+      if (!/\.(md|mdx)$/.test(file)) continue;
+      const source = await fs.readFile(path.join(staging, 'docs', file), 'utf8');
+      for (const match of source.matchAll(/<HyperframesVideo\b[^>]*\bname=["']([^"']+)["']/g)) videos.add(match[1]);
+    }
+    await bundleHyperframes([...videos], path.join(staging, 'static', 'hyperframes'));
     await fs.copyFile(path.join(SOURCE_DIR, 'package.json'), path.join(staging, 'package.json'));
     await fs.copyFile(path.join(SOURCE_DIR, 'tsconfig.json'), path.join(staging, 'tsconfig.json'));
     const manifest = { generator: 'assemble-course', sourceDir, courseDir, documents: selected, exercises: [...exercises].sort() };

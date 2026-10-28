@@ -2,7 +2,7 @@
 sidebar_position: 9999
 ---
 
-import YouTubeVideo from '@site/src/components/YouTubeVideo';
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
 
 # custom hooks
 
@@ -160,7 +160,7 @@ const { pause: pauseTime, resume: resumeTime } = useTimeout(1000, () => setTime(
 
 ### useFetch hook
 
-<YouTubeVideo src="https://youtu.be/OFBt5A5Wxpc" title="React - useFetch: een fetch hook bouwen" />
+<HyperframesVideo name="react-usefetch" title="React - useFetch: een fetch hook bouwen" />
 
 Een heel interessante hook om te schrijven is een `useFetch` hook die data ophaalt van een API en deze in de state plaatst. Deze hook kan ook loading en error states bijhouden.
 
