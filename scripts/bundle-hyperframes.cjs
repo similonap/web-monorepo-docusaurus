@@ -70,7 +70,13 @@ function playerPage(name, version) {
     <title>${name}</title>
     <style>
       html, body { margin: 0; height: 100%; background: #fff; overflow: hidden; }
-      hyperframes-player { display: block; width: 100%; height: 100%; }
+      /* Wit i.p.v. zwart achter de compositie, bedieningsbalk in de huisstijl. */
+      hyperframes-player {
+        display: block; width: 100%; height: 100%; background: #fff;
+        --hfp-controls-bg: linear-gradient(transparent, rgba(15, 23, 42, 0.45));
+        --hfp-scrubber-bg: rgba(255, 255, 255, 0.45);
+        --hfp-accent: #3178C6;
+      }
     </style>
   </head>
   <body>

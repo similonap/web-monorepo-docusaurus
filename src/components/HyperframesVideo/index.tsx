@@ -20,7 +20,10 @@ export default function HyperframesVideo({name, title}: {name: string; title?: s
       style={{
         display: 'block', width: '100%', maxWidth: 800, aspectRatio: '16 / 9', margin: '0 auto 1rem',
         // Het eerste frame is wit: zonder rand valt de video weg tegen de pagina.
-        border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: 8,
+        // Een box-shadow i.p.v. border, zodat de binnenkant exact 16:9 blijft
+        // en de player geen zwarte randjes naast de compositie toont.
+        border: 'none', borderRadius: 8,
+        boxShadow: '0 0 0 1px var(--ifm-color-emphasis-200), 0 1px 2px rgba(15, 23, 42, 0.06)',
       }}
     />
   );
