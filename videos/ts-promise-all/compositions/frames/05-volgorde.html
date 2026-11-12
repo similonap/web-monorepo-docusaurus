@@ -1,0 +1,418 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- PROMISE CLIP: shared helpers of the promise videos ---- */
+    /* console card: program output (Node), same place and look as the scherm card */
+    .pc-console { position: absolute; box-sizing: border-box; background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow); padding: 18px 26px; overflow: hidden; }
+    .pc-out { position: relative; height: 44px; display: flex; align-items: center; font-family: var(--ts-mono); font-size: 24px; font-weight: 400; color: var(--ts-ink); white-space: nowrap; opacity: 0; }
+    .pc-out::before { content: ">"; color: var(--ts-muted); margin-right: 16px; }
+    .pc-out--error { border-left: 4px solid var(--ts-error); padding-left: 14px; }
+    .pc-out--error::before { content: none; }
+    .pc-out--old { color: var(--ts-muted); }
+    .pc-stamp { margin-left: auto; padding-left: 20px; font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted); }
+    /* promise state chip: key PROMISE + value (pending / fulfilled / rejected) */
+    .pc-state .pc-val { display: inline-block; }
+    .pc-val--pending { color: var(--ts-ink-soft); }
+    .pc-val--fulfilled { color: var(--ts-blue-dark); }
+    .pc-val--rejected { color: var(--ts-error); }
+    /* small note next to a chip / under a card */
+    .pc-note { position: absolute; font-family: var(--ts-sans); font-weight: 500; font-size: 27px; line-height: 1.3; color: var(--ts-ink-soft); white-space: nowrap; opacity: 0; }
+    /* timeline: one row per promise (label | track with a bar), axis below */
+    .pc-tl { position: absolute; }
+    .pc-tl-row { position: relative; height: 56px; }
+    .pc-tl-label { position: absolute; left: 0; top: 0; height: 56px; display: flex; align-items: center; font-family: var(--ts-mono); font-size: 22px; color: var(--ts-ink); white-space: nowrap; }
+    .pc-tl-track { position: absolute; top: 10px; height: 36px; right: 0; background: var(--ts-panel); border-radius: 8px; }
+    .pc-bar { position: absolute; top: 0; bottom: 0; left: 0; box-sizing: border-box; border: 2px solid var(--ts-blue); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; opacity: 0; }
+    .pc-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: var(--ts-wash); transform-origin: left center; transform: scaleX(0); }
+    .pc-bar-text { position: relative; font-family: var(--ts-mono); font-size: 20px; font-weight: 500; color: var(--ts-blue-dark); white-space: nowrap; opacity: 0; }
+    .pc-bar--error { border-color: var(--ts-error); }
+    .pc-bar--error .pc-fill { background: rgba(209, 67, 67, 0.10); }
+    .pc-bar--error .pc-bar-text { color: var(--ts-error); }
+    .pc-bar--ghost { border-style: dashed; border-color: var(--ts-muted); }
+    .pc-bar--ghost .pc-fill { background: transparent; }
+    .pc-now { position: absolute; top: -6px; bottom: -6px; width: 2px; margin-left: -1px; background: var(--ts-blue); opacity: 0; }
+    .pc-axis { position: relative; height: 28px; }
+    .pc-tick { position: absolute; top: 4px; font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted); transform: translateX(-50%); white-space: nowrap; }
+    .pc-clock { position: absolute; font-family: var(--ts-mono); font-size: 30px; font-weight: 500; color: var(--ts-blue-dark); white-space: nowrap; }
+    /* bracket over a span of the axis: thin muted line with end ticks + label above */
+    .pc-bracket { position: absolute; height: 12px; box-sizing: border-box; border: 2px solid var(--ts-muted); border-bottom: none; border-radius: 4px 4px 0 0; opacity: 0; }
+    .pc-bracket-label { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); font-family: var(--ts-mono); font-size: 22px; color: var(--ts-ink-soft); white-space: nowrap; }
+    /* arrow: a line (2px muted) with a small solid head drawn with borders */
+    .pc-arrow { position: absolute; height: 2px; background: var(--ts-muted); transform-origin: left center; }
+    .pc-arrow::after { content: ""; position: absolute; right: -2px; top: -6px; border-left: 12px solid var(--ts-muted); border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+
+    /* ---- frame 05 positions ---- */
+    #f05v-card { left: 80px; top: 190px; width: 1760px; height: 420px; }
+    #f05v-tl { left: 120px; top: 250px; width: 1580px; }
+    #f05v-tl .pc-tl-row { margin-bottom: 14px; }
+    #f05v-tl .pc-tl-track { left: 260px; }
+    #f05v-tl .pc-axis { margin-left: 260px; width: 1320px; }
+    .f05v-idx { position: absolute; left: 210px; top: 0; height: 56px; display: flex; align-items: center; font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted); white-space: nowrap; opacity: 0; }
+    #f05v-b1 { width: 100%; border-left-width: 6px; border-right-width: 6px; border-radius: 18px / 6px; }
+    #f05v-b2 { width: 33.3333%; }
+    #f05v-b3 { width: 66.6667%; }
+    .f05v-txtbox { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
+    #f05v-nowwrap { position: absolute; left: 260px; top: 0; width: 1320px; height: 196px; }
+    #f05v-clock { left: 1720px; top: 398px; }
+    .f05v-rank { font-size: 18px; line-height: 22px; padding: 6px 14px; opacity: 0; }
+    #f05v-r2 { left: 832px; top: 331px; }
+    #f05v-r3 { left: 1272px; top: 401px; }
+    #f05v-r1 { left: 1712px; top: 261px; }
+    #f05v-conn { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #f05v-reslabel { left: 80px; top: 650px; }
+    .f05v-brk { position: absolute; top: 690px; width: 24px; height: 72px; line-height: 72px; text-align: center; font-family: var(--ts-mono); font-size: 40px; color: var(--ts-label); }
+    .f05v-cell { width: 120px; height: 72px; padding: 0; justify-content: center; font-size: 34px; top: 690px; }
+    #f05v-c0 { left: 112px; }
+    #f05v-c1 { left: 256px; }
+    #f05v-c2 { left: 400px; }
+    .f05v-ci { position: absolute; top: 772px; width: 120px; text-align: center; font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted); opacity: 0; }
+    #f05v-mark4 { left: 106px; top: 684px; width: 132px; height: 84px; opacity: 0; }
+  </style>
+
+  <div data-hf-id="hf-h0vo" id="root" data-composition-id="05-volgorde" data-width="1920" data-height="1080" data-duration="12.55">
+    <div data-hf-id="hf-mng1" class="ts-bg clip" id="f05v-bg" data-start="0" data-duration="12.55" data-track-index="0"></div>
+
+    <div data-hf-id="hf-96w6" class="ts-stage clip" id="f05v-stage" data-start="0" data-duration="12.55" data-track-index="1">
+      <div data-hf-id="hf-i554" class="ts-kicker" id="f05v-kicker"><div data-hf-id="hf-6y1p" class="ts-kicker-bar" id="f05v-kbar"></div><span data-hf-id="hf-sw84" class="ts-kicker-text" id="f05v-ktext">Volgorde</span></div>
+
+      <!-- timeline card -->
+      <div data-hf-id="hf-9ev6" class="ts-card" id="f05v-card"></div>
+      <div data-hf-id="hf-1m52" class="pc-tl" id="f05v-tl">
+        <div data-hf-id="hf-h2ir" class="pc-tl-row">
+          <span data-hf-id="hf-51ph" class="pc-tl-label">multiply(2, 2)</span>
+          <span data-hf-id="hf-1twd" class="f05v-idx" id="f05v-i0">[0]</span>
+          <div data-hf-id="hf-29fa" class="pc-tl-track">
+            <div data-hf-id="hf-n8i0" class="pc-bar" id="f05v-b1"><div data-hf-id="hf-qmbs" class="pc-fill" id="f05v-f1"></div></div>
+            <div data-hf-id="hf-2nk3" class="f05v-txtbox"><span data-hf-id="hf-q6ik" class="pc-bar-text" id="f05v-t1">= 4</span></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-e9oj" class="pc-tl-row">
+          <span data-hf-id="hf-91bf" class="pc-tl-label">multiply(3, 3)</span>
+          <span data-hf-id="hf-qdx3" class="f05v-idx" id="f05v-i1">[1]</span>
+          <div data-hf-id="hf-i07u" class="pc-tl-track">
+            <div data-hf-id="hf-y3zn" class="pc-bar" id="f05v-b2"><div data-hf-id="hf-za7n" class="pc-fill" id="f05v-f2"></div><span data-hf-id="hf-mkeu" class="pc-bar-text" id="f05v-t2">= 9</span></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-dvdi" class="pc-tl-row">
+          <span data-hf-id="hf-9y6p" class="pc-tl-label">multiply(4, 4)</span>
+          <span data-hf-id="hf-nrr5" class="f05v-idx" id="f05v-i2">[2]</span>
+          <div data-hf-id="hf-ieiv" class="pc-tl-track">
+            <div data-hf-id="hf-u5vm" class="pc-bar" id="f05v-b3"><div data-hf-id="hf-vc3m" class="pc-fill" id="f05v-f3"></div><span data-hf-id="hf-3svx" class="pc-bar-text" id="f05v-t3">= 16</span></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-8urz" class="pc-axis">
+          <span data-hf-id="hf-dagk" class="pc-tick" style="left: 0%;">0 s</span>
+          <span data-hf-id="hf-8wmv" class="pc-tick" style="left: 33.3333%;">1 s</span>
+          <span data-hf-id="hf-zfqr" class="pc-tick" style="left: 66.6667%;">2 s</span>
+          <span data-hf-id="hf-rwr2" class="pc-tick" style="left: 100%;">3 s</span>
+        </div>
+        <div data-hf-id="hf-2svt" id="f05v-nowwrap"><div data-hf-id="hf-57me" class="pc-now" id="f05v-now"></div></div>
+      </div>
+      <div data-hf-id="hf-fxwb" class="pc-clock" id="f05v-clock">0,0 s</div>
+
+      <!-- finish order tags -->
+      <span data-hf-id="hf-f681" class="ts-tag f05v-rank" id="f05v-r2">1e</span>
+      <span data-hf-id="hf-w4jb" class="ts-tag f05v-rank" id="f05v-r3">2e</span>
+      <span data-hf-id="hf-pies" class="ts-tag f05v-rank" id="f05v-r1">3e</span>
+
+      <!-- connector: 3e tag to the 4 cell -->
+      <svg data-hf-id="hf-60ra" id="f05v-conn" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+        <path data-hf-id="hf-b92s" id="f05v-conn-path" d="M 1725 298 C 1640 520, 560 600, 222 684" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+
+      <!-- result block -->
+      <div data-hf-id="hf-9zf5" class="ts-label" id="f05v-reslabel">resultaat</div>
+      <div data-hf-id="hf-5eb7" class="ts-chip f05v-cell" id="f05v-c0">4</div>
+      <div data-hf-id="hf-l8hb" class="ts-chip f05v-cell" id="f05v-c1">9</div>
+      <div data-hf-id="hf-ivik" class="ts-chip f05v-cell" id="f05v-c2">16</div>
+      <span data-hf-id="hf-h61m" class="f05v-brk" id="f05v-bo" style="left: 80px;">[</span>
+      <span data-hf-id="hf-4w1e" class="f05v-brk" id="f05v-cm1" style="left: 232px;">,</span>
+      <span data-hf-id="hf-f9io" class="f05v-brk" id="f05v-cm2" style="left: 376px;">,</span>
+      <span data-hf-id="hf-thd1" class="f05v-brk" id="f05v-bc" style="left: 526px;">]</span>
+      <span data-hf-id="hf-u2d1" class="f05v-ci" id="f05v-ci0" style="left: 112px;">[0]</span>
+      <span data-hf-id="hf-wyvu" class="f05v-ci" id="f05v-ci1" style="left: 256px;">[1]</span>
+      <span data-hf-id="hf-6xft" class="f05v-ci" id="f05v-ci2" style="left: 400px;">[2]</span>
+      <div data-hf-id="hf-wyy0" class="ts-mark" id="f05v-mark4"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 12.55;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="05-volgorde"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- type-on helper (kept from the reference frame; this frame has no code panel) ----
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // ---- initial state ----
+      gsap.set(["#f05v-b1", "#f05v-b2", "#f05v-b3"], { opacity: 1 });
+      gsap.set("#f05v-b1", { scaleX: 1 / 3, transformOrigin: "left center" });
+      gsap.set(["#f05v-card", "#f05v-tl", "#f05v-clock", "#f05v-reslabel", ".f05v-brk", ".f05v-cell"], { opacity: 0 });
+
+      var path = q("#f05v-conn-path");
+      var LEN = (path && path.getTotalLength) ? path.getTotalLength() : 1700;
+      gsap.set(path, { strokeDasharray: LEN, strokeDashoffset: LEN });
+
+      // ---- 0.0-1.7: kicker; "eerste vermenigvuldiging" (0.48): card with outlined bars (row 1 at 1 s) ----
+      tl.fromTo("#f05v-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f05v-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo(["#f05v-card", "#f05v-tl", "#f05v-clock"], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.48);
+
+      // ---- 1.7-4.7: "drie seconden" (1.76): row 1 grows to 3 s; 2.20-3.96 all fill together ----
+      // side borders and corner radius are counter-scaled so the outline stays 2px while the bar grows
+      var R0 = "18px 6px", R1 = "6px 6px";
+      tl.fromTo("#f05v-b1",
+        { scaleX: 1 / 3, borderLeftWidth: 6, borderRightWidth: 6, borderTopLeftRadius: R0, borderTopRightRadius: R0, borderBottomLeftRadius: R0, borderBottomRightRadius: R0 },
+        { scaleX: 1, borderLeftWidth: 2, borderRightWidth: 2, borderTopLeftRadius: R1, borderTopRightRadius: R1, borderBottomLeftRadius: R1, borderBottomRightRadius: R1, duration: 0.5, ease: "power3.inOut" }, 1.76);
+
+      var T0 = 2.20, T3 = 3.96, PER = (T3 - T0) / 3; // 0.587s of video per program second
+      tl.fromTo("#f05v-f2", { scaleX: 0 }, { scaleX: 1, duration: PER, ease: "none" }, T0);
+      tl.fromTo("#f05v-f3", { scaleX: 0 }, { scaleX: 1, duration: PER * 2, ease: "none" }, T0);
+      tl.fromTo("#f05v-f1", { scaleX: 0 }, { scaleX: 1, duration: PER * 3, ease: "none" }, T0);
+      tl.set("#f05v-now", { opacity: 1, x: 0 }, T0);
+      tl.fromTo("#f05v-now", { x: 0 }, { x: 1320, duration: T3 - T0, ease: "none" }, T0);
+      var clock = q("#f05v-clock");
+      var tick = { v: 0 };
+      tl.fromTo(tick, { v: 0 }, {
+        v: 3, duration: T3 - T0, ease: "none",
+        onUpdate: function () { clock.textContent = (Math.round(tick.v * 10) / 10).toFixed(1).replace(".", ",") + " s"; }
+      }, T0);
+
+      // done: row 2 (1 s), row 3 (2 s), row 1 (3 s) -> text + finish-order tag
+      function done(txt, tag, at) {
+        tl.fromTo(txt, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, at);
+        tl.fromTo(tag, { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, at);
+      }
+      done("#f05v-t2", "#f05v-r2", T0 + PER);
+      done("#f05v-t3", "#f05v-r3", T0 + PER * 2);
+      done("#f05v-t1", "#f05v-r1", T3);
+      tl.to("#f05v-now", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 4.3);
+
+      // ---- 4.7-7.1: result block (5.04); "vier" (5.36): mark around 4 + connector ----
+      tl.fromTo(["#f05v-reslabel", ".f05v-brk"], { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 5.04);
+      tl.fromTo(["#f05v-c0", "#f05v-c1", "#f05v-c2"], { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out", stagger: 0.13 }, 5.04);
+      tl.fromTo("#f05v-mark4", { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power3.out" }, 5.36);
+      tl.to(path, { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 5.36);
+
+      // ---- 7.1-end: "volgorde van de array" (8.40): index tags; "eerst" (10.48): 1e/2e/3e dim ----
+      tl.fromTo(["#f05v-ci0", "#f05v-ci1", "#f05v-ci2"], { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", stagger: 0.1 }, 8.40);
+      tl.fromTo(["#f05v-i0", "#f05v-i1", "#f05v-i2"], { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", stagger: 0.1 }, 8.40);
+      tl.to(["#f05v-r1", "#f05v-r2", "#f05v-r3"], { opacity: 0.35, duration: 0.4, ease: "power2.inOut" }, 10.48);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["05-volgorde"] = tl;
+    })();
+  </script>
+</template>

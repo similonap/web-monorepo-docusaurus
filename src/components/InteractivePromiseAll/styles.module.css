@@ -1,0 +1,419 @@
+/* ============================================================
+   InteractivePromiseAll — CSS Module
+   ============================================================ */
+
+.container {
+    --ipa-panel-bg: #1e1e1e;
+    --ipa-border: #333;
+    --ipa-text: #d4d4d4;
+    --ipa-muted: #888;
+    --ipa-track: #2a2a2a;
+    --ipa-accent: #4fc3f7;
+    --ipa-accent-dim: rgba(79, 195, 247, 0.18);
+    --ipa-done: #4ec9b0;
+    --ipa-done-dim: rgba(78, 201, 176, 0.18);
+    --ipa-error: #f48771;
+    --ipa-error-dim: rgba(244, 135, 113, 0.18);
+    --ipa-btn-primary-bg: #4fc3f7;
+    --ipa-btn-primary-text: #000;
+    --ipa-btn-secondary-bg: #333;
+    --ipa-btn-secondary-text: #ccc;
+    --ipa-btn-secondary-border: #555;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: var(--ifm-color-emphasis-100);
+    border: 1px solid var(--ifm-color-emphasis-200);
+    border-radius: var(--ifm-global-radius);
+    font-family: var(--ifm-font-family-monospace);
+    color: var(--ipa-text);
+}
+
+:global([data-theme='light']) .container {
+    --ipa-panel-bg: #f8f8f8;
+    --ipa-border: #ddd;
+    --ipa-text: #24292e;
+    --ipa-muted: #888;
+    --ipa-track: #ececec;
+    --ipa-accent: #0288d1;
+    --ipa-accent-dim: rgba(2, 136, 209, 0.14);
+    --ipa-done: #1f8a70;
+    --ipa-done-dim: rgba(31, 138, 112, 0.14);
+    --ipa-error: #d14343;
+    --ipa-error-dim: rgba(209, 67, 67, 0.12);
+    --ipa-btn-primary-bg: #0288d1;
+    --ipa-btn-primary-text: #fff;
+    --ipa-btn-secondary-bg: #e8e8e8;
+    --ipa-btn-secondary-text: #444;
+    --ipa-btn-secondary-border: #ccc;
+}
+
+.container code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+}
+
+/* ============================================================
+   Duration settings
+   ============================================================ */
+
+.settings {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.75rem 1rem;
+    background: var(--ipa-panel-bg);
+    border: 1px solid var(--ipa-border);
+    border-radius: 6px;
+}
+
+.settingsTitle {
+    font-family: var(--ifm-font-family-base);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ipa-muted);
+    margin-bottom: 0.15rem;
+}
+
+.setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.settingLabel {
+    font-size: 0.85rem;
+}
+
+.segmented {
+    display: inline-flex;
+    border: 1px solid var(--ipa-btn-secondary-border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.segment {
+    background: var(--ipa-btn-secondary-bg);
+    color: var(--ipa-btn-secondary-text);
+    border: none;
+    border-left: 1px solid var(--ipa-btn-secondary-border);
+    padding: 0.25rem 0.7rem;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.segment:first-child { border-left: none; }
+.segment:disabled { cursor: not-allowed; opacity: 0.6; }
+
+.segmentActive {
+    background: var(--ipa-btn-primary-bg);
+    color: var(--ipa-btn-primary-text);
+    font-weight: bold;
+}
+
+/* ============================================================
+   Lanes
+   ============================================================ */
+
+.lane {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    background: var(--ipa-panel-bg);
+    border: 1px solid var(--ipa-border);
+    border-radius: 6px;
+    transition: border-color 0.3s;
+}
+
+.laneDone { border-color: var(--ipa-done); }
+
+.laneHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.laneTitle {
+    font-family: var(--ifm-font-family-base);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.laneCode {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--ipa-muted) !important;
+    overflow-wrap: anywhere;
+}
+
+.clock {
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--ipa-accent);
+}
+
+.laneDone .clock { color: var(--ipa-done); }
+
+.rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: minmax(0, 9.5rem) minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.container .rowLabel {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.track {
+    position: relative;
+    height: 1.9rem;
+    background: var(--ipa-track);
+    border-radius: 6px;
+}
+
+.bar {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    border-radius: 5px;
+    border: 1px solid var(--ipa-accent);
+    background: transparent;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.barWaiting {
+    border-style: dashed;
+    opacity: 0.6;
+}
+
+.barFill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: var(--ipa-accent-dim);
+}
+
+.barActive .barFill { background: var(--ipa-accent-dim); }
+
+.barDone {
+    border-color: var(--ipa-done);
+}
+
+.barDone .barFill { background: var(--ipa-done-dim); }
+
+.barText {
+    position: relative;
+    font-size: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.barWaiting .barText {
+    font-weight: normal;
+    color: var(--ipa-muted);
+}
+
+.barDone .barText { color: var(--ipa-done); }
+
+.rank {
+    margin-left: 0.4rem;
+    padding: 0 0.3rem;
+    border-radius: 4px;
+    border: 1px solid var(--ipa-muted);
+    font-size: 0.65rem;
+    font-weight: normal;
+    color: var(--ipa-muted);
+}
+
+.nowLine {
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--ipa-accent);
+    pointer-events: none;
+}
+
+.laneDone .nowLine { background: var(--ipa-done); }
+
+.axis {
+    position: relative;
+    height: 1rem;
+}
+
+.tick {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: var(--ipa-muted);
+}
+
+.tick:first-child { transform: none; }
+.tick:last-child { transform: translateX(-100%); }
+
+.result {
+    font-size: 0.85rem;
+}
+
+.resultLabel { color: var(--ipa-muted); }
+
+.resultValue { color: var(--ipa-done); }
+
+.pending {
+    color: var(--ipa-muted);
+    font-style: italic;
+}
+
+/* ============================================================
+   Errors (Promise.all vs Promise.allSettled)
+   ============================================================ */
+
+.outcomeOk,
+.outcomeErr {
+    font-size: 0.7rem;
+    padding: 0 0.35rem;
+    border-radius: 4px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+}
+
+.outcomeOk { color: var(--ipa-done); }
+.outcomeErr { color: var(--ipa-error); }
+
+.laneFailed { border-color: var(--ipa-error); }
+.laneFailed .clock { color: var(--ipa-error); }
+
+.barError { border-color: var(--ipa-error); }
+.barError .barFill { background: var(--ipa-error-dim); }
+.barError .barText { color: var(--ipa-error); }
+
+.barIgnored {
+    opacity: 0.45;
+    border-style: dashed;
+}
+
+.nowLineError { background: var(--ipa-error) !important; }
+
+.errorText {
+    color: var(--ipa-error);
+    font-weight: bold;
+}
+
+.resultNote {
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--ipa-muted);
+    font-style: italic;
+}
+
+.settledList {
+    display: block;
+    margin-top: 0.2rem;
+}
+
+.settledLine {
+    display: block;
+    padding-left: 1.25rem;
+    overflow-wrap: anywhere;
+}
+
+.statusOk { color: var(--ipa-done); }
+.statusErr { color: var(--ipa-error); }
+
+/* ============================================================
+   Summary
+   ============================================================ */
+
+.summary {
+    font-family: var(--ifm-font-family-base);
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid var(--ipa-done);
+    background: var(--ipa-done-dim);
+    border-radius: 0 6px 6px 0;
+}
+
+.summary p { margin: 0; }
+.summary p + p { margin-top: 0.4rem; }
+.summary code { font-family: var(--ifm-font-family-monospace); }
+
+/* ============================================================
+   Controls
+   ============================================================ */
+
+.controls {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+}
+
+.btnPrimary,
+.btnSecondary {
+    padding: 0.45rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: var(--ifm-font-family-monospace);
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.btnPrimary {
+    background: var(--ipa-btn-primary-bg);
+    color: var(--ipa-btn-primary-text);
+    border: none;
+    font-weight: bold;
+}
+
+.btnSecondary {
+    background: var(--ipa-btn-secondary-bg);
+    color: var(--ipa-btn-secondary-text);
+    border: 1px solid var(--ipa-btn-secondary-border);
+}
+
+.btnPrimary:hover:not(:disabled),
+.btnSecondary:hover:not(:disabled) { opacity: 0.85; transform: translateY(-1px); }
+.btnPrimary:disabled,
+.btnSecondary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ============================================================
+   Small screens
+   ============================================================ */
+
+@media (max-width: 600px) {
+    .container { padding: 1rem; }
+    .row { grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr); gap: 0.5rem; }
+    .container .rowLabel { font-size: 0.7rem; }
+    .rank { display: none; }
+}

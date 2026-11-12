@@ -1,4 +1,8 @@
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
+
 # Promises
+
+<HyperframesVideo name="ts-promises" title="TypeScript - Promises" />
 
 Een belangrijk mechanisme om asynchrone code te schrijven is het gebruik van Promises. Een Promise is een object dat een waarde bevat die pas op een later moment beschikbaar zal zijn. Zoals het engelse woord al aangeeft, is een Promise een belofte dat de functie die een promise teruggeeft, op een later moment een waarde zal teruggeven.
 
@@ -100,7 +104,27 @@ multiply(4,10)
 
 ## Promise All
 
-Als je meerdere promises hebt die je tegelijkertijd wil uitvoeren, dan kan je de Promise.all functie gebruiken. Deze functie heeft als argument een array van promises. Deze functie zal een nieuwe promise teruggeven die resolved is als alle promises in de array resolved zijn. De waarde die deze promise teruggeeft is een array van de waarden van de promises.
+<HyperframesVideo name="ts-promise-all" title="TypeScript - Promise.all en Promise.allSettled" />
+
+### Het probleem: na elkaar wachten
+
+Stel dat we drie vermenigvuldigingen willen uitvoeren met onze `multiply` functie. Elke vermenigvuldiging duurt 1 seconde. Als we ze netjes na elkaar uitvoeren, ziet dat er zo uit:
+
+```typescript
+multiply(2, 2).then((result1) => {
+    multiply(3, 3).then((result2) => {
+        multiply(4, 4).then((result3) => {
+            console.log([result1, result2, result3]);
+        });
+    });
+});
+```
+
+Dit werkt, maar het duurt **3 seconden**: de tweede vermenigvuldiging start pas als de eerste klaar is, en de derde pas als de tweede klaar is. Dat is zonde, want de drie berekeningen hebben elkaar helemaal niet nodig. `3 * 3` hoeft niet te wachten op het resultaat van `2 * 2`.
+
+### De oplossing: Promise.all
+
+Als je meerdere promises hebt die niet van elkaar afhangen, dan kan je de `Promise.all` functie gebruiken. Deze functie heeft als argument een array van promises en geeft één nieuwe promise terug. Die nieuwe promise is resolved zodra **alle** promises in de array resolved zijn. De waarde die ze teruggeeft is een array met de waarden van alle promises.
 
 ```typescript
 Promise.all([multiply(2, 2), multiply(3, 3), multiply(4, 4)])
@@ -108,11 +132,106 @@ Promise.all([multiply(2, 2), multiply(3, 3), multiply(4, 4)])
     .catch((error) => console.log(error.message));
 ```
 
-Het resultaat hier is dus:
+Het resultaat hier is:
 
 ```
 [4, 9, 16]
 ```
+
+Het belangrijke verschil: op het moment dat we de array aanmaken, worden de drie `multiply` functies al aangeroepen. De drie timers lopen dus tegelijk. `Promise.all` wacht gewoon tot ze alle drie klaar zijn. Daardoor duurt dit voorbeeld maar **1 seconde** in plaats van 3.
+
+Druk hieronder op **Start** om beide manieren naast elkaar te zien lopen. Je kan ook zelf instellen hoe lang elke vermenigvuldiging duurt.
+
+import InteractivePromiseAll from '@site/src/components/InteractivePromiseAll';
+
+<InteractivePromiseAll />
+
+Bij `Promise.all` wacht je dus niet de som van alle wachttijden, maar enkel zo lang als de traagste promise.
+
+### Volgorde van de resultaten
+
+De resultaten in de array staan altijd in dezelfde volgorde als de promises die je meegaf, ook al zijn ze niet in die volgorde klaar. Stel dat `multiply(2, 2)` 3 seconden zou duren en `multiply(4, 4)` maar 1 seconde, dan krijg je toch `[4, 9, 16]` terug. Het eerste resultaat hoort altijd bij de eerste promise, het tweede bij de tweede, enzovoort. Probeer het maar uit in de demo hierboven.
+
+### Promise.all combineren met map
+
+Vaak heb je niet drie losse aanroepen, maar een array van gegevens waarvoor je telkens dezelfde asynchrone functie wil aanroepen. Dan is `map` ideaal: daarmee zet je elk element van de array om naar een promise.
+
+```typescript
+const numbers: number[] = [2, 3, 4, 5];
+
+const promises: Promise<number>[] = numbers.map((n) => multiply(n, n));
+
+Promise.all(promises)
+    .then((results: number[]) => console.log(results))
+    .catch((error) => console.log(error.message));
+```
+
+```
+[4, 9, 16, 25]
+```
+
+Let goed op de types:
+
+- `numbers` is een `number[]`: een array van getallen.
+- `promises` is een `Promise<number>[]`: een array van promises. `map` voert `multiply` meteen uit voor elk getal, dus alle vermenigvuldigingen lopen al.
+- `Promise.all(promises)` maakt van die array van promises **één** promise die een `number[]` teruggeeft.
+
+Hoe groot de array ook is, dit duurt nog steeds ongeveer 1 seconde. Dit patroon (array van gegevens → `map` naar promises → `Promise.all`) kom je heel vaak tegen, zeker bij het ophalen van data met `fetch`. Je vindt er een voorbeeld van in het onderdeel [Fetch](./fetch.md#meerdere-requests-tegelijk-met-promiseall).
+
+### Als één promise faalt
+
+`Promise.all` is alles of niets. Als één van de promises rejected wordt, dan wordt de promise van `Promise.all` ook meteen rejected en wordt de `catch` uitgevoerd. De resultaten van de andere promises krijg je dan niet.
+
+We nemen de versie van `multiply` uit het onderdeel Catch, die een fout geeft als het resultaat groter is dan 10:
+
+```typescript
+Promise.all([multiply(2, 2), multiply(4, 10), multiply(3, 3)])
+    .then((results: number[]) => console.log(results))
+    .catch((error) => console.log(error.message));
+```
+
+```
+Result is greater than 10
+```
+
+### Promise.allSettled
+
+Wil je toch de uitkomst van elke promise kennen, ook als er een paar mislukken, dan kan je `Promise.allSettled` gebruiken. Die wacht tot alle promises klaar zijn, of ze nu geslaagd of mislukt zijn, en wordt zelf nooit rejected. Je krijgt een array terug met voor elke promise een object:
+
+- `{ status: "fulfilled", value: ... }` als de promise gelukt is;
+- `{ status: "rejected", reason: ... }` als de promise mislukt is. In `reason` zit de error.
+
+Met de `status` kan je dus per promise nagaan of ze gelukt is:
+
+```typescript
+Promise.allSettled([multiply(2, 2), multiply(4, 10), multiply(3, 3)])
+    .then((results) => {
+        for (const result of results) {
+            if (result.status === "fulfilled") {
+                console.log("gelukt:", result.value);
+            } else {
+                console.log("mislukt:", result.reason.message);
+            }
+        }
+    });
+```
+
+```
+gelukt: 4
+mislukt: Result is greater than 10
+gelukt: 9
+```
+
+In de demo hieronder zie je beide naast elkaar. `multiply(4, 10)` faalt, de andere twee lukken. Pas de tijden aan en kijk wanneer elke variant klaar is en wat je als resultaat krijgt.
+
+import InteractivePromiseAllSettled from '@site/src/components/InteractivePromiseAllSettled';
+
+<InteractivePromiseAllSettled />
+
+Kort samengevat:
+
+- Gebruik **`Promise.all`** als je alle resultaten nodig hebt en één fout betekent dat het geheel mislukt is. Je krijgt dan meteen de fout, zonder te wachten op de rest.
+- Gebruik **`Promise.allSettled`** als de promises los van elkaar mogen mislukken en je wil weten welke gelukt zijn en welke niet.
 
 ## Built-in promises
 

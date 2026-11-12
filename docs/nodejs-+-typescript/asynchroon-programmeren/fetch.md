@@ -128,6 +128,111 @@ Je kan ook de `status` property gebruiken om de status code op te vragen. Deze p
 })();
 ```
 
+## Meerdere requests tegelijk met Promise.all
+
+Vaak heb je niet genoeg aan één request. Stel dat je de posts met id 1 tot en met 5 wil ophalen. De API heeft een endpoint `/posts/{id}` om één post op te halen, dus je moet vijf requests doen.
+
+We maken eerst een hulpfunctie die één post ophaalt aan de hand van zijn id:
+
+```typescript
+async function getPost(id: number): Promise<Post> {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
+    if (!response.ok) throw new Error(response.status.toString());
+    return response.json();
+}
+```
+
+### De trage manier: na elkaar
+
+De eerste oplossing waar je misschien aan denkt, is een `for` lus met een `await` erin:
+
+```typescript
+(async function () {
+    try {
+        const ids: number[] = [1, 2, 3, 4, 5];
+        for (const id of ids) {
+            const post: Post = await getPost(id);
+            console.log(post.title);
+        }
+    } catch (error: any) {
+        console.log(error);
+    }
+})();
+```
+
+Dit werkt, maar elke request wacht tot de vorige volledig klaar is. Pas als post 1 binnen is, vertrekt de request voor post 2. Duurt één request ongeveer 200 milliseconden, dan wacht je in totaal ongeveer 5 × 200 = 1000 milliseconden. Hoe meer ids, hoe langer het duurt.
+
+### De snelle manier: ids → promises → Promise.all
+
+De requests hebben elkaar niet nodig: om post 2 op te halen hoef je post 1 niet te kennen. We kunnen ze dus allemaal tegelijk laten vertrekken en daarna wachten tot ze allemaal binnen zijn. Dat doen we in drie stappen:
+
+```typescript
+(async function () {
+    try {
+        const ids: number[] = [1, 2, 3, 4, 5];
+
+        const promises: Promise<Post>[] = ids.map((id) => getPost(id));
+
+        const posts: Post[] = await Promise.all(promises);
+
+        for (const post of posts) {
+            console.log(post.title);
+        }
+    } catch (error: any) {
+        console.log(error);
+    }
+})();
+```
+
+Wat gebeurt er hier precies?
+
+1. **`ids`** is een `number[]`: de lijst van ids die we willen ophalen.
+2. **`ids.map((id) => getPost(id))`** roept `getPost` aan voor elke id. Op dat moment vertrekken alle vijf de requests al naar de server. We wachten nog niet: `getPost` geeft meteen een promise terug, dus `promises` is een `Promise<Post>[]`, een array van vijf promises.
+3. **`await Promise.all(promises)`** maakt van die array van promises één promise en wacht tot alle vijf de requests een antwoord hebben. Het resultaat is een `Post[]`: een gewone array van posts.
+
+### Waarom is dit zo interessant?
+
+Het grote voordeel is snelheid. Omdat alle requests tegelijk vertrekken, wacht je niet meer de som van alle requests, maar enkel zo lang als de traagste request:
+
+```
+Na elkaar:    |-- /posts/1 --|-- /posts/2 --|-- /posts/3 --|-- /posts/4 --|-- /posts/5 --|   ≈ 1000 ms
+Promise.all:  |-- /posts/1 --|
+              |-- /posts/2 --|
+              |-- /posts/3 --|
+              |-- /posts/4 --|
+              |-- /posts/5 --|                                                            ≈ 200 ms
+```
+
+Met 5 posts is dat al 5 keer sneller, met 50 posts is het verschil nog veel groter. Het meeste van de tijd van een request gaat naar wachten op het netwerk en de server, en dat wachten kan perfect tegelijk gebeuren.
+
+Nog een paar dingen om te onthouden:
+
+- **De volgorde blijft behouden.** `posts[0]` hoort altijd bij `ids[0]`, ook als de request voor post 3 eerder binnen was dan die voor post 1.
+- **Eén fout laat alles falen.** Geeft één van de requests een fout (bv. een 404 voor id `99999`), dan gooit `getPost` een error, wordt `Promise.all` rejected en kom je in de `catch` terecht. Daarom staat de code in een `try/catch` blok.
+- **Hou het redelijk.** Duizenden requests tegelijk naar dezelfde server sturen is geen goed idee: veel API's hebben een limiet op het aantal requests dat je mag doen.
+
+### Veelgemaakte fouten
+
+Vergeet je `Promise.all`, dan heb je enkel een array van promises en nog geen data:
+
+```typescript
+const posts = ids.map((id) => getPost(id));
+console.log(posts);
+// [ Promise { <pending> }, Promise { <pending> }, ... ]
+```
+
+Ook `forEach` met een `async` functie werkt niet zoals je zou verwachten. `forEach` wacht niet op de promises, dus de code na de `forEach` wordt uitgevoerd voordat de posts binnen zijn:
+
+```typescript
+ids.forEach(async (id) => {
+    const post = await getPost(id);
+    console.log(post.title);
+});
+console.log("Klaar!"); // wordt als eerste getoond
+```
+
+Gebruik dus `map` om de promises te verzamelen en wacht ze af met `await Promise.all(...)`.
+
 ## Testen
 
 Om fetch-aanroepen te testen gebruiken we **Vitest**, zoals in het hoofdstuk [Testing](../testing.md). Omdat fetch asynchroon werkt én afhankelijk is van een externe server, combineren we twee technieken: async/await testen en mocking met **@fetch-mock/vitest**.
