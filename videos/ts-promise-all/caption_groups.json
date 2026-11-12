@@ -1,5 +1,5 @@
 {
- "total_duration_s": 125.78,
+ "total_duration_s": 112.53,
  "width": 1920,
  "height": 1080,
  "groups": [
@@ -1438,989 +1438,749 @@
    "id": "caption-group-39",
    "frame": 7,
    "start": 70.06,
-   "end": 72.18,
-   "text": "Dat patroon zie je vaak bij fetch.",
+   "end": 72.94,
+   "text": "Maar Promise.all is alles of niets.",
    "words": [
     {
      "id": "caption-word-39-0",
-     "text": "Dat",
+     "text": "Maar",
      "start": 70.06,
      "end": 70.22
     },
     {
      "id": "caption-word-39-1",
-     "text": "patroon",
-     "start": 70.34,
-     "end": 70.7
+     "text": "Promise.all",
+     "start": 70.46,
+     "end": 71.42
     },
     {
      "id": "caption-word-39-2",
-     "text": "zie",
-     "start": 70.78,
-     "end": 70.86
+     "text": "is",
+     "start": 71.5,
+     "end": 71.82
     },
     {
      "id": "caption-word-39-3",
-     "text": "je",
-     "start": 70.94,
-     "end": 71.02
+     "text": "alles",
+     "start": 72.02,
+     "end": 72.22
     },
     {
      "id": "caption-word-39-4",
-     "text": "vaak",
-     "start": 71.1,
-     "end": 71.34
+     "text": "of",
+     "start": 72.3,
+     "end": 72.46
     },
     {
      "id": "caption-word-39-5",
-     "text": "bij",
-     "start": 71.42,
-     "end": 71.5
-    },
-    {
-     "id": "caption-word-39-6",
-     "text": "fetch.",
-     "start": 71.58,
-     "end": 72.18
+     "text": "niets.",
+     "start": 72.54,
+     "end": 72.94
     }
    ]
   },
   {
    "id": "caption-group-40",
    "frame": 7,
-   "start": 72.38,
-   "end": 73.74,
-   "text": "Een lijst met ids,",
+   "start": 73.34,
+   "end": 74.54,
+   "text": "Faalt één promise,",
    "words": [
     {
      "id": "caption-word-40-0",
-     "text": "Een",
-     "start": 72.38,
-     "end": 72.46
+     "text": "Faalt",
+     "start": 73.34,
+     "end": 73.66
     },
     {
      "id": "caption-word-40-1",
-     "text": "lijst",
-     "start": 72.54,
-     "end": 72.78
+     "text": "één",
+     "start": 73.74,
+     "end": 73.9
     },
     {
      "id": "caption-word-40-2",
-     "text": "met",
-     "start": 72.86,
-     "end": 72.94
-    },
-    {
-     "id": "caption-word-40-3",
-     "text": "ids,",
-     "start": 73.02,
-     "end": 73.74
+     "text": "promise,",
+     "start": 73.98,
+     "end": 74.54
     }
    ]
   },
   {
    "id": "caption-group-41",
    "frame": 7,
-   "start": 73.9,
-   "end": 77.82,
-   "text": "map naar getPost, en dan await Promise.all.",
+   "start": 74.58,
+   "end": 75.9,
+   "text": "dan wordt het geheel meteen",
    "words": [
     {
      "id": "caption-word-41-0",
-     "text": "map",
-     "start": 73.9,
-     "end": 74.14
+     "text": "dan",
+     "start": 74.58,
+     "end": 74.62
     },
     {
      "id": "caption-word-41-1",
-     "text": "naar",
-     "start": 74.18,
-     "end": 74.38
+     "text": "wordt",
+     "start": 74.7,
+     "end": 74.86
     },
     {
      "id": "caption-word-41-2",
-     "text": "getPost,",
-     "start": 74.46,
-     "end": 75.34
+     "text": "het",
+     "start": 74.9,
+     "end": 74.94
     },
     {
      "id": "caption-word-41-3",
-     "text": "en",
-     "start": 75.42,
-     "end": 75.5
+     "text": "geheel",
+     "start": 75.02,
+     "end": 75.42
     },
     {
      "id": "caption-word-41-4",
-     "text": "dan",
-     "start": 75.62,
-     "end": 75.74
-    },
-    {
-     "id": "caption-word-41-5",
-     "text": "await",
-     "start": 75.98,
-     "end": 76.38
-    },
-    {
-     "id": "caption-word-41-6",
-     "text": "Promise.all.",
-     "start": 76.46,
-     "end": 77.82
+     "text": "meteen",
+     "start": 75.58,
+     "end": 75.9
     }
    ]
   },
   {
    "id": "caption-group-42",
    "frame": 7,
-   "start": 78.06,
-   "end": 80.06,
-   "text": "Alle requests vertrekken tegelijk,",
+   "start": 76.22,
+   "end": 77.82,
+   "text": "rejected, en kom je in de catch.",
    "words": [
     {
      "id": "caption-word-42-0",
-     "text": "Alle",
-     "start": 78.06,
-     "end": 78.22
+     "text": "rejected,",
+     "start": 76.22,
+     "end": 76.7
     },
     {
      "id": "caption-word-42-1",
-     "text": "requests",
-     "start": 78.3,
-     "end": 78.78
+     "text": "en",
+     "start": 76.74,
+     "end": 76.78
     },
     {
      "id": "caption-word-42-2",
-     "text": "vertrekken",
-     "start": 78.9,
-     "end": 79.26
+     "text": "kom",
+     "start": 76.86,
+     "end": 77.02
     },
     {
      "id": "caption-word-42-3",
-     "text": "tegelijk,",
-     "start": 79.34,
-     "end": 80.06
+     "text": "je",
+     "start": 77.06,
+     "end": 77.1
+    },
+    {
+     "id": "caption-word-42-4",
+     "text": "in",
+     "start": 77.14,
+     "end": 77.18
+    },
+    {
+     "id": "caption-word-42-5",
+     "text": "de",
+     "start": 77.26,
+     "end": 77.34
+    },
+    {
+     "id": "caption-word-42-6",
+     "text": "catch.",
+     "start": 77.54,
+     "end": 77.82
     }
    ]
   },
   {
    "id": "caption-group-43",
    "frame": 7,
-   "start": 80.14,
-   "end": 81.9,
-   "text": "dus heb je de vijf posts veel",
+   "start": 78.3,
+   "end": 79.5,
+   "text": "De resultaten van de andere",
    "words": [
     {
      "id": "caption-word-43-0",
-     "text": "dus",
-     "start": 80.14,
-     "end": 80.38
+     "text": "De",
+     "start": 78.3,
+     "end": 78.34
     },
     {
      "id": "caption-word-43-1",
-     "text": "heb",
-     "start": 80.46,
-     "end": 80.62
+     "text": "resultaten",
+     "start": 78.38,
+     "end": 78.94
     },
     {
      "id": "caption-word-43-2",
-     "text": "je",
-     "start": 80.66,
-     "end": 80.7
+     "text": "van",
+     "start": 79.02,
+     "end": 79.1
     },
     {
      "id": "caption-word-43-3",
      "text": "de",
-     "start": 80.74,
-     "end": 80.78
+     "start": 79.18,
+     "end": 79.26
     },
     {
      "id": "caption-word-43-4",
-     "text": "vijf",
-     "start": 80.86,
-     "end": 81.02
-    },
-    {
-     "id": "caption-word-43-5",
-     "text": "posts",
-     "start": 81.1,
-     "end": 81.58
-    },
-    {
-     "id": "caption-word-43-6",
-     "text": "veel",
-     "start": 81.66,
-     "end": 81.9
+     "text": "andere",
+     "start": 79.34,
+     "end": 79.5
     }
    ]
   },
   {
    "id": "caption-group-44",
    "frame": 7,
-   "start": 81.94,
-   "end": 82.86,
-   "text": "sneller binnen.",
+   "start": 79.58,
+   "end": 81.18,
+   "text": "promises ben je kwijt.",
    "words": [
     {
      "id": "caption-word-44-0",
-     "text": "sneller",
-     "start": 81.94,
-     "end": 82.22
+     "text": "promises",
+     "start": 79.58,
+     "end": 80.14
     },
     {
      "id": "caption-word-44-1",
-     "text": "binnen.",
-     "start": 82.3,
-     "end": 82.86
+     "text": "ben",
+     "start": 80.22,
+     "end": 80.38
+    },
+    {
+     "id": "caption-word-44-2",
+     "text": "je",
+     "start": 80.46,
+     "end": 80.54
+    },
+    {
+     "id": "caption-word-44-3",
+     "text": "kwijt.",
+     "start": 80.58,
+     "end": 81.18
     }
    ]
   },
   {
    "id": "caption-group-45",
    "frame": 8,
-   "start": 83.31,
-   "end": 86.19,
-   "text": "Maar Promise.all is alles of niets.",
+   "start": 81.63,
+   "end": 83.71,
+   "text": "Wil je toch elke uitkomst kennen,",
    "words": [
     {
      "id": "caption-word-45-0",
-     "text": "Maar",
-     "start": 83.31,
-     "end": 83.47
+     "text": "Wil",
+     "start": 81.63,
+     "end": 81.79
     },
     {
      "id": "caption-word-45-1",
-     "text": "Promise.all",
-     "start": 83.71,
-     "end": 84.67
+     "text": "je",
+     "start": 81.91,
+     "end": 82.03
     },
     {
      "id": "caption-word-45-2",
-     "text": "is",
-     "start": 84.75,
-     "end": 85.07
+     "text": "toch",
+     "start": 82.11,
+     "end": 82.27
     },
     {
      "id": "caption-word-45-3",
-     "text": "alles",
-     "start": 85.27,
-     "end": 85.47
+     "text": "elke",
+     "start": 82.43,
+     "end": 82.67
     },
     {
      "id": "caption-word-45-4",
-     "text": "of",
-     "start": 85.55,
-     "end": 85.71
+     "text": "uitkomst",
+     "start": 82.75,
+     "end": 83.15
     },
     {
      "id": "caption-word-45-5",
-     "text": "niets.",
-     "start": 85.79,
-     "end": 86.19
+     "text": "kennen,",
+     "start": 83.23,
+     "end": 83.71
     }
    ]
   },
   {
    "id": "caption-group-46",
    "frame": 8,
-   "start": 86.59,
-   "end": 87.79,
-   "text": "Faalt één promise,",
+   "start": 83.79,
+   "end": 86.19,
+   "text": "gebruik dan Promise.allSettled.",
    "words": [
     {
      "id": "caption-word-46-0",
-     "text": "Faalt",
-     "start": 86.59,
-     "end": 86.91
+     "text": "gebruik",
+     "start": 83.79,
+     "end": 84.11
     },
     {
      "id": "caption-word-46-1",
-     "text": "één",
-     "start": 86.99,
-     "end": 87.15
+     "text": "dan",
+     "start": 84.19,
+     "end": 84.27
     },
     {
      "id": "caption-word-46-2",
-     "text": "promise,",
-     "start": 87.23,
-     "end": 87.79
+     "text": "Promise.allSettled.",
+     "start": 84.43,
+     "end": 86.19
     }
    ]
   },
   {
    "id": "caption-group-47",
    "frame": 8,
-   "start": 87.83,
-   "end": 89.15,
-   "text": "dan wordt het geheel meteen",
+   "start": 86.59,
+   "end": 87.95,
+   "text": "Die wacht tot alles klaar",
    "words": [
     {
      "id": "caption-word-47-0",
-     "text": "dan",
-     "start": 87.83,
-     "end": 87.87
+     "text": "Die",
+     "start": 86.59,
+     "end": 86.75
     },
     {
      "id": "caption-word-47-1",
-     "text": "wordt",
-     "start": 87.95,
-     "end": 88.11
+     "text": "wacht",
+     "start": 86.83,
+     "end": 87.07
     },
     {
      "id": "caption-word-47-2",
-     "text": "het",
-     "start": 88.15,
-     "end": 88.19
+     "text": "tot",
+     "start": 87.19,
+     "end": 87.31
     },
     {
      "id": "caption-word-47-3",
-     "text": "geheel",
-     "start": 88.27,
-     "end": 88.67
+     "text": "alles",
+     "start": 87.39,
+     "end": 87.63
     },
     {
      "id": "caption-word-47-4",
-     "text": "meteen",
-     "start": 88.83,
-     "end": 89.15
+     "text": "klaar",
+     "start": 87.71,
+     "end": 87.95
     }
    ]
   },
   {
    "id": "caption-group-48",
    "frame": 8,
-   "start": 89.47,
-   "end": 91.07,
-   "text": "rejected, en kom je in de catch.",
+   "start": 88.07,
+   "end": 89.59,
+   "text": "is en faalt nooit.",
    "words": [
     {
      "id": "caption-word-48-0",
-     "text": "rejected,",
-     "start": 89.47,
-     "end": 89.95
+     "text": "is",
+     "start": 88.07,
+     "end": 88.19
     },
     {
      "id": "caption-word-48-1",
      "text": "en",
-     "start": 89.99,
-     "end": 90.03
+     "start": 88.27,
+     "end": 88.43
     },
     {
      "id": "caption-word-48-2",
-     "text": "kom",
-     "start": 90.11,
-     "end": 90.27
+     "text": "faalt",
+     "start": 88.51,
+     "end": 88.83
     },
     {
      "id": "caption-word-48-3",
-     "text": "je",
-     "start": 90.31,
-     "end": 90.35
-    },
-    {
-     "id": "caption-word-48-4",
-     "text": "in",
-     "start": 90.39,
-     "end": 90.43
-    },
-    {
-     "id": "caption-word-48-5",
-     "text": "de",
-     "start": 90.51,
-     "end": 90.59
-    },
-    {
-     "id": "caption-word-48-6",
-     "text": "catch.",
-     "start": 90.79,
-     "end": 91.07
+     "text": "nooit.",
+     "start": 88.99,
+     "end": 89.59
     }
    ]
   },
   {
    "id": "caption-group-49",
    "frame": 8,
-   "start": 91.55,
-   "end": 92.75,
-   "text": "De resultaten van de andere",
+   "start": 89.79,
+   "end": 90.99,
+   "text": "Je krijgt per promise een",
    "words": [
     {
      "id": "caption-word-49-0",
-     "text": "De",
-     "start": 91.55,
-     "end": 91.59
+     "text": "Je",
+     "start": 89.79,
+     "end": 89.87
     },
     {
      "id": "caption-word-49-1",
-     "text": "resultaten",
-     "start": 91.63,
-     "end": 92.19
+     "text": "krijgt",
+     "start": 89.91,
+     "end": 90.19
     },
     {
      "id": "caption-word-49-2",
-     "text": "van",
-     "start": 92.27,
-     "end": 92.35
+     "text": "per",
+     "start": 90.27,
+     "end": 90.35
     },
     {
      "id": "caption-word-49-3",
-     "text": "de",
-     "start": 92.43,
-     "end": 92.51
+     "text": "promise",
+     "start": 90.43,
+     "end": 90.83
     },
     {
      "id": "caption-word-49-4",
-     "text": "andere",
-     "start": 92.59,
-     "end": 92.75
+     "text": "een",
+     "start": 90.91,
+     "end": 90.99
     }
    ]
   },
   {
    "id": "caption-group-50",
    "frame": 8,
-   "start": 92.83,
-   "end": 94.43,
-   "text": "promises ben je kwijt.",
+   "start": 91.23,
+   "end": 92.67,
+   "text": "object met een status:",
    "words": [
     {
      "id": "caption-word-50-0",
-     "text": "promises",
-     "start": 92.83,
-     "end": 93.39
+     "text": "object",
+     "start": 91.23,
+     "end": 91.47
     },
     {
      "id": "caption-word-50-1",
-     "text": "ben",
-     "start": 93.47,
-     "end": 93.63
+     "text": "met",
+     "start": 91.55,
+     "end": 91.63
     },
     {
      "id": "caption-word-50-2",
-     "text": "je",
-     "start": 93.71,
-     "end": 93.79
+     "text": "een",
+     "start": 91.71,
+     "end": 91.79
     },
     {
      "id": "caption-word-50-3",
-     "text": "kwijt.",
-     "start": 93.83,
-     "end": 94.43
+     "text": "status:",
+     "start": 92.07,
+     "end": 92.67
     }
    ]
   },
   {
    "id": "caption-group-51",
-   "frame": 9,
-   "start": 94.88,
-   "end": 96.96,
-   "text": "Wil je toch elke uitkomst kennen,",
+   "frame": 8,
+   "start": 92.79,
+   "end": 94.59,
+   "text": "fulfilled met een value,",
    "words": [
     {
      "id": "caption-word-51-0",
-     "text": "Wil",
-     "start": 94.88,
-     "end": 95.04
+     "text": "fulfilled",
+     "start": 92.79,
+     "end": 93.31
     },
     {
      "id": "caption-word-51-1",
-     "text": "je",
-     "start": 95.16,
-     "end": 95.28
+     "text": "met",
+     "start": 93.55,
+     "end": 93.63
     },
     {
      "id": "caption-word-51-2",
-     "text": "toch",
-     "start": 95.36,
-     "end": 95.52
+     "text": "een",
+     "start": 93.71,
+     "end": 93.79
     },
     {
      "id": "caption-word-51-3",
-     "text": "elke",
-     "start": 95.68,
-     "end": 95.92
-    },
-    {
-     "id": "caption-word-51-4",
-     "text": "uitkomst",
-     "start": 96.0,
-     "end": 96.4
-    },
-    {
-     "id": "caption-word-51-5",
-     "text": "kennen,",
-     "start": 96.48,
-     "end": 96.96
+     "text": "value,",
+     "start": 94.03,
+     "end": 94.59
     }
    ]
   },
   {
    "id": "caption-group-52",
-   "frame": 9,
-   "start": 97.04,
-   "end": 99.44,
-   "text": "gebruik dan Promise.allSettled.",
+   "frame": 8,
+   "start": 94.67,
+   "end": 96.91,
+   "text": "of rejected met een reason.",
    "words": [
     {
      "id": "caption-word-52-0",
-     "text": "gebruik",
-     "start": 97.04,
-     "end": 97.36
+     "text": "of",
+     "start": 94.67,
+     "end": 94.83
     },
     {
      "id": "caption-word-52-1",
-     "text": "dan",
-     "start": 97.44,
-     "end": 97.52
+     "text": "rejected",
+     "start": 95.07,
+     "end": 95.71
     },
     {
      "id": "caption-word-52-2",
-     "text": "Promise.allSettled.",
-     "start": 97.68,
-     "end": 99.44
+     "text": "met",
+     "start": 95.95,
+     "end": 96.03
+    },
+    {
+     "id": "caption-word-52-3",
+     "text": "een",
+     "start": 96.11,
+     "end": 96.19
+    },
+    {
+     "id": "caption-word-52-4",
+     "text": "reason.",
+     "start": 96.27,
+     "end": 96.91
     }
    ]
   },
   {
    "id": "caption-group-53",
    "frame": 9,
-   "start": 99.84,
-   "end": 101.2,
-   "text": "Die wacht tot alles klaar",
+   "start": 97.36,
+   "end": 100.56,
+   "text": "Samengevat: Promise.all laat promises",
    "words": [
     {
      "id": "caption-word-53-0",
-     "text": "Die",
-     "start": 99.84,
-     "end": 100.0
+     "text": "Samengevat:",
+     "start": 97.36,
+     "end": 98.16
     },
     {
      "id": "caption-word-53-1",
-     "text": "wacht",
-     "start": 100.08,
-     "end": 100.32
+     "text": "Promise.all",
+     "start": 98.56,
+     "end": 99.6
     },
     {
      "id": "caption-word-53-2",
-     "text": "tot",
-     "start": 100.44,
-     "end": 100.56
+     "text": "laat",
+     "start": 99.76,
+     "end": 100.0
     },
     {
      "id": "caption-word-53-3",
-     "text": "alles",
-     "start": 100.64,
-     "end": 100.88
-    },
-    {
-     "id": "caption-word-53-4",
-     "text": "klaar",
-     "start": 100.96,
-     "end": 101.2
+     "text": "promises",
+     "start": 100.08,
+     "end": 100.56
     }
    ]
   },
   {
    "id": "caption-group-54",
    "frame": 9,
-   "start": 101.32,
-   "end": 102.84,
-   "text": "is en faalt nooit.",
+   "start": 100.64,
+   "end": 103.12,
+   "text": "tegelijk lopen, en geeft de resultaten",
    "words": [
     {
      "id": "caption-word-54-0",
-     "text": "is",
-     "start": 101.32,
-     "end": 101.44
+     "text": "tegelijk",
+     "start": 100.64,
+     "end": 101.12
     },
     {
      "id": "caption-word-54-1",
-     "text": "en",
-     "start": 101.52,
-     "end": 101.68
+     "text": "lopen,",
+     "start": 101.2,
+     "end": 101.76
     },
     {
      "id": "caption-word-54-2",
-     "text": "faalt",
-     "start": 101.76,
-     "end": 102.08
+     "text": "en",
+     "start": 101.84,
+     "end": 102.0
     },
     {
      "id": "caption-word-54-3",
-     "text": "nooit.",
+     "text": "geeft",
      "start": 102.24,
-     "end": 102.84
+     "end": 102.4
+    },
+    {
+     "id": "caption-word-54-4",
+     "text": "de",
+     "start": 102.44,
+     "end": 102.48
+    },
+    {
+     "id": "caption-word-54-5",
+     "text": "resultaten",
+     "start": 102.64,
+     "end": 103.12
     }
    ]
   },
   {
    "id": "caption-group-55",
    "frame": 9,
-   "start": 103.04,
-   "end": 104.24,
-   "text": "Je krijgt per promise een",
+   "start": 103.2,
+   "end": 104.88,
+   "text": "in de volgorde van de array.",
    "words": [
     {
      "id": "caption-word-55-0",
-     "text": "Je",
-     "start": 103.04,
-     "end": 103.12
+     "text": "in",
+     "start": 103.2,
+     "end": 103.28
     },
     {
      "id": "caption-word-55-1",
-     "text": "krijgt",
-     "start": 103.16,
+     "text": "de",
+     "start": 103.36,
      "end": 103.44
     },
     {
      "id": "caption-word-55-2",
-     "text": "per",
+     "text": "volgorde",
      "start": 103.52,
-     "end": 103.6
+     "end": 104.0
     },
     {
      "id": "caption-word-55-3",
-     "text": "promise",
-     "start": 103.68,
-     "end": 104.08
+     "text": "van",
+     "start": 104.08,
+     "end": 104.16
     },
     {
      "id": "caption-word-55-4",
-     "text": "een",
-     "start": 104.16,
+     "text": "de",
+     "start": 104.2,
      "end": 104.24
+    },
+    {
+     "id": "caption-word-55-5",
+     "text": "array.",
+     "start": 104.44,
+     "end": 104.88
     }
    ]
   },
   {
    "id": "caption-group-56",
    "frame": 9,
-   "start": 104.48,
-   "end": 105.92,
-   "text": "object met een status:",
+   "start": 105.12,
+   "end": 107.28,
+   "text": "Faalt er één, dan faalt alles.",
    "words": [
     {
      "id": "caption-word-56-0",
-     "text": "object",
-     "start": 104.48,
-     "end": 104.72
+     "text": "Faalt",
+     "start": 105.12,
+     "end": 105.36
     },
     {
      "id": "caption-word-56-1",
-     "text": "met",
-     "start": 104.8,
-     "end": 104.88
+     "text": "er",
+     "start": 105.44,
+     "end": 105.52
     },
     {
      "id": "caption-word-56-2",
-     "text": "een",
-     "start": 104.96,
-     "end": 105.04
+     "text": "één,",
+     "start": 105.6,
+     "end": 106.08
     },
     {
      "id": "caption-word-56-3",
-     "text": "status:",
-     "start": 105.32,
-     "end": 105.92
+     "text": "dan",
+     "start": 106.16,
+     "end": 106.24
+    },
+    {
+     "id": "caption-word-56-4",
+     "text": "faalt",
+     "start": 106.28,
+     "end": 106.56
+    },
+    {
+     "id": "caption-word-56-5",
+     "text": "alles.",
+     "start": 106.64,
+     "end": 107.28
     }
    ]
   },
   {
    "id": "caption-group-57",
    "frame": 9,
-   "start": 106.04,
-   "end": 107.84,
-   "text": "fulfilled met een value,",
+   "start": 107.52,
+   "end": 108.96,
+   "text": "Wil je elke uitkomst,",
    "words": [
     {
      "id": "caption-word-57-0",
-     "text": "fulfilled",
-     "start": 106.04,
-     "end": 106.56
+     "text": "Wil",
+     "start": 107.52,
+     "end": 107.68
     },
     {
      "id": "caption-word-57-1",
-     "text": "met",
-     "start": 106.8,
-     "end": 106.88
+     "text": "je",
+     "start": 107.76,
+     "end": 107.84
     },
     {
      "id": "caption-word-57-2",
-     "text": "een",
-     "start": 106.96,
-     "end": 107.04
+     "text": "elke",
+     "start": 107.92,
+     "end": 108.16
     },
     {
      "id": "caption-word-57-3",
-     "text": "value,",
-     "start": 107.28,
-     "end": 107.84
+     "text": "uitkomst,",
+     "start": 108.24,
+     "end": 108.96
     }
    ]
   },
   {
    "id": "caption-group-58",
    "frame": 9,
-   "start": 107.92,
-   "end": 110.16,
-   "text": "of rejected met een reason.",
-   "words": [
-    {
-     "id": "caption-word-58-0",
-     "text": "of",
-     "start": 107.92,
-     "end": 108.08
-    },
-    {
-     "id": "caption-word-58-1",
-     "text": "rejected",
-     "start": 108.32,
-     "end": 108.96
-    },
-    {
-     "id": "caption-word-58-2",
-     "text": "met",
-     "start": 109.2,
-     "end": 109.28
-    },
-    {
-     "id": "caption-word-58-3",
-     "text": "een",
-     "start": 109.36,
-     "end": 109.44
-    },
-    {
-     "id": "caption-word-58-4",
-     "text": "reason.",
-     "start": 109.52,
-     "end": 110.16
-    }
-   ]
-  },
-  {
-   "id": "caption-group-59",
-   "frame": 10,
-   "start": 110.61,
-   "end": 113.81,
-   "text": "Samengevat: Promise.all laat promises",
-   "words": [
-    {
-     "id": "caption-word-59-0",
-     "text": "Samengevat:",
-     "start": 110.61,
-     "end": 111.41
-    },
-    {
-     "id": "caption-word-59-1",
-     "text": "Promise.all",
-     "start": 111.81,
-     "end": 112.85
-    },
-    {
-     "id": "caption-word-59-2",
-     "text": "laat",
-     "start": 113.01,
-     "end": 113.25
-    },
-    {
-     "id": "caption-word-59-3",
-     "text": "promises",
-     "start": 113.33,
-     "end": 113.81
-    }
-   ]
-  },
-  {
-   "id": "caption-group-60",
-   "frame": 10,
-   "start": 113.89,
-   "end": 116.37,
-   "text": "tegelijk lopen, en geeft de resultaten",
-   "words": [
-    {
-     "id": "caption-word-60-0",
-     "text": "tegelijk",
-     "start": 113.89,
-     "end": 114.37
-    },
-    {
-     "id": "caption-word-60-1",
-     "text": "lopen,",
-     "start": 114.45,
-     "end": 115.01
-    },
-    {
-     "id": "caption-word-60-2",
-     "text": "en",
-     "start": 115.09,
-     "end": 115.25
-    },
-    {
-     "id": "caption-word-60-3",
-     "text": "geeft",
-     "start": 115.49,
-     "end": 115.65
-    },
-    {
-     "id": "caption-word-60-4",
-     "text": "de",
-     "start": 115.69,
-     "end": 115.73
-    },
-    {
-     "id": "caption-word-60-5",
-     "text": "resultaten",
-     "start": 115.89,
-     "end": 116.37
-    }
-   ]
-  },
-  {
-   "id": "caption-group-61",
-   "frame": 10,
-   "start": 116.45,
-   "end": 118.13,
-   "text": "in de volgorde van de array.",
-   "words": [
-    {
-     "id": "caption-word-61-0",
-     "text": "in",
-     "start": 116.45,
-     "end": 116.53
-    },
-    {
-     "id": "caption-word-61-1",
-     "text": "de",
-     "start": 116.61,
-     "end": 116.69
-    },
-    {
-     "id": "caption-word-61-2",
-     "text": "volgorde",
-     "start": 116.77,
-     "end": 117.25
-    },
-    {
-     "id": "caption-word-61-3",
-     "text": "van",
-     "start": 117.33,
-     "end": 117.41
-    },
-    {
-     "id": "caption-word-61-4",
-     "text": "de",
-     "start": 117.45,
-     "end": 117.49
-    },
-    {
-     "id": "caption-word-61-5",
-     "text": "array.",
-     "start": 117.69,
-     "end": 118.13
-    }
-   ]
-  },
-  {
-   "id": "caption-group-62",
-   "frame": 10,
-   "start": 118.37,
-   "end": 120.53,
-   "text": "Faalt er één, dan faalt alles.",
-   "words": [
-    {
-     "id": "caption-word-62-0",
-     "text": "Faalt",
-     "start": 118.37,
-     "end": 118.61
-    },
-    {
-     "id": "caption-word-62-1",
-     "text": "er",
-     "start": 118.69,
-     "end": 118.77
-    },
-    {
-     "id": "caption-word-62-2",
-     "text": "één,",
-     "start": 118.85,
-     "end": 119.33
-    },
-    {
-     "id": "caption-word-62-3",
-     "text": "dan",
-     "start": 119.41,
-     "end": 119.49
-    },
-    {
-     "id": "caption-word-62-4",
-     "text": "faalt",
-     "start": 119.53,
-     "end": 119.81
-    },
-    {
-     "id": "caption-word-62-5",
-     "text": "alles.",
-     "start": 119.89,
-     "end": 120.53
-    }
-   ]
-  },
-  {
-   "id": "caption-group-63",
-   "frame": 10,
-   "start": 120.77,
-   "end": 122.21,
-   "text": "Wil je elke uitkomst,",
-   "words": [
-    {
-     "id": "caption-word-63-0",
-     "text": "Wil",
-     "start": 120.77,
-     "end": 120.93
-    },
-    {
-     "id": "caption-word-63-1",
-     "text": "je",
-     "start": 121.01,
-     "end": 121.09
-    },
-    {
-     "id": "caption-word-63-2",
-     "text": "elke",
-     "start": 121.17,
-     "end": 121.41
-    },
-    {
-     "id": "caption-word-63-3",
-     "text": "uitkomst,",
-     "start": 121.49,
-     "end": 122.21
-    }
-   ]
-  },
-  {
-   "id": "caption-group-64",
-   "frame": 10,
-   "start": 122.29,
-   "end": 124.13,
+   "start": 109.04,
+   "end": 110.88,
    "text": "gebruik dan allSettled.",
    "words": [
     {
-     "id": "caption-word-64-0",
+     "id": "caption-word-58-0",
      "text": "gebruik",
-     "start": 122.29,
-     "end": 122.53
+     "start": 109.04,
+     "end": 109.28
     },
     {
-     "id": "caption-word-64-1",
+     "id": "caption-word-58-1",
      "text": "dan",
-     "start": 122.61,
-     "end": 122.77
+     "start": 109.36,
+     "end": 109.52
     },
     {
-     "id": "caption-word-64-2",
+     "id": "caption-word-58-2",
      "text": "allSettled.",
-     "start": 123.01,
-     "end": 124.13
+     "start": 109.76,
+     "end": 110.88
     }
    ]
   }

@@ -48,7 +48,6 @@ json.dump(meta, open('audio_meta.json', 'w'), indent=1, ensure_ascii=False)
 MERGE = [(['promise', 'punt', 'all', 'settled'], 'Promise.allSettled', False),
          (['promise', 'punt', 'all'], 'Promise.all', False),
          (['all', 'settled'], 'allSettled', False),
-         (['get', 'post'], 'getPost', False),
          (['map'], 'map', False)]
 def norm(w): return re.sub(r'[^\wëéèï]', '', w.lower())
 def strip(w): return re.sub(r'[^\wëéèï]', '', w)

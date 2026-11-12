@@ -1,6 +1,6 @@
 ---
 format: 1920x1080
-duration: 125s
+duration: 112s
 mode: autonomous
 message: "Promise.all laat promises die elkaar niet nodig hebben tegelijk lopen: je wacht zo lang als de traagste in plaats van de som. Het resultaat volgt de volgorde van de array, met map maak je de promises, en faalt er één dan faalt alles. Promise.allSettled wacht op alles en geeft per promise een status."
 arc: how-to-process
@@ -12,7 +12,7 @@ music: none
 ## Video direction
 
 - **Sibling film.** Direct predecessor: `../ts-promises` (same series). **Everything in the "Video direction" section of `../ts-promises/STORYBOARD.md` applies here too** (reference frame, TS LIGHT block, the **PROMISE CLIP** CSS block, which you copy verbatim from that file, console card, state chip, code style, motion, negative list). Read it first. Only the differences and additions are listed here.
-- **Course pages:** `docs/nodejs-+-typescript/asynchroon-programmeren/promises.md` (section "Promise All") and `fetch.md` (section "Meerdere requests tegelijk met Promise.all"). The interactive demos `InteractivePromiseAll` / `InteractivePromiseAllSettled` on that page show the same idea as the timelines here (bars per promise on a shared time axis).
+- **Course pages:** `docs/nodejs-+-typescript/asynchroon-programmeren/promises.md` (section "Promise All"). The interactive demos `InteractivePromiseAll` / `InteractivePromiseAllSettled` on that page show the same idea as the timelines here (bars per promise on a shared time axis).
 - **`multiply`** is the function of `../ts-promises`: it resolves `number1 * number2` after a delay and rejects with `new Error("Result is greater than 10")` when the result is > 10. In the timelines the durations are free per frame (the voice says so).
 - **Timelines** use the PROMISE CLIP `.pc-tl` kit: per promise a row with a mono label (`2 * 2`, `multiply(4, 10)`, `/posts/1`) and a track; the bar's `left` / `width` are set in CSS per row (in % of the track) and never animated; progress = `.pc-fill` scaleX 0 → 1 (linear, over the compressed time the frame gives); when a bar is done its `.pc-bar-text` (`= 4`) fades in. A now-line `.pc-now` moves with `x` across the track (linear) in step with the fills. The axis `.pc-axis` has ticks `0 s`, `1 s`, `2 s`, `3 s`. A bar appears (opacity 0 → 1, 0.3s) when the frame says. Error bar: `.pc-bar--error` with text `reject`. A result that Promise.all throws away: the bar fades to 0.35 and gets a dashed border (`.pc-bar--ghost` look keeps the text).
 - **Code panel** 26px / 38px, x 80, width 1060 unless the frame says 24px / 36px with width 1120 (then the right column starts at x 1260).
@@ -135,38 +135,9 @@ music: none
   - 2.3-6.6: "maak je de promises" (2.40): rows 3-4 type (2.4-3.7). "map" (3.36): wash on `numbers.map((n) => multiply(n, n))`. "array van promises" (5.24-5.68): wash on `Promise<number>[]`; the first arrow draws and the `promises` chip pops in at 5.68. Washes off 6.5.
   - 6.6-end: "Promise punt all" (6.72): rows 6-7 type (6.72-7.9). "één promise" (8.40): wash on `Promise.all(promises)`. "getallen" (10.24): the second arrow + `results` chip; console line `[4, 9, 16, 25]`. Hold.
 
-## Frame 7 — Met fetch
+## Frame 7 — Faalt er één, dan faalt alles
 
-- id: 07-fetch
-- duration: 13.75s
-- transition_in: crossfade
-- sfx: typing@2.3, typing@3.84, pop@4.88, typing@5.92, whoosh-short@8.24, pop@11.04
-- voiceover: "Dat patroon zie je vaak bij fetch. Een lijst met ids, map naar get post, en dan await promise punt all. Alle requests vertrekken tegelijk, dus heb je de vijf posts veel sneller binnen."
-- focal: `ids.map((id) => getPost(id))` and five requests leaving at the same time.
-- code (24px / 36px, panel x 80 width 1120; status `index.ts · fetch`). Rows 1-4 present at t = 0 (opacity 0.5 until 2.3, then full): a short `getPost` helper (the course's URL does not fit on one row, so it uses an `API` constant):
-  ```
-  1  const getPost = async (id: number): Promise<Post> => {
-  2      const response = await fetch(`${API}/posts/${id}`);
-  3      return response.json();
-  4  };
-  ```
-  then typed:
-  ```
-  6  const ids: number[] = [1, 2, 3, 4, 5];
-  7  const promises: Promise<Post>[] = ids.map((id) => getPost(id));
-  8  const posts: Post[] = await Promise.all(promises);
-  ```
-  (`${API}` in the template literal: `${` `}` in `ts-punct`, `API` ink.)
-- right column (x 1260, width 580): label `requests` at 186; a `.pc-tl` at top 232: labels column 150 (`/posts/1` … `/posts/5`, mono 20px), track x 1410-1840 representing 0-1000 ms (ticks `0`, `500 ms`, `1000 ms`), five rows of 48px (bar height 30). Bars (all start at 0): 0-190, 0-230, 0-170, 0-210, 0-200 ms. Ghost bars (sequential, dashed: 0-190, 190-420, 420-590, 590-800, 800-1000 ms) behind them, hidden until 10.08. A chip under the timeline at top 540: key `posts`, value `Post[]` → later `5 posts`.
-- shots:
-  - 0.0-2.2: kicker `Met fetch`. "fetch" (1.52): wash on `fetch` in row 2 (off 2.2).
-  - 2.2-5.8: "ids" (2.32-2.96): row 6 types (2.3-3.0). "map naar get post" (3.84-4.88): row 7 types (3.84-4.9); wash on `ids.map((id) => getPost(id))` at 4.40; the five request rows (labels + outlined bars) fade in staggered at 4.88.
-  - 5.8-7.9: "await promise punt all" (5.92-7.20): row 8 types (5.92-7.2); wash on `await Promise.all(promises)` (off 7.9).
-  - 7.9-end: "vertrekken tegelijk" (8.24-9.28): all five bars fill together (8.24-9.10, each in proportion to its length) with a now-line. "dus" (10.08): the ghost bars fade in (0.4s) to show what one-by-one would cost. "vijf posts" (11.04): the posts chip pops in with `5 posts`. Hold.
-
-## Frame 8 — Faalt er één, dan faalt alles
-
-- id: 08-een-faalt
+- id: 07-een-faalt
 - duration: 12.07s
 - transition_in: push-slide
 - sfx: whoosh-short@3.0, pop@3.68, pop@6.16, pop@7.48, pop@9.52
@@ -184,9 +155,9 @@ music: none
   - 2.9-6.6: 3.00: all three bars start filling (linear, 1 s = 0.68s of video), now-line moves. "één" (3.68): row 2 reaches its end: it becomes `.pc-bar--error` with text `reject`; wash on `multiply(4, 10)` in the code is NOT used (red moment). The now-line stops at 1 s and turns red (background tween to `#D14343`). "meteen rejected" (5.52-6.16): rows 1 and 3 keep filling to their end in the background but faded to 0.35 with dashed borders (they are ignored); the state chip swaps to `rejected` (red look) at 6.16.
   - 6.6-end: "catch" (7.48): console line `Result is greater than 10` with `.pc-out--error`. "andere promises" (9.28-9.52): the texts `= 4` and `= 9` appear in the faded bars together with a small mono tag `genegeerd` (18px muted) right of each faded bar at 9.52. Hold.
 
-## Frame 9 — Promise.allSettled
+## Frame 8 — Promise.allSettled
 
-- id: 09-allsettled
+- id: 08-allsettled
 - duration: 16.23s
 - transition_in: crossfade
 - sfx: typing@2.8, whoosh-short@5.2, pop@6.44, pop@7.36, pop@9.6, pop@9.8, pop@10.0, pop@11.16, pop@13.44
@@ -216,9 +187,9 @@ music: none
   - 4.9-8.0: "wacht tot alles klaar is" (5.20-6.44): all bars fill (5.20-6.44, linear over 3 s), row 2 turns red with `reject` at 5.61, rows 1 and 3 get `= 4` (6.03) and `= 9` (6.44); the now-line runs to the end (it does NOT stop at the reject); clock `3,0 s` at 6.44. "faalt nooit" (7.36): `ts-mark` around the clock.
   - 8.0-end: "Je krijgt" (8.16): rows 2-10 fade in. "object" (9.60): the results card fades up and its lines pop in at 9.60, 9.80, 10.00. "status" (10.44): wash on the three `status: ...` parts. "fulfilled met een value" (11.16-12.40): wash on code rows 4-5 and on lines 1 and 3 (off 13.3). "rejected met een reason" (13.44-14.64): wash on rows 6-7 and line 2 (wash stays blue; the red is only the `"rejected"` text). Hold.
 
-## Frame 10 — Samenvatting
+## Frame 9 — Samenvatting
 
-- id: 10-samenvatting
+- id: 09-samenvatting
 - duration: 15.17s
 - transition_in: crossfade
 - sfx: pop@1.2, pop@5.28, pop@7.76, pop@12.4

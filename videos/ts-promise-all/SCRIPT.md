@@ -1,8 +1,8 @@
 # SCRIPT — ts-promise-all
 
 **Voice:** ElevenLabs eleven_v4 via the `elevenlabs` CLI — Andie (`8OezxDDjGa2d9W45o5Qs`) for every line
-**Voice settings:** stability 0.5, output mp3_44100_128; same voice + settings for all 10 lines
-**Voice direction:** Calm, friendly teacher. Clear, unhurried. Code terms in English, written split so they are spoken as words (promise punt all, promise punt all settled, get post). Captions restore the code spelling (see `build.py`).
+**Voice settings:** stability 0.5, output mp3_44100_128; same voice + settings for all 9 lines
+**Voice direction:** Calm, friendly teacher. Clear, unhurried. Code terms in English, written split so they are spoken as words (promise punt all, promise punt all settled). Captions restore the code spelling (see `build.py`).
 
 ---
 
@@ -30,18 +30,14 @@
 
     Heb je een array met gegevens, dan maak je de promises met map. Map geeft een array van promises. Promise punt all maakt daar één promise van, met een array van getallen.
 
-## Line 7 — Fetch (Frame 7)
-
-    Dat patroon zie je vaak bij fetch. Een lijst met ids, map naar get post, en dan await promise punt all. Alle requests vertrekken tegelijk, dus heb je de vijf posts veel sneller binnen.
-
-## Line 8 — Eén faalt (Frame 8)
+## Line 7 — Eén faalt (Frame 7)
 
     Maar promise punt all is alles of niets. Faalt één promise, dan wordt het geheel meteen rejected, en kom je in de catch. De resultaten van de andere promises ben je kwijt.
 
-## Line 9 — allSettled (Frame 9)
+## Line 8 — allSettled (Frame 8)
 
     Wil je toch elke uitkomst kennen, gebruik dan promise punt all settled. Die wacht tot alles klaar is en faalt nooit. Je krijgt per promise een object met een status: fulfilled met een value, of rejected met een reason.
 
-## Line 10 — Samenvatting (Frame 10)
+## Line 9 — Samenvatting (Frame 9)
 
     Samengevat: promise punt all laat promises tegelijk lopen, en geeft de resultaten in de volgorde van de array. Faalt er één, dan faalt alles. Wil je elke uitkomst, gebruik dan all settled.

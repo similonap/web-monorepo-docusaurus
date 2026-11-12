@@ -164,6 +164,7 @@
       container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
     }
 
+
     /* ---- PROMISE CLIP: shared helpers of the promise videos ---- */
     /* console card: program output (Node), same place and look as the scherm card */
     .pc-console { position: absolute; box-sizing: border-box; background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow); padding: 18px 26px; overflow: hidden; }
@@ -204,64 +205,94 @@
     .pc-arrow { position: absolute; height: 2px; background: var(--ts-muted); transform-origin: left center; }
     .pc-arrow::after { content: ""; position: absolute; right: -2px; top: -6px; border-left: 12px solid var(--ts-muted); border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
 
-    /* ---- frame 10 positions: four recap rows (chip left, statement right) ---- */
-    .f10s-row { position: absolute; left: 80px; width: 1760px; height: 90px; }
-    #f10s-r1 { top: 230px; }
-    #f10s-r2 { top: 380px; }
-    #f10s-r3 { top: 530px; }
-    #f10s-r4 { top: 680px; }
-    .f10s-line {
-      position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
-      background: var(--ts-hairline); transform-origin: left center;
-    }
-    .f10s-row .ts-chip { left: 0; top: 13px; height: 56px; font-size: 26px; font-weight: 500; }
-    .f10s-chip--err { border-left: 4px solid var(--ts-error); }
-    .f10s-stmt {
-      position: absolute; left: 540px; top: 0; height: 82px; display: flex; align-items: center;
-      white-space: nowrap; font-family: var(--ts-sans); font-weight: 500; font-size: 40px; line-height: 1.2;
-      letter-spacing: -0.01em; color: var(--ts-ink);
-    }
-    .f10s-key { position: relative; display: inline-block; }
-    #f10s-ul { left: 0; right: 0; bottom: -4px; }
+    /* ---- frame 08 positions (26px / 38px code, panel 80-1140, right column 1236) ---- */
+    #f08e-panel { left: 80px; top: 170px; width: 1060px; height: 260px; }
+    #f08e-label { left: 1236px; top: 186px; }
+    #f08e-tl { left: 1236px; top: 232px; width: 604px; height: 196px; }
+    #f08e-tl .pc-tl-label { font-size: 20px; }
+    #f08e-tl .pc-tl-track { left: 200px; }
+    #f08e-bar1 { width: 66.6667%; }
+    #f08e-bar2 { width: 33.3333%; }
+    #f08e-bar3 { width: 100%; }
+    #f08e-bt2 { color: var(--ts-error); }
+    /* = 4 sits in the right half of its bar, clear of the stopped now-line at 1 s */
+    #f08e-bar1 { justify-content: flex-end; padding-right: 52px; }
+    #f08e-axis { position: absolute; left: 0; right: 0; top: 168px; }
+    #f08e-nowbox { position: absolute; left: 200px; right: 0; top: 10px; height: 148px; pointer-events: none; }
+    .f08e-ign { position: absolute; left: 482px; height: 56px; display: flex; align-items: center; font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted); white-space: nowrap; opacity: 0; }
+    #f08e-ign1 { top: 0; }
+    #f08e-ign3 { top: 112px; }
+    #f08e-state { left: 1236px; top: 470px; }
+    #f08e-vbox { position: relative; display: inline-block; width: 124px; height: 32px; overflow: visible; }
+    #f08e-vbox .pc-val { position: absolute; left: 0; top: 0; line-height: 32px; }
+    #f08e-clabel { left: 1236px; top: 576px; }
+    #f08e-console { left: 1236px; top: 622px; width: 604px; height: 106px; }
   </style>
 
-  <div data-hf-id="hf-0m7g" id="root" data-composition-id="10-samenvatting" data-width="1920" data-height="1080" data-duration="15.17">
-    <div data-hf-id="hf-hfzh" class="ts-bg clip" id="f10s-bg" data-start="0" data-duration="15.17" data-track-index="0"></div>
+  <div data-hf-id="hf-f1b7" id="root" data-composition-id="07-een-faalt" data-width="1920" data-height="1080" data-duration="12.07">
+    <div data-hf-id="hf-arni" class="ts-bg clip" id="f08e-bg" data-start="0" data-duration="12.07" data-track-index="0"></div>
 
-    <div data-hf-id="hf-0sm2" class="ts-stage clip" id="f10s-stage" data-start="0" data-duration="15.17" data-track-index="1">
-      <div data-hf-id="hf-is0p" class="ts-kicker" id="f10s-kicker"><div data-hf-id="hf-usgc" class="ts-kicker-bar" id="f10s-kbar"></div><span data-hf-id="hf-lzws" class="ts-kicker-text" id="f10s-ktext">Samenvatting</span></div>
+    <div data-hf-id="hf-ztor" class="ts-stage clip" id="f08e-stage" data-start="0" data-duration="12.07" data-track-index="1">
+      <div data-hf-id="hf-ke50" class="ts-kicker" id="f08e-kicker"><div data-hf-id="hf-jlgh" class="ts-kicker-bar" id="f08e-kbar"></div><span data-hf-id="hf-yexi" class="ts-kicker-text" id="f08e-ktext">Als één faalt</span></div>
 
-      <div data-hf-id="hf-kne5" class="f10s-row" id="f10s-r1">
-        <div data-hf-id="hf-tjlj" class="f10s-line" id="f10s-l1"></div>
-        <span data-hf-id="hf-dnhj" class="ts-chip" id="f10s-c1">Promise.all([...])</span>
-        <div data-hf-id="hf-a3zx" class="f10s-stmt" id="f10s-s1">loopt&nbsp;<span data-hf-id="hf-9l44" class="f10s-key">tegelijk<span data-hf-id="hf-t26b" class="ts-underline" id="f10s-ul"></span></span>: je wacht op de traagste</div>
+      <!-- code surface (present) -->
+      <div data-hf-id="hf-sqp9" class="ts-code-surface" id="f08e-panel">
+        <div data-hf-id="hf-i0t9" class="ts-code-title">index.ts</div>
+        <div data-hf-id="hf-0onr" class="ts-code">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-joe1" class="ts-txt"><span data-hf-id="hf-zgio" class="ts-type">Promise</span><span data-hf-id="hf-9x31" class="ts-punct">.</span><span data-hf-id="hf-rb8e" class="ts-fn">all</span><span data-hf-id="hf-6pf4" class="ts-punct">([</span><span data-hf-id="hf-n0b7" class="ts-fn">multiply</span><span data-hf-id="hf-cax7" class="ts-punct">(</span><span data-hf-id="hf-lzij" class="ts-fn">2</span><span data-hf-id="hf-app3" class="ts-punct">,</span> <span data-hf-id="hf-w3fv" class="ts-fn">2</span><span data-hf-id="hf-9iik" class="ts-punct">),</span> <span data-hf-id="hf-fb1v" class="ts-fn">multiply</span><span data-hf-id="hf-7d7v" class="ts-punct">(</span><span data-hf-id="hf-jlod" class="ts-fn">4</span><span data-hf-id="hf-leon" class="ts-punct">,</span> <span data-hf-id="hf-hpt6" class="ts-fn">10</span><span data-hf-id="hf-us8k" class="ts-punct">),</span> <span data-hf-id="hf-ewqu" class="ts-fn">multiply</span><span data-hf-id="hf-6ywu" class="ts-punct">(</span><span data-hf-id="hf-mdtk" class="ts-fn">3</span><span data-hf-id="hf-l0dm" class="ts-punct">,</span> <span data-hf-id="hf-pavk" class="ts-fn">3</span><span data-hf-id="hf-ateq" class="ts-punct">)])</span></span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-qb8e" class="ts-txt">    <span data-hf-id="hf-py35" class="ts-punct">.</span><span data-hf-id="hf-qm6o" class="ts-fn">then</span><span data-hf-id="hf-9pzt" class="ts-punct">((</span>results: <span data-hf-id="hf-rnci" class="ts-type">number</span><span data-hf-id="hf-d28w" class="ts-punct">[])</span> <span data-hf-id="hf-crlq" class="ts-punct">=&gt;</span> console<span data-hf-id="hf-r508" class="ts-punct">.</span><span data-hf-id="hf-pfyj" class="ts-fn">log</span><span data-hf-id="hf-6klt" class="ts-punct">(</span>results<span data-hf-id="hf-apfn" class="ts-punct">))</span></span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-7tl7" class="ts-txt">    <span data-hf-id="hf-qqp7" class="ts-punct">.</span><span data-hf-id="hf-i3xi" class="ts-fn">catch</span><span data-hf-id="hf-ih7x" class="ts-punct">((</span>error<span data-hf-id="hf-cp88" class="ts-punct">)</span> <span data-hf-id="hf-3v6q" class="ts-punct">=&gt;</span> console<span data-hf-id="hf-or62" class="ts-punct">.</span><span data-hf-id="hf-hsob" class="ts-fn">log</span><span data-hf-id="hf-66as" class="ts-punct">(</span>error<span data-hf-id="hf-ocv1" class="ts-punct">.</span>message<span data-hf-id="hf-hs6g" class="ts-punct">));</span></span></div>
+        </div>
+        <div data-hf-id="hf-h5r4" class="ts-code-status">index.ts · Promise.all</div>
       </div>
 
-      <div data-hf-id="hf-oli6" class="f10s-row" id="f10s-r2">
-        <div data-hf-id="hf-kvpo" class="f10s-line" id="f10s-l2"></div>
-        <span data-hf-id="hf-miwr" class="ts-chip" id="f10s-c2">[4, 9, 16]</span>
-        <div data-hf-id="hf-mn6k" class="f10s-stmt" id="f10s-s2">in de volgorde van de array</div>
+      <!-- right column: timeline -->
+      <div data-hf-id="hf-lmh4" class="ts-label" id="f08e-label">tijdlijn</div>
+      <div data-hf-id="hf-eji2" class="pc-tl" id="f08e-tl">
+        <div data-hf-id="hf-nmfm" class="pc-tl-row" id="f08e-row1">
+          <div data-hf-id="hf-ba02" class="pc-tl-label">multiply(2, 2)</div>
+          <div data-hf-id="hf-29fa" class="pc-tl-track"><div data-hf-id="hf-9q9f" class="pc-bar" id="f08e-bar1"><div data-hf-id="hf-q0ad" class="pc-fill" id="f08e-fill1"></div><span data-hf-id="hf-hzyi" class="pc-bar-text" id="f08e-bt1">= 4</span></div></div>
+        </div>
+        <div data-hf-id="hf-jobl" class="pc-tl-row" id="f08e-row2">
+          <div data-hf-id="hf-uxp7" class="pc-tl-label">multiply(4, 10)</div>
+          <div data-hf-id="hf-i07u" class="pc-tl-track"><div data-hf-id="hf-yurs" class="pc-bar" id="f08e-bar2"><div data-hf-id="hf-tyee" class="pc-fill" id="f08e-fill2"></div><span data-hf-id="hf-68xj" class="pc-bar-text" id="f08e-bt2">reject</span></div></div>
+        </div>
+        <div data-hf-id="hf-iwns" class="pc-tl-row" id="f08e-row3">
+          <div data-hf-id="hf-2pzg" class="pc-tl-label">multiply(3, 3)</div>
+          <div data-hf-id="hf-ieiv" class="pc-tl-track"><div data-hf-id="hf-zmfl" class="pc-bar" id="f08e-bar3"><div data-hf-id="hf-xwif" class="pc-fill" id="f08e-fill3"></div><span data-hf-id="hf-qt2b" class="pc-bar-text" id="f08e-bt3">= 9</span></div></div>
+        </div>
+        <div data-hf-id="hf-u3p4" class="pc-axis" id="f08e-axis">
+          <span data-hf-id="hf-hji9" class="pc-tick" style="left: 200px;">0 s</span>
+          <span data-hf-id="hf-dqxn" class="pc-tick" style="left: 334.67px;">1 s</span>
+          <span data-hf-id="hf-rmh2" class="pc-tick" style="left: 469.33px;">2 s</span>
+          <span data-hf-id="hf-c18w" class="pc-tick" style="left: 604px;">3 s</span>
+        </div>
+        <div data-hf-id="hf-fxjk" id="f08e-nowbox"><div data-hf-id="hf-1c6y" class="pc-now" id="f08e-now"></div></div>
+        <div data-hf-id="hf-g7nb" class="f08e-ign" id="f08e-ign1">genegeerd</div>
+        <div data-hf-id="hf-y3h5" class="f08e-ign" id="f08e-ign3">genegeerd</div>
       </div>
 
-      <div data-hf-id="hf-sjm7" class="f10s-row" id="f10s-r3">
-        <div data-hf-id="hf-lndh" class="f10s-line" id="f10s-l3"></div>
-        <span data-hf-id="hf-luvg" class="ts-chip f10s-chip--err" id="f10s-c3">.catch()</span>
-        <div data-hf-id="hf-4un1" class="f10s-stmt" id="f10s-s3">faalt er één, dan faalt alles</div>
-      </div>
+      <!-- promise state -->
+      <div data-hf-id="hf-ty4c" class="ts-chip pc-state" id="f08e-state"><span data-hf-id="hf-g5a9" class="ts-chip-key">Promise.all</span><span data-hf-id="hf-13y7" id="f08e-vbox"><span data-hf-id="hf-c2cx" class="pc-val pc-val--pending" id="f08e-v-pending">pending</span><span data-hf-id="hf-wq0i" class="pc-val pc-val--rejected" id="f08e-v-rejected">rejected</span></span></div>
 
-      <div data-hf-id="hf-whq8" class="f10s-row" id="f10s-r4">
-        <div data-hf-id="hf-4f36" class="f10s-line" id="f10s-l4"></div>
-        <span data-hf-id="hf-lqm4" class="ts-chip" id="f10s-c4">Promise.allSettled</span>
-        <div data-hf-id="hf-wmde" class="f10s-stmt" id="f10s-s4">elke uitkomst, met een status</div>
+      <!-- console -->
+      <div data-hf-id="hf-q6zs" class="ts-label" id="f08e-clabel">console</div>
+      <div data-hf-id="hf-fi6y" class="pc-console" id="f08e-console">
+        <div data-hf-id="hf-mimo" class="pc-out pc-out--error" id="f08e-out1">Result is greater than 10<span data-hf-id="hf-v5pa" class="pc-stamp">1,0 s</span></div>
       </div>
     </div>
   </div>
 
   <script>
     (function () {
-      var DUR = 15.17;
+      var DUR = 12.07;
       var WASH = "rgba(49, 120, 198, 0.12)";
       var CLEAR = "rgba(49, 120, 198, 0)";
+      var SEC = 0.68;          // 1 s of program time = 0.68 s of video
+      var PXS = 404 / 3;       // track 404 px = 3 s
+      var T0 = 3.0;            // timers start
+      var root = document.querySelector('[data-composition-id="07-een-faalt"]');
+      var q = function (s) { return root.querySelector(s); };
 
       window.__timelines = window.__timelines || {};
       var tl = gsap.timeline({ paused: true });
@@ -269,30 +300,54 @@
       function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
       function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
 
-      function lineIn(sel, at) {
-        tl.fromTo(sel, { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, at);
-      }
-      // chip and statement fade up together (0.5s, y 16 -> 0)
-      function rowIn(n, at) {
-        lineIn("#f10s-l" + n, at);
-        tl.fromTo(["#f10s-c" + n, "#f10s-s" + n], { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, at);
-      }
+      // ---- start state ----
+      gsap.set(["#f08e-label", "#f08e-tl", "#f08e-state", "#f08e-clabel", "#f08e-console"], { opacity: 0 });
+      gsap.set(["#f08e-fill1", "#f08e-fill2", "#f08e-fill3"], { scaleX: 0 });
+      gsap.set("#f08e-v-rejected", { opacity: 0, y: 10 });
+      gsap.set("#f08e-now", { x: 0 });
 
-      // ---- 0.0-4.8: kicker (0.1); "promise punt all" (1.20) row 1; "tegelijk" (3.28) underline ----
-      tl.fromTo("#f10s-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
-      tl.fromTo("#f10s-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
-      rowIn(1, 1.2);
-      tl.fromTo("#f10s-ul", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 3.28);
+      // ---- Shot 1 (0.0-2.9): kicker; "alles of niets" (1.96) timeline + state chip + console ----
+      tl.fromTo("#f08e-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f08e-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
 
-      // ---- 4.8-end: "resultaten" (5.28), "Faalt er één" (7.76), "all settled" (12.40) ----
-      rowIn(2, 5.28);
-      rowIn(3, 7.76);
-      rowIn(4, 12.4);
+      tl.fromTo("#f08e-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 1.96);
+      tl.fromTo("#f08e-tl", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 1.96);
+      tl.to(["#f08e-bar1", "#f08e-bar2", "#f08e-bar3"], { opacity: 1, duration: 0.3, ease: "power2.out", stagger: 0.08 }, 2.1);
+      tl.fromTo("#f08e-state", { opacity: 0, y: 12, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" }, 2.2);
+      tl.fromTo("#f08e-clabel", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 2.3);
+      tl.fromTo("#f08e-console", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 2.3);
+
+      // ---- Shot 2 (2.9-6.6): 3.00 all timers run; "één" (3.68) row 2 rejects; "rejected" (6.16) chip ----
+      tl.to("#f08e-now", { opacity: 1, duration: 0.15, ease: "power1.out" }, T0);
+      tl.to("#f08e-fill1", { scaleX: 1, duration: 2 * SEC, ease: "none" }, T0);
+      tl.to("#f08e-fill2", { scaleX: 1, duration: 1 * SEC, ease: "none" }, T0);
+      tl.to("#f08e-fill3", { scaleX: 1, duration: 3 * SEC, ease: "none" }, T0);
+      tl.to("#f08e-now", { x: PXS, duration: 1 * SEC, ease: "none" }, T0);
+
+      var TR = T0 + SEC; // 3.68: multiply(4, 10) rejects
+      tl.to("#f08e-bar2", { borderColor: "#D14343", duration: 0.25, ease: "power2.out" }, TR);
+      tl.to("#f08e-fill2", { backgroundColor: "rgba(209, 67, 67, 0.10)", duration: 0.25, ease: "power2.out" }, TR);
+      tl.to("#f08e-bt2", { opacity: 1, duration: 0.3, ease: "power2.out" }, TR);
+      tl.to("#f08e-now", { backgroundColor: "#D14343", duration: 0.25, ease: "power2.out" }, TR);
+
+      // Promise.all ignores the others: they keep running, faded and dashed
+      tl.set(["#f08e-bar1", "#f08e-bar3"], { borderStyle: "dashed" }, TR + 0.16);
+      tl.to(["#f08e-bar1", "#f08e-bar3"], { opacity: 0.35, borderColor: "#94A3B8", duration: 0.4, ease: "power2.inOut" }, TR + 0.16);
+
+      // state chip: pending -> rejected (red look)
+      tl.to("#f08e-v-pending", { opacity: 0, y: -10, duration: 0.25, ease: "power2.in" }, 6.16);
+      tl.to("#f08e-v-rejected", { opacity: 1, y: 0, duration: 0.25, ease: "power2.out" }, 6.24);
+      tl.to("#f08e-state", { borderColor: "#D14343", boxShadow: "0 0 0 1px #D14343", duration: 0.3, ease: "power2.out" }, 6.16);
+
+      // ---- Shot 3 (6.6-end): "catch" (7.48) console line; "andere promises" (9.52) thrown-away results ----
+      tl.fromTo("#f08e-out1", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out" }, 7.48);
+
+      tl.to(["#f08e-bt1", "#f08e-bt3"], { opacity: 1, duration: 0.35, ease: "power2.out" }, 9.52);
+      tl.fromTo(["#f08e-ign1", "#f08e-ign3"], { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 9.52);
 
       // hold still to full duration
       tl.set({}, {}, DUR);
-      window.__timelines["10-samenvatting"] = tl;
+      window.__timelines["07-een-faalt"] = tl;
     })();
   </script>
 </template>

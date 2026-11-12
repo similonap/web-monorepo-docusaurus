@@ -205,92 +205,105 @@
     .pc-arrow { position: absolute; height: 2px; background: var(--ts-muted); transform-origin: left center; }
     .pc-arrow::after { content: ""; position: absolute; right: -2px; top: -6px; border-left: 12px solid var(--ts-muted); border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
 
-
-    /* ---- frame 07 positions ---- */
-    #f07f-panel { left: 80px; top: 170px; width: 1120px; height: 720px; }
-    #f07f-panel .ts-code { font-size: 24px; line-height: 36px; }
-    #f07f-panel .ts-row { height: 36px; }
-    #f07f-panel .ts-caret { top: 5px; height: 26px; }
-    #f07f-label { left: 1260px; top: 186px; opacity: 0; }
-    #f07f-tl { left: 1260px; top: 232px; width: 580px; }
-    #f07f-tl .pc-tl-row { height: 48px; opacity: 0; }
-    #f07f-tl .pc-tl-label { height: 48px; font-size: 20px; }
-    #f07f-tl .pc-tl-track { left: 150px; top: 9px; height: 30px; }
-    #f07f-tl .pc-bar--real { z-index: 2; }
-    #f07f-tl .pc-bar--ghost { z-index: 1; }
-    #f07f-nowwrap { position: absolute; left: 150px; top: 9px; width: 430px; height: 222px; z-index: 3; }
-    #f07f-axis { margin-left: 150px; opacity: 0; }
-    #f07f-tick-end { transform: translateX(-100%); }
-    #f07f-chip { left: 1260px; top: 540px; opacity: 0; }
+    /* ---- frame 09 positions ---- */
+    /* 24px / 36px code rows, panel x 80-1200; right column from x 1260 */
+    #f09s-panel { left: 80px; top: 170px; width: 1120px; height: 500px; }
+    #f09s-panel .ts-code { font-size: 24px; line-height: 36px; }
+    #f09s-panel .ts-row { height: 36px; }
+    #f09s-panel .ts-caret { top: 5px; height: 26px; }
+    #f09s-rest { position: relative; }
+    /* timeline */
+    #f09s-tl { left: 1260px; top: 200px; width: 580px; }
+    #f09s-tl .pc-tl-label { font-size: 20px; }
+    #f09s-tl .pc-tl-track { left: 190px; }
+    #f09s-nowwrap { position: absolute; left: 190px; right: 0; top: 10px; height: 148px; }
+    #f09s-now { left: 0; }
+    #f09s-clock { left: 1260px; top: 414px; opacity: 0; }
+    #f09s-clockmark { left: 1248px; top: 404px; width: 116px; height: 58px; opacity: 0; }
+    /* results card */
+    #f09s-reslabel { left: 1260px; top: 474px; }
+    #f09s-card { left: 1260px; top: 508px; width: 580px; height: 196px; }
+    .f09s-res { position: absolute; left: 20px; height: 52px; line-height: 52px; font-family: var(--ts-mono); font-size: 20px; font-weight: 400; color: var(--ts-ink); white-space: pre; }
+    .f09s-rejected { color: var(--ts-error); }
   </style>
 
-  <div data-hf-id="hf-bsvn" id="root" data-composition-id="07-fetch" data-width="1920" data-height="1080" data-duration="13.75">
-    <div data-hf-id="hf-ljr0" class="ts-bg clip" id="f07f-bg" data-start="0" data-duration="13.75" data-track-index="0"></div>
+  <div data-hf-id="hf-9o01" id="root" data-composition-id="08-allsettled" data-width="1920" data-height="1080" data-duration="16.23">
+    <div data-hf-id="hf-dd97" class="ts-bg clip" id="f09s-bg" data-start="0" data-duration="16.23" data-track-index="0"></div>
 
-    <div data-hf-id="hf-yzoh" class="ts-stage clip" id="f07f-stage" data-start="0" data-duration="13.75" data-track-index="1">
-      <div data-hf-id="hf-0ux2" class="ts-kicker" id="f07f-kicker"><div data-hf-id="hf-lh87" class="ts-kicker-bar" id="f07f-kbar"></div><span data-hf-id="hf-k0s8" class="ts-kicker-text" id="f07f-ktext">Met fetch</span></div>
+    <div data-hf-id="hf-ilfg" class="ts-stage clip" id="f09s-stage" data-start="0" data-duration="16.23" data-track-index="1">
+      <div data-hf-id="hf-sbzj" class="ts-kicker" id="f09s-kicker"><div data-hf-id="hf-ii1q" class="ts-kicker-bar" id="f09s-kbar"></div><span data-hf-id="hf-rmhx" class="ts-kicker-text" id="f09s-ktext">allSettled</span></div>
 
       <!-- code surface -->
-      <div data-hf-id="hf-chx3" class="ts-code-surface" id="f07f-panel">
+      <div data-hf-id="hf-bpbc" class="ts-code-surface" id="f09s-panel">
         <div data-hf-id="hf-i0t9" class="ts-code-title">index.ts</div>
         <div data-hf-id="hf-0onr" class="ts-code">
-          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-8ewo" class="ts-txt" id="f07f-l1"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> <span data-hf-id="hf-hnbr" class="ts-fn">getPost</span> = <span data-hf-id="hf-tg6j" class="ts-kw">async</span> <span data-hf-id="hf-cax7" class="ts-punct">(</span>id: <span data-hf-id="hf-rnci" class="ts-type">number</span><span data-hf-id="hf-cp88" class="ts-punct">)</span>: <span data-hf-id="hf-zgio" class="ts-type">Promise</span><span data-hf-id="hf-4csn" class="ts-punct">&lt;</span><span data-hf-id="hf-2brp" class="ts-type">Post</span><span data-hf-id="hf-3k6l" class="ts-punct">&gt;</span> <span data-hf-id="hf-crlq" class="ts-punct">=&gt;</span> <span data-hf-id="hf-uzbi" class="ts-punct">{</span></span></div>
-          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-of4u" class="ts-txt" id="f07f-l2">    <span data-hf-id="hf-stvc" class="ts-kw">const</span> response = <span data-hf-id="hf-axwx" class="ts-kw">await</span> <span data-hf-id="hf-bdeq" class="ts-hl" id="f07f-hl-fetch"><span data-hf-id="hf-1b51" class="ts-fn">fetch</span></span><span data-hf-id="hf-7d7v" class="ts-punct">(</span><span data-hf-id="hf-bu1o" class="ts-str">`</span><span data-hf-id="hf-bzkc" class="ts-punct">${</span>API<span data-hf-id="hf-u6pg" class="ts-punct">}</span><span data-hf-id="hf-3blp" class="ts-str">/posts/</span><span data-hf-id="hf-d6uc" class="ts-punct">${</span>id<span data-hf-id="hf-4k98" class="ts-punct">}</span><span data-hf-id="hf-eqqc" class="ts-str">`</span><span data-hf-id="hf-g9q1" class="ts-punct">);</span></span></div>
-          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-sfcv" class="ts-txt" id="f07f-l3">    <span data-hf-id="hf-kmyz" class="ts-kw">return</span> response<span data-hf-id="hf-9x31" class="ts-punct">.</span><span data-hf-id="hf-l0ex" class="ts-fn">json</span><span data-hf-id="hf-2itj" class="ts-punct">();</span></span></div>
-          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-s09b" class="ts-txt" id="f07f-l4"><span data-hf-id="hf-jyvx" class="ts-punct">};</span></span></div>
-          <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-joe1" class="ts-txt"></span></div>
-          <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-k419" class="ts-txt" id="f07f-l6"></span><span data-hf-id="hf-cd0z" class="ts-caret" id="f07f-c6"></span></div>
-          <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><span data-hf-id="hf-h4ro" class="ts-txt" id="f07f-l7"></span><span data-hf-id="hf-8ewy" class="ts-caret" id="f07f-c7"></span></div>
-          <div data-hf-id="hf-du2u" class="ts-row"><span data-hf-id="hf-hcwz" class="ts-ln">8</span><span data-hf-id="hf-y9gj" class="ts-txt" id="f07f-l8"></span><span data-hf-id="hf-y7lp" class="ts-caret" id="f07f-c8"></span></div>
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-xldf" class="ts-txt" id="f09s-l1"></span><span data-hf-id="hf-vi9p" class="ts-caret" id="f09s-c1"></span></div>
+          <div data-hf-id="hf-rl2u" id="f09s-rest">
+            <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-cjtd" class="ts-txt">    <span data-hf-id="hf-9x31" class="ts-punct">.</span><span data-hf-id="hf-qm6o" class="ts-fn">then</span><span data-hf-id="hf-9pzt" class="ts-punct">((</span>results<span data-hf-id="hf-cp88" class="ts-punct">)</span> <span data-hf-id="hf-crlq" class="ts-punct">=&gt;</span> <span data-hf-id="hf-uzbi" class="ts-punct">{</span></span></div>
+            <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-g046" class="ts-txt">        <span data-hf-id="hf-8zh0" class="ts-kw">for</span> <span data-hf-id="hf-cax7" class="ts-punct">(</span><span data-hf-id="hf-vgw0" class="ts-kw">const</span> result <span data-hf-id="hf-1puc" class="ts-kw">of</span> results<span data-hf-id="hf-0knk" class="ts-punct">)</span> <span data-hf-id="hf-vyvm" class="ts-punct">{</span></span></div>
+            <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-joe1" class="ts-txt">            <span data-hf-id="hf-n33m" class="ts-hl" id="f09s-hl4"><span data-hf-id="hf-vine" class="ts-kw">if</span> <span data-hf-id="hf-7d7v" class="ts-punct">(</span>result<span data-hf-id="hf-py35" class="ts-punct">.</span>status === <span data-hf-id="hf-bzoh" class="ts-str">"fulfilled"</span><span data-hf-id="hf-zdqh" class="ts-punct">)</span> <span data-hf-id="hf-wd6n" class="ts-punct">{</span></span></span></div>
+            <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-5edp" class="ts-txt">                <span data-hf-id="hf-fka8" class="ts-hl" id="f09s-hl5">console<span data-hf-id="hf-r508" class="ts-punct">.</span><span data-hf-id="hf-pfyj" class="ts-fn">log</span><span data-hf-id="hf-6ywu" class="ts-punct">(</span><span data-hf-id="hf-e93m" class="ts-str">"gelukt:"</span><span data-hf-id="hf-app3" class="ts-punct">,</span> result<span data-hf-id="hf-qqp7" class="ts-punct">.</span>value<span data-hf-id="hf-g9q1" class="ts-punct">);</span></span></span></div>
+            <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-6las" class="ts-txt">            <span data-hf-id="hf-wwoa" class="ts-hl" id="f09s-hl6"><span data-hf-id="hf-u6pg" class="ts-punct">}</span> <span data-hf-id="hf-1yl0" class="ts-kw">else</span> <span data-hf-id="hf-wrho" class="ts-punct">{</span></span></span></div>
+            <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><span data-hf-id="hf-66zr" class="ts-txt">                <span data-hf-id="hf-omw4" class="ts-hl" id="f09s-hl7">console<span data-hf-id="hf-or62" class="ts-punct">.</span><span data-hf-id="hf-hsob" class="ts-fn">log</span><span data-hf-id="hf-6klt" class="ts-punct">(</span><span data-hf-id="hf-6lsl" class="ts-str">"mislukt:"</span><span data-hf-id="hf-leon" class="ts-punct">,</span> result<span data-hf-id="hf-ocv1" class="ts-punct">.</span>reason<span data-hf-id="hf-pjs4" class="ts-punct">.</span>message<span data-hf-id="hf-mlfx" class="ts-punct">);</span></span></span></div>
+            <div data-hf-id="hf-du2u" class="ts-row"><span data-hf-id="hf-hcwz" class="ts-ln">8</span><span data-hf-id="hf-7dwu" class="ts-txt">            <span data-hf-id="hf-4k98" class="ts-punct">}</span></span></div>
+            <div data-hf-id="hf-9gpj" class="ts-row"><span data-hf-id="hf-hr80" class="ts-ln">9</span><span data-hf-id="hf-6zlt" class="ts-txt">        <span data-hf-id="hf-zbd1" class="ts-punct">}</span></span></div>
+            <div data-hf-id="hf-9v0k" class="ts-row"><span data-hf-id="hf-h360" class="ts-ln">10</span><span data-hf-id="hf-86iw" class="ts-txt">    <span data-hf-id="hf-hntg" class="ts-punct">});</span></span></div>
+          </div>
         </div>
-        <div data-hf-id="hf-fna4" class="ts-code-status">index.ts · fetch</div>
+        <div data-hf-id="hf-vhfo" class="ts-code-status">index.ts · allSettled</div>
       </div>
 
-      <!-- right column: requests timeline (0-1000 ms) -->
-      <div data-hf-id="hf-0vw2" class="ts-label" id="f07f-label">requests</div>
-      <div data-hf-id="hf-7qvo" class="pc-tl" id="f07f-tl">
-        <div data-hf-id="hf-bjyq" class="pc-tl-row" id="f07f-r1"><span data-hf-id="hf-fsx2" class="pc-tl-label">/posts/1</span><div data-hf-id="hf-29fa" class="pc-tl-track">
-          <div data-hf-id="hf-wtuk" class="pc-bar pc-bar--ghost" id="f07f-g1" style="left: 0%; width: 19%;"></div>
-          <div data-hf-id="hf-rx4c" class="pc-bar pc-bar--real" id="f07f-b1" style="left: 0%; width: 19%;"><div data-hf-id="hf-9lde" class="pc-fill" id="f07f-f1"></div></div>
-        </div></div>
-        <div data-hf-id="hf-7lup" class="pc-tl-row" id="f07f-r2"><span data-hf-id="hf-g783" class="pc-tl-label">/posts/2</span><div data-hf-id="hf-i07u" class="pc-tl-track">
-          <div data-hf-id="hf-2lns" class="pc-bar pc-bar--ghost" id="f07f-g2" style="left: 19%; width: 23%;"></div>
-          <div data-hf-id="hf-dag4" class="pc-bar pc-bar--real" id="f07f-b2" style="left: 0%; width: 23%;"><div data-hf-id="hf-5n9d" class="pc-fill" id="f07f-f2"></div></div>
-        </div></div>
-        <div data-hf-id="hf-aw60" class="pc-tl-row" id="f07f-r3"><span data-hf-id="hf-glj4" class="pc-tl-label">/posts/3</span><div data-hf-id="hf-ieiv" class="pc-tl-track">
-          <div data-hf-id="hf-d25a" class="pc-bar pc-bar--ghost" id="f07f-g3" style="left: 42%; width: 17%;"></div>
-          <div data-hf-id="hf-sjhw" class="pc-bar pc-bar--real" id="f07f-b3" style="left: 0%; width: 17%;"><div data-hf-id="hf-4vlk" class="pc-fill" id="f07f-f3"></div></div>
-        </div></div>
-        <div data-hf-id="hf-6y1z" class="pc-tl-row" id="f07f-r4"><span data-hf-id="hf-dtdx" class="pc-tl-label">/posts/4</span><div data-hf-id="hf-istw" class="pc-tl-track">
-          <div data-hf-id="hf-x33g" class="pc-bar pc-bar--ghost" id="f07f-g4" style="left: 59%; width: 21%;"></div>
-          <div data-hf-id="hf-xi54" class="pc-bar pc-bar--real" id="f07f-b4" style="left: 0%; width: 21%;"><div data-hf-id="hf-0xhj" class="pc-fill" id="f07f-f4"></div></div>
-        </div></div>
-        <div data-hf-id="hf-yxyu" class="pc-tl-row" id="f07f-r5"><span data-hf-id="hf-e7oy" class="pc-tl-label">/posts/5</span><div data-hf-id="hf-j74x" class="pc-tl-track">
-          <div data-hf-id="hf-v4i8" class="pc-bar pc-bar--ghost" id="f07f-g5" style="left: 80%; width: 20%;"></div>
-          <div data-hf-id="hf-gby0" class="pc-bar pc-bar--real" id="f07f-b5" style="left: 0%; width: 20%;"><div data-hf-id="hf-wzdi" class="pc-fill" id="f07f-f5"></div></div>
-        </div></div>
-        <div data-hf-id="hf-ued2" class="pc-axis" id="f07f-axis">
-          <span data-hf-id="hf-e3hx" class="pc-tick" style="left: 0%;">0</span>
-          <span data-hf-id="hf-ephj" class="pc-tick" style="left: 50%;">500 ms</span>
-          <span data-hf-id="hf-yte0" class="pc-tick" id="f07f-tick-end" style="left: 100%;">1000 ms</span>
+      <!-- right column: timeline -->
+      <div data-hf-id="hf-1zj9" class="pc-tl" id="f09s-tl">
+        <div data-hf-id="hf-h2ir" class="pc-tl-row">
+          <div data-hf-id="hf-ba02" class="pc-tl-label">multiply(2, 2)</div>
+          <div data-hf-id="hf-29fa" class="pc-tl-track">
+            <div data-hf-id="hf-of8n" class="pc-bar" id="f09s-bar1" style="width: 66.667%;"><div data-hf-id="hf-33m0" class="pc-fill" id="f09s-fill1"></div><span data-hf-id="hf-xrqt" class="pc-bar-text" id="f09s-txt1">= 4</span></div>
+          </div>
         </div>
-        <div data-hf-id="hf-vuc7" id="f07f-nowwrap"><div data-hf-id="hf-4m10" class="pc-now" id="f07f-now"></div></div>
+        <div data-hf-id="hf-e9oj" class="pc-tl-row">
+          <div data-hf-id="hf-uxp7" class="pc-tl-label">multiply(4, 10)</div>
+          <div data-hf-id="hf-i07u" class="pc-tl-track">
+            <div data-hf-id="hf-2o98" class="pc-bar" id="f09s-bar2" style="width: 33.333%;"><div data-hf-id="hf-brhv" class="pc-fill" id="f09s-fill2"></div><span data-hf-id="hf-yncc" class="pc-bar-text" id="f09s-txt2" style="color: #D14343;">reject</span></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-dvdi" class="pc-tl-row">
+          <div data-hf-id="hf-2pzg" class="pc-tl-label">multiply(3, 3)</div>
+          <div data-hf-id="hf-ieiv" class="pc-tl-track">
+            <div data-hf-id="hf-uv5h" class="pc-bar" id="f09s-bar3" style="width: 100%;"><div data-hf-id="hf-7tdu" class="pc-fill" id="f09s-fill3"></div><span data-hf-id="hf-anbk" class="pc-bar-text" id="f09s-txt3">= 9</span></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-zhqz" class="pc-axis" id="f09s-axis">
+          <span data-hf-id="hf-weil" class="pc-tick" style="left: 190px;">0 s</span>
+          <span data-hf-id="hf-49c9" class="pc-tick" style="left: 320px;">1 s</span>
+          <span data-hf-id="hf-a7im" class="pc-tick" style="left: 450px;">2 s</span>
+          <span data-hf-id="hf-4qtv" class="pc-tick" style="left: 580px;">3 s</span>
+        </div>
+        <div data-hf-id="hf-jnww" id="f09s-nowwrap"><div data-hf-id="hf-omhn" class="pc-now" id="f09s-now"></div></div>
       </div>
 
-      <!-- result chip -->
-      <div data-hf-id="hf-9vl4" class="ts-chip" id="f07f-chip"><span data-hf-id="hf-kao2" class="ts-chip-key">posts</span><span data-hf-id="hf-j2t5" id="f07f-chipval">5 posts</span></div>
+      <div data-hf-id="hf-j104" class="pc-clock" id="f09s-clock">0,0 s</div>
+      <div data-hf-id="hf-glbd" class="ts-mark" id="f09s-clockmark"></div>
+
+      <!-- results card -->
+      <div data-hf-id="hf-1zbf" class="ts-label" id="f09s-reslabel">results</div>
+      <div data-hf-id="hf-0jzp" class="ts-card" id="f09s-card">
+        <div data-hf-id="hf-nuql" class="f09s-res" id="f09s-res1" style="top: 20px;"><span data-hf-id="hf-hbna" class="ts-hl" id="f09s-hlr1"><span data-hf-id="hf-x5sp" class="ts-punct">{</span> <span data-hf-id="hf-8oti" class="ts-hl" id="f09s-st1">status: <span data-hf-id="hf-zgc5" class="ts-str">"fulfilled"</span></span><span data-hf-id="hf-l0dm" class="ts-punct">,</span> value: <span data-hf-id="hf-jlod" class="ts-fn">4</span> <span data-hf-id="hf-3rn6" class="ts-punct">}</span></span></div>
+        <div data-hf-id="hf-vekv" class="f09s-res" id="f09s-res2" style="top: 72px;"><span data-hf-id="hf-ehle" class="ts-hl" id="f09s-hlr2"><span data-hf-id="hf-xk3q" class="ts-punct">{</span> <span data-hf-id="hf-mjn3" class="ts-hl" id="f09s-st2">status: <span data-hf-id="hf-2e2o" class="f09s-rejected">"rejected"</span></span><span data-hf-id="hf-km2l" class="ts-punct">,</span> reason: <span data-hf-id="hf-de1n" class="ts-type">Error</span> <span data-hf-id="hf-5r6b" class="ts-punct">}</span></span></div>
+        <div data-hf-id="hf-3490" class="f09s-res" id="f09s-res3" style="top: 124px;"><span data-hf-id="hf-hy6c" class="ts-hl" id="f09s-hlr3"><span data-hf-id="hf-xyer" class="ts-punct">{</span> <span data-hf-id="hf-l6ic" class="ts-hl" id="f09s-st3">status: <span data-hf-id="hf-0n98" class="ts-str">"fulfilled"</span></span><span data-hf-id="hf-ne7s" class="ts-punct">,</span> value: <span data-hf-id="hf-ornq" class="ts-fn">9</span> <span data-hf-id="hf-65hc" class="ts-punct">}</span></span></div>
+      </div>
     </div>
   </div>
 
   <script>
     (function () {
-      var DUR = 13.75;
+      var DUR = 16.23;
       var CW = 0.6; // JetBrains Mono advance (em)
       var FS = 24;
       var X0 = 76;
       var WASH = "rgba(49, 120, 198, 0.12)";
       var CLEAR = "rgba(49, 120, 198, 0)";
-      var root = document.querySelector('[data-composition-id="07-fetch"]');
+      var root = document.querySelector('[data-composition-id="08-allsettled"]');
       var q = function (s) { return root.querySelector(s); };
 
       window.__timelines = window.__timelines || {};
@@ -338,112 +351,97 @@
       function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
       function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
 
-      // start state: helper rows 1-4 present but dimmed; real bars visible inside their (hidden) rows
-      tl.set(["#f07f-l1", "#f07f-l2", "#f07f-l3", "#f07f-l4"], { opacity: 0.5 }, 0);
-      tl.set(["#f07f-b1", "#f07f-b2", "#f07f-b3", "#f07f-b4", "#f07f-b5"], { opacity: 1 }, 0);
+      // start states
+      gsap.set(["#f09s-fill1", "#f09s-fill2", "#f09s-fill3"], { scaleX: 0 });
+      gsap.set(["#f09s-panel", "#f09s-tl", "#f09s-reslabel", "#f09s-card", "#f09s-res1", "#f09s-res2", "#f09s-res3"], { opacity: 0 });
 
-      // ---- Scene 1 (0.0-2.2): kicker; "fetch" (1.52) wash on fetch in row 2 ----
-      tl.fromTo("#f07f-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
-      tl.fromTo("#f07f-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
-      tl.to("#f07f-l2", { opacity: 1, duration: 0.4, ease: "power2.out" }, 1.52);
-      washOn("#f07f-hl-fetch", 1.52);
-      washOff("#f07f-hl-fetch", 2.2);
-      tl.to(["#f07f-l1", "#f07f-l3", "#f07f-l4"], { opacity: 1, duration: 0.4, ease: "power2.out" }, 2.3);
+      // ---- Shot 1 (0.0-2.7): kicker; "elke uitkomst" (0.80) timeline with outlined bars ----
+      tl.fromTo("#f09s-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f09s-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f09s-tl", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.8);
+      tl.to(["#f09s-bar1", "#f09s-bar2", "#f09s-bar3"], { opacity: 1, duration: 0.3, ease: "power3.out", stagger: 0.06 }, 0.9);
 
-      // ---- Scene 2 (2.2-5.8): "ids" (2.32) row 6; "map naar get post" (3.84-4.88) row 7; rows fade in at 4.88 ----
-      typeLine("#f07f-l6", "#f07f-c6", [
-        { t: "const", c: "ts-kw" },
-        { t: " ids: " },
-        { t: "number", c: "ts-type" },
-        { t: "[]", c: "ts-punct" },
-        { t: " = " },
-        { t: "[", c: "ts-punct" },
-        { t: "1", c: "ts-fn" }, { t: ",", c: "ts-punct" }, { t: " " },
-        { t: "2", c: "ts-fn" }, { t: ",", c: "ts-punct" }, { t: " " },
-        { t: "3", c: "ts-fn" }, { t: ",", c: "ts-punct" }, { t: " " },
-        { t: "4", c: "ts-fn" }, { t: ",", c: "ts-punct" }, { t: " " },
-        { t: "5", c: "ts-fn" },
-        { t: "];", c: "ts-punct" }
-      ], 0, 2.3, 0.0184);
-
-      var l7 = typeLine("#f07f-l7", "#f07f-c7", [
-        { t: "const", c: "ts-kw" },
-        { t: " promises: " },
+      // ---- Shot 2 (2.7-4.9): code shell; "promise punt all settled" (2.80) row 1 types; wash on allSettled ----
+      tl.fromTo("#f09s-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 2.3);
+      typeLine("#f09s-l1", "#f09s-c1", [
         { t: "Promise", c: "ts-type" },
-        { t: "<", c: "ts-punct" },
-        { t: "Post", c: "ts-type" },
-        { t: ">[]", c: "ts-punct" },
-        { t: " = " },
-        { id: "f07f-hl-map", parts: [
-          { t: "ids" },
-          { t: ".", c: "ts-punct" },
-          { t: "map", c: "ts-fn" },
-          { t: "((", c: "ts-punct" },
-          { t: "id" },
-          { t: ")", c: "ts-punct" },
-          { t: " " },
-          { t: "=>", c: "ts-punct" },
-          { t: " " },
-          { t: "getPost", c: "ts-fn" },
-          { t: "(", c: "ts-punct" },
-          { t: "id" },
-          { t: ")", c: "ts-punct" },
-          { t: ")", c: "ts-punct" }
-        ] },
-        { t: ";", c: "ts-punct" }
-      ], 0, 3.84, 0.0168);
-      washOn("#f07f-hl-map", Math.max(4.40, l7.marks["f07f-hl-map"] + 0.05));
+        { t: ".", c: "ts-punct" },
+        { id: "f09s-hl-as", parts: [{ t: "allSettled", c: "ts-fn" }] },
+        { t: "([", c: "ts-punct" },
+        { t: "multiply", c: "ts-fn" },
+        { t: "(", c: "ts-punct" },
+        { t: "2", c: "ts-fn" },
+        { t: ",", c: "ts-punct" },
+        { t: " " },
+        { t: "2", c: "ts-fn" },
+        { t: "),", c: "ts-punct" },
+        { t: " " },
+        { t: "multiply", c: "ts-fn" },
+        { t: "(", c: "ts-punct" },
+        { t: "4", c: "ts-fn" },
+        { t: ",", c: "ts-punct" },
+        { t: " " },
+        { t: "10", c: "ts-fn" },
+        { t: "),", c: "ts-punct" },
+        { t: " " },
+        { t: "multiply", c: "ts-fn" },
+        { t: "(", c: "ts-punct" },
+        { t: "3", c: "ts-fn" },
+        { t: ",", c: "ts-punct" },
+        { t: " " },
+        { t: "3", c: "ts-fn" },
+        { t: ")])", c: "ts-punct" }
+      ], 0, 2.8, 0.02);
+      washOn("#f09s-hl-as", 3.76);
+      washOff("#f09s-hl-as", 4.8);
 
-      tl.fromTo("#f07f-label", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 4.88);
-      tl.fromTo(["#f07f-r1", "#f07f-r2", "#f07f-r3", "#f07f-r4", "#f07f-r5"],
-        { opacity: 0, y: 8 },
-        { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", stagger: 0.08 }, 4.88);
-      tl.fromTo("#f07f-axis", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power3.out" }, 5.24);
-      washOff("#f07f-hl-map", 5.8);
+      // ---- Shot 3 (4.9-8.0): "wacht tot alles klaar is" (5.20-6.44): bars fill over 3 s of program time ----
+      var T0 = 5.2, T1 = 6.44, SEC = (T1 - T0) / 3;
+      tl.fromTo("#f09s-now", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power1.out" }, T0 - 0.1);
+      tl.fromTo("#f09s-now", { x: 0 }, { x: 390, duration: T1 - T0, ease: "none" }, T0);
+      tl.to("#f09s-fill1", { scaleX: 1, duration: 2 * SEC, ease: "none" }, T0);
+      tl.to("#f09s-fill2", { scaleX: 1, duration: 1 * SEC, ease: "none" }, T0);
+      tl.to("#f09s-fill3", { scaleX: 1, duration: 3 * SEC, ease: "none" }, T0);
+      // clock counts the program time 0,0 -> 3,0 s
+      var clock = q("#f09s-clock");
+      var clockState = { v: 0 };
+      tl.fromTo("#f09s-clock", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, T0 - 0.1);
+      tl.fromTo(clockState, { v: 0 }, {
+        v: 3, duration: T1 - T0, ease: "none",
+        onUpdate: function () { clock.textContent = (Math.round(clockState.v * 10) / 10).toFixed(1).replace(".", ",") + " s"; }
+      }, T0);
+      // row 2 rejects at 1 s (5.61): red border + fill, `reject`; the now-line keeps going
+      var tRej = T0 + SEC;
+      tl.to("#f09s-bar2", { borderColor: "#D14343", duration: 0.2, ease: "power1.out" }, tRej);
+      tl.to("#f09s-fill2", { backgroundColor: "rgba(209, 67, 67, 0.10)", duration: 0.2, ease: "power1.out" }, tRej);
+      tl.fromTo("#f09s-txt2", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power3.out" }, tRej);
+      tl.fromTo("#f09s-txt1", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power3.out" }, T0 + 2 * SEC);
+      tl.fromTo("#f09s-txt3", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power3.out" }, T1);
+      // "faalt nooit" (7.36): mark around the clock
+      tl.fromTo("#f09s-clockmark", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 7.36);
 
-      // ---- Scene 3 (5.8-7.9): "await promise punt all" (5.92-7.20) row 8 ----
-      var l8 = typeLine("#f07f-l8", "#f07f-c8", [
-        { t: "const", c: "ts-kw" },
-        { t: " posts: " },
-        { t: "Post", c: "ts-type" },
-        { t: "[]", c: "ts-punct" },
-        { t: " = " },
-        { id: "f07f-hl-all", parts: [
-          { t: "await", c: "ts-kw" },
-          { t: " " },
-          { t: "Promise", c: "ts-type" },
-          { t: ".", c: "ts-punct" },
-          { t: "all", c: "ts-fn" },
-          { t: "(", c: "ts-punct" },
-          { t: "promises" },
-          { t: ")", c: "ts-punct" }
-        ] },
-        { t: ";", c: "ts-punct" }
-      ], 0, 5.92, 0.0256);
-      washOn("#f07f-hl-all", l8.marks["f07f-hl-all"] + 0.05);
-      washOff("#f07f-hl-all", 7.9);
-
-      // ---- Scene 4 (7.9-end): "vertrekken tegelijk" (8.24) all bars fill together ----
-      // real time 0-230 ms over 8.24-9.10; each fill lasts in proportion to its length
-      var T0 = 8.24, SPAN = 0.86, MAXMS = 230;
-      var lens = [190, 230, 170, 210, 200];
-      lens.forEach(function (ms, i) {
-        tl.to("#f07f-f" + (i + 1), { scaleX: 1, duration: SPAN * ms / MAXMS, ease: "none" }, T0);
-      });
-      tl.set("#f07f-now", { x: 0 }, 0);
-      tl.to("#f07f-now", { opacity: 1, duration: 0.15, ease: "power1.out" }, T0);
-      tl.to("#f07f-now", { x: 430 * MAXMS / 1000, duration: SPAN, ease: "none" }, T0);
-
-      // "dus" (10.08): ghost bars (one by one) fade in
-      tl.to(["#f07f-g1", "#f07f-g2", "#f07f-g3", "#f07f-g4", "#f07f-g5"], { opacity: 1, duration: 0.4, ease: "power3.out" }, 10.08);
-
-      // "vijf posts" (11.04): posts chip pops in with 5 posts
-      tl.fromTo("#f07f-chip", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 11.04);
-      tl.to("#f07f-chip", { backgroundColor: "#EAF2FB", borderColor: "#3178C6", duration: 0.4, ease: "power1.out" }, 11.04);
+      // ---- Shot 4 (8.0-end) ----
+      // "Je krijgt" (8.16): rows 2-10 as a block
+      tl.fromTo("#f09s-rest", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 8.16);
+      // "object" (9.60): results card, lines pop in
+      tl.to("#f09s-clockmark", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 9.4);
+      tl.fromTo("#f09s-reslabel", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.6);
+      tl.fromTo("#f09s-card", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 9.6);
+      tl.fromTo("#f09s-res1", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 9.6);
+      tl.fromTo("#f09s-res2", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 9.8);
+      tl.fromTo("#f09s-res3", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 10.0);
+      // "status" (10.44): wash on the three status parts
+      washOn(["#f09s-st1", "#f09s-st2", "#f09s-st3"], 10.44);
+      washOff(["#f09s-st1", "#f09s-st2", "#f09s-st3"], 11.0);
+      // "fulfilled met een value" (11.16-12.40): rows 4-5 + lines 1 and 3
+      washOn(["#f09s-hl4", "#f09s-hl5", "#f09s-hlr1", "#f09s-hlr3"], 11.16);
+      washOff(["#f09s-hl4", "#f09s-hl5", "#f09s-hlr1", "#f09s-hlr3"], 13.3);
+      // "rejected met een reason" (13.44-14.64): rows 6-7 + line 2 (blue wash; only the text is red)
+      washOn(["#f09s-hl6", "#f09s-hl7", "#f09s-hlr2"], 13.44);
 
       // hold still to full duration
       tl.set({}, {}, DUR);
-      window.__timelines["07-fetch"] = tl;
+      window.__timelines["08-allsettled"] = tl;
     })();
   </script>
 </template>
