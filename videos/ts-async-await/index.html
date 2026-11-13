@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #FFFFFF;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="220.69" data-width="1920" data-height="1080">
+      <div id="el-01-hook" class="scene" data-composition-id="01-hook" data-composition-src="compositions/frames/01-hook.html" data-start="0.0" data-duration="16.31" data-track-index="0"></div>
+      <audio id="el-01-hook-voice" src="audio/vo-01.mp3" data-start="0.0" data-duration="15.31" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-02-callback-hell" class="scene" data-composition-id="02-callback-hell" data-composition-src="compositions/frames/02-callback-hell.html" data-start="15.81" data-duration="14.39" data-track-index="1"></div>
+      <audio id="el-02-callback-hell-voice" src="audio/vo-02.mp3" data-start="15.81" data-duration="13.4" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-03-async-await" class="scene" data-composition-id="03-async-await" data-composition-src="compositions/frames/03-async-await.html" data-start="29.7" data-duration="14.95" data-track-index="0"></div>
+      <audio id="el-03-async-await-voice" src="audio/vo-03.mp3" data-start="29.7" data-duration="13.95" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-04-zoemer" class="scene" data-composition-id="04-zoemer" data-composition-src="compositions/frames/04-zoemer.html" data-start="44.15" data-duration="10.95" data-track-index="1"></div>
+      <audio id="el-04-zoemer-voice" src="audio/vo-04.mp3" data-start="44.15" data-duration="9.95" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-05-geval-1" class="scene" data-composition-id="05-geval-1" data-composition-src="compositions/frames/05-geval-1.html" data-start="54.6" data-duration="11.4" data-track-index="0"></div>
+      <audio id="el-05-geval-1-voice" src="audio/vo-05.mp3" data-start="54.6" data-duration="10.45" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-06-geval-2" class="scene" data-composition-id="06-geval-2" data-composition-src="compositions/frames/06-geval-2.html" data-start="65.5" data-duration="14.39" data-track-index="1"></div>
+      <audio id="el-06-geval-2-voice" src="audio/vo-06.mp3" data-start="65.5" data-duration="13.4" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-07-geval-3" class="scene" data-composition-id="07-geval-3" data-composition-src="compositions/frames/07-geval-3.html" data-start="79.39" data-duration="9.51" data-track-index="0"></div>
+      <audio id="el-07-geval-3-voice" src="audio/vo-07.mp3" data-start="79.39" data-duration="8.52" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-08-altijd-promise" class="scene" data-composition-id="08-altijd-promise" data-composition-src="compositions/frames/08-altijd-promise.html" data-start="88.4" data-duration="15.51" data-track-index="1"></div>
+      <audio id="el-08-altijd-promise-voice" src="audio/vo-08.mp3" data-start="88.4" data-duration="14.52" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-09-regel-1" class="scene" data-composition-id="09-regel-1" data-composition-src="compositions/frames/09-regel-1.html" data-start="103.41" data-duration="13.19" data-track-index="0"></div>
+      <audio id="el-09-regel-1-voice" src="audio/vo-09.mp3" data-start="103.41" data-duration="12.2" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-10-regel-2" class="scene" data-composition-id="10-regel-2" data-composition-src="compositions/frames/10-regel-2.html" data-start="116.1" data-duration="17.03" data-track-index="1"></div>
+      <audio id="el-10-regel-2-voice" src="audio/vo-10.mp3" data-start="116.1" data-duration="16.04" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-11-vergeten" class="scene" data-composition-id="11-vergeten" data-composition-src="compositions/frames/11-vergeten.html" data-start="132.63" data-duration="12.71" data-track-index="0"></div>
+      <audio id="el-11-vergeten-voice" src="audio/vo-11.mp3" data-start="132.63" data-duration="11.73" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-12-foreach" class="scene" data-composition-id="12-foreach" data-composition-src="compositions/frames/12-foreach.html" data-start="144.84" data-duration="14.55" data-track-index="1"></div>
+      <audio id="el-12-foreach-voice" src="audio/vo-12.mp3" data-start="144.84" data-duration="13.56" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-13-top-level" class="scene" data-composition-id="13-top-level" data-composition-src="compositions/frames/13-top-level.html" data-start="158.89" data-duration="16.79" data-track-index="0"></div>
+      <audio id="el-13-top-level-voice" src="audio/vo-13.mp3" data-start="158.89" data-duration="15.8" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-14-try-catch" class="scene" data-composition-id="14-try-catch" data-composition-src="compositions/frames/14-try-catch.html" data-start="175.18" data-duration="13.83" data-track-index="1"></div>
+      <audio id="el-14-try-catch-voice" src="audio/vo-14.mp3" data-start="175.18" data-duration="12.83" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-15-promise-all" class="scene" data-composition-id="15-promise-all" data-composition-src="compositions/frames/15-promise-all.html" data-start="188.51" data-duration="17.43" data-track-index="0"></div>
+      <audio id="el-15-promise-all-voice" src="audio/vo-15.mp3" data-start="188.51" data-duration="16.43" data-track-index="10" data-volume="1"></audio>
+
+      <div id="el-16-samenvatting" class="scene" data-composition-id="16-samenvatting" data-composition-src="compositions/frames/16-samenvatting.html" data-start="205.44" data-duration="15.25" data-track-index="1"></div>
+      <audio id="el-16-samenvatting-voice" src="audio/vo-16.mp3" data-start="205.44" data-duration="13.56" data-track-index="10" data-volume="1"></audio>
+
+      <!-- captions -->
+      <div id="el-captions" data-track-kind="captions" class="scene" data-composition-id="captions" data-composition-src="compositions/captions.html" data-start="0" data-duration="220.69" data-track-index="2"></div>
+
+      <!-- SFX -->
+      <audio id="el-sfx-0" src="assets/sfx/pop.mp3" data-start="1.0" data-duration="0.72" data-track-index="20" data-volume="0.35"></audio>
+      <audio id="el-sfx-1" src="assets/sfx/pop.mp3" data-start="1.76" data-duration="0.72" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="el-sfx-2" src="assets/sfx/pop.mp3" data-start="3.6" data-duration="0.72" data-track-index="22" data-volume="0.35"></audio>
+      <audio id="el-sfx-3" src="assets/sfx/pop.mp3" data-start="6.56" data-duration="0.72" data-track-index="23" data-volume="0.35"></audio>
+      <audio id="el-sfx-4" src="assets/sfx/pop.mp3" data-start="8.32" data-duration="0.72" data-track-index="24" data-volume="0.35"></audio>
+      <audio id="el-sfx-5" src="assets/sfx/pop.mp3" data-start="9.56" data-duration="0.72" data-track-index="25" data-volume="0.35"></audio>
+      <audio id="el-sfx-6" src="assets/sfx/whoosh-short.mp3" data-start="13.6" data-duration="0.57" data-track-index="26" data-volume="0.35"></audio>
+      <audio id="el-sfx-7" src="assets/sfx/pop.mp3" data-start="14.0" data-duration="0.72" data-track-index="27" data-volume="0.35"></audio>
+      <audio id="el-sfx-8" src="assets/sfx/pop.mp3" data-start="14.88" data-duration="0.72" data-track-index="28" data-volume="0.35"></audio>
+      <audio id="el-sfx-9" src="assets/sfx/typing.mp3" data-start="18.69" data-duration="1.5" data-track-index="29" data-volume="0.35"></audio>
+      <audio id="el-sfx-10" src="assets/sfx/typing.mp3" data-start="20.33" data-duration="1.5" data-track-index="30" data-volume="0.35"></audio>
+      <audio id="el-sfx-11" src="assets/sfx/typing.mp3" data-start="21.53" data-duration="1.5" data-track-index="31" data-volume="0.35"></audio>
+      <audio id="el-sfx-12" src="assets/sfx/pop.mp3" data-start="26.29" data-duration="0.72" data-track-index="32" data-volume="0.35"></audio>
+      <audio id="el-sfx-13" src="assets/sfx/pop.mp3" data-start="27.89" data-duration="0.72" data-track-index="33" data-volume="0.35"></audio>
+      <audio id="el-sfx-14" src="assets/sfx/typing.mp3" data-start="31.7" data-duration="1.5" data-track-index="34" data-volume="0.35"></audio>
+      <audio id="el-sfx-15" src="assets/sfx/typing.mp3" data-start="33.78" data-duration="1.5" data-track-index="35" data-volume="0.35"></audio>
+      <audio id="el-sfx-16" src="assets/sfx/pop.mp3" data-start="36.82" data-duration="0.72" data-track-index="36" data-volume="0.35"></audio>
+      <audio id="el-sfx-17" src="assets/sfx/pop.mp3" data-start="39.98" data-duration="0.72" data-track-index="37" data-volume="0.35"></audio>
+      <audio id="el-sfx-18" src="assets/sfx/pop.mp3" data-start="41.7" data-duration="0.72" data-track-index="38" data-volume="0.35"></audio>
+      <audio id="el-sfx-19" src="assets/sfx/pop.mp3" data-start="43.18" data-duration="0.72" data-track-index="39" data-volume="0.35"></audio>
+      <audio id="el-sfx-20" src="assets/sfx/pop.mp3" data-start="47.03" data-duration="0.72" data-track-index="40" data-volume="0.35"></audio>
+      <audio id="el-sfx-21" src="assets/sfx/pop.mp3" data-start="49.99" data-duration="0.72" data-track-index="41" data-volume="0.35"></audio>
+      <audio id="el-sfx-22" src="assets/sfx/whoosh-short.mp3" data-start="50.87" data-duration="0.57" data-track-index="42" data-volume="0.35"></audio>
+      <audio id="el-sfx-23" src="assets/sfx/typing.mp3" data-start="50.95" data-duration="1.5" data-track-index="43" data-volume="0.35"></audio>
+      <audio id="el-sfx-24" src="assets/sfx/pop.mp3" data-start="51.67" data-duration="0.72" data-track-index="44" data-volume="0.35"></audio>
+      <audio id="el-sfx-25" src="assets/sfx/typing.mp3" data-start="56.0" data-duration="1.5" data-track-index="45" data-volume="0.35"></audio>
+      <audio id="el-sfx-26" src="assets/sfx/typing.mp3" data-start="57.08" data-duration="1.5" data-track-index="46" data-volume="0.35"></audio>
+      <audio id="el-sfx-27" src="assets/sfx/pop.mp3" data-start="57.56" data-duration="0.72" data-track-index="47" data-volume="0.35"></audio>
+      <audio id="el-sfx-28" src="assets/sfx/pop.mp3" data-start="60.8" data-duration="0.72" data-track-index="48" data-volume="0.35"></audio>
+      <audio id="el-sfx-29" src="assets/sfx/pop.mp3" data-start="61.64" data-duration="0.72" data-track-index="49" data-volume="0.35"></audio>
+      <audio id="el-sfx-30" src="assets/sfx/pop.mp3" data-start="67.5" data-duration="0.72" data-track-index="50" data-volume="0.35"></audio>
+      <audio id="el-sfx-31" src="assets/sfx/pop.mp3" data-start="70.82" data-duration="0.72" data-track-index="51" data-volume="0.35"></audio>
+      <audio id="el-sfx-32" src="assets/sfx/pop.mp3" data-start="71.58" data-duration="0.72" data-track-index="52" data-volume="0.35"></audio>
+      <audio id="el-sfx-33" src="assets/sfx/pop.mp3" data-start="75.3" data-duration="0.72" data-track-index="53" data-volume="0.35"></audio>
+      <audio id="el-sfx-34" src="assets/sfx/pop.mp3" data-start="77.74" data-duration="0.72" data-track-index="54" data-volume="0.35"></audio>
+      <audio id="el-sfx-35" src="assets/sfx/pop.mp3" data-start="78.3" data-duration="0.72" data-track-index="55" data-volume="0.35"></audio>
+      <audio id="el-sfx-36" src="assets/sfx/whoosh-short.mp3" data-start="82.83" data-duration="0.57" data-track-index="56" data-volume="0.35"></audio>
+      <audio id="el-sfx-37" src="assets/sfx/pop.mp3" data-start="84.03" data-duration="0.72" data-track-index="57" data-volume="0.35"></audio>
+      <audio id="el-sfx-38" src="assets/sfx/pop.mp3" data-start="86.23" data-duration="0.72" data-track-index="58" data-volume="0.35"></audio>
+      <audio id="el-sfx-39" src="assets/sfx/pop.mp3" data-start="86.99" data-duration="0.72" data-track-index="59" data-volume="0.35"></audio>
+      <audio id="el-sfx-40" src="assets/sfx/pop.mp3" data-start="87.43" data-duration="0.72" data-track-index="60" data-volume="0.35"></audio>
+      <audio id="el-sfx-41" src="assets/sfx/typing.mp3" data-start="88.84" data-duration="1.5" data-track-index="61" data-volume="0.35"></audio>
+      <audio id="el-sfx-42" src="assets/sfx/pop.mp3" data-start="95.36" data-duration="0.72" data-track-index="62" data-volume="0.35"></audio>
+      <audio id="el-sfx-43" src="assets/sfx/whoosh-short.mp3" data-start="98.48" data-duration="0.57" data-track-index="63" data-volume="0.35"></audio>
+      <audio id="el-sfx-44" src="assets/sfx/typing.mp3" data-start="100.08" data-duration="1.5" data-track-index="64" data-volume="0.35"></audio>
+      <audio id="el-sfx-45" src="assets/sfx/pop.mp3" data-start="101.68" data-duration="0.72" data-track-index="65" data-volume="0.35"></audio>
+      <audio id="el-sfx-46" src="assets/sfx/pop.mp3" data-start="105.97" data-duration="0.72" data-track-index="66" data-volume="0.35"></audio>
+      <audio id="el-sfx-47" src="assets/sfx/pop.mp3" data-start="107.65" data-duration="0.72" data-track-index="67" data-volume="0.35"></audio>
+      <audio id="el-sfx-48" src="assets/sfx/pop.mp3" data-start="112.33" data-duration="0.72" data-track-index="68" data-volume="0.35"></audio>
+      <audio id="el-sfx-49" src="assets/sfx/typing.mp3" data-start="117.7" data-duration="1.5" data-track-index="69" data-volume="0.35"></audio>
+      <audio id="el-sfx-50" src="assets/sfx/pop.mp3" data-start="122.42" data-duration="0.72" data-track-index="70" data-volume="0.35"></audio>
+      <audio id="el-sfx-51" src="assets/sfx/typing.mp3" data-start="126.82" data-duration="1.5" data-track-index="71" data-volume="0.35"></audio>
+      <audio id="el-sfx-52" src="assets/sfx/pop.mp3" data-start="128.98" data-duration="0.72" data-track-index="72" data-volume="0.35"></audio>
+      <audio id="el-sfx-53" src="assets/sfx/pop.mp3" data-start="130.18" data-duration="0.72" data-track-index="73" data-volume="0.35"></audio>
+      <audio id="el-sfx-54" src="assets/sfx/pop.mp3" data-start="131.54" data-duration="0.72" data-track-index="74" data-volume="0.35"></audio>
+      <audio id="el-sfx-55" src="assets/sfx/pop.mp3" data-start="135.11" data-duration="0.72" data-track-index="75" data-volume="0.35"></audio>
+      <audio id="el-sfx-56" src="assets/sfx/pop.mp3" data-start="137.59" data-duration="0.72" data-track-index="76" data-volume="0.35"></audio>
+      <audio id="el-sfx-57" src="assets/sfx/pop.mp3" data-start="140.07" data-duration="0.72" data-track-index="77" data-volume="0.35"></audio>
+      <audio id="el-sfx-58" src="assets/sfx/pop.mp3" data-start="141.67" data-duration="0.72" data-track-index="78" data-volume="0.35"></audio>
+      <audio id="el-sfx-59" src="assets/sfx/pop.mp3" data-start="147.56" data-duration="0.72" data-track-index="79" data-volume="0.35"></audio>
+      <audio id="el-sfx-60" src="assets/sfx/pop.mp3" data-start="152.44" data-duration="0.72" data-track-index="80" data-volume="0.35"></audio>
+      <audio id="el-sfx-61" src="assets/sfx/pop.mp3" data-start="152.84" data-duration="0.72" data-track-index="81" data-volume="0.35"></audio>
+      <audio id="el-sfx-62" src="assets/sfx/pop.mp3" data-start="153.04" data-duration="0.72" data-track-index="82" data-volume="0.35"></audio>
+      <audio id="el-sfx-63" src="assets/sfx/pop.mp3" data-start="153.24" data-duration="0.72" data-track-index="83" data-volume="0.35"></audio>
+      <audio id="el-sfx-64" src="assets/sfx/whoosh-short.mp3" data-start="154.92" data-duration="0.57" data-track-index="84" data-volume="0.35"></audio>
+      <audio id="el-sfx-65" src="assets/sfx/pop.mp3" data-start="156.76" data-duration="0.72" data-track-index="85" data-volume="0.35"></audio>
+      <audio id="el-sfx-66" src="assets/sfx/pop.mp3" data-start="157.04" data-duration="0.72" data-track-index="86" data-volume="0.35"></audio>
+      <audio id="el-sfx-67" src="assets/sfx/pop.mp3" data-start="157.32" data-duration="0.72" data-track-index="87" data-volume="0.35"></audio>
+      <audio id="el-sfx-68" src="assets/sfx/pop.mp3" data-start="157.88" data-duration="0.72" data-track-index="88" data-volume="0.35"></audio>
+      <audio id="el-sfx-69" src="assets/sfx/pop.mp3" data-start="163.41" data-duration="0.72" data-track-index="89" data-volume="0.35"></audio>
+      <audio id="el-sfx-70" src="assets/sfx/pop.mp3" data-start="165.13" data-duration="0.72" data-track-index="90" data-volume="0.35"></audio>
+      <audio id="el-sfx-71" src="assets/sfx/whoosh-short.mp3" data-start="167.13" data-duration="0.57" data-track-index="91" data-volume="0.35"></audio>
+      <audio id="el-sfx-72" src="assets/sfx/pop.mp3" data-start="169.05" data-duration="0.72" data-track-index="92" data-volume="0.35"></audio>
+      <audio id="el-sfx-73" src="assets/sfx/whoosh-short.mp3" data-start="171.53" data-duration="0.57" data-track-index="93" data-volume="0.35"></audio>
+      <audio id="el-sfx-74" src="assets/sfx/pop.mp3" data-start="173.53" data-duration="0.72" data-track-index="94" data-volume="0.35"></audio>
+      <audio id="el-sfx-75" src="assets/sfx/pop.mp3" data-start="176.62" data-duration="0.72" data-track-index="95" data-volume="0.35"></audio>
+      <audio id="el-sfx-76" src="assets/sfx/pop.mp3" data-start="182.7" data-duration="0.72" data-track-index="96" data-volume="0.35"></audio>
+      <audio id="el-sfx-77" src="assets/sfx/pop.mp3" data-start="185.74" data-duration="0.72" data-track-index="97" data-volume="0.35"></audio>
+      <audio id="el-sfx-78" src="assets/sfx/pop.mp3" data-start="187.34" data-duration="0.72" data-track-index="98" data-volume="0.35"></audio>
+      <audio id="el-sfx-79" src="assets/sfx/pop.mp3" data-start="192.48" data-duration="0.72" data-track-index="99" data-volume="0.35"></audio>
+      <audio id="el-sfx-80" src="assets/sfx/pop.mp3" data-start="193.39" data-duration="0.72" data-track-index="100" data-volume="0.35"></audio>
+      <audio id="el-sfx-81" src="assets/sfx/pop.mp3" data-start="193.99" data-duration="0.72" data-track-index="101" data-volume="0.35"></audio>
+      <audio id="el-sfx-82" src="assets/sfx/pop.mp3" data-start="194.59" data-duration="0.72" data-track-index="102" data-volume="0.35"></audio>
+      <audio id="el-sfx-83" src="assets/sfx/whoosh-short.mp3" data-start="201.95" data-duration="0.57" data-track-index="103" data-volume="0.35"></audio>
+      <audio id="el-sfx-84" src="assets/sfx/pop.mp3" data-start="204.23" data-duration="0.72" data-track-index="104" data-volume="0.35"></audio>
+      <audio id="el-sfx-85" src="assets/sfx/pop.mp3" data-start="206.88" data-duration="0.72" data-track-index="105" data-volume="0.35"></audio>
+      <audio id="el-sfx-86" src="assets/sfx/pop.mp3" data-start="210.16" data-duration="0.72" data-track-index="106" data-volume="0.35"></audio>
+      <audio id="el-sfx-87" src="assets/sfx/pop.mp3" data-start="213.72" data-duration="0.72" data-track-index="107" data-volume="0.35"></audio>
+      <audio id="el-sfx-88" src="assets/sfx/pop.mp3" data-start="216.88" data-duration="0.72" data-track-index="108" data-volume="0.35"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+      // ── frame transitions ──
+      (function () { var tl = window.__timelines["main"];
+        tl.to("#el-01-hook", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.6, ease: "power2.inOut" }, 15.81);
+        tl.fromTo("#el-02-callback-hell", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.6, ease: "power2.inOut" }, 15.81);
+        tl.addLabel("hf:transition:01-hook:02-callback-hell:blur-crossfade", 15.81);
+        tl.to("#el-02-callback-hell", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 29.7);
+        tl.fromTo("#el-03-async-await", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 29.7);
+        tl.addLabel("hf:transition:02-callback-hell:03-async-await:crossfade", 29.7);
+        tl.to("#el-03-async-await", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 44.15);
+        tl.fromTo("#el-04-zoemer", { x: 1920, opacity: 1 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.inOut" }, 44.15);
+        tl.addLabel("hf:transition:03-async-await:04-zoemer:push-slide", 44.15);
+        tl.set("#el-04-zoemer", { opacity: 0 }, 54.6);
+        tl.addLabel("hf:transition:04-zoemer:05-geval-1:cut", 54.6);
+        tl.set("#el-05-geval-1", { opacity: 0 }, 65.5);
+        tl.addLabel("hf:transition:05-geval-1:06-geval-2:cut", 65.5);
+        tl.set("#el-06-geval-2", { opacity: 0 }, 79.39);
+        tl.addLabel("hf:transition:06-geval-2:07-geval-3:cut", 79.39);
+        tl.to("#el-07-geval-3", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.6, ease: "power2.inOut" }, 88.4);
+        tl.fromTo("#el-08-altijd-promise", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.6, ease: "power2.inOut" }, 88.4);
+        tl.addLabel("hf:transition:07-geval-3:08-altijd-promise:blur-crossfade", 88.4);
+        tl.to("#el-08-altijd-promise", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 103.41);
+        tl.fromTo("#el-09-regel-1", { x: 1920, opacity: 1 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.inOut" }, 103.41);
+        tl.addLabel("hf:transition:08-altijd-promise:09-regel-1:push-slide", 103.41);
+        tl.to("#el-09-regel-1", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 116.1);
+        tl.fromTo("#el-10-regel-2", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 116.1);
+        tl.addLabel("hf:transition:09-regel-1:10-regel-2:crossfade", 116.1);
+        tl.to("#el-10-regel-2", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.6, ease: "power2.inOut" }, 132.63);
+        tl.fromTo("#el-11-vergeten", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.6, ease: "power2.inOut" }, 132.63);
+        tl.addLabel("hf:transition:10-regel-2:11-vergeten:blur-crossfade", 132.63);
+        tl.to("#el-11-vergeten", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 144.84);
+        tl.fromTo("#el-12-foreach", { x: 1920, opacity: 1 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.inOut" }, 144.84);
+        tl.addLabel("hf:transition:11-vergeten:12-foreach:push-slide", 144.84);
+        tl.to("#el-12-foreach", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 158.89);
+        tl.fromTo("#el-13-top-level", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 158.89);
+        tl.addLabel("hf:transition:12-foreach:13-top-level:crossfade", 158.89);
+        tl.to("#el-13-top-level", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.6, ease: "power2.inOut" }, 175.18);
+        tl.fromTo("#el-14-try-catch", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.6, ease: "power2.inOut" }, 175.18);
+        tl.addLabel("hf:transition:13-top-level:14-try-catch:blur-crossfade", 175.18);
+        tl.to("#el-14-try-catch", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 188.51);
+        tl.fromTo("#el-15-promise-all", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 188.51);
+        tl.addLabel("hf:transition:14-try-catch:15-promise-all:crossfade", 188.51);
+        tl.to("#el-15-promise-all", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 205.44);
+        tl.fromTo("#el-16-samenvatting", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 205.44);
+        tl.addLabel("hf:transition:15-promise-all:16-samenvatting:crossfade", 205.44);
+        tl.to({}, { duration: 220.69 }, 0); // full-span anchor
+      })();
+    </script>
+  </body>
+</html>

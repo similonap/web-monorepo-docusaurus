@@ -1,0 +1,62 @@
+{
+  "title": "Quiz: async/await",
+  "description": "Test je kennis over `async` functies, `await`, welke functies `async` moeten worden en `await` samen met `Promise.all`.",
+  "questions": [
+    {
+      "type": "single",
+      "prompt": "Wat geeft deze functie terug?\n\n```ts\nasync function getFive() {\n    return 5;\n}\n```",
+      "options": ["`5`", "`number`", "`Promise<number>`", "`undefined`"],
+      "answer": 2,
+      "explanation": "Een `async` functie geeft altijd een promise terug. De waarde die je met `return` teruggeeft (`5`) wordt automatisch in een promise verpakt, dus het return type is `Promise<number>`."
+    },
+    {
+      "type": "single",
+      "prompt": "`multiply` geeft na 1 seconde een promise terug. In welke volgorde verschijnen de letters in de console?\n\n```ts\nasync function demo() {\n    console.log(\"A\");\n    await multiply(2, 2);\n    console.log(\"B\");\n}\n\ndemo();\nconsole.log(\"C\");\n```",
+      "options": ["`A C B`", "`A B C`", "`C A B`", "`B A C`"],
+      "answer": 0,
+      "explanation": "`demo()` begint meteen te lopen en toont `A`. Bij de `await` pauzeert de functie, en het programma gaat verder met `console.log(\"C\")`. Pas een seconde later gaat `demo` verder en toont `B`."
+    },
+    {
+      "type": "multiple",
+      "prompt": "Deze code compileert niet. Welke functies moeten `async` worden? Duid alle juiste antwoorden aan.\n\n```ts\nfunction multiply(a: number, b: number): Promise<number> {\n    return new Promise<number>((resolve) => {\n        setTimeout(() => resolve(a * b), 1000);\n    });\n}\n\nfunction getArea(width: number, height: number): Promise<number> {\n    const area = await multiply(width, height);\n    return area;\n}\n\nfunction printArea() {\n    const area = await getArea(3, 4);\n    console.log(`Oppervlakte: ${area}`);\n}\n\nfunction main() {\n    printArea();\n}\n```",
+      "options": ["`multiply`", "`getArea`", "`printArea`", "`main`"],
+      "answers": [1, 2],
+      "explanation": "Een functie moet `async` zijn als ze zelf `await` gebruikt: dat zijn `getArea` en `printArea`. `multiply` maakt de promise zelf met `new Promise` en gebruikt geen `await`. `main` roept `printArea()` op maar wacht er niet op, want er komt niets meer na: ook die hoeft niet `async` te zijn."
+    },
+    {
+      "type": "fill",
+      "prompt": "Vul het ontbrekende keyword in zodat `await` gebruikt mag worden.",
+      "language": "typescript",
+      "template": "function multiply(a: number, b: number): Promise<number> {\n    return new Promise<number>((resolve) => {\n        setTimeout(() => resolve(a * b), 100);\n    });\n}\n\n{{0}} function calculate(): Promise<number> {\n    const result = await multiply(2, 2);\n    return result + 1;\n}",
+      "blanks": [{ "placeholder": "..", "width": 7 }],
+      "tests": [{ "expression": "calculate()", "expected": 5, "description": "calculate() geeft 5" }],
+      "explanation": "`await` mag je enkel gebruiken in een `async` functie. Zonder `async` geeft TypeScript de fout `'await' expressions are only allowed within async functions`."
+    },
+    {
+      "type": "single",
+      "prompt": "Wat verschijnt er in de console?\n\n```ts\nasync function getTotal(): Promise<number> {\n    const result = await multiply(2, 3);\n    return result + 1;\n}\n\nconst total = getTotal();\nconsole.log(total);\n```",
+      "options": ["`7`", "`6`", "`undefined`", "`Promise { <pending> }`"],
+      "answer": 3,
+      "explanation": "Hier is de `await` vergeten. `getTotal()` geeft een promise terug die nog niet klaar is, dus `total` is `Promise { <pending> }`. Met `const total = await getTotal();` krijg je wel `7`."
+    },
+    {
+      "type": "single",
+      "prompt": "`multiply` geeft na 1 seconde een promise terug. Hoe lang duurt het voor `a` en `b` allebei beschikbaar zijn?\n\n```ts\nconst a = await multiply(2, 2);\nconst b = await multiply(3, 3);\n```",
+      "options": ["`1 seconde`", "`2 seconden`", "`0 seconden`", "`3 seconden`"],
+      "answer": 1,
+      "explanation": "De tweede `await` begint pas als de eerste klaar is, dus de wachttijden tellen op: 2 seconden. Met `const [a, b] = await Promise.all([multiply(2, 2), multiply(3, 3)]);` lopen ze tegelijk en duurt het 1 seconde."
+    },
+    {
+      "type": "code",
+      "prompt": "Schrijf de async functie `sumOfSquares(a, b)`. Ze berekent `a * a` en `b * b` met de functie `multiply` (gebruik `await`) en geeft de som van de twee kwadraten terug.",
+      "language": "typescript",
+      "starterCode": "function multiply(a: number, b: number): Promise<number> {\n    return new Promise<number>((resolve) => {\n        setTimeout(() => resolve(a * b), 100);\n    });\n}\n\nasync function sumOfSquares(a: number, b: number): Promise<number> {\n    // jouw code\n}\n",
+      "tests": [
+        { "expression": "sumOfSquares(3, 4)", "expected": 25, "description": "sumOfSquares(3, 4) geeft 25" },
+        { "expression": "sumOfSquares(1, 2)", "expected": 5, "description": "sumOfSquares(1, 2) geeft 5" },
+        { "expression": "sumOfSquares(0, 0)", "expected": 0, "description": "sumOfSquares(0, 0) geeft 0" }
+      ],
+      "explanation": "Bijvoorbeeld:\n\n```ts\nasync function sumOfSquares(a: number, b: number): Promise<number> {\n    const squareA = await multiply(a, a);\n    const squareB = await multiply(b, b);\n    return squareA + squareB;\n}\n```"
+    }
+  ]
+}

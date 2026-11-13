@@ -1,0 +1,346 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ---- PROMISE CLIP: shared helpers of the promise videos ---- */
+    /* console card: program output (Node), same place and look as the scherm card */
+    .pc-console { position: absolute; box-sizing: border-box; background: var(--ts-ground); border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow); padding: 18px 26px; overflow: hidden; }
+    .pc-out { position: relative; height: 44px; display: flex; align-items: center; font-family: var(--ts-mono); font-size: 24px; font-weight: 400; color: var(--ts-ink); white-space: nowrap; opacity: 0; }
+    .pc-out::before { content: ">"; color: var(--ts-muted); margin-right: 16px; }
+    .pc-out--error { border-left: 4px solid var(--ts-error); padding-left: 14px; }
+    .pc-out--error::before { content: none; }
+    .pc-out--old { color: var(--ts-muted); }
+    .pc-stamp { margin-left: auto; padding-left: 20px; font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted); }
+    /* promise state chip: key PROMISE + value (pending / fulfilled / rejected) */
+    .pc-state .pc-val { display: inline-block; }
+    .pc-val--pending { color: var(--ts-ink-soft); }
+    .pc-val--fulfilled { color: var(--ts-blue-dark); }
+    .pc-val--rejected { color: var(--ts-error); }
+    /* small note next to a chip / under a card */
+    .pc-note { position: absolute; font-family: var(--ts-sans); font-weight: 500; font-size: 27px; line-height: 1.3; color: var(--ts-ink-soft); white-space: nowrap; opacity: 0; }
+    /* timeline: one row per promise (label | track with a bar), axis below */
+    .pc-tl { position: absolute; }
+    .pc-tl-row { position: relative; height: 56px; }
+    .pc-tl-label { position: absolute; left: 0; top: 0; height: 56px; display: flex; align-items: center; font-family: var(--ts-mono); font-size: 22px; color: var(--ts-ink); white-space: nowrap; }
+    .pc-tl-track { position: absolute; top: 10px; height: 36px; right: 0; background: var(--ts-panel); border-radius: 8px; }
+    .pc-bar { position: absolute; top: 0; bottom: 0; left: 0; box-sizing: border-box; border: 2px solid var(--ts-blue); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; opacity: 0; }
+    .pc-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: var(--ts-wash); transform-origin: left center; transform: scaleX(0); }
+    .pc-bar-text { position: relative; font-family: var(--ts-mono); font-size: 20px; font-weight: 500; color: var(--ts-blue-dark); white-space: nowrap; opacity: 0; }
+    .pc-bar--error { border-color: var(--ts-error); }
+    .pc-bar--error .pc-fill { background: rgba(209, 67, 67, 0.10); }
+    .pc-bar--error .pc-bar-text { color: var(--ts-error); }
+    .pc-bar--ghost { border-style: dashed; border-color: var(--ts-muted); }
+    .pc-bar--ghost .pc-fill { background: transparent; }
+    .pc-now { position: absolute; top: -6px; bottom: -6px; width: 2px; margin-left: -1px; background: var(--ts-blue); opacity: 0; }
+    .pc-axis { position: relative; height: 28px; }
+    .pc-tick { position: absolute; top: 4px; font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted); transform: translateX(-50%); white-space: nowrap; }
+    .pc-clock { position: absolute; font-family: var(--ts-mono); font-size: 30px; font-weight: 500; color: var(--ts-blue-dark); white-space: nowrap; }
+    /* bracket over a span of the axis: thin muted line with end ticks + label above */
+    .pc-bracket { position: absolute; height: 12px; box-sizing: border-box; border: 2px solid var(--ts-muted); border-bottom: none; border-radius: 4px 4px 0 0; opacity: 0; }
+    .pc-bracket-label { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); font-family: var(--ts-mono); font-size: 22px; color: var(--ts-ink-soft); white-space: nowrap; }
+    /* arrow: a line (2px muted) with a small solid head drawn with borders */
+    .pc-arrow { position: absolute; height: 2px; background: var(--ts-muted); transform-origin: left center; }
+    .pc-arrow::after { content: ""; position: absolute; right: -2px; top: -6px; border-left: 12px solid var(--ts-muted); border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+
+    /* ---- frame 11 positions ---- */
+    #f11t-panel { left: 80px; top: 170px; width: 1060px; height: 720px; }
+    .f11t-ver .ts-mark { left: 0; top: 0; height: 36px; opacity: 0; }
+    #f11t-chip { left: 1236px; top: 200px; }
+    #f11t-elabel { left: 1236px; top: 300px; }
+    #f11t-ecard { left: 1236px; top: 346px; width: 604px; height: 190px; }
+    #f11t-eline { height: auto; display: block; white-space: normal; line-height: 1.35; font-size: 20px; }
+    #f11t-mini { left: 1236px; top: 560px; width: 604px; height: 200px; }
+    #f11t-mini .ts-mini-code { font-size: 20px; line-height: 32px; }
+    #f11t-mini .ts-mini-row { height: 32px; }
+  </style>
+
+  <div data-hf-id="hf-1y2l" id="root" data-composition-id="13-top-level" data-width="1920" data-height="1080" data-duration="16.79">
+    <div data-hf-id="hf-22yu" class="ts-bg clip" id="f11t-bg" data-start="0" data-duration="16.79" data-track-index="0"></div>
+
+    <div data-hf-id="hf-giy3" class="ts-stage clip" id="f11t-stage" data-start="0" data-duration="16.79" data-track-index="1">
+      <div data-hf-id="hf-7vch" class="ts-kicker" id="f11t-kicker"><div data-hf-id="hf-k3z8" class="ts-kicker-bar" id="f11t-kbar"></div><span data-hf-id="hf-lkcf" class="ts-kicker-text" id="f11t-ktext">Top-level await</span></div>
+
+      <!-- code surface: three versions, cross-faded -->
+      <div data-hf-id="hf-9v7a" class="ts-code-surface" id="f11t-panel">
+        <div data-hf-id="hf-i0t9" class="ts-code-title">index.ts</div>
+
+        <!-- version A: module with an import -->
+        <div data-hf-id="hf-nvrb" class="ts-code f11t-ver" id="f11t-va">
+          <div data-hf-id="hf-au1g" class="ts-row"><span data-hf-id="hf-ekrs" class="ts-ln">1</span><span data-hf-id="hf-joe1" class="ts-txt"><span data-hf-id="hf-npl0" class="ts-hl" id="f11t-hl-import"><span data-hf-id="hf-qaso" class="ts-kw">import</span> <span data-hf-id="hf-uzbi" class="ts-punct">{</span> <span data-hf-id="hf-i8ip" class="ts-fn">readFile</span> <span data-hf-id="hf-u6pg" class="ts-punct">}</span> <span data-hf-id="hf-e409" class="ts-kw">from</span> <span data-hf-id="hf-pip6" class="ts-str">"fs/promises"</span><span data-hf-id="hf-5jpq" class="ts-punct">;</span></span></span></div>
+          <div data-hf-id="hf-d1gs" class="ts-row"><span data-hf-id="hf-ddup" class="ts-ln">2</span><span data-hf-id="hf-5edp" class="ts-txt"></span></div>
+          <div data-hf-id="hf-bujp" class="ts-row"><span data-hf-id="hf-ds5q" class="ts-ln">3</span><span data-hf-id="hf-hgq1" class="ts-txt"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> text = <span data-hf-id="hf-axwx" class="ts-kw">await</span> <span data-hf-id="hf-lho5" class="ts-fn">readFile</span><span data-hf-id="hf-cax7" class="ts-punct">(</span><span data-hf-id="hf-iivm" class="ts-str">"test.txt"</span><span data-hf-id="hf-app3" class="ts-punct">,</span> <span data-hf-id="hf-ji7c" class="ts-str">"utf-8"</span><span data-hf-id="hf-g9q1" class="ts-punct">);</span></span></div>
+          <div data-hf-id="hf-c8uq" class="ts-row"><span data-hf-id="hf-cl8n" class="ts-ln">4</span><span data-hf-id="hf-qpyl" class="ts-txt">console<span data-hf-id="hf-9x31" class="ts-punct">.</span><span data-hf-id="hf-pfyj" class="ts-fn">log</span><span data-hf-id="hf-7d7v" class="ts-punct">(</span>text<span data-hf-id="hf-mlfx" class="ts-punct">);</span></span></div>
+          <div data-hf-id="hf-w2wr" class="ts-mark" id="f11t-mark-a"></div>
+        </div>
+
+        <!-- version B: no imports -->
+        <div data-hf-id="hf-f7vg" class="ts-code f11t-ver" id="f11t-vb">
+          <div data-hf-id="hf-e8dv" class="ts-row"><span data-hf-id="hf-89eo" class="ts-ln">1</span><span data-hf-id="hf-mfox" class="ts-txt"><span data-hf-id="hf-vmvq" class="ts-kw">let</span> result: <span data-hf-id="hf-rnci" class="ts-type">number</span> = <span data-hf-id="hf-vep1" class="ts-kw">await</span> <span data-hf-id="hf-n0b7" class="ts-fn">multiply</span><span data-hf-id="hf-6ywu" class="ts-punct">(</span><span data-hf-id="hf-lzij" class="ts-fn">2</span><span data-hf-id="hf-leon" class="ts-punct">,</span> <span data-hf-id="hf-w3fv" class="ts-fn">2</span><span data-hf-id="hf-nsd0" class="ts-punct">);</span></span></div>
+          <div data-hf-id="hf-emow" class="ts-row"><span data-hf-id="hf-4q5x" class="ts-ln">2</span><span data-hf-id="hf-31tq" class="ts-txt">result = <span data-hf-id="hf-wlm4" class="ts-kw">await</span> <span data-hf-id="hf-fb1v" class="ts-fn">multiply</span><span data-hf-id="hf-6klt" class="ts-punct">(</span>result<span data-hf-id="hf-l0dm" class="ts-punct">,</span> <span data-hf-id="hf-jzze" class="ts-fn">5</span><span data-hf-id="hf-ne1z" class="ts-punct">);</span></span></div>
+          <div data-hf-id="hf-dfrt" class="ts-row"><span data-hf-id="hf-wmoi" class="ts-ln">3</span><span data-hf-id="hf-irpj" class="ts-txt">console<span data-hf-id="hf-py35" class="ts-punct">.</span><span data-hf-id="hf-hsob" class="ts-fn">log</span><span data-hf-id="hf-66as" class="ts-punct">(</span>result<span data-hf-id="hf-okz2" class="ts-punct">);</span></span></div>
+          <div data-hf-id="hf-3fsy" class="ts-mark ts-mark--wrong" id="f11t-mark-b"></div>
+        </div>
+
+        <!-- version C: async main() -->
+        <div data-hf-id="hf-fzj9" class="ts-code f11t-ver" id="f11t-vc">
+          <div data-hf-id="hf-du2u" class="ts-row"><span data-hf-id="hf-72hl" class="ts-ln">1</span><span data-hf-id="hf-6las" class="ts-txt"><span data-hf-id="hf-hntd" class="ts-hl" id="f11t-hl-main1"><span data-hf-id="hf-tg6j" class="ts-kw">async</span> <span data-hf-id="hf-8nn9" class="ts-kw">function</span> <span data-hf-id="hf-1j16" class="ts-fn">main</span><span data-hf-id="hf-a4au" class="ts-punct">()</span> <span data-hf-id="hf-vyvm" class="ts-punct">{</span></span></span></div>
+          <div data-hf-id="hf-9gpj" class="ts-row"><span data-hf-id="hf-5x30" class="ts-ln">2</span><span data-hf-id="hf-y0o5" class="ts-txt">    <span data-hf-id="hf-g2gq" class="ts-kw">let</span> result: <span data-hf-id="hf-0y46" class="ts-type">number</span> = <span data-hf-id="hf-w7b3" class="ts-kw">await</span> <span data-hf-id="hf-ewqu" class="ts-fn">multiply</span><span data-hf-id="hf-5rzr" class="ts-punct">(</span><span data-hf-id="hf-vp4u" class="ts-fn">2</span><span data-hf-id="hf-km2l" class="ts-punct">,</span> <span data-hf-id="hf-vatt" class="ts-fn">2</span><span data-hf-id="hf-o6o1" class="ts-punct">);</span></span></div>
+          <div data-hf-id="hf-9v0k" class="ts-row"><span data-hf-id="hf-x0zj" class="ts-ln">3</span><span data-hf-id="hf-wag2" class="ts-txt">    result = <span data-hf-id="hf-xe86" class="ts-kw">await</span> <span data-hf-id="hf-eift" class="ts-fn">multiply</span><span data-hf-id="hf-5doq" class="ts-punct">(</span>result<span data-hf-id="hf-ne7s" class="ts-punct">,</span> <span data-hf-id="hf-jtm6" class="ts-fn">5</span><span data-hf-id="hf-pdl4" class="ts-punct">);</span></span></div>
+          <div data-hf-id="hf-rmvo" class="ts-row"><span data-hf-id="hf-t3fr" class="ts-ln">4</span><span data-hf-id="hf-c5wn" class="ts-txt">    console<span data-hf-id="hf-r508" class="ts-punct">.</span><span data-hf-id="hf-heda" class="ts-fn">log</span><span data-hf-id="hf-4zdp" class="ts-punct">(</span>result<span data-hf-id="hf-oza3" class="ts-punct">);</span></span></div>
+          <div data-hf-id="hf-r8kn" class="ts-row"><span data-hf-id="hf-czjo" class="ts-ln">5</span><span data-hf-id="hf-66zr" class="ts-txt"><span data-hf-id="hf-4k98" class="ts-punct">}</span></span></div>
+          <div data-hf-id="hf-qu9m" class="ts-row"><span data-hf-id="hf-bsml" class="ts-ln">6</span><span data-hf-id="hf-7dwu" class="ts-txt"></span></div>
+          <div data-hf-id="hf-qfyl" class="ts-row"><span data-hf-id="hf-c6xm" class="ts-ln">7</span><span data-hf-id="hf-6zlt" class="ts-txt"><span data-hf-id="hf-cy1j" class="ts-hl" id="f11t-hl-main7"><span data-hf-id="hf-94fy" class="ts-fn">main</span><span data-hf-id="hf-2itj" class="ts-punct">();</span></span></span></div>
+        </div>
+
+        <div data-hf-id="hf-gqdy" class="ts-code-status">index.ts · top-level await</div>
+      </div>
+
+      <!-- right column -->
+      <div data-hf-id="hf-778f" class="ts-chip" id="f11t-chip"><span data-hf-id="hf-n8r3" class="ts-chip-key">module</span><span data-hf-id="hf-s42z" id="f11t-chip-val">import / export</span></div>
+
+      <div data-hf-id="hf-2ghf" class="ts-label" id="f11t-elabel">typescript</div>
+      <div data-hf-id="hf-0hn5" class="pc-console" id="f11t-ecard">
+        <div data-hf-id="hf-1tqn" class="pc-out pc-out--error" id="f11t-eline">error TS1375: 'await' expressions are only allowed at the top level of a file when that file is a module, but this file has no imports or exports.</div>
+      </div>
+
+      <div data-hf-id="hf-wwkl" class="ts-mini" id="f11t-mini">
+        <div data-hf-id="hf-6ptr" class="ts-mini-title">IIFE</div>
+        <div data-hf-id="hf-1pmp" class="ts-mini-code">
+          <div data-hf-id="hf-h3fi" class="ts-mini-row"><span data-hf-id="hf-axz4" class="ts-punct">(</span><span data-hf-id="hf-5vd7" class="ts-kw">async</span> <span data-hf-id="hf-2hqi" class="ts-punct">()</span> <span data-hf-id="hf-crlq" class="ts-punct">=&gt;</span> <span data-hf-id="hf-wd6n" class="ts-punct">{</span></div>
+          <div data-hf-id="hf-8ad2" class="ts-mini-row">    <span data-hf-id="hf-ggrr" class="ts-kw">let</span> result: <span data-hf-id="hf-1cf7" class="ts-type">number</span> = <span data-hf-id="hf-wzx5" class="ts-kw">await</span> <span data-hf-id="hf-e44s" class="ts-fn">multiply</span><span data-hf-id="hf-ajo3" class="ts-punct">(</span><span data-hf-id="hf-uwis" class="ts-fn">2</span><span data-hf-id="hf-mzwr" class="ts-punct">,</span> <span data-hf-id="hf-ui7r" class="ts-fn">2</span><span data-hf-id="hf-q676" class="ts-punct">);</span></div>
+          <div data-hf-id="hf-x8jm" class="ts-mini-row">    <span data-hf-id="hf-49xj" class="ts-fold">⋯</span></div>
+          <div data-hf-id="hf-xmun" class="ts-mini-row"><span data-hf-id="hf-2n6t" class="ts-punct">})();</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 16.79;
+      var CW = 0.6; // JetBrains Mono advance (em)
+      var FS = 26;
+      var X0 = 76;
+      var ROW = 38;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="13-top-level"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // place a mark around `len` chars at column `col` of row `row` (0-based)
+      function placeMark(sel, row, col, len) {
+        var chPx = FS * CW;
+        gsap.set(sel, { x: X0 + col * chPx - 6, y: row * ROW + 1, width: len * chPx + 12 });
+      }
+      // swap code versions: old fades out, new fades in (0.35s)
+      function swapVersion(fromSel, toSel, at) {
+        tl.to(fromSel, { autoAlpha: 0, duration: 0.35, ease: "power2.inOut" }, at);
+        tl.to(toSel, { autoAlpha: 1, duration: 0.35, ease: "power2.inOut" }, at);
+      }
+
+      // start states
+      gsap.set(["#f11t-vb", "#f11t-vc"], { autoAlpha: 0 });
+      gsap.set(["#f11t-chip", "#f11t-elabel", "#f11t-ecard", "#f11t-mini"], { opacity: 0 });
+      placeMark("#f11t-mark-a", 2, 13, 5); // `await` in row 3 of version A
+      placeMark("#f11t-mark-b", 0, 21, 5); // `await` in row 1 of version B
+
+      // ---- Shot 1 (0.0-2.2): kicker; version A present; "functie maken" (1.44) hold ----
+      tl.fromTo("#f11t-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f11t-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+
+      // ---- Shot 2 (2.2-8.1): "module" (2.64) wash row 1; "import of export" (4.52) chip; "bovenaan" (6.80) mark ----
+      washOn("#f11t-hl-import", 2.64);
+      tl.fromTo("#f11t-chip", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 4.52);
+      washOff("#f11t-hl-import", 5.8);
+      tl.to("#f11t-mark-a", { opacity: 1, duration: 0.3, ease: "power3.out" }, 6.8);
+      tl.to("#f11t-mark-a", { opacity: 0, duration: 0.3, ease: "power2.inOut" }, 8.1);
+
+      // ---- Shot 3 (8.1-12.5): "Zonder import" (8.24) version B + chip struck; "fout" (10.16) error card + red mark ----
+      swapVersion("#f11t-va", "#f11t-vb", 8.24);
+      tl.set("#f11t-chip", { textDecoration: "line-through" }, 8.24);
+      tl.to("#f11t-chip", { opacity: 0.35, duration: 0.35, ease: "power2.out" }, 8.24);
+      tl.fromTo(["#f11t-elabel", "#f11t-ecard"], { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out" }, 10.16);
+      tl.fromTo("#f11t-eline", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power3.out" }, 10.2);
+      tl.to("#f11t-mark-b", { opacity: 1, duration: 0.3, ease: "power3.out" }, 10.16);
+
+      // ---- Shot 4 (12.5-end): "async main functie" (12.64) version C; wash main lines; "IIFE" (14.64) mini panel ----
+      swapVersion("#f11t-vb", "#f11t-vc", 12.64);
+      tl.to(["#f11t-elabel", "#f11t-ecard", "#f11t-chip"], { opacity: 0, duration: 0.35, ease: "power2.inOut" }, 12.64);
+      washOn(["#f11t-hl-main1", "#f11t-hl-main7"], 12.74);
+      washOff(["#f11t-hl-main1", "#f11t-hl-main7"], 14.4);
+      tl.fromTo("#f11t-mini", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 14.64);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["13-top-level"] = tl;
+    })();
+  </script>
+</template>

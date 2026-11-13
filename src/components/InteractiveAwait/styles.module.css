@@ -1,0 +1,192 @@
+/* ============================================================
+   InteractiveAwait: uses the tokens (--ipa-*) of the
+   InteractivePromiseAll container it is rendered in.
+   ============================================================ */
+
+.layout {
+    --ia-pause: #f0b429;
+    --ia-pause-dim: rgba(240, 180, 41, 0.15);
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 0.75rem;
+}
+
+:global([data-theme='light']) .layout {
+    --ia-pause: #b45309;
+    --ia-pause-dim: rgba(180, 83, 9, 0.10);
+}
+
+/* ---- code ---- */
+
+.codePanel {
+    background: var(--ipa-panel-bg);
+    border: 1px solid var(--ipa-border);
+    border-radius: 6px;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.codeHeader {
+    padding: 0.4rem 1rem;
+    font-size: 0.7rem;
+    color: var(--ipa-muted);
+    border-bottom: 1px solid var(--ipa-border);
+}
+
+.codeBody {
+    padding: 0.5rem 0;
+    overflow-x: auto;
+}
+
+.codeLine {
+    display: flex;
+    align-items: center;
+    min-height: 1.7rem;
+    font-size: 0.82rem;
+    white-space: pre;
+    border-left: 3px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.codeLineActive {
+    background: var(--ipa-accent-dim);
+    border-left-color: var(--ipa-accent);
+}
+
+.codeLinePaused {
+    background: var(--ia-pause-dim);
+    border-left-color: var(--ia-pause);
+    border-left-style: dashed;
+}
+
+/* the paused await line wins over the active highlight */
+.codeLineActive.codeLinePaused {
+    background: var(--ia-pause-dim);
+    border-left-color: var(--ia-pause);
+}
+
+.ln {
+    flex: 0 0 2.2rem;
+    text-align: right;
+    padding-right: 0.8rem;
+    color: var(--ipa-muted);
+    font-size: 0.7rem;
+    user-select: none;
+}
+
+.code { padding-right: 1rem; }
+
+.kw  { color: var(--ipa-accent); }
+.fn  { color: #c18401; }
+.str { color: var(--ipa-done); }
+.num { color: #c18401; }
+
+/* ---- state ---- */
+
+.side {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.75rem 1rem;
+    background: var(--ipa-panel-bg);
+    border: 1px solid var(--ipa-border);
+    border-radius: 6px;
+    min-width: 0;
+}
+
+.stateRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.stateKey { font-weight: bold; }
+
+.badge {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+}
+
+.badge_idle    { color: var(--ipa-muted); }
+.badge_running { color: var(--ipa-accent); }
+.badge_paused  { color: var(--ia-pause); }
+.badge_done    { color: var(--ipa-done); }
+.badge_pending { color: var(--ipa-accent); }
+
+.muted {
+    color: var(--ipa-muted);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.timer {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.timerLabel {
+    font-size: 0.72rem;
+    color: var(--ipa-muted);
+    white-space: nowrap;
+}
+
+.timerTrack {
+    flex: 1;
+    height: 6px;
+    background: var(--ipa-track);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.timerFill {
+    height: 100%;
+    background: var(--ipa-accent);
+    transition-property: width;
+    transition-timing-function: linear;
+}
+
+.consoleLabel {
+    margin-top: 0.3rem;
+    font-family: var(--ifm-font-family-base);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ipa-muted);
+}
+
+.console {
+    min-height: 5.2rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--ipa-border);
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+.consoleLine { line-height: 1.6; }
+
+/* ---- explanation ---- */
+
+.explanation {
+    font-family: var(--ifm-font-family-base);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    min-height: 3rem;
+    padding: 0.6rem 0.9rem;
+    border-left: 3px solid var(--ipa-accent);
+    background: var(--ipa-accent-dim);
+    border-radius: 0 6px 6px 0;
+}
+
+.explanation code { font-size: 0.85em; }
+
+@media (max-width: 700px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+}
