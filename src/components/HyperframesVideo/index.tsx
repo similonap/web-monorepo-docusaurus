@@ -15,7 +15,7 @@ export default function HyperframesVideo({name, title}: {name: string; title?: s
       src={src}
       title={title ?? name}
       loading="lazy"
-      allow="autoplay; fullscreen"
+      allow="autoplay; fullscreen; clipboard-write"
       allowFullScreen
       style={{
         display: 'block', width: '100%', maxWidth: 800, aspectRatio: '16 / 9', margin: '0 auto 1rem',

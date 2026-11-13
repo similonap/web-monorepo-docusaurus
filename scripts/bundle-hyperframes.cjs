@@ -117,8 +117,122 @@ function playerPage(name, version) {
           doc.addEventListener('pointerdown', () => player.hasAttribute('interactive') && markUnselectable(doc), true);
         }
         if (!selectable) doc.getSelection()?.removeAllRanges();
+        // Na een seek past de runtime de compositie pas een frame later aan.
+        requestAnimationFrame(() => requestAnimationFrame(() => updateCopyButtons(doc, selectable)));
       }
       for (const event of ['play', 'pause', 'ended', 'seeked']) player.addEventListener(event, sync);
+
+      // Gepauzeerd krijgt elk zichtbaar codevenster rechtsboven een knop die
+      // de code in één keer kopieert, zoals ze op dat moment op het scherm
+      // staat: zonder lijnnummers, titel- en statusbalk of nog niet getypte
+      // tekst. Lege regels en inspringing blijven behouden.
+      const PANEL = '.ts-code-surface, .ts-mini';
+      const SKIP = '.ts-code-title, .ts-code-status, .ts-mini-title, .ts-tag, .hf-copy-btn';
+      const COPY_LABEL = 'Kopieer code';
+      const COPY_STYLE = \`
+        .hf-copy-btn { position: fixed; transform: translateX(-100%); z-index: 2147483000; pointer-events: auto;
+          font: 600 26px/1 Inter, system-ui, sans-serif; color: #1E293B; background: #FFFFFF;
+          border: 2px solid #E2E8F0; border-radius: 10px; padding: 9px 20px; cursor: pointer;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12); user-select: none; -webkit-user-select: none; }
+        .hf-copy-btn:hover { border-color: #3178C6; color: #235A97; }\`;
+
+      const isLineNumber = (el, stop) => {
+        for (let node = el; node && node !== stop; node = node.parentElement) {
+          if ([...node.classList].some((name) => LINE_NUMBER.test(name))) return true;
+        }
+        return false;
+      };
+      function shown(el, stop) {
+        const view = el.ownerDocument.defaultView;
+        for (let node = el; node && node !== stop; node = node.parentElement) {
+          const style = view.getComputedStyle(node);
+          if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) < 0.05) return false;
+        }
+        return true;
+      }
+
+      // Groepeer de zichtbare tekst per regel op basis van de positie op het
+      // scherm, zodat het werkt voor elke opbouw (een span per teken, rijen
+      // in lagen, ...). Lijnnummers zorgen dat lege regels behouden blijven.
+      function panelText(panel) {
+        const doc = panel.ownerDocument;
+        const box = panel.getBoundingClientRect();
+        const inside = (r) => r.width > 0 && r.bottom > box.top + 1 && r.top < box.bottom - 1 && r.right > box.left && r.left < box.right;
+        const lines = [];
+        const lineAt = (r) => {
+          const y = r.top + r.height / 2;
+          let line = lines.find((l) => Math.abs(l.y - y) < l.h / 2);
+          if (!line) { line = { y, h: Math.max(r.height, 1), parts: [] }; lines.push(line); }
+          return line;
+        };
+        for (const el of panel.querySelectorAll('*')) {
+          if (![...el.classList].some((name) => LINE_NUMBER.test(name)) || !shown(el, panel)) continue;
+          const r = el.getBoundingClientRect();
+          if (inside(r)) lineAt(r);
+        }
+        const walker = doc.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
+        const range = doc.createRange();
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+          const el = node.parentElement;
+          if (!node.data || el.closest(SKIP) || isLineNumber(el, panel) || !shown(el, panel)) continue;
+          range.selectNodeContents(node);
+          const r = range.getBoundingClientRect();
+          if (inside(r)) lineAt(r).parts.push({ x: r.left, text: node.data });
+        }
+        const text = lines
+          .sort((a, b) => a.y - b.y)
+          .map((l) => l.parts.sort((a, b) => a.x - b.x).map((p) => p.text).join('').replace(/\\u00a0/g, ' ').replace(/\\s+$/, ''));
+        while (text.length && !text[0].trim()) text.shift();
+        while (text.length && !text[text.length - 1].trim()) text.pop();
+        return text.join('\\n');
+      }
+
+      async function copyText(doc, text) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch {
+          // Zonder toegang tot de clipboard-API (bv. in een iframe).
+          const area = doc.createElement('textarea');
+          area.value = text;
+          area.style.cssText = 'position: fixed; top: 0; left: 0; opacity: 0;';
+          doc.body.append(area);
+          area.select();
+          const ok = doc.execCommand('copy');
+          area.remove();
+          return ok;
+        }
+      }
+
+      function updateCopyButtons(doc, active) {
+        for (const button of doc.querySelectorAll('.hf-copy-btn')) button.remove();
+        if (!active) return;
+        if (!doc.getElementById('hf-copy-btn-style')) {
+          const style = doc.createElement('style');
+          style.id = 'hf-copy-btn-style';
+          style.textContent = COPY_STYLE;
+          doc.head.append(style);
+        }
+        for (const panel of doc.querySelectorAll(PANEL)) {
+          if (!shown(panel, doc.body)) continue;
+          const box = panel.getBoundingClientRect();
+          if (box.width < 200 || box.height < 80 || !panelText(panel)) continue;
+          const button = doc.createElement('button');
+          button.type = 'button';
+          button.className = 'hf-copy-btn';
+          button.textContent = COPY_LABEL;
+          button.style.left = (box.right - 12) + 'px';
+          button.style.top = (box.top + 6) + 'px';
+          button.addEventListener('pointerdown', (event) => event.stopPropagation());
+          button.addEventListener('click', async (event) => {
+            event.stopPropagation();
+            const ok = await copyText(doc, panelText(panel));
+            button.textContent = ok ? 'Gekopieerd' : 'Kopiëren mislukt';
+            setTimeout(() => { button.textContent = COPY_LABEL; }, 1500);
+          });
+          doc.body.append(button);
+        }
+      }
     </script>
   </body>
 </html>
