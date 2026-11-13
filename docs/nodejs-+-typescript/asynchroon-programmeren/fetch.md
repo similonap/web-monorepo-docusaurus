@@ -1,4 +1,8 @@
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
+
 # Fetch
+
+<HyperframesVideo name="ts-fetch" title="TypeScript - Fetch" />
 
 Net zoals in de browser is het mogelijk om in Node.js een HTTP request te doen naar een andere server. Dit doe je met de `fetch` functie. Deze functie heeft als argument een URL. De functie geeft een Promise terug die een Response object bevat. Dit object bevat de data die je terugkrijgt van de server. In TypeScript is het wel belangrijk dat je het type van de data opgeeft die je verwacht terug te krijgen. Je moet dus een interface voorzien die de data beschrijft. 
 

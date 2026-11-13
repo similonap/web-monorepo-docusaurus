@@ -40,3 +40,6 @@ yarn-error.log*
 /videos/*/.media/
 /videos/*/snapshots/
 .DS_Store
+
+# Extra stem-takes per regel (lossless, enkel om lokaal een andere take te kiezen)
+/videos/*/audio/takes/
