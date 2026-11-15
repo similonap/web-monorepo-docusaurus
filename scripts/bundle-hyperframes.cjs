@@ -233,6 +233,48 @@ function playerPage(name, version) {
           doc.body.append(button);
         }
       }
+
+      // De player heeft zelf geen fullscreenknop: zet er een achteraan in de
+      // bedieningsbalk. Fullscreen gaat over deze hele pagina (de iframe op
+      // de cursussite heeft allowFullScreen). Kan het niet (iPhone), dan
+      // komt er geen knop. Sneltoets: f.
+      const ENTER = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+      const EXIT = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+      const page = document.documentElement;
+      const fullscreenElement = () => document.fullscreenElement ?? document.webkitFullscreenElement;
+      function toggleFullscreen() {
+        if (fullscreenElement()) (document.exitFullscreen ?? document.webkitExitFullscreen).call(document);
+        else (page.requestFullscreen ?? page.webkitRequestFullscreen).call(page);
+      }
+      function addFullscreenButton() {
+        const controls = player.shadowRoot?.querySelector('.hfp-controls');
+        if (!controls) return requestAnimationFrame(addFullscreenButton);
+        const style = document.createElement('style');
+        style.textContent = \`
+          .hfp-fullscreen-btn { background: none; border: none; color: var(--hfp-color, #fff); cursor: pointer;
+            padding: 4px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex-shrink: 0; }
+          .hfp-fullscreen-btn:hover { opacity: 0.8; }
+          .hfp-fullscreen-btn svg { pointer-events: none; }\`;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'hfp-fullscreen-btn';
+        const update = () => {
+          const active = Boolean(fullscreenElement());
+          button.innerHTML = active ? EXIT : ENTER;
+          button.setAttribute('aria-label', active ? 'Volledig scherm sluiten' : 'Volledig scherm');
+        };
+        button.addEventListener('click', toggleFullscreen);
+        for (const event of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(event, update);
+        update();
+        player.shadowRoot.append(style);
+        controls.append(button);
+      }
+      if (document.fullscreenEnabled || document.webkitFullscreenEnabled) {
+        addFullscreenButton();
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'f' && !event.ctrlKey && !event.metaKey && !event.altKey) toggleFullscreen();
+        });
+      }
     </script>
   </body>
 </html>
