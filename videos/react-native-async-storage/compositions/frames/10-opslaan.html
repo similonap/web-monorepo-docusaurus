@@ -1,0 +1,521 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ==========================================================================
+       FLEX KIT: code surface + phone, shared by every frame of this video.
+       Copy this block verbatim; frame-specific ids use the fNN- prefix.
+       ========================================================================== */
+    /* code surface: fixed position, 24px / 34px, separate static line-number column */
+    .fx-panel { left: 80px; top: 150px; width: 1290px; height: 730px; }
+    .fx-code { top: 66px; font-size: 24px; line-height: 34px; }
+    .fx-lns { position: absolute; left: 0; top: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 19px; }
+    .fx-lns > div { height: 34px; }
+    .fx-lines { position: absolute; left: 76px; top: 0; right: 0; }
+    .fx-row { position: relative; height: 34px; white-space: pre; }
+    .fx-row .ts-caret { top: 5px; height: 24px; }
+    /* a value that changes in place (stacked variants, old slides up, new slides in) */
+    .fx-val { position: relative; display: inline-block; height: 34px; overflow: hidden; vertical-align: top; }
+    .fx-v { position: absolute; left: 0; top: 0; white-space: pre; }
+
+    /* phone: light device at the right, x 1494-1840, y 150-880; screen 316 x 650 */
+    .ph-body {
+      position: absolute; left: 1494px; top: 150px; width: 346px; height: 730px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 48px; box-shadow: var(--ts-shadow);
+    }
+    .ph-speaker { position: absolute; left: 144px; top: 16px; width: 56px; height: 6px; border-radius: 3px; background: #CBD5E1; }
+    .ph-home { position: absolute; left: 122px; bottom: 15px; width: 100px; height: 6px; border-radius: 3px; background: #CBD5E1; }
+    .ph-screen {
+      position: absolute; left: 13px; top: 38px; width: 316px; height: 650px;
+      background: #FFFFFF; border: 1px solid var(--ts-hairline); border-radius: 12px; overflow: hidden; box-sizing: content-box;
+    }
+    .ph-svg { position: absolute; left: 0; top: 0; width: 316px; height: 650px; overflow: hidden; }
+    .ph-parent { fill: none; stroke: #94A3B8; stroke-width: 1.5; stroke-dasharray: 6 5; }
+    .ph-mark { fill: none; stroke: var(--ts-blue); stroke-width: 3; }
+    .ph-main { stroke: var(--ts-blue); stroke-width: 3; stroke-linecap: round; }
+    .ph-main-head { fill: var(--ts-blue); }
+    .ph-cross { stroke: #94A3B8; stroke-width: 2; stroke-dasharray: 7 6; }
+    .ph-cross-head { fill: #94A3B8; }
+    .ph-lbl {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 17px;
+      paint-order: stroke; stroke: #FFFFFF; stroke-width: 5px; stroke-linejoin: round;
+    }
+    .ph-lbl--main { fill: var(--ts-blue-dark); }
+    .ph-lbl--cross { fill: var(--ts-ink-soft); }
+    .ph-prop { font-family: var(--ts-mono); font-weight: 500; font-size: 15px; }
+    .ph-prop--main { fill: var(--ts-blue); }
+    .ph-prop--cross { fill: var(--ts-label); }
+
+    /* ==========================================================================
+       APP KIT: the app inside the phone, as DOM. 1 dp = 1.4 px:
+       .ph-app is 226 x 464 dp, scaled into the 316 x 650 screen. Never tween .ph-app itself.
+       ========================================================================== */
+    .ph-app { position: absolute; left: 0; top: 0; width: 226px; height: 464px; transform: scale(1.4); transform-origin: 0 0; overflow: hidden; font-family: var(--ts-sans); color: #000000; }
+    .ph-status { position: absolute; left: 0; top: 0; width: 226px; height: 24px; box-sizing: border-box; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-family: var(--ts-sans); font-weight: 600; font-size: 11px; color: #1E293B; z-index: 5; }
+    .ph-status-icons { display: flex; align-items: center; gap: 5px; }
+    .ph-sig { display: flex; align-items: flex-end; gap: 1.5px; height: 8px; }
+    .ph-sig > i { display: block; width: 2.5px; background: #1E293B; border-radius: 0.5px; }
+    .ph-batt { position: relative; width: 18px; height: 9px; box-sizing: border-box; border: 1.2px solid #1E293B; border-radius: 2.5px; }
+    .ph-batt::after { content: ""; position: absolute; left: 1px; top: 1px; bottom: 1px; width: 11px; border-radius: 1px; background: #1E293B; }
+    /* React Native defaults: every View is a flex container, direction column */
+    .rn-root { position: absolute; left: 0; top: 0; width: 226px; height: 464px; display: flex; flex-direction: column; box-sizing: border-box; }
+    .rn-view { position: relative; display: flex; flex-direction: column; flex-shrink: 0; box-sizing: border-box; min-width: 0; min-height: 0; }
+    .rn-text { position: relative; display: block; font-family: var(--ts-sans); font-size: 14px; line-height: 1.3; color: #000000; white-space: pre-wrap; }
+    /* Button as the course previews show it (Android look): blue, white, uppercase */
+    .rn-btn { display: block; box-sizing: border-box; padding: 8px; border-radius: 2px; background: #2196F3; color: #FFFFFF; font-family: var(--ts-sans); font-weight: 500; font-size: 14px; line-height: 1.3; text-align: center; text-transform: uppercase; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24); }
+    .rn-btn--disabled { background: #DFDFDF; color: #A1A1A1; box-shadow: none; }
+    /* Button, iOS look (only for the color comparison): plain tinted text */
+    .rn-btn-ios { display: block; padding: 8px; color: #007AFF; font-family: var(--ts-sans); font-size: 18px; line-height: 1.3; text-align: center; }
+    /* TextInput: no border by default */
+    .rn-input { position: relative; display: flex; align-items: center; height: 40px; box-sizing: border-box; padding: 0 4px; font-family: var(--ts-sans); font-size: 14px; color: #000000; }
+    .rn-placeholder { color: #A1A1AA; }
+    .rn-caret { display: inline-block; width: 1.5px; height: 17px; background: #2196F3; vertical-align: middle; }
+    /* touch indicator (a finger press). Position it in dp inside .ph-app, centred on the target */
+    .ph-touch { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; box-sizing: border-box; background: rgba(30, 41, 59, 0.16); border: 1.5px solid rgba(30, 41, 59, 0.35); opacity: 0; z-index: 20; }
+
+    /* ==========================================================================
+       STORE KIT: the AsyncStorage table (from STORYBOARD.md)
+       ========================================================================== */
+    /* STORE KIT: the AsyncStorage table */
+    .st-card { position: absolute; left: 80px; top: 700px; width: 1290px; height: 176px; box-sizing: border-box; background: #FFFFFF; border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06); overflow: hidden; }
+    .st-title { position: absolute; left: 0; top: 0; right: 0; height: 40px; box-sizing: border-box; padding: 0 20px; display: flex; align-items: center; gap: 12px; background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline); }
+    .st-sq { width: 12px; height: 12px; border-radius: 3px; background: var(--ts-blue); flex: none; }
+    .st-name { font-family: var(--ts-mono); font-size: 18px; color: var(--ts-ink-soft); }
+    .st-sub { font-family: var(--ts-sans); font-weight: 500; font-size: 16px; color: var(--ts-label); }
+    .st-note { margin-left: auto; font-family: var(--ts-mono); font-size: 18px; color: var(--ts-ink-soft); opacity: 0; }
+    .st-head { position: absolute; left: 0; right: 0; top: 40px; height: 28px; display: flex; align-items: center; border-bottom: 1px solid var(--ts-hairline); font-family: var(--ts-sans); font-weight: 600; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-label); }
+    .st-k { width: 300px; padding-left: 20px; box-sizing: border-box; flex: none; }
+    .st-rows { position: absolute; left: 0; right: 0; top: 68px; height: 108px; }
+    .st-row { position: absolute; left: 0; right: 0; height: 36px; display: flex; align-items: center; font-family: var(--ts-mono); font-size: 22px; white-space: nowrap; }
+    .st-row .st-k { color: var(--ts-ink); position: relative; }
+    .st-row .st-v { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; padding-right: 20px; color: var(--ts-code-str); position: relative; }
+    .st-wash { position: absolute; inset: 0; background: rgba(49, 120, 198, 0.12); opacity: 0; }
+    .st-read { position: absolute; inset: 2px 8px; border: 2px solid var(--ts-blue); border-radius: 6px; opacity: 0; }
+    .st-empty { position: absolute; left: 20px; top: 0; height: 36px; display: flex; align-items: center; font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-muted); }
+
+    /* ---- frame 10 ---- */
+    /* 1290 x 520 panel, 11-row code window (11 x 34 = 374px) */
+    #f10-panel { height: 520px; }
+    #f10-code { height: 374px; overflow: hidden; }
+    /* state chip above the phone: mono label in ink-soft, value in ink */
+    #f10-chips { position: absolute; left: 1494px; top: 82px; width: 346px; height: 52px; display: flex; justify-content: center; }
+    #f10-chips .ts-chip { position: relative; opacity: 0; }
+    #f10-chips .ts-chip-key { color: var(--ts-ink-soft); }
+    .f10-ckey { color: var(--ts-ink-soft); }
+    .f10-cval { display: inline-flex; align-items: center; height: 34px; line-height: 34px; white-space: pre; }
+    /* counter digit on the phone (stacked, old slides up, new slides in) */
+    .f10-num { position: relative; display: inline-block; width: 9px; height: 18.2px; overflow: hidden; vertical-align: top; }
+    .f10-d { position: absolute; left: 0; top: 0; }
+    /* table value that changes in place (mono 22px, 3 chars = 39.6px) */
+    .f10-sv { position: relative; display: inline-block; width: 39.6px; height: 36px; overflow: hidden; vertical-align: top; }
+    .f10-svv { position: absolute; left: 0; top: 0; line-height: 36px; white-space: pre; }
+    #f10-store { opacity: 0; }
+  </style>
+
+  <div data-hf-id="hf-pxqi" id="root" data-composition-id="10-opslaan" data-width="1920" data-height="1080" data-duration="9.11">
+    <div data-hf-id="hf-zm6h" class="ts-bg clip" id="f10-bg" data-start="0" data-duration="9.11" data-track-index="0"></div>
+
+    <div data-hf-id="hf-1pnc" class="ts-stage clip" id="f10-stage" data-start="0" data-duration="9.11" data-track-index="1">
+      <div data-hf-id="hf-w0r8" class="ts-kicker" id="f10-kicker"><div data-hf-id="hf-aixt" class="ts-kicker-bar" id="f10-kbar"></div><span data-hf-id="hf-y6z3" class="ts-kicker-text" id="f10-ktext">State opslaan</span></div>
+
+      <!-- code surface: app/index.tsx (27 rows, 11-row window; rows 14-19 open and type on) -->
+      <div data-hf-id="hf-kq12" class="ts-code-surface fx-panel" id="f10-panel">
+        <div data-hf-id="hf-lgrb" class="ts-code-title">app/index.tsx</div>
+        <div data-hf-id="hf-2ndo" class="ts-code fx-code" id="f10-code">
+          <div data-hf-id="hf-fnnh" class="fx-lns" id="f10-lns"><div data-hf-id="hf-oy6b">1</div><div data-hf-id="hf-ojva">2</div><div data-hf-id="hf-o5k9">3</div><div data-hf-id="hf-nr98">4</div><div data-hf-id="hf-ncy7">5</div><div data-hf-id="hf-myn6">6</div><div data-hf-id="hf-mkc5">7</div><div data-hf-id="hf-m614">8</div><div data-hf-id="hf-lrq3">9</div><div data-hf-id="hf-w8cp">10</div><div data-hf-id="hf-wmnq">11</div><div data-hf-id="hf-x0yr">12</div><div data-hf-id="hf-xf9s">13</div><div data-hf-id="hf-un4l">14</div><div data-hf-id="hf-v1fm">15</div><div data-hf-id="hf-vfqn">16</div><div data-hf-id="hf-vu1o">17</div><div data-hf-id="hf-t1wh">18</div><div data-hf-id="hf-tg7i">19</div><div data-hf-id="hf-x00i">20</div><div data-hf-id="hf-wlph">21</div><div data-hf-id="hf-xsmk">22</div><div data-hf-id="hf-xebj">23</div><div data-hf-id="hf-yl8m">24</div><div data-hf-id="hf-y6xl">25</div><div data-hf-id="hf-zduo">26</div><div data-hf-id="hf-yzjn">27</div></div>
+          <div data-hf-id="hf-c4lt" class="fx-lines" id="f10-lines">
+            <div data-hf-id="hf-2ck0" class="fx-row"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> <span data-hf-id="hf-xdgx" class="ts-fn">Index</span> = () <span data-hf-id="hf-kpf2" class="ts-kw">=&gt;</span> {</div>
+            <div data-hf-id="hf-tem6" class="fx-row">    <span data-hf-id="hf-stvc" class="ts-kw">const</span> [counter, setCounter] = <span data-hf-id="hf-md7z" class="ts-fn">useState</span><span data-hf-id="hf-4csn" class="ts-punct">&lt;</span><span data-hf-id="hf-rnci" class="ts-type">number</span><span data-hf-id="hf-3k6l" class="ts-punct">&gt;</span>(<span data-hf-id="hf-l6wh" class="ts-fn">0</span>);</div>
+            <div data-hf-id="hf-bz7x" class="fx-row"></div>
+            <div data-hf-id="hf-wlp9" class="fx-row">    <span data-hf-id="hf-uw2v" class="ts-fn">useEffect</span>(() <span data-hf-id="hf-hprm" class="ts-kw">=&gt;</span> {</div>
+            <div data-hf-id="hf-3t00" class="fx-row">        <span data-hf-id="hf-rmy9" class="ts-kw">const</span> <span data-hf-id="hf-uodf" class="ts-fn">loadData</span> = <span data-hf-id="hf-tg6j" class="ts-kw">async</span> () <span data-hf-id="hf-i42n" class="ts-kw">=&gt;</span> {</div>
+            <div data-hf-id="hf-62h4" class="fx-row">            <span data-hf-id="hf-s19a" class="ts-kw">const</span> value: <span data-hf-id="hf-sj5i" class="ts-type">string</span> | <span data-hf-id="hf-di3k" class="ts-kw">null</span> = <span data-hf-id="hf-axwx" class="ts-kw">await</span> AsyncStorage.<span data-hf-id="hf-zzsm" class="ts-fn">getItem</span>(<span data-hf-id="hf-ivi8" class="ts-str">"counter"</span>);</div>
+            <div data-hf-id="hf-0y7f" class="fx-row">            <span data-hf-id="hf-vine" class="ts-kw">if</span> (value !== <span data-hf-id="hf-3e8o" class="ts-kw">null</span>) {</div>
+            <div data-hf-id="hf-gmyp" class="fx-row">                <span data-hf-id="hf-hkjr" class="ts-fn">setCounter</span>(<span data-hf-id="hf-5d5m" class="ts-fn">Number</span>(value));</div>
+            <div data-hf-id="hf-0vv4" class="fx-row">            }</div>
+            <div data-hf-id="hf-41o1" class="fx-row">        };</div>
+            <div data-hf-id="hf-ofrv" class="fx-row">        <span data-hf-id="hf-xyoz" class="ts-fn">loadData</span>();</div>
+            <div data-hf-id="hf-zfco" class="fx-row">    }, []);</div>
+            <div data-hf-id="hf-lvlt" class="fx-row"></div>
+            <div data-hf-id="hf-gg98" class="fx-row" id="f10-l14"><span data-hf-id="hf-7z5s" class="ts-caret" id="f10-c14"></span>    </div>
+            <div data-hf-id="hf-jfit" class="fx-row" id="f10-l15"><span data-hf-id="hf-8qtl" class="ts-caret" id="f10-c15"></span>        </div>
+            <div data-hf-id="hf-ndmu" class="fx-row" id="f10-l16"><span data-hf-id="hf-coxm" class="ts-caret" id="f10-c16"></span>            </div>
+            <div data-hf-id="hf-rbqv" class="fx-row" id="f10-l17"><span data-hf-id="hf-gn1n" class="ts-caret" id="f10-c17"></span>        </div>
+            <div data-hf-id="hf-3u9c" class="fx-row" id="f10-l18"><span data-hf-id="hf-msrg" class="ts-caret" id="f10-c18"></span>        </div>
+            <div data-hf-id="hf-4lx5" class="fx-row" id="f10-l19"><span data-hf-id="hf-nkf9" class="ts-caret" id="f10-c19"></span>    </div>
+            <div data-hf-id="hf-pupy" id="f10-below">
+            <div data-hf-id="hf-n2iw" class="fx-row"></div>
+            <div data-hf-id="hf-uou7" class="fx-row">    <span data-hf-id="hf-kmyz" class="ts-kw">return</span> (</div>
+            <div data-hf-id="hf-mo7v" class="fx-row">        <span data-hf-id="hf-c0rr" class="ts-punct">&lt;</span><span data-hf-id="hf-zaoe" class="ts-fn">View</span><span data-hf-id="hf-1oyp" class="ts-punct">&gt;</span></div>
+            <div data-hf-id="hf-d50c" class="fx-row">            <span data-hf-id="hf-bmgq" class="ts-punct">&lt;</span><span data-hf-id="hf-1npo" class="ts-fn">Text</span><span data-hf-id="hf-2vvs" class="ts-punct">&gt;</span>AsyncStorage<span data-hf-id="hf-70hk" class="ts-punct">&lt;/</span><span data-hf-id="hf-9ffo" class="ts-fn">Text</span><span data-hf-id="hf-2hkr" class="ts-punct">&gt;</span></div>
+            <div data-hf-id="hf-x26f" class="fx-row">            <span data-hf-id="hf-b85p" class="ts-punct">&lt;</span><span data-hf-id="hf-88il" class="ts-fn">Text</span><span data-hf-id="hf-0i1m" class="ts-punct">&gt;</span>Counter: <span data-hf-id="hf-uzbi" class="ts-punct">{</span>counter<span data-hf-id="hf-c1ud" class="ts-punct">}&lt;/</span><span data-hf-id="hf-8mtm" class="ts-fn">Text</span><span data-hf-id="hf-03ql" class="ts-punct">&gt;</span></div>
+            <div data-hf-id="hf-nl9c" class="fx-row">            <span data-hf-id="hf-e0aw" class="ts-punct">&lt;</span><span data-hf-id="hf-nxvn" class="ts-fn">Button</span> title<span data-hf-id="hf-4r3o" class="ts-punct">=</span><span data-hf-id="hf-1qij" class="ts-str">"Increment"</span> onPress<span data-hf-id="hf-lcgt" class="ts-punct">={</span>() <span data-hf-id="hf-iido" class="ts-kw">=&gt;</span> <span data-hf-id="hf-6a93" class="ts-fn">setCounter</span>(counter + <span data-hf-id="hf-ll7i" class="ts-fn">1</span>)<span data-hf-id="hf-u6pg" class="ts-punct">}</span> <span data-hf-id="hf-07ek" class="ts-punct">/&gt;</span></div>
+            <div data-hf-id="hf-kooq" class="fx-row">        <span data-hf-id="hf-bdow" class="ts-punct">&lt;/</span><span data-hf-id="hf-uor6" class="ts-fn">View</span><span data-hf-id="hf-1ano" class="ts-punct">&gt;</span></div>
+            <div data-hf-id="hf-3stx" class="fx-row">    );</div>
+            </div>
+          </div>
+        </div>
+        <div data-hf-id="hf-thq7" class="ts-code-status">app/index.tsx · AsyncStorage</div>
+      </div>
+
+      <!-- the AsyncStorage table (STORE KIT) -->
+      <div data-hf-id="hf-metr" class="st-card" id="f10-store"><div data-hf-id="hf-vbvs" class="st-title"><span data-hf-id="hf-5odx" class="st-sq"></span><span data-hf-id="hf-co3t" class="st-name">AsyncStorage</span><span data-hf-id="hf-a71x" class="st-sub">op de telefoon</span><span data-hf-id="hf-cgdp" class="st-note" id="f10-note"></span></div><div data-hf-id="hf-ddps" class="st-head"><span data-hf-id="hf-392b" class="st-k">key</span><span data-hf-id="hf-pvym">value</span></div><div data-hf-id="hf-0z9d" class="st-rows"><div data-hf-id="hf-c5o8" class="st-row" id="f10-r-counter" style="top: 0px"><span data-hf-id="hf-qai5" class="st-wash" id="f10-wash"></span><span data-hf-id="hf-vfi5" class="st-read" id="f10-read"></span><span data-hf-id="hf-xwhk" class="st-k">counter</span><span data-hf-id="hf-i4c1" class="st-v"><span data-hf-id="hf-5nt0" class="f10-sv"><span data-hf-id="hf-3ix3" class="f10-svv" id="f10-sv5">"5"</span><span data-hf-id="hf-apuf" class="f10-svv" id="f10-sv6" style="opacity: 0;">"6"</span><span data-hf-id="hf-km3p" class="f10-svv" id="f10-sv7" style="opacity: 0;">"7"</span></span></span></div></div></div>
+
+      <!-- phone: the app as DOM, in dp -->
+      <div data-hf-id="hf-34hr" class="ph-body" id="f10-phone">
+        <div data-hf-id="hf-9aks" class="ph-speaker"></div>
+        <div data-hf-id="hf-66w1" class="ph-screen">
+          <div data-hf-id="hf-pfty" class="ph-app">
+            <div data-hf-id="hf-3hcz" class="ph-status"><span data-hf-id="hf-zwmt">9:41</span><span data-hf-id="hf-zte5" class="ph-status-icons"><span data-hf-id="hf-wjw5" class="ph-sig"><i data-hf-id="hf-1rvt" style="height:3px"></i><i data-hf-id="hf-4ztr" style="height:5px"></i><i data-hf-id="hf-jylm" style="height:8px"></i></span><span data-hf-id="hf-tn7h" class="ph-batt"></span></span></div>
+            <div data-hf-id="hf-2xoi" class="rn-root" id="f10-app">
+              <div data-hf-id="hf-fkli" class="rn-view" id="f10-container" style="flex: 1; padding-top: 24px;">
+                <span data-hf-id="hf-4rni" class="rn-text">AsyncStorage</span>
+                <span data-hf-id="hf-66vq" class="rn-text" id="f10-count">Counter: <span data-hf-id="hf-i5yr" class="f10-num" id="f10-num"><span data-hf-id="hf-f2kf" class="f10-d" id="f10-d5">5</span><span data-hf-id="hf-pkxx" class="f10-d" id="f10-d6" style="opacity: 0;">6</span><span data-hf-id="hf-3zd1" class="f10-d" id="f10-d7" style="opacity: 0;">7</span></span></span>
+                <div data-hf-id="hf-v9mi" class="rn-btn" id="f10-btn">Increment</div>
+              </div>
+            </div>
+            <div data-hf-id="hf-i46n" class="ph-touch" id="f10-touch"></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-xjm4" class="ph-home"></div>
+      </div>
+
+      <!-- state above the phone -->
+      <div data-hf-id="hf-zo3o" id="f10-chips"><span data-hf-id="hf-5pgk" class="ts-chip" id="f10-state"><span data-hf-id="hf-h79w" class="ts-chip-key">state</span><span data-hf-id="hf-xy5f" class="f10-cval"><span data-hf-id="hf-0pp9" class="f10-ckey">counter: </span><span data-hf-id="hf-fflg" class="fx-val" id="f10-cv" style="width: 14.4px;"><span data-hf-id="hf-t8ol" class="fx-v" id="f10-cv5">5</span><span data-hf-id="hf-rlov" class="fx-v" id="f10-cv6" style="opacity: 0;">6</span><span data-hf-id="hf-xecv" class="fx-v" id="f10-cv7" style="opacity: 0;">7</span></span></span></span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 9.11;
+      var CH = 14.4; // JetBrains Mono 24px advance
+      var FS = 24, CW = 0.6, X0 = 0;
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="10-opslaan"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // value change inside a line: old slides up and out, new slides in, wrapper width follows (0.25s)
+      function swapVal(oldSel, newSel, wrapSel, chars, at) {
+        tl.to(oldSel, { y: -14, opacity: 0, duration: 0.25, ease: "power2.out" }, at);
+        tl.fromTo(newSel, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, at);
+        tl.to(wrapSel, { width: chars * CH, duration: 0.25, ease: "power2.out" }, at);
+      }
+
+      // type-on with a caret that steps per character (caret .ts-caret inside the .fx-row)
+      function typeLine(lineSel, caretSel, segments, col, start, per, lead) {
+        if (lead === undefined) lead = 0.1;
+        var line = q(lineSel);
+        var caret = q(caretSel);
+        var chars = [];
+        var marks = {};
+        segments.forEach(function (seg) {
+          var host = line;
+          if (seg.id) {
+            host = document.createElement("span");
+            host.className = "ts-hl";
+            host.id = seg.id;
+            line.appendChild(host);
+            marks[seg.id] = start + chars.length * per;
+          }
+          (seg.parts || [{ t: seg.t, c: seg.c }]).forEach(function (p) {
+            for (var i = 0; i < p.t.length; i++) {
+              var s = document.createElement("span");
+              s.className = "ts-ch" + (p.c ? " " + p.c : "");
+              s.textContent = p.t[i];
+              host.appendChild(s);
+              chars.push(s);
+            }
+          });
+          if (seg.id) marks[seg.id + ":end"] = start + chars.length * per;
+        });
+        var chPx = FS * CW;
+        tl.set(chars, { opacity: 0 }, 0);
+        tl.set(caret, { opacity: 1, x: X0 + col * chPx }, start - lead);
+        chars.forEach(function (el, i) {
+          var at = start + i * per;
+          tl.to(el, { opacity: 1, duration: 0.05, ease: "power1.out" }, at);
+          tl.set(caret, { x: X0 + (col + i + 1) * chPx }, at);
+        });
+        var end = start + chars.length * per;
+        tl.set(caret, { opacity: 0 }, end);
+        return { end: end, col: col + chars.length, marks: marks };
+      }
+
+      // ---- APP KIT helpers ----
+      // box of an element in dp, relative to .ph-app (layout is measured once, before any tween)
+      function dpBox(sel) {
+        var el = q(sel), x = 0, y = 0, e = el;
+        while (e && !e.classList.contains("ph-app")) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; }
+        return { x: x, y: y, w: el.offsetWidth, h: el.offsetHeight };
+      }
+      // centre an absolutely placed element (touch, ring) on a dp box
+      function placeOn(sel, b) { var el = q(sel); el.style.left = (b.x + b.w / 2) + "px"; el.style.top = (b.y + b.h / 2) + "px"; }
+      // a finger press: touch fades and scales in (0.6 -> 1, 0.15s); on release it fades out (0.25s)
+      function touchDown(sel, at) { tl.fromTo(sel, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.15, ease: "power2.out", immediateRender: false }, at); }
+      function touchUp(sel, at) { tl.to(sel, { opacity: 0, duration: 0.25, ease: "power1.out" }, at); }
+      // chip / label pop: opacity, y 10 -> 0, scale 0.96 -> 1
+      function pop(sel, at) { tl.fromTo(sel, { opacity: 0, y: 10, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, at); }
+      // panel rows scroll together with the line numbers
+      function scrollTo(nn, rows, at) { tl.to(["#f" + nn + "-lns", "#f" + nn + "-lines"], { y: -34 * rows, duration: 0.6, ease: "power3.inOut" }, at); }
+      function intro(nn) {
+        tl.fromTo("#f" + nn + "-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+        tl.fromTo("#f" + nn + "-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+        tl.fromTo("#f" + nn + "-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1);
+        tl.fromTo("#f" + nn + "-phone", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.2);
+      }
+      // rows outside the 11-row window are hidden (not only clipped), by final row number
+      function range(a, b) { var r = []; for (var i = a; i <= b; i++) r.push(i); return r; }
+      function rowEls(nn, idxs) { var r = root.querySelectorAll("#f" + nn + "-lines .fx-row"); return idxs.map(function (i) { return r[i - 1]; }); }
+      function lnEls(nn, idxs) { var r = root.querySelectorAll("#f" + nn + "-lns > div"); return idxs.map(function (i) { return r[i - 1]; }); }
+      function hideEls(els, at, dur) { if (dur) tl.to(els, { autoAlpha: 0, duration: dur, ease: "power1.inOut" }, at); else tl.set(els, { autoAlpha: 0 }, at); }
+      function showEls(els, at, dur) { if (dur) tl.to(els, { autoAlpha: 1, duration: dur, ease: "power1.inOut" }, at); else tl.set(els, { autoAlpha: 1 }, at); }
+      // ---- end APP KIT helpers ----
+
+      // ---- STORE KIT helpers ----
+      // wash on a table row: 0 -> 1 -> 0 over 0.8s
+      function stWash(sel, at) {
+        tl.to(sel, { opacity: 1, duration: 0.3, ease: "power1.out" }, at);
+        tl.to(sel, { opacity: 0, duration: 0.5, ease: "power1.inOut" }, at + 0.3);
+      }
+      // ---- end STORE KIT helpers ----
+
+      // start: window 9-19 with rows 14-19 absent (row 13 directly followed by row 20)
+      placeOn("#f10-touch", dpBox("#f10-btn"));
+      tl.set(["#f10-lns", "#f10-lines"], { y: -34 * 8 }, 0);
+      tl.set("#f10-below", { y: -34 * 6 }, 0);
+      hideEls(rowEls("10", range(1, 8).concat(range(14, 19), [26, 27])).concat(lnEls("10", range(1, 8).concat(range(20, 27)))), 0);
+
+      // ---- 0.0-0.3: kicker, panel, phone, chip and table in ----
+      intro("10");
+      tl.fromTo("#f10-store", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.25);
+      pop("#f10-state", 0.3);
+
+      // ---- 0.56 "use effect": rows 14-19 open and type on (0.6-1.8) ----
+      tl.to("#f10-below", { y: 0, duration: 0.35, ease: "power3.out" }, 0.56);
+      showEls(rowEls("10", range(14, 19)), 0.56);
+      hideEls(rowEls("10", range(20, 25)), 0.91);
+      var PER = 0.0078, GAP = 0.03;
+      var t = typeLine("#f10-l14", "#f10-c14", [{ parts: [{ t: "useEffect", c: "ts-fn" }, { t: "(() " }, { t: "=>", c: "ts-kw" }, { t: " {" }] }], 4, 0.6, PER, 0.04);
+      t = typeLine("#f10-l15", "#f10-c15", [{ parts: [{ t: "const", c: "ts-kw" }, { t: " " }, { t: "storeData", c: "ts-fn" }, { t: " = " }, { t: "async", c: "ts-kw" }, { t: " () " }, { t: "=>", c: "ts-kw" }, { t: " {" }] }], 8, t.end + GAP, PER, GAP);
+      t = typeLine("#f10-l16", "#f10-c16", [
+        { parts: [{ t: "await", c: "ts-kw" }, { t: " AsyncStorage." }] },
+        { id: "f10-hl-set", parts: [{ t: "setItem", c: "ts-fn" }] },
+        { parts: [{ t: "(" }, { t: "\"counter\"", c: "ts-str" }, { t: ", " }] },
+        { id: "f10-hl-str", parts: [{ t: "counter." }, { t: "toString", c: "ts-fn" }, { t: "()" }] },
+        { t: ");" }
+      ], 12, t.end + GAP, PER, GAP);
+      t = typeLine("#f10-l17", "#f10-c17", [{ t: "};" }], 8, t.end + GAP, PER, GAP);
+      t = typeLine("#f10-l18", "#f10-c18", [{ parts: [{ t: "storeData", c: "ts-fn" }, { t: "();" }] }], 8, t.end + GAP, PER, GAP);
+      t = typeLine("#f10-l19", "#f10-c19", [{ t: "}, " }, { id: "f10-hl-dep", parts: [{ t: "[counter]" }] }, { t: ");" }], 4, t.end + GAP, PER, GAP);
+
+      // ---- 1.36 "slaat": wash on setItem; 1.96 "state": counter.toString(); 3.12 "verandert": [counter] ----
+      washOn("#f10-hl-set", 1.36);
+      washOff("#f10-hl-set", 1.96);
+      washOn("#f10-hl-str", 1.96);
+      washOff("#f10-hl-str", 3.12);
+      washOn("#f10-hl-dep", 3.12);
+
+      // ---- 3.60: scroll to rows 17-27 ----
+      showEls(rowEls("10", range(20, 27)).concat(lnEls("10", range(20, 27))), 3.6);
+      scrollTo("10", 16, 3.6);
+      hideEls(rowEls("10", range(9, 16)).concat(lnEls("10", range(9, 16))), 4.2);
+
+      // a Button press: finger down, pressed colour while down; onPress fires on release,
+      // the counter and the state chip change; the effect then writes the table value
+      function pressTo(n, down, up, store) {
+        touchDown("#f10-touch", down);
+        tl.to("#f10-btn", { backgroundColor: "#1976D2", duration: 0.1, ease: "power1.out" }, down);
+        tl.to("#f10-btn", { backgroundColor: "#2196F3", duration: 0.2, ease: "power1.out" }, up);
+        touchUp("#f10-touch", up);
+        tl.to("#f10-d" + (n - 1), { y: -10, opacity: 0, duration: 0.25, ease: "power2.out" }, up);
+        tl.fromTo("#f10-d" + n, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, up);
+        swapVal("#f10-cv" + (n - 1), "#f10-cv" + n, "#f10-cv", 1, up);
+        tl.to("#f10-sv" + (n - 1), { y: -14, opacity: 0, duration: 0.25, ease: "power2.out" }, store);
+        tl.fromTo("#f10-sv" + n, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, store);
+        stWash("#f10-wash", store);
+      }
+
+      // ---- 4.08 "Druk": tap INCREMENT, Counter: 6 (4.1); 4.3 table "6" ----
+      pressTo(6, 4.0, 4.1, 4.3);
+      // ---- 5.68: tap again, Counter: 7 (5.7); 5.9 table "7" ----
+      pressTo(7, 5.6, 5.7, 5.9);
+
+      // ---- 7.52 "opslag": blue outline around the table row, held ----
+      washOff("#f10-hl-dep", 7.52);
+      tl.to("#f10-read", { opacity: 1, duration: 0.3, ease: "power1.out" }, 7.52);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["10-opslaan"] = tl;
+    })();
+  </script>
+</template>

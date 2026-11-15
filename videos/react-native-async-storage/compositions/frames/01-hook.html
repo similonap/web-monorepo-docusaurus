@@ -1,0 +1,419 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ==========================================================================
+       FLEX KIT: code surface + phone, shared by every frame of this video.
+       Copy this block verbatim; frame-specific ids use the fNN- prefix.
+       ========================================================================== */
+    /* code surface: fixed position, 24px / 34px, separate static line-number column */
+    .fx-panel { left: 80px; top: 150px; width: 1290px; height: 730px; }
+    .fx-code { top: 66px; font-size: 24px; line-height: 34px; }
+    .fx-lns { position: absolute; left: 0; top: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 19px; }
+    .fx-lns > div { height: 34px; }
+    .fx-lines { position: absolute; left: 76px; top: 0; right: 0; }
+    .fx-row { position: relative; height: 34px; white-space: pre; }
+    .fx-row .ts-caret { top: 5px; height: 24px; }
+    /* a value that changes in place (stacked variants, old slides up, new slides in) */
+    .fx-val { position: relative; display: inline-block; height: 34px; overflow: hidden; vertical-align: top; }
+    .fx-v { position: absolute; left: 0; top: 0; white-space: pre; }
+
+    /* phone: light device at the right, x 1494-1840, y 150-880; screen 316 x 650 */
+    .ph-body {
+      position: absolute; left: 1494px; top: 150px; width: 346px; height: 730px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 48px; box-shadow: var(--ts-shadow);
+    }
+    .ph-speaker { position: absolute; left: 144px; top: 16px; width: 56px; height: 6px; border-radius: 3px; background: #CBD5E1; }
+    .ph-home { position: absolute; left: 122px; bottom: 15px; width: 100px; height: 6px; border-radius: 3px; background: #CBD5E1; }
+    .ph-screen {
+      position: absolute; left: 13px; top: 38px; width: 316px; height: 650px;
+      background: #FFFFFF; border: 1px solid var(--ts-hairline); border-radius: 12px; overflow: hidden; box-sizing: content-box;
+    }
+    .ph-svg { position: absolute; left: 0; top: 0; width: 316px; height: 650px; overflow: hidden; }
+    .ph-parent { fill: none; stroke: #94A3B8; stroke-width: 1.5; stroke-dasharray: 6 5; }
+    .ph-mark { fill: none; stroke: var(--ts-blue); stroke-width: 3; }
+    .ph-main { stroke: var(--ts-blue); stroke-width: 3; stroke-linecap: round; }
+    .ph-main-head { fill: var(--ts-blue); }
+    .ph-cross { stroke: #94A3B8; stroke-width: 2; stroke-dasharray: 7 6; }
+    .ph-cross-head { fill: #94A3B8; }
+    .ph-lbl {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 17px;
+      paint-order: stroke; stroke: #FFFFFF; stroke-width: 5px; stroke-linejoin: round;
+    }
+    .ph-lbl--main { fill: var(--ts-blue-dark); }
+    .ph-lbl--cross { fill: var(--ts-ink-soft); }
+    .ph-prop { font-family: var(--ts-mono); font-weight: 500; font-size: 15px; }
+    .ph-prop--main { fill: var(--ts-blue); }
+    .ph-prop--cross { fill: var(--ts-label); }
+
+    /* ==========================================================================
+       APP KIT: the app inside the phone, as DOM. 1 dp = 1.4 px:
+       .ph-app is 226 x 464 dp, scaled into the 316 x 650 screen. Never tween .ph-app itself.
+       ========================================================================== */
+    .ph-app { position: absolute; left: 0; top: 0; width: 226px; height: 464px; transform: scale(1.4); transform-origin: 0 0; overflow: hidden; font-family: var(--ts-sans); color: #000000; }
+    .ph-status { position: absolute; left: 0; top: 0; width: 226px; height: 24px; box-sizing: border-box; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-family: var(--ts-sans); font-weight: 600; font-size: 11px; color: #1E293B; z-index: 5; }
+    .ph-status-icons { display: flex; align-items: center; gap: 5px; }
+    .ph-sig { display: flex; align-items: flex-end; gap: 1.5px; height: 8px; }
+    .ph-sig > i { display: block; width: 2.5px; background: #1E293B; border-radius: 0.5px; }
+    .ph-batt { position: relative; width: 18px; height: 9px; box-sizing: border-box; border: 1.2px solid #1E293B; border-radius: 2.5px; }
+    .ph-batt::after { content: ""; position: absolute; left: 1px; top: 1px; bottom: 1px; width: 11px; border-radius: 1px; background: #1E293B; }
+    /* React Native defaults: every View is a flex container, direction column */
+    .rn-root { position: absolute; left: 0; top: 0; width: 226px; height: 464px; display: flex; flex-direction: column; box-sizing: border-box; }
+    .rn-view { position: relative; display: flex; flex-direction: column; flex-shrink: 0; box-sizing: border-box; min-width: 0; min-height: 0; }
+    .rn-text { position: relative; display: block; font-family: var(--ts-sans); font-size: 14px; line-height: 1.3; color: #000000; white-space: pre-wrap; }
+    /* Button as the course previews show it (Android look): blue, white, uppercase */
+    .rn-btn { display: block; box-sizing: border-box; padding: 8px; border-radius: 2px; background: #2196F3; color: #FFFFFF; font-family: var(--ts-sans); font-weight: 500; font-size: 14px; line-height: 1.3; text-align: center; text-transform: uppercase; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24); }
+    .rn-btn--disabled { background: #DFDFDF; color: #A1A1A1; box-shadow: none; }
+    /* Button, iOS look (only for the color comparison): plain tinted text */
+    .rn-btn-ios { display: block; padding: 8px; color: #007AFF; font-family: var(--ts-sans); font-size: 18px; line-height: 1.3; text-align: center; }
+    /* TextInput: no border by default */
+    .rn-input { position: relative; display: flex; align-items: center; height: 40px; box-sizing: border-box; padding: 0 4px; font-family: var(--ts-sans); font-size: 14px; color: #000000; }
+    .rn-placeholder { color: #A1A1AA; }
+    .rn-caret { display: inline-block; width: 1.5px; height: 17px; background: #2196F3; vertical-align: middle; }
+    /* touch indicator (a finger press). Position it in dp inside .ph-app, centred on the target */
+    .ph-touch { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; box-sizing: border-box; background: rgba(30, 41, 59, 0.16); border: 1.5px solid rgba(30, 41, 59, 0.35); opacity: 0; z-index: 20; }
+
+    /* STORE KIT: the AsyncStorage table */
+    .st-card { position: absolute; left: 80px; top: 700px; width: 1290px; height: 176px; box-sizing: border-box; background: #FFFFFF; border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06); overflow: hidden; }
+    .st-title { position: absolute; left: 0; top: 0; right: 0; height: 40px; box-sizing: border-box; padding: 0 20px; display: flex; align-items: center; gap: 12px; background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline); }
+    .st-sq { width: 12px; height: 12px; border-radius: 3px; background: var(--ts-blue); flex: none; }
+    .st-name { font-family: var(--ts-mono); font-size: 18px; color: var(--ts-ink-soft); }
+    .st-sub { font-family: var(--ts-sans); font-weight: 500; font-size: 16px; color: var(--ts-label); }
+    .st-note { margin-left: auto; font-family: var(--ts-mono); font-size: 18px; color: var(--ts-ink-soft); opacity: 0; }
+    .st-head { position: absolute; left: 0; right: 0; top: 40px; height: 28px; display: flex; align-items: center; border-bottom: 1px solid var(--ts-hairline); font-family: var(--ts-sans); font-weight: 600; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-label); }
+    .st-k { width: 300px; padding-left: 20px; box-sizing: border-box; flex: none; }
+    .st-rows { position: absolute; left: 0; right: 0; top: 68px; height: 108px; }
+    .st-row { position: absolute; left: 0; right: 0; height: 36px; display: flex; align-items: center; font-family: var(--ts-mono); font-size: 22px; white-space: nowrap; }
+    .st-row .st-k { color: var(--ts-ink); position: relative; }
+    .st-row .st-v { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; padding-right: 20px; color: var(--ts-code-str); position: relative; }
+    .st-wash { position: absolute; inset: 0; background: rgba(49, 120, 198, 0.12); opacity: 0; }
+    .st-read { position: absolute; inset: 2px 8px; border: 2px solid var(--ts-blue); border-radius: 6px; opacity: 0; }
+    .st-empty { position: absolute; left: 20px; top: 0; height: 36px; display: flex; align-items: center; font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-muted); }
+
+    /* ---- frame 01 ---- */
+    #f01-phone { opacity: 0; }
+    #f01-hero { left: 80px; top: 280px; display: inline-block; opacity: 0; }
+    #f01-hero .ts-hero-bar { left: 0; width: 100%; bottom: -18px; }
+    #f01-stmt { position: absolute; left: 80px; top: 520px; max-width: 1300px; font-size: 48px; opacity: 0; }
+    /* the table starts narrow (left of the centred phone) and widens when the phone slides away */
+    #f01-store { width: 660px; opacity: 0; }
+    /* table value that changes in place: stacked, old slides up, new slides in */
+    #f01-v { height: 36px; }
+    .f01-sv { position: absolute; left: 0; top: 0; height: 36px; line-height: 36px; white-space: pre; }
+    /* counter digit on the phone (stacked, old slides up, new slides in) */
+    .f01-num { position: relative; display: inline-block; width: 9px; height: 18.2px; overflow: hidden; vertical-align: top; }
+    .f01-d { position: absolute; left: 0; top: 0; }
+    /* launcher (dp, inside .ph-app): 3 x 3 grid of 44 dp icons, the middle one is this app */
+    #f01-launch { position: absolute; left: 0; top: 0; width: 226px; height: 464px; background: #F1F5F9; opacity: 0; z-index: 3; }
+    .f01-ic { position: absolute; width: 44px; height: 44px; border-radius: 10px; background: #CBD5E1; }
+    #f01-ic-app { background: #3178C6; }
+    /* .ph-mark as a DOM outline in dp (3px on screen = 2.15 dp) around Counter: 3 */
+    #f01-cmark { position: absolute; box-sizing: border-box; border: 2.15px solid var(--ts-blue); border-radius: 4px; opacity: 0; }
+  </style>
+
+  <div data-hf-id="hf-vkw7" id="root" data-composition-id="01-hook" data-width="1920" data-height="1080" data-duration="9.11">
+    <div data-hf-id="hf-2xpn" class="ts-bg clip" id="f01-bg" data-start="0" data-duration="9.11" data-track-index="0"></div>
+
+    <div data-hf-id="hf-c4ra" class="ts-stage clip" id="f01-stage" data-start="0" data-duration="9.11" data-track-index="1">
+      <div data-hf-id="hf-p46i" class="ts-kicker" id="f01-kicker"><div data-hf-id="hf-9kn7" class="ts-kicker-bar" id="f01-kbar"></div><span data-hf-id="hf-z6f6" class="ts-kicker-text" id="f01-ktext">React Native</span></div>
+
+      <!-- hero + statement -->
+      <span data-hf-id="hf-qs1o" class="ts-hero" id="f01-hero">AsyncStorage<span data-hf-id="hf-beyi" class="ts-hero-bar" id="f01-hbar"></span></span>
+      <div data-hf-id="hf-3lum" class="ts-statement" id="f01-stmt">Data die blijft als je de app sluit</div>
+
+      <!-- the AsyncStorage table -->
+      <div data-hf-id="hf-51gh" class="st-card" id="f01-store">
+        <div data-hf-id="hf-vbvs" class="st-title"><span data-hf-id="hf-5odx" class="st-sq"></span><span data-hf-id="hf-co3t" class="st-name">AsyncStorage</span><span data-hf-id="hf-a71x" class="st-sub">op de telefoon</span><span data-hf-id="hf-yikb" class="st-note" id="f01-note"></span></div>
+        <div data-hf-id="hf-ddps" class="st-head"><span data-hf-id="hf-392b" class="st-k">key</span><span data-hf-id="hf-pvym">value</span></div>
+        <div data-hf-id="hf-0z9d" class="st-rows">
+          <div data-hf-id="hf-xnad" class="st-row" id="f01-r-counter" style="top: 0px;"><span data-hf-id="hf-kc69" class="st-wash" id="f01-rwash"></span><span data-hf-id="hf-wa47" class="st-read" id="f01-rread"></span><span data-hf-id="hf-xwhk" class="st-k">counter</span><span data-hf-id="hf-ywmj" class="st-v" id="f01-v"><span data-hf-id="hf-i79j" class="f01-sv" id="f01-sv2">"2"</span><span data-hf-id="hf-04ln" class="f01-sv" id="f01-sv3" style="opacity: 0;">"3"</span></span></div>
+        </div>
+      </div>
+
+      <!-- phone: the counter app as DOM, in dp -->
+      <div data-hf-id="hf-aeft" class="ph-body" id="f01-phone">
+        <div data-hf-id="hf-9aks" class="ph-speaker"></div>
+        <div data-hf-id="hf-66w1" class="ph-screen">
+          <div data-hf-id="hf-pfty" class="ph-app">
+            <div data-hf-id="hf-3hcz" class="ph-status"><span data-hf-id="hf-zwmt">9:41</span><span data-hf-id="hf-zte5" class="ph-status-icons"><span data-hf-id="hf-wjw5" class="ph-sig"><i data-hf-id="hf-1rvt" style="height:3px"></i><i data-hf-id="hf-4ztr" style="height:5px"></i><i data-hf-id="hf-jylm" style="height:8px"></i></span><span data-hf-id="hf-tn7h" class="ph-batt"></span></span></div>
+            <!-- mark sits under the app content so the flush-left text stays on top -->
+            <div data-hf-id="hf-be67" id="f01-cmark"></div>
+            <div data-hf-id="hf-sga4" class="rn-root" id="f01-app">
+              <div data-hf-id="hf-tsc3" class="rn-view" id="f01-container" style="padding-top: 24px;">
+                <span data-hf-id="hf-4rni" class="rn-text">AsyncStorage</span>
+                <span data-hf-id="hf-45yj" class="rn-text"><span data-hf-id="hf-5w01" id="f01-count">Counter: <span data-hf-id="hf-ugd3" class="f01-num"><span data-hf-id="hf-qtoj" class="f01-d" id="f01-d2">2</span><span data-hf-id="hf-fqld" class="f01-d" id="f01-d3" style="opacity: 0;">3</span></span></span></span>
+                <div data-hf-id="hf-8wig" class="rn-btn" id="f01-btn">Increment</div>
+              </div>
+            </div>
+            <!-- launcher: shown while the app is closed -->
+            <div data-hf-id="hf-fmqw" id="f01-launch">
+              <div data-hf-id="hf-gubm" class="f01-ic" style="left: 23px; top: 72px;"></div>
+              <div data-hf-id="hf-ypgt" class="f01-ic" style="left: 91px; top: 72px;"></div>
+              <div data-hf-id="hf-u3bm" class="f01-ic" style="left: 159px; top: 72px;"></div>
+              <div data-hf-id="hf-qok0" class="f01-ic" style="left: 23px; top: 140px;"></div>
+              <div data-hf-id="hf-vfm1" class="f01-ic" id="f01-ic-app" style="left: 91px; top: 140px;"></div>
+              <div data-hf-id="hf-5wps" class="f01-ic" style="left: 159px; top: 140px;"></div>
+              <div data-hf-id="hf-e1bl" class="f01-ic" style="left: 23px; top: 208px;"></div>
+              <div data-hf-id="hf-jsn8" class="f01-ic" style="left: 91px; top: 208px;"></div>
+              <div data-hf-id="hf-n8ox" class="f01-ic" style="left: 159px; top: 208px;"></div>
+            </div>
+            <div data-hf-id="hf-c3rx" class="ph-touch" id="f01-touch"></div>
+            <div data-hf-id="hf-k2gt" class="ph-touch" id="f01-touch2"></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-xjm4" class="ph-home"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 9.11;
+      var root = document.querySelector('[data-composition-id="01-hook"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- APP KIT helpers ----
+      // box of an element in dp, relative to .ph-app (layout is measured once, before any tween)
+      function dpBox(sel) {
+        var el = q(sel), x = 0, y = 0, e = el;
+        while (e && !e.classList.contains("ph-app")) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; }
+        return { x: x, y: y, w: el.offsetWidth, h: el.offsetHeight };
+      }
+      // centre an absolutely placed element (touch, ring) on a dp box
+      function placeOn(sel, b) { var el = q(sel); el.style.left = (b.x + b.w / 2) + "px"; el.style.top = (b.y + b.h / 2) + "px"; }
+      // a finger press: touch fades and scales in (0.6 -> 1, 0.15s); on release it fades out (0.25s)
+      function touchDown(sel, at) { tl.fromTo(sel, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.15, ease: "power2.out", immediateRender: false }, at); }
+      function touchUp(sel, at) { tl.to(sel, { opacity: 0, duration: 0.25, ease: "power1.out" }, at); }
+      // ---- end APP KIT helpers ----
+
+      // table row wash: 0 -> 1 -> 0 over 0.8s
+      function rowWash(at) {
+        tl.to("#f01-rwash", { opacity: 1, duration: 0.3, ease: "power1.out" }, at);
+        tl.to("#f01-rwash", { opacity: 0, duration: 0.5, ease: "power1.inOut" }, at + 0.3);
+      }
+
+      placeOn("#f01-touch", dpBox("#f01-btn"));
+      placeOn("#f01-touch2", dpBox("#f01-ic-app"));
+      // mark around the inline "Counter: 3" text (the text sits flush left, so the mark starts at 1 dp)
+      var cb = dpBox("#f01-count");
+      var cm = q("#f01-cmark");
+      var mx = Math.max(1, cb.x - 3);
+      cm.style.left = mx + "px"; cm.style.top = (cb.y - 1) + "px";
+      cm.style.width = (cb.x + cb.w + 4 - mx) + "px"; cm.style.height = (cb.h + 2) + "px";
+
+      // ---- 0.1: the centred phone fades in with the counter app; "async" (0.24): kicker ----
+      tl.set("#f01-phone", { x: -707 }, 0);
+      tl.fromTo("#f01-phone", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f01-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.24);
+      tl.fromTo("#f01-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.34);
+
+      // ---- "storage" (0.72): the table fades in with one row counter | "2" ----
+      tl.fromTo("#f01-store", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.72);
+
+      // ---- "bewaar" (1.28): tap INCREMENT; on release (1.4) Counter: 3 and the table "2" -> "3" with a wash ----
+      touchDown("#f01-touch", 1.28);
+      tl.to("#f01-btn", { backgroundColor: "#1976D2", duration: 0.1, ease: "power1.out" }, 1.28);
+      tl.to("#f01-btn", { backgroundColor: "#2196F3", duration: 0.2, ease: "power1.out" }, 1.4);
+      touchUp("#f01-touch", 1.4);
+      tl.to("#f01-d2", { y: -10, opacity: 0, duration: 0.25, ease: "power2.out" }, 1.4);
+      tl.fromTo("#f01-d3", { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, 1.4);
+      tl.to("#f01-sv2", { y: -16, opacity: 0, duration: 0.25, ease: "power2.out" }, 1.4);
+      tl.fromTo("#f01-sv3", { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, 1.4);
+      rowWash(1.4);
+
+      // ---- "telefoon" (2.60): phone to the standard place, the table widens; hero (2.90); hero bar (3.20) ----
+      tl.to("#f01-phone", { x: 0, duration: 0.8, ease: "power3.inOut" }, 2.6);
+      tl.to("#f01-store", { width: 1290, duration: 0.8, ease: "power3.inOut" }, 2.6);
+      tl.fromTo("#f01-hero", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 2.9);
+      tl.fromTo("#f01-hbar", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 3.2);
+
+      // ---- "Sluit" (3.52): the app closes to the launcher; the table stays; "app" (4.00): read outline ----
+      tl.to("#f01-app", { scale: 0.94, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "50% 40%" }, 3.52);
+      tl.to("#f01-launch", { opacity: 1, duration: 0.35, ease: "power2.out" }, 3.66);
+      tl.to("#f01-rread", { opacity: 1, duration: 0.2, ease: "power1.out" }, 4.0);
+      tl.to("#f01-rread", { opacity: 0, duration: 0.3, ease: "power1.inOut" }, 4.5);
+
+      // ---- "open" (4.64): the finger taps the blue icon; the app opens again with Counter: 3 ----
+      touchDown("#f01-touch2", 4.64);
+      tl.to("#f01-ic-app", { scale: 0.92, duration: 0.12, ease: "power1.out" }, 4.64);
+      tl.to("#f01-ic-app", { scale: 1, duration: 0.2, ease: "power1.out" }, 4.8);
+      touchUp("#f01-touch2", 4.8);
+      tl.to("#f01-launch", { opacity: 0, duration: 0.3, ease: "power2.in" }, 4.86);
+      tl.fromTo("#f01-app", { scale: 0.94, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "power3.out", transformOrigin: "50% 40%", immediateRender: false }, 5.0);
+
+      // ---- "dan is die data er nog altijd" (6.04): statement; "data" (6.68): mark around Counter: 3 + row wash ----
+      tl.fromTo("#f01-stmt", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 6.04);
+      tl.fromTo("#f01-cmark", { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, 6.68);
+      rowWash(6.68);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["01-hook"] = tl;
+    })();
+  </script>
+</template>
