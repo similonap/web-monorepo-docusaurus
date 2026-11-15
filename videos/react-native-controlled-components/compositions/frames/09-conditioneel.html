@@ -1,0 +1,457 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ==========================================================================
+       FLEX KIT: code surface + phone, shared by every frame of this video.
+       Copy this block verbatim; frame-specific ids use the fNN- prefix.
+       ========================================================================== */
+    /* code surface: fixed position, 24px / 34px, separate static line-number column */
+    .fx-panel { left: 80px; top: 150px; width: 1290px; height: 730px; }
+    .fx-code { top: 66px; font-size: 24px; line-height: 34px; }
+    .fx-lns { position: absolute; left: 0; top: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 19px; }
+    .fx-lns > div { height: 34px; }
+    .fx-lines { position: absolute; left: 76px; top: 0; right: 0; }
+    .fx-row { position: relative; height: 34px; white-space: pre; }
+    .fx-row .ts-caret { top: 5px; height: 24px; }
+    /* a value that changes in place (stacked variants, old slides up, new slides in) */
+    .fx-val { position: relative; display: inline-block; height: 34px; overflow: hidden; vertical-align: top; }
+    .fx-v { position: absolute; left: 0; top: 0; white-space: pre; }
+
+    /* phone: light device at the right, x 1494-1840, y 150-880; screen 316 x 650 */
+    .ph-body {
+      position: absolute; left: 1494px; top: 150px; width: 346px; height: 730px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 48px; box-shadow: var(--ts-shadow);
+    }
+    .ph-speaker { position: absolute; left: 144px; top: 16px; width: 56px; height: 6px; border-radius: 3px; background: #CBD5E1; }
+    .ph-home { position: absolute; left: 122px; bottom: 15px; width: 100px; height: 6px; border-radius: 3px; background: #CBD5E1; }
+    .ph-screen {
+      position: absolute; left: 13px; top: 38px; width: 316px; height: 650px;
+      background: #FFFFFF; border: 1px solid var(--ts-hairline); border-radius: 12px; overflow: hidden; box-sizing: content-box;
+    }
+    .ph-svg { position: absolute; left: 0; top: 0; width: 316px; height: 650px; overflow: hidden; }
+    .ph-parent { fill: none; stroke: #94A3B8; stroke-width: 1.5; stroke-dasharray: 6 5; }
+    .ph-mark { fill: none; stroke: var(--ts-blue); stroke-width: 3; }
+    .ph-main { stroke: var(--ts-blue); stroke-width: 3; stroke-linecap: round; }
+    .ph-main-head { fill: var(--ts-blue); }
+    .ph-cross { stroke: #94A3B8; stroke-width: 2; stroke-dasharray: 7 6; }
+    .ph-cross-head { fill: #94A3B8; }
+    .ph-lbl {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 17px;
+      paint-order: stroke; stroke: #FFFFFF; stroke-width: 5px; stroke-linejoin: round;
+    }
+    .ph-lbl--main { fill: var(--ts-blue-dark); }
+    .ph-lbl--cross { fill: var(--ts-ink-soft); }
+    .ph-prop { font-family: var(--ts-mono); font-weight: 500; font-size: 15px; }
+    .ph-prop--main { fill: var(--ts-blue); }
+    .ph-prop--cross { fill: var(--ts-label); }
+
+    /* ==========================================================================
+       APP KIT: the app inside the phone, as DOM. 1 dp = 1.4 px:
+       .ph-app is 226 x 464 dp, scaled into the 316 x 650 screen. Never tween .ph-app itself.
+       ========================================================================== */
+    .ph-app { position: absolute; left: 0; top: 0; width: 226px; height: 464px; transform: scale(1.4); transform-origin: 0 0; overflow: hidden; font-family: var(--ts-sans); color: #000000; }
+    .ph-status { position: absolute; left: 0; top: 0; width: 226px; height: 24px; box-sizing: border-box; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-family: var(--ts-sans); font-weight: 600; font-size: 11px; color: #1E293B; z-index: 5; }
+    .ph-status-icons { display: flex; align-items: center; gap: 5px; }
+    .ph-sig { display: flex; align-items: flex-end; gap: 1.5px; height: 8px; }
+    .ph-sig > i { display: block; width: 2.5px; background: #1E293B; border-radius: 0.5px; }
+    .ph-batt { position: relative; width: 18px; height: 9px; box-sizing: border-box; border: 1.2px solid #1E293B; border-radius: 2.5px; }
+    .ph-batt::after { content: ""; position: absolute; left: 1px; top: 1px; bottom: 1px; width: 11px; border-radius: 1px; background: #1E293B; }
+    /* React Native defaults: every View is a flex container, direction column */
+    .rn-root { position: absolute; left: 0; top: 0; width: 226px; height: 464px; display: flex; flex-direction: column; box-sizing: border-box; }
+    .rn-view { position: relative; display: flex; flex-direction: column; flex-shrink: 0; box-sizing: border-box; min-width: 0; min-height: 0; }
+    .rn-text { position: relative; display: block; font-family: var(--ts-sans); font-size: 14px; line-height: 1.3; color: #000000; white-space: pre-wrap; }
+    /* Button as the course previews show it (Android look): blue, white, uppercase */
+    .rn-btn { display: block; box-sizing: border-box; padding: 8px; border-radius: 2px; background: #2196F3; color: #FFFFFF; font-family: var(--ts-sans); font-weight: 500; font-size: 14px; line-height: 1.3; text-align: center; text-transform: uppercase; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24); }
+    .rn-btn--disabled { background: #DFDFDF; color: #A1A1A1; box-shadow: none; }
+    /* Button, iOS look (only for the color comparison): plain tinted text */
+    .rn-btn-ios { display: block; padding: 8px; color: #007AFF; font-family: var(--ts-sans); font-size: 18px; line-height: 1.3; text-align: center; }
+    /* TextInput: no border by default */
+    .rn-input { position: relative; display: flex; align-items: center; height: 40px; box-sizing: border-box; padding: 0 4px; font-family: var(--ts-sans); font-size: 14px; color: #000000; }
+    .rn-placeholder { color: #A1A1AA; }
+    .rn-caret { display: inline-block; width: 1.5px; height: 17px; background: #2196F3; vertical-align: middle; }
+    /* touch indicator (a finger press). Position it in dp inside .ph-app, centred on the target */
+    .ph-touch { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; box-sizing: border-box; background: rgba(30, 41, 59, 0.16); border: 1.5px solid rgba(30, 41, 59, 0.35); opacity: 0; z-index: 20; }
+
+    /* ---- frame 09 ---- */
+    #f09-code { height: 612px; overflow: hidden; }
+    /* state chip above the phone: mono label in ink-soft, value in ink */
+    #f09-chips { position: absolute; left: 1494px; top: 82px; width: 346px; height: 52px; display: flex; justify-content: center; }
+    #f09-chips .ts-chip { position: relative; opacity: 0; }
+    .f09-ckey { color: var(--ts-ink-soft); }
+    .f09-cval { display: inline-flex; align-items: center; height: 34px; line-height: 34px; white-space: pre; }
+    /* small grey "&&" chip at the end of row 18 ({isEnabled = 22 cols = 316.8px) */
+    #f09-andchip {
+      position: absolute; left: 346px; top: 579px; height: 32px; padding: 0 12px; box-sizing: border-box; gap: 10px;
+      display: inline-flex; align-items: center; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 6px;
+      font-family: var(--ts-mono); font-size: 22px; line-height: 1; color: var(--ts-ink); white-space: pre; opacity: 0;
+    }
+    .f09-of { font-family: var(--ts-sans); font-weight: 600; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label); }
+    /* true / false pills in the indent of rows 19 and 20, right-aligned just before ? and : (col 16 = 230.4px) */
+    .f09-tag { font-size: 18px; line-height: 28px; padding: 0 12px; opacity: 0; }
+    #f09-tag-t { left: 152.8px; top: 615px; }
+    #f09-tag-f { left: 142px; top: 649px; }
+    /* Android Switch (track 34 x 14 dp, thumb 20 dp, slides 14 dp) */
+    .f09-swbox { padding: 6px; align-items: flex-start; }
+    .f09-sw { position: relative; width: 34px; height: 20px; flex-shrink: 0; }
+    .f09-track { position: absolute; left: 0; top: 3px; width: 34px; height: 14px; border-radius: 7px; background: #B2B2B2; }
+    .f09-thumb { position: absolute; left: 0; top: 0; width: 20px; height: 20px; border-radius: 50%; background: #ECECEC; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); }
+    /* Image 60 x 60 dp: the alarm light, off and on stacked */
+    .f09-lamp { position: relative; width: 60px; height: 60px; flex-shrink: 0; }
+    .f09-lamp svg { position: absolute; left: 0; top: 0; width: 60px; height: 60px; }
+    /* mark layer over the whole device */
+    #f09-msvg { width: 346px; height: 730px; overflow: visible; }
+    .f09-pmark { stroke-width: 2; opacity: 0; }
+    #f09-chips .ts-chip-key { color: var(--ts-ink-soft); }
+  </style>
+
+  <div data-hf-id="hf-7fup" id="root" data-composition-id="09-conditioneel" data-width="1920" data-height="1080" data-duration="10.39">
+    <div data-hf-id="hf-7q61" class="ts-bg clip" id="f09-bg" data-start="0" data-duration="10.39" data-track-index="0"></div>
+
+    <div data-hf-id="hf-4bli" class="ts-stage clip" id="f09-stage" data-start="0" data-duration="10.39" data-track-index="1">
+      <div data-hf-id="hf-gb36" class="ts-kicker" id="f09-kicker"><div data-hf-id="hf-1tmz" class="ts-kicker-bar" id="f09-kbar"></div><span data-hf-id="hf-atrc" class="ts-kicker-text" id="f09-ktext">Conditioneel renderen</span></div>
+
+      <!-- code surface: app/index.tsx (23 rows, window 4-21) -->
+      <div data-hf-id="hf-24ew" class="ts-code-surface fx-panel" id="f09-panel">
+        <div data-hf-id="hf-lgrb" class="ts-code-title">app/index.tsx</div>
+        <div data-hf-id="hf-li3u" class="ts-code fx-code" id="f09-code">
+          <div data-hf-id="hf-7ox9" class="fx-lns f09-ln" id="f09-lns"><div data-hf-id="hf-oy6b">1</div><div data-hf-id="hf-ojva">2</div><div data-hf-id="hf-o5k9">3</div><div data-hf-id="hf-nr98">4</div><div data-hf-id="hf-ncy7">5</div><div data-hf-id="hf-myn6">6</div><div data-hf-id="hf-mkc5">7</div><div data-hf-id="hf-m614">8</div><div data-hf-id="hf-lrq3">9</div><div data-hf-id="hf-w8cp">10</div><div data-hf-id="hf-wmnq">11</div><div data-hf-id="hf-x0yr">12</div><div data-hf-id="hf-xf9s">13</div><div data-hf-id="hf-un4l">14</div><div data-hf-id="hf-v1fm">15</div><div data-hf-id="hf-vfqn">16</div><div data-hf-id="hf-vu1o">17</div><div data-hf-id="hf-t1wh">18</div><div data-hf-id="hf-tg7i">19</div><div data-hf-id="hf-x00i">20</div><div data-hf-id="hf-wlph">21</div><div data-hf-id="hf-xsmk">22</div><div data-hf-id="hf-xebj">23</div></div>
+          <div data-hf-id="hf-790f" class="fx-lines" id="f09-lines">
+            <div data-hf-id="hf-umdy" class="fx-row"><span data-hf-id="hf-qaso" class="ts-kw">import</span> {useState} <span data-hf-id="hf-e409" class="ts-kw">from</span> <span data-hf-id="hf-ijfh" class="ts-str">"react"</span>;</div>
+            <div data-hf-id="hf-42kc" class="fx-row"><span data-hf-id="hf-24v4" class="ts-kw">import</span> {View, Switch, Image} <span data-hf-id="hf-1ghp" class="ts-kw">from</span> <span data-hf-id="hf-j62j" class="ts-str">"react-native"</span>;</div>
+            <div data-hf-id="hf-bz7x" class="fx-row"></div>
+            <div data-hf-id="hf-06jt" class="fx-row"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> lightOn = {uri: <span data-hf-id="hf-ylow" class="ts-str">"https://raw.githubusercontent.com/Templarian/"</span> +</div>
+            <div data-hf-id="hf-41o1" class="fx-row">    <span data-hf-id="hf-itj8" class="ts-str">"MaterialDesign/master/svg/alarm-light.svg"</span>};</div>
+            <div data-hf-id="hf-otk7" class="fx-row"><span data-hf-id="hf-stvc" class="ts-kw">const</span> lightOff = {uri: <span data-hf-id="hf-5gko" class="ts-str">"https://raw.githubusercontent.com/Templarian/"</span> +</div>
+            <div data-hf-id="hf-p1t1" class="fx-row">    <span data-hf-id="hf-tkwk" class="ts-str">"MaterialDesign/master/svg/alarm-light-off.svg"</span>};</div>
+            <div data-hf-id="hf-lvlt" class="fx-row"></div>
+            <div data-hf-id="hf-2ck0" class="fx-row"><span data-hf-id="hf-rmy9" class="ts-kw">const</span> <span data-hf-id="hf-xdgx" class="ts-fn">Index</span> = () <span data-hf-id="hf-kpf2" class="ts-kw">=&gt;</span> {</div>
+            <div data-hf-id="hf-2480" class="fx-row">    <span data-hf-id="hf-s19a" class="ts-kw">const</span> [isEnabled, setIsEnabled] = <span data-hf-id="hf-md7z" class="ts-fn">useState</span>&lt;<span data-hf-id="hf-8t8x" class="ts-type">boolean</span>&gt;(<span data-hf-id="hf-2wru" class="ts-fn">false</span>);</div>
+            <div data-hf-id="hf-n2iw" class="fx-row"></div>
+            <div data-hf-id="hf-uou7" class="fx-row">    <span data-hf-id="hf-kmyz" class="ts-kw">return</span> (</div>
+            <div data-hf-id="hf-3t13" class="fx-row">        <span data-hf-id="hf-4csn" class="ts-punct">&lt;</span><span data-hf-id="hf-zaoe" class="ts-fn">View</span> style<span data-hf-id="hf-4xjm" class="ts-punct">={{</span>flexDirection: <span data-hf-id="hf-wd3q" class="ts-str">"column"</span>, flex: <span data-hf-id="hf-ll7i" class="ts-fn">1</span><span data-hf-id="hf-yeq7" class="ts-punct">}}&gt;</span></div>
+            <div data-hf-id="hf-mo7v" class="fx-row">            <span data-hf-id="hf-c0rr" class="ts-punct">&lt;</span><span data-hf-id="hf-nlrf" class="ts-fn">Switch</span></div>
+            <div data-hf-id="hf-cb0e" class="fx-row">                onValueChange<span data-hf-id="hf-lcgt" class="ts-punct">={</span>() <span data-hf-id="hf-hprm" class="ts-kw">=&gt;</span> <span data-hf-id="hf-q52a" class="ts-fn">setIsEnabled</span>(previousState <span data-hf-id="hf-i42n" class="ts-kw">=&gt;</span> !previousState)<span data-hf-id="hf-u6pg" class="ts-punct">}</span></div>
+            <div data-hf-id="hf-gjpf" class="fx-row">                value<span data-hf-id="hf-n5o1" class="ts-punct">={</span>isEnabled<span data-hf-id="hf-4k98" class="ts-punct">}</span></div>
+            <div data-hf-id="hf-kooq" class="fx-row">            <span data-hf-id="hf-07ek" class="ts-punct">/&gt;</span></div>
+            <div data-hf-id="hf-kadp" class="fx-row">            <span data-hf-id="hf-7s32" class="ts-hl" id="f09-hl-18"><span data-hf-id="hf-uzbi" class="ts-punct">{</span>isEnabled</span></div>
+            <div data-hf-id="hf-lhas" class="fx-row">                <span data-hf-id="hf-wht6" class="ts-hl" id="f09-hl-19"><span data-hf-id="hf-deaw" class="ts-hl" id="f09-hl-q">?</span> <span data-hf-id="hf-bmgq" class="ts-punct">&lt;</span><span data-hf-id="hf-hksg" class="ts-fn">Image</span> style<span data-hf-id="hf-pzbq" class="ts-punct">={{</span>width: <span data-hf-id="hf-dtet" class="ts-fn">60</span>, height: <span data-hf-id="hf-u83d" class="ts-fn">60</span><span data-hf-id="hf-fuaz" class="ts-punct">}}</span> source<span data-hf-id="hf-ocl4" class="ts-punct">={</span>lightOn<span data-hf-id="hf-cjql" class="ts-punct">}/&gt;</span></span></div>
+            <div data-hf-id="hf-l2zr" class="fx-row">                <span data-hf-id="hf-bkgs" class="ts-hl" id="f09-hl-20"><span data-hf-id="hf-cw4d" class="ts-hl" id="f09-hl-c">:</span> <span data-hf-id="hf-b85p" class="ts-punct">&lt;</span><span data-hf-id="hf-n7g8" class="ts-fn">Image</span> style<span data-hf-id="hf-qdmr" class="ts-punct">={{</span>width: <span data-hf-id="hf-vf0g" class="ts-fn">60</span>, height: <span data-hf-id="hf-v0pf" class="ts-fn">60</span><span data-hf-id="hf-23nv" class="ts-punct">}}</span> source<span data-hf-id="hf-nya3" class="ts-punct">={</span>lightOff<span data-hf-id="hf-1ay8" class="ts-punct">}/&gt;}</span></span></div>
+            <div data-hf-id="hf-pgd2" class="fx-row">        <span data-hf-id="hf-70hk" class="ts-punct">&lt;/</span><span data-hf-id="hf-uor6" class="ts-fn">View</span><span data-hf-id="hf-3k6l" class="ts-punct">&gt;</span></div>
+            <div data-hf-id="hf-3stx" class="fx-row">    );</div>
+            <div data-hf-id="hf-0vv4" class="fx-row">}</div>
+            <span data-hf-id="hf-l93a" class="ts-tag f09-tag" id="f09-tag-t">true</span>
+            <span data-hf-id="hf-7slf" class="ts-tag f09-tag" id="f09-tag-f">false</span>
+            <div data-hf-id="hf-pnc6" id="f09-andchip"><span data-hf-id="hf-i7gn" class="f09-of">of</span><span data-hf-id="hf-2vus"><span data-hf-id="hf-vyvm" class="ts-punct">{</span>isEnabled &amp;&amp; <span data-hf-id="hf-e0aw" class="ts-punct">&lt;</span><span data-hf-id="hf-m0j5" class="ts-fn">Image</span> …<span data-hf-id="hf-5ocz" class="ts-punct">/&gt;}</span></span></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-eqcw" class="ts-code-status">app/index.tsx · Controlled Components</div>
+      </div>
+
+      <!-- phone: the app as DOM, in dp -->
+      <div data-hf-id="hf-m5nl" class="ph-body" id="f09-phone">
+        <div data-hf-id="hf-9aks" class="ph-speaker"></div>
+        <div data-hf-id="hf-66w1" class="ph-screen">
+          <div data-hf-id="hf-pfty" class="ph-app">
+            <div data-hf-id="hf-3hcz" class="ph-status"><span data-hf-id="hf-zwmt">9:41</span><span data-hf-id="hf-zte5" class="ph-status-icons"><span data-hf-id="hf-wjw5" class="ph-sig"><i data-hf-id="hf-1rvt" style="height:3px"></i><i data-hf-id="hf-4ztr" style="height:5px"></i><i data-hf-id="hf-jylm" style="height:8px"></i></span><span data-hf-id="hf-tn7h" class="ph-batt"></span></span></div>
+            <div data-hf-id="hf-s49w" class="rn-root" id="f09-app">
+              <div data-hf-id="hf-2wqw" class="rn-view" id="f09-container" style="flex: 1; padding-top: 24px;">
+                <div data-hf-id="hf-zq8f" class="rn-view f09-swbox">
+                  <div data-hf-id="hf-xc96" class="f09-sw" id="f09-sw"><div data-hf-id="hf-na54" class="f09-track" id="f09-track"></div><div data-hf-id="hf-a4g2" class="f09-thumb" id="f09-thumb"></div></div>
+                </div>
+                <div data-hf-id="hf-jmeq" class="f09-lamp" id="f09-lamp">
+                  <!-- alarm light, off: outline, no rays, diagonal slash -->
+                  <svg data-hf-id="hf-k5dv" id="f09-off" viewBox="0 0 24 24" aria-hidden="true">
+                    <g data-hf-id="hf-92mp" fill="none" stroke="#1E293B" stroke-width="0.8" stroke-linejoin="round">
+                      <path data-hf-id="hf-c11j" d="M7.5 18.5 V13 A4.5 4.5 0 0 1 16.5 13 V18.5 Z"></path>
+                      <rect data-hf-id="hf-pavb" x="4.5" y="18.5" width="15" height="3" rx="0.6"></rect>
+                    </g>
+                    <line data-hf-id="hf-4ozc" x1="4" y1="5" x2="20" y2="21" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></line>
+                    <line data-hf-id="hf-4fmq" x1="4" y1="5" x2="20" y2="21" stroke="#1E293B" stroke-width="0.8" stroke-linecap="round"></line>
+                  </svg>
+                  <!-- alarm light, on: filled dome on its base, three rays -->
+                  <svg data-hf-id="hf-4dc7" id="f09-on" viewBox="0 0 24 24" aria-hidden="true" style="opacity: 0;">
+                    <g data-hf-id="hf-kjmc" fill="#1E293B">
+                      <path data-hf-id="hf-ol0n" d="M7.5 18.5 V13 A4.5 4.5 0 0 1 16.5 13 V18.5 Z"></path>
+                      <rect data-hf-id="hf-lbhj" x="4.5" y="18.5" width="15" height="3" rx="0.6"></rect>
+                    </g>
+                    <path data-hf-id="hf-wmfm" d="M10.4 18.5 V13.6 A1.6 1.6 0 0 1 12 12" fill="none" stroke="#FFFFFF" stroke-width="0.8" stroke-linecap="round"></path>
+                    <g data-hf-id="hf-fkoa" stroke="#1E293B" stroke-width="0.9" stroke-linecap="round">
+                      <line data-hf-id="hf-pw8h" x1="12" y1="2.6" x2="12" y2="5.6"></line>
+                      <line data-hf-id="hf-0wow" x1="5.2" y1="5.2" x2="7.3" y2="7.3"></line>
+                      <line data-hf-id="hf-sluy" x1="18.8" y1="5.2" x2="16.7" y2="7.3"></line>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div data-hf-id="hf-xf39" class="ph-touch" id="f09-touch"></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-xjm4" class="ph-home"></div>
+        <!-- mark layer over the whole device -->
+        <svg data-hf-id="hf-jwcy" class="ph-svg" id="f09-msvg" viewBox="0 0 346 730" aria-hidden="true"><rect data-hf-id="hf-p3eu" class="ph-mark f09-pmark" id="f09-pmark" x="0" y="0" width="10" height="10" rx="8"></rect></svg>
+      </div>
+
+      <!-- state above the phone -->
+      <div data-hf-id="hf-i3eu" id="f09-chips"><span data-hf-id="hf-2m4a" class="ts-chip" id="f09-state"><span data-hf-id="hf-h79w" class="ts-chip-key">state</span><span data-hf-id="hf-26pd" class="f09-cval"><span data-hf-id="hf-qq40" class="f09-ckey">isEnabled: </span><span data-hf-id="hf-ly1k" class="fx-val" id="f09-cv" style="width: 72px;"><span data-hf-id="hf-v2ag" class="fx-v" id="f09-cv0">false</span><span data-hf-id="hf-ojte" class="fx-v" id="f09-cv1" style="opacity: 0;">true</span></span></span></span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 10.39;
+      var CH = 14.4; // JetBrains Mono 24px advance
+      var WASH = "rgba(49, 120, 198, 0.12)";
+      var CLEAR = "rgba(49, 120, 198, 0)";
+      var root = document.querySelector('[data-composition-id="09-conditioneel"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      function washOn(sel, at) { tl.to(sel, { backgroundColor: WASH, duration: 0.35, ease: "power1.out" }, at); }
+      function washOff(sel, at) { tl.to(sel, { backgroundColor: CLEAR, duration: 0.4, ease: "power1.inOut" }, at); }
+
+      // value change inside a line: old slides up and out, new slides in, wrapper width follows (0.25s)
+      function swapVal(oldSel, newSel, wrapSel, chars, at) {
+        tl.to(oldSel, { y: -14, opacity: 0, duration: 0.25, ease: "power2.out" }, at);
+        tl.fromTo(newSel, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, at);
+        tl.to(wrapSel, { width: chars * CH, duration: 0.25, ease: "power2.out" }, at);
+      }
+
+      // ---- APP KIT helpers ----
+      // box of an element in dp, relative to .ph-app (layout is measured once, before any tween)
+      function dpBox(sel) {
+        var el = q(sel), x = 0, y = 0, e = el;
+        while (e && !e.classList.contains("ph-app")) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; }
+        return { x: x, y: y, w: el.offsetWidth, h: el.offsetHeight };
+      }
+      // centre an absolutely placed element (touch, ring) on a dp box
+      function placeOn(sel, b) { var el = q(sel); el.style.left = (b.x + b.w / 2) + "px"; el.style.top = (b.y + b.h / 2) + "px"; }
+      // a finger press: touch fades and scales in (0.6 -> 1, 0.15s); on release it fades out (0.25s)
+      function touchDown(sel, at) { tl.fromTo(sel, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.15, ease: "power2.out", immediateRender: false }, at); }
+      function touchUp(sel, at) { tl.to(sel, { opacity: 0, duration: 0.25, ease: "power1.out" }, at); }
+      // chip / label pop: opacity, y 10 -> 0, scale 0.96 -> 1
+      function pop(sel, at) { tl.fromTo(sel, { opacity: 0, y: 10, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, at); }
+      function intro(nn) {
+        tl.fromTo("#f" + nn + "-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+        tl.fromTo("#f" + nn + "-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+        tl.fromTo("#f" + nn + "-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.1);
+        tl.fromTo("#f" + nn + "-phone", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.2);
+      }
+      // rows outside the 18-row window are hidden (not only clipped), by row number
+      function range(a, b) { var r = []; for (var i = a; i <= b; i++) r.push(i); return r; }
+      function rowEls(nn, idxs) { var r = root.querySelectorAll("#f" + nn + "-lines .fx-row"); return idxs.map(function (i) { return r[i - 1]; }); }
+      function lnEls(nn, idxs) { var r = root.querySelectorAll("#f" + nn + "-lns > div"); return idxs.map(function (i) { return r[i - 1]; }); }
+      function hideEls(els, at, dur) { if (dur) tl.to(els, { autoAlpha: 0, duration: dur, ease: "power1.inOut" }, at); else tl.set(els, { autoAlpha: 0 }, at); }
+      // ---- end APP KIT helpers ----
+
+      placeOn("#f09-touch", dpBox("#f09-sw"));
+      // mark around the lamp, in device px (screen at 14, 39 inside the body; 1 dp = 1.4 px)
+      var lb = dpBox("#f09-lamp");
+      var pm = q("#f09-pmark");
+      pm.setAttribute("x", (14 + lb.x * 1.4 - 6).toFixed(1)); pm.setAttribute("y", (39 + lb.y * 1.4 - 6).toFixed(1));
+      pm.setAttribute("width", (lb.w * 1.4 + 12).toFixed(1)); pm.setAttribute("height", (lb.h * 1.4 + 12).toFixed(1));
+
+      // window 4-21: rows 1-3 above and 22-23 below are hidden at rest
+      tl.set(["#f09-lns", "#f09-lines"], { y: -34 * 3 }, 0);
+      hideEls(rowEls("09", [1, 2, 3, 22, 23]).concat(lnEls("09", [1, 2, 3, 22, 23])), 0);
+      intro("09");
+      pop("#f09-state", 0.3);
+
+      // ---- 1.56 "conditioneel": wash on the ternary, rows 18-20 ----
+      washOn(["#f09-hl-18", "#f09-hl-19", "#f09-hl-20"], 1.56);
+
+      // ---- 3.24 "ternary operator": wash narrows to ? and :, true / false pills pop ----
+      washOff(["#f09-hl-18", "#f09-hl-19", "#f09-hl-20"], 3.24);
+      washOn(["#f09-hl-q", "#f09-hl-c"], 3.24);
+      pop("#f09-tag-t", 3.24);
+      pop("#f09-tag-f", 3.34);
+
+      // ---- 4.88 "twee ampersands": the && chip pops, dims to 60% after 6.0 ----
+      pop("#f09-andchip", 4.88);
+      tl.to("#f09-andchip", { opacity: 0.6, duration: 0.3, ease: "power1.inOut" }, 6.0);
+
+      // ---- 6.40 "switch aan": finger taps the switch: it slides on, chip false -> true ----
+      touchDown("#f09-touch", 6.4);
+      tl.to("#f09-thumb", { x: 14, backgroundColor: "#2196F3", duration: 0.2, ease: "power2.out" }, 6.4);
+      tl.to("#f09-track", { backgroundColor: "rgba(33, 150, 243, 0.5)", duration: 0.2, ease: "power2.out" }, 6.4);
+      swapVal("#f09-cv0", "#f09-cv1", "#f09-cv", 4, 6.4);
+      touchUp("#f09-touch", 6.65);
+
+      // ---- 8.00 "toon je": wash on row 19; 8.64 "ander beeld": lamp lights up, mark around it ----
+      washOff(["#f09-hl-q", "#f09-hl-c"], 8.0);
+      washOn("#f09-hl-19", 8.0);
+      tl.to("#f09-off", { opacity: 0, duration: 0.25, ease: "power1.inOut" }, 8.64);
+      tl.to("#f09-on", { opacity: 1, duration: 0.25, ease: "power1.inOut" }, 8.64);
+      tl.to("#f09-pmark", { opacity: 1, duration: 0.3, ease: "power1.out" }, 8.64);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["09-conditioneel"] = tl;
+    })();
+  </script>
+</template>

@@ -2,7 +2,11 @@
 sidebar_position: 6
 ---
 
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
+
 # Custom Components
+
+<HyperframesVideo name="react-native-custom-components" title="React Native - Custom Components" />
 
 ## Properties 
 

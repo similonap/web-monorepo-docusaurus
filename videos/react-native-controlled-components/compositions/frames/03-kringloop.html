@@ -1,0 +1,465 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* ==========================================================================
+       TS LIGHT: shared primitives. Copy this block (font-faces, :root tokens and
+       every `ts-*` rule) verbatim into every frame; frame-specific positions go
+       on `fNNx-*` ids below.
+       ========================================================================== */
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+    @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/JetBrains_Mono-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: block; }
+
+    :root {
+      --ts-ground: #FFFFFF;
+      --ts-ground-subtle: #F8FAFC;
+      --ts-panel: #F1F5F9;
+      --ts-hairline: #E2E8F0;
+      --ts-ink: #1E293B;
+      --ts-ink-soft: #475569;
+      --ts-label: #64748B;
+      --ts-muted: #94A3B8;
+      --ts-blue: #3178C6;
+      --ts-blue-dark: #235A97;
+      --ts-blue-tint: #EAF2FB;
+      --ts-error: #D14343;
+      /* code surface syntax */
+      --ts-code-bg: #F8FAFC;
+      --ts-code-text: #1E293B;
+      --ts-code-ln: #94A3B8;
+      --ts-code-kw: #235A97;
+      --ts-code-str: #0F7B6C;
+      --ts-code-fn: #9A5B13;
+      --ts-code-type: #3178C6;
+      --ts-code-punct: #64748B;
+      --ts-code-fold: #94A3B8;
+      --ts-wash: rgba(49, 120, 198, 0.12);
+      --ts-wash-clear: rgba(49, 120, 198, 0);
+      --ts-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --ts-sans: "Inter", Arial, sans-serif;
+      --ts-mono: "JetBrains Mono", monospace;
+    }
+
+    /* ground: white background clip on every frame */
+    .ts-bg { position: absolute; inset: 0; background: var(--ts-ground); }
+    .ts-stage { position: absolute; inset: 0; }
+
+    /* kicker at (80,84): 28x4 blue bar, 14px gap, blue uppercase label */
+    .ts-kicker { position: absolute; left: 80px; top: 84px; height: 28px; display: flex; align-items: center; }
+    .ts-kicker-bar { width: 28px; height: 4px; border-radius: 2px; background: var(--ts-blue); margin-right: 14px; transform-origin: left center; }
+    .ts-kicker-text {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 22px; line-height: 1;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ts-blue);
+    }
+
+    /* code surface: light, like the course code blocks */
+    .ts-code-surface {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-code-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 50px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 20px; color: var(--ts-ink-soft);
+    }
+    .ts-code-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 12px; }
+    .ts-code-status {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-top: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 28px;
+      font-family: var(--ts-mono); font-size: 18px; color: var(--ts-muted);
+    }
+    .ts-code {
+      position: absolute; left: 0; right: 0; top: 66px;
+      font-family: var(--ts-mono); font-size: 26px; line-height: 38px;
+      color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-row { position: relative; height: 38px; white-space: pre; }
+    .ts-ln { position: absolute; left: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 20px; }
+    .ts-txt { position: absolute; left: 76px; top: 0; white-space: pre; }
+    .ts-ch { display: inline; }
+    .ts-kw { color: var(--ts-code-kw); }
+    .ts-str { color: var(--ts-code-str); }
+    .ts-fn { color: var(--ts-code-fn); }
+    .ts-type { color: var(--ts-code-type); }
+    .ts-punct { color: var(--ts-code-punct); }
+    .ts-fold { color: var(--ts-code-fold); }
+    .ts-hl { background: var(--ts-wash-clear); border-radius: 4px; }
+    .ts-caret { position: absolute; top: 6px; left: 0; width: 2px; height: 27px; background: var(--ts-blue); opacity: 0; }
+    /* marks around a token / line (absolute, sized per use) */
+    .ts-mark { position: absolute; border: 2px solid var(--ts-blue); border-radius: 6px; box-sizing: border-box; }
+    .ts-mark--wrong { border-color: var(--ts-error); }
+    .ts-underline { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+
+    /* scherm card (browser output) */
+    .ts-label {
+      position: absolute; font-family: var(--ts-sans); font-weight: 600; font-size: 20px; line-height: 1;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-label);
+    }
+    .ts-card {
+      position: absolute; box-sizing: border-box; background: var(--ts-ground);
+      border: 1px solid var(--ts-hairline); border-radius: 12px; box-shadow: var(--ts-shadow);
+    }
+    .ts-li {
+      position: absolute; left: 32px; right: 32px; height: 52px; display: flex; align-items: center;
+      font-family: var(--ts-sans); font-size: 24px; font-weight: 400; color: var(--ts-ink);
+      white-space: nowrap; overflow: hidden;
+    }
+    .ts-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--ts-blue); margin-right: 18px; }
+    .ts-btn {
+      display: inline-flex; align-items: center; height: 56px; padding: 0 28px; border-radius: 6px;
+      background: var(--ts-blue); color: #FFFFFF; font-family: var(--ts-sans); font-weight: 600; font-size: 22px;
+    }
+    .ts-spinner { width: 56px; height: 56px; box-sizing: border-box; border: 5px solid var(--ts-hairline); border-top-color: var(--ts-blue); border-radius: 50%; }
+    .ts-error {
+      font-family: var(--ts-sans); font-weight: 500; font-size: 24px; color: var(--ts-ink);
+      border-left: 4px solid var(--ts-error); padding-left: 16px;
+    }
+
+    /* mini code panel: light, like the code surface */
+    .ts-mini {
+      position: absolute; background: var(--ts-code-bg); border: 1px solid var(--ts-hairline);
+      border-radius: 12px; box-shadow: var(--ts-shadow); overflow: hidden; box-sizing: border-box;
+    }
+    .ts-mini-title {
+      position: absolute; left: 0; right: 0; top: 0; height: 40px; box-sizing: border-box;
+      background: var(--ts-panel); border-bottom: 1px solid var(--ts-hairline);
+      display: flex; align-items: center; padding: 0 22px;
+      font-family: var(--ts-sans); font-weight: 500; font-size: 18px; color: var(--ts-ink-soft);
+    }
+    .ts-mini-title::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--ts-blue); margin-right: 10px; }
+    .ts-mini-code {
+      position: absolute; left: 0; right: 0; top: 56px; font-family: var(--ts-mono);
+      font-size: 22px; line-height: 34px; color: var(--ts-code-text); font-variant-ligatures: none;
+    }
+    .ts-mini-row { position: relative; height: 34px; white-space: pre; padding-left: 28px; }
+
+    /* chips */
+    .ts-chip {
+      position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 52px; padding: 0 20px;
+      box-sizing: border-box; background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 8px;
+      font-family: var(--ts-mono); font-size: 24px; font-weight: 500; color: var(--ts-ink); white-space: nowrap;
+    }
+    .ts-chip-key { font-family: var(--ts-sans); font-weight: 600; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ts-muted); }
+    .ts-chip--new { background: var(--ts-blue-tint); border-color: var(--ts-blue); }
+    .ts-chip--unwanted { border: 2px solid var(--ts-error); }
+    .ts-chip--struck { text-decoration: line-through; opacity: 0.35; }
+    /* render-tag pill */
+    .ts-tag {
+      position: absolute; background: var(--ts-blue-tint); color: var(--ts-blue-dark); border-radius: 999px;
+      font-family: var(--ts-mono); font-size: 20px; font-weight: 500; padding: 6px 16px; white-space: nowrap;
+    }
+
+    /* statements / hero */
+    .ts-hero { position: absolute; font-family: var(--ts-sans); font-weight: 700; font-size: 168px; line-height: 1; letter-spacing: -0.035em; color: var(--ts-ink); white-space: nowrap; }
+    .ts-hero-bar { position: absolute; height: 6px; border-radius: 3px; background: var(--ts-blue); transform-origin: left center; }
+    .ts-statement { font-family: var(--ts-sans); font-weight: 500; font-size: 56px; line-height: 1.15; letter-spacing: -0.015em; color: var(--ts-ink); }
+    .ts-body { font-family: var(--ts-sans); font-weight: 400; font-size: 32px; line-height: 1.45; color: var(--ts-ink-soft); }
+
+    #root {
+      position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      container-type: size; font-family: var(--ts-sans); color: var(--ts-ink);
+    }
+
+    /* ==========================================================================
+       FLEX KIT: code surface + phone, shared by every frame of this video.
+       Copy this block verbatim; frame-specific ids use the fNN- prefix.
+       ========================================================================== */
+    /* code surface: fixed position, 24px / 34px, separate static line-number column */
+    .fx-panel { left: 80px; top: 150px; width: 1290px; height: 730px; }
+    .fx-code { top: 66px; font-size: 24px; line-height: 34px; }
+    .fx-lns { position: absolute; left: 0; top: 0; width: 52px; text-align: right; color: var(--ts-code-ln); font-size: 19px; }
+    .fx-lns > div { height: 34px; }
+    .fx-lines { position: absolute; left: 76px; top: 0; right: 0; }
+    .fx-row { position: relative; height: 34px; white-space: pre; }
+    .fx-row .ts-caret { top: 5px; height: 24px; }
+    /* a value that changes in place (stacked variants, old slides up, new slides in) */
+    .fx-val { position: relative; display: inline-block; height: 34px; overflow: hidden; vertical-align: top; }
+    .fx-v { position: absolute; left: 0; top: 0; white-space: pre; }
+
+    /* phone: light device at the right, x 1494-1840, y 150-880; screen 316 x 650 */
+    .ph-body {
+      position: absolute; left: 1494px; top: 150px; width: 346px; height: 730px; box-sizing: border-box;
+      background: var(--ts-panel); border: 1px solid var(--ts-hairline); border-radius: 48px; box-shadow: var(--ts-shadow);
+    }
+    .ph-speaker { position: absolute; left: 144px; top: 16px; width: 56px; height: 6px; border-radius: 3px; background: #CBD5E1; }
+    .ph-home { position: absolute; left: 122px; bottom: 15px; width: 100px; height: 6px; border-radius: 3px; background: #CBD5E1; }
+    .ph-screen {
+      position: absolute; left: 13px; top: 38px; width: 316px; height: 650px;
+      background: #FFFFFF; border: 1px solid var(--ts-hairline); border-radius: 12px; overflow: hidden; box-sizing: content-box;
+    }
+    .ph-svg { position: absolute; left: 0; top: 0; width: 316px; height: 650px; overflow: hidden; }
+    .ph-parent { fill: none; stroke: #94A3B8; stroke-width: 1.5; stroke-dasharray: 6 5; }
+    .ph-mark { fill: none; stroke: var(--ts-blue); stroke-width: 3; }
+    .ph-main { stroke: var(--ts-blue); stroke-width: 3; stroke-linecap: round; }
+    .ph-main-head { fill: var(--ts-blue); }
+    .ph-cross { stroke: #94A3B8; stroke-width: 2; stroke-dasharray: 7 6; }
+    .ph-cross-head { fill: #94A3B8; }
+    .ph-lbl {
+      font-family: var(--ts-sans); font-weight: 600; font-size: 17px;
+      paint-order: stroke; stroke: #FFFFFF; stroke-width: 5px; stroke-linejoin: round;
+    }
+    .ph-lbl--main { fill: var(--ts-blue-dark); }
+    .ph-lbl--cross { fill: var(--ts-ink-soft); }
+    .ph-prop { font-family: var(--ts-mono); font-weight: 500; font-size: 15px; }
+    .ph-prop--main { fill: var(--ts-blue); }
+    .ph-prop--cross { fill: var(--ts-label); }
+
+    /* ==========================================================================
+       APP KIT: the app inside the phone, as DOM. 1 dp = 1.4 px:
+       .ph-app is 226 x 464 dp, scaled into the 316 x 650 screen. Never tween .ph-app itself.
+       ========================================================================== */
+    .ph-app { position: absolute; left: 0; top: 0; width: 226px; height: 464px; transform: scale(1.4); transform-origin: 0 0; overflow: hidden; font-family: var(--ts-sans); color: #000000; }
+    .ph-status { position: absolute; left: 0; top: 0; width: 226px; height: 24px; box-sizing: border-box; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-family: var(--ts-sans); font-weight: 600; font-size: 11px; color: #1E293B; z-index: 5; }
+    .ph-status-icons { display: flex; align-items: center; gap: 5px; }
+    .ph-sig { display: flex; align-items: flex-end; gap: 1.5px; height: 8px; }
+    .ph-sig > i { display: block; width: 2.5px; background: #1E293B; border-radius: 0.5px; }
+    .ph-batt { position: relative; width: 18px; height: 9px; box-sizing: border-box; border: 1.2px solid #1E293B; border-radius: 2.5px; }
+    .ph-batt::after { content: ""; position: absolute; left: 1px; top: 1px; bottom: 1px; width: 11px; border-radius: 1px; background: #1E293B; }
+    /* React Native defaults: every View is a flex container, direction column */
+    .rn-root { position: absolute; left: 0; top: 0; width: 226px; height: 464px; display: flex; flex-direction: column; box-sizing: border-box; }
+    .rn-view { position: relative; display: flex; flex-direction: column; flex-shrink: 0; box-sizing: border-box; min-width: 0; min-height: 0; }
+    .rn-text { position: relative; display: block; font-family: var(--ts-sans); font-size: 14px; line-height: 1.3; color: #000000; white-space: pre-wrap; }
+    /* Button as the course previews show it (Android look): blue, white, uppercase */
+    .rn-btn { display: block; box-sizing: border-box; padding: 8px; border-radius: 2px; background: #2196F3; color: #FFFFFF; font-family: var(--ts-sans); font-weight: 500; font-size: 14px; line-height: 1.3; text-align: center; text-transform: uppercase; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24); }
+    .rn-btn--disabled { background: #DFDFDF; color: #A1A1A1; box-shadow: none; }
+    /* Button, iOS look (only for the color comparison): plain tinted text */
+    .rn-btn-ios { display: block; padding: 8px; color: #007AFF; font-family: var(--ts-sans); font-size: 18px; line-height: 1.3; text-align: center; }
+    /* TextInput: no border by default */
+    .rn-input { position: relative; display: flex; align-items: center; height: 40px; box-sizing: border-box; padding: 0 4px; font-family: var(--ts-sans); font-size: 14px; color: #000000; }
+    .rn-placeholder { color: #A1A1AA; }
+    .rn-caret { display: inline-block; width: 1.5px; height: 17px; background: #2196F3; vertical-align: middle; }
+    /* touch indicator (a finger press). Position it in dp inside .ph-app, centred on the target */
+    .ph-touch { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; box-sizing: border-box; background: rgba(30, 41, 59, 0.16); border: 1.5px solid rgba(30, 41, 59, 0.35); opacity: 0; z-index: 20; }
+
+    /* ==========================================================================
+       TEXTINPUT KIT (this clip): absolute code rows, the field, the keyboard.
+       ========================================================================== */
+    /* code rows are absolute and placed by order (insert = rows below slide down); 18 visible rows */
+    .tx-code { height: 612px; overflow: hidden; }
+    .tx-code .fx-row { position: absolute; left: 0; right: 0; top: 0; }
+    /* the TextInput in the phone (dp): placeholder sits under the caret, typed chars appear one by one */
+    .tx-ph { position: absolute; left: 6px; top: 0; bottom: 0; display: flex; align-items: center; white-space: nowrap; }
+    .tx-val { white-space: pre; }
+    .tx-vc { display: none; }
+    .tx-input .rn-caret { height: 21px; margin-left: 0.5px; opacity: 0; }
+    /* on-screen keyboard (dp): flat keys, slides up from the bottom of .ph-app */
+    .kb-wrap { position: absolute; left: 0; right: 0; bottom: 0; height: 136px; z-index: 10; }
+    .kb { position: absolute; left: 0; top: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 6px 3px 8px; background: #F8FAFC; border-top: 1px solid #E2E8F0; display: flex; flex-direction: column; gap: 6px; }
+    .kb-row { display: flex; gap: 3px; height: 26px; }
+    .kb-row--mid { padding: 0 10px; }
+    .kb-key { flex: 1 1 0; border-radius: 4px; background: #E2E8F0; display: flex; align-items: center; justify-content: center; font-family: var(--ts-sans); font-weight: 500; font-size: 11px; color: #1E293B; }
+    .kb-key--wide { flex: 1.6 1 0; }
+    .kb-key--space { flex: 5 1 0; }
+    .kb-key--ret { flex: 2.4 1 0; background: #CBD5E1; font-weight: 600; font-size: 12px; }
+    .kb--num .kb-key { font-size: 15px; }
+
+    /* ---- frame 03: the cycle diagram (in place of the code panel) ---- */
+    #f03-arcs, #f03-dots { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .f03-arc { fill: none; stroke: #94A3B8; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 302; stroke-dashoffset: 302; }
+    .f03-head { fill: #94A3B8; opacity: 0; }
+    .f03-node {
+      position: absolute; width: 330px; height: 96px; box-sizing: border-box; background: var(--ts-panel);
+      border: 2px solid var(--ts-hairline); border-radius: 12px; opacity: 0; text-align: center;
+    }
+    .f03-ntitle { position: absolute; left: 0; right: 0; top: 14px; font-family: var(--ts-sans); font-weight: 600; font-size: 26px; line-height: 32px; color: var(--ts-ink); white-space: nowrap; }
+    .f03-nline { position: absolute; left: 0; right: 0; top: 50px; font-family: var(--ts-mono); font-weight: 400; font-size: 24px; line-height: 30px; color: var(--ts-ink-soft); white-space: pre; font-variant-ligatures: none; }
+    #f03-n0 { left: 560px; top: 202px; }
+    #f03-n1 { left: 1000px; top: 452px; }
+    #f03-n2 { left: 560px; top: 702px; }
+    #f03-n3 { left: 120px; top: 452px; }
+    .f03-dot {
+      position: absolute; left: 0; top: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--ts-blue);
+      offset-anchor: 50% 50%; offset-rotate: 0deg; offset-distance: 0%; opacity: 0;
+    }
+    #f03-d0 { offset-path: path("M902.2 271.2 A440 250 0 0 1 1152.9 441.9"); }
+    #f03-d1 { offset-path: path("M1152.1 560.1 A440 250 0 0 1 900.1 729.4"); }
+    #f03-d2 { offset-path: path("M547.8 728.8 A440 250 0 0 1 297.1 558.1"); }
+    #f03-d3 { offset-path: path("M297.9 439.9 A440 250 0 0 1 549.9 270.6"); }
+    #f03-rtag { left: 914px; top: 731px; opacity: 0; }
+    /* code chip in the centre of the cycle */
+    #f03-mid { position: absolute; left: 425px; top: 474px; width: 600px; height: 52px; display: flex; justify-content: center; }
+    #f03-mid .ts-chip { position: relative; opacity: 0; font-weight: 400; font-variant-ligatures: none; }
+    /* state chip above the phone */
+    #f03-chips { position: absolute; left: 1494px; top: 82px; width: 346px; height: 52px; display: flex; justify-content: center; }
+    #f03-chips .ts-chip { position: relative; }
+    #f03-chips .ts-chip-key { color: var(--ts-ink-soft); }
+    .f03-cval { display: inline-flex; align-items: center; height: 34px; line-height: 34px; white-space: pre; }
+    /* app */
+    #f03-input { border: 1px solid #808080; }
+    #f03-input .rn-caret { opacity: 1; margin-left: 1.5px; }
+    #f03-text { opacity: 0; }
+    #f03-mark { opacity: 0; }
+  </style>
+
+  <div data-hf-id="hf-571r" id="root" data-composition-id="03-kringloop" data-width="1920" data-height="1080" data-duration="10.95">
+    <div data-hf-id="hf-w1xl" class="ts-bg clip" id="f03-bg" data-start="0" data-duration="10.95" data-track-index="0"></div>
+
+    <div data-hf-id="hf-b0dm" class="ts-stage clip" id="f03-stage" data-start="0" data-duration="10.95" data-track-index="1">
+      <div data-hf-id="hf-gxig" class="ts-kicker" id="f03-kicker"><div data-hf-id="hf-vaod" class="ts-kicker-bar" id="f03-kbar"></div><span data-hf-id="hf-2nhc" class="ts-kicker-text" id="f03-ktext">De kringloop</span></div>
+
+      <!-- cycle: four arcs on an ellipse (centre 725, 500; rx 440, ry 250), clockwise, with arrow heads -->
+      <svg data-hf-id="hf-vbz4" id="f03-arcs" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path data-hf-id="hf-1xhs" class="f03-arc" id="f03-a0" d="M902.2 271.2 A440 250 0 0 1 1147.8 430.9" />
+        <path data-hf-id="hf-dbh3" class="f03-arc" id="f03-a1" d="M1152.1 560.1 A440 250 0 0 1 912.0 726.3" />
+        <path data-hf-id="hf-fuvd" class="f03-arc" id="f03-a2" d="M547.8 728.8 A440 250 0 0 1 302.2 569.1" />
+        <path data-hf-id="hf-4cr8" class="f03-arc" id="f03-a3" d="M297.9 439.9 A440 250 0 0 1 538.0 273.7" />
+        <polygon data-hf-id="hf-uoy7" class="f03-head" id="f03-h0" points="1152.9,441.9 1140.3,429.8 1153.2,424.4" />
+        <polygon data-hf-id="hf-kp8k" class="f03-head" id="f03-h1" points="900.1,729.4 914.0,718.7 917.3,732.3" />
+        <polygon data-hf-id="hf-e7z6" class="f03-head" id="f03-h2" points="297.1,558.1 309.7,570.2 296.8,575.6" />
+        <polygon data-hf-id="hf-65y9" class="f03-head" id="f03-h3" points="549.9,270.6 536.0,281.3 532.7,267.7" />
+      </svg>
+
+      <div data-hf-id="hf-my5w" class="f03-node" id="f03-n0"><div data-hf-id="hf-6av6" class="f03-ntitle">je typt</div><div data-hf-id="hf-br90" class="f03-nline">onChangeText</div></div>
+      <div data-hf-id="hf-nptp" class="f03-node" id="f03-n1"><div data-hf-id="hf-4mbr" class="f03-ntitle">de state verandert</div><div data-hf-id="hf-pvyx" class="f03-nline">setText("Hoi!")</div></div>
+      <div data-hf-id="hf-rnxq" class="f03-node" id="f03-n2"><div data-hf-id="hf-v2am" class="f03-ntitle">render</div><div data-hf-id="hf-8aol" class="f03-nline">Index()</div></div>
+      <div data-hf-id="hf-vm1r" class="f03-node" id="f03-n3"><div data-hf-id="hf-0aks" class="f03-ntitle">het veld toont</div><div data-hf-id="hf-1zc7" class="f03-nline">value={text}</div></div>
+
+      <div data-hf-id="hf-zog2" class="ts-tag" id="f03-rtag">render #5</div>
+
+      <div data-hf-id="hf-fdsr" id="f03-mid"><span data-hf-id="hf-464o" class="ts-chip" id="f03-codechip"><span data-hf-id="hf-l4fx"><span data-hf-id="hf-4csn" class="ts-punct">&lt;</span><span data-hf-id="hf-1npo" class="ts-fn">Text</span><span data-hf-id="hf-3k6l" class="ts-punct">&gt;</span>You typed: <span data-hf-id="hf-uzbi" class="ts-punct">{</span>text<span data-hf-id="hf-c1ud" class="ts-punct">}&lt;/</span><span data-hf-id="hf-9ffo" class="ts-fn">Text</span><span data-hf-id="hf-1oyp" class="ts-punct">&gt;</span></span></span></div>
+
+      <div data-hf-id="hf-jkzz" id="f03-dots">
+        <div data-hf-id="hf-u0xv" class="f03-dot" id="f03-d0"></div>
+        <div data-hf-id="hf-q2tu" class="f03-dot" id="f03-d1"></div>
+        <div data-hf-id="hf-m4pt" class="f03-dot" id="f03-d2"></div>
+        <div data-hf-id="hf-ld20" class="f03-dot" id="f03-d3"></div>
+      </div>
+
+      <!-- phone: the app as DOM, in dp -->
+      <div data-hf-id="hf-m4bz" class="ph-body" id="f03-phone">
+        <div data-hf-id="hf-9aks" class="ph-speaker"></div>
+        <div data-hf-id="hf-66w1" class="ph-screen">
+          <div data-hf-id="hf-pfty" class="ph-app">
+            <div data-hf-id="hf-3hcz" class="ph-status"><span data-hf-id="hf-zwmt">9:41</span><span data-hf-id="hf-zte5" class="ph-status-icons"><span data-hf-id="hf-wjw5" class="ph-sig"><i data-hf-id="hf-1rvt" style="height:3px"></i><i data-hf-id="hf-4ztr" style="height:5px"></i><i data-hf-id="hf-jylm" style="height:8px"></i></span><span data-hf-id="hf-tn7h" class="ph-batt"></span></span></div>
+            <div data-hf-id="hf-xpbe" class="rn-root" id="f03-app" style="padding-top: 24px;">
+              <div data-hf-id="hf-c6ey" class="rn-view" id="f03-container" style="flex-direction: column; flex: 1 1 auto;">
+                <div data-hf-id="hf-lf12" class="rn-input tx-input" id="f03-input"><span data-hf-id="hf-95y4" class="tx-val" id="f03-val">Hoi<span data-hf-id="hf-kts1" class="tx-vc" id="f03-v3">!</span></span><span data-hf-id="hf-st6o" class="rn-caret" id="f03-caret"></span></div>
+                <span data-hf-id="hf-tjgk" class="rn-text" id="f03-text">You typed: Hoi!</span>
+              </div>
+            </div>
+            <div data-hf-id="hf-mdye" class="kb-wrap" id="f03-kbw"><div data-hf-id="hf-qa6g" class="kb" id="f03-kbd"><div data-hf-id="hf-g0ps" class="kb-row"><span data-hf-id="hf-fce9" class="kb-key" id="f03-k-q"></span><span data-hf-id="hf-ammf" class="kb-key" id="f03-k-w"></span><span data-hf-id="hf-hnlh" class="kb-key" id="f03-k-e"></span><span data-hf-id="hf-jaia" class="kb-key" id="f03-k-r"></span><span data-hf-id="hf-1yqk" class="kb-key" id="f03-k-t"></span><span data-hf-id="hf-nwsp" class="kb-key" id="f03-k-y"></span><span data-hf-id="hf-2qed" class="kb-key" id="f03-k-u"></span><span data-hf-id="hf-51ll" class="kb-key" id="f03-k-i"></span><span data-hf-id="hf-y47z" class="kb-key" id="f03-k-o"></span><span data-hf-id="hf-ekqg" class="kb-key" id="f03-k-p"></span></div><div data-hf-id="hf-y9mk" class="kb-row kb-row--mid"><span data-hf-id="hf-wh75" class="kb-key" id="f03-k-a"></span><span data-hf-id="hf-pg83" class="kb-key" id="f03-k-s"></span><span data-hf-id="hf-gvxo" class="kb-key" id="f03-k-d"></span><span data-hf-id="hf-llpi" class="kb-key" id="f03-k-f"></span><span data-hf-id="hf-rrfb" class="kb-key" id="f03-k-g"></span><span data-hf-id="hf-49xs" class="kb-key" id="f03-k-h"></span><span data-hf-id="hf-8zpm" class="kb-key" id="f03-k-j"></span><span data-hf-id="hf-cxtn" class="kb-key" id="f03-k-k"></span><span data-hf-id="hf-pgc4" class="kb-key" id="f03-k-l"></span></div><div data-hf-id="hf-dg2g" class="kb-row"><span data-hf-id="hf-gzhe" class="kb-key kb-key--wide"></span><span data-hf-id="hf-ruwq" class="kb-key" id="f03-k-z"></span><span data-hf-id="hf-n54w" class="kb-key" id="f03-k-x"></span><span data-hf-id="hf-4df7" class="kb-key" id="f03-k-c"></span><span data-hf-id="hf-6oie" class="kb-key" id="f03-k-v"></span><span data-hf-id="hf-0fb6" class="kb-key" id="f03-k-b"></span><span data-hf-id="hf-u63y" class="kb-key" id="f03-k-n"></span><span data-hf-id="hf-q7zx" class="kb-key" id="f03-k-m"></span><span data-hf-id="hf-t6di" class="kb-key kb-key--wide"></span></div><div data-hf-id="hf-c95d" class="kb-row"><span data-hf-id="hf-9mye" class="kb-key kb-key--wide">123</span><span data-hf-id="hf-txff" class="kb-key kb-key--space"></span><span data-hf-id="hf-7z4x" class="kb-key kb-key--ret" id="f03-k-ret">gereed</span></div></div></div>
+          </div>
+          <!-- .ph-mark outline around the field, in screen px (1 dp = 1.4 px) -->
+          <svg data-hf-id="hf-hgt9" class="ph-svg" id="f03-marks" viewBox="0 0 316 650" aria-hidden="true">
+            <rect data-hf-id="hf-hfx6" class="ph-mark" id="f03-mark" x="0" y="0" width="56" height="56"></rect>
+          </svg>
+        </div>
+        <div data-hf-id="hf-xjm4" class="ph-home"></div>
+      </div>
+
+      <!-- state above the phone -->
+      <div data-hf-id="hf-94wo" id="f03-chips"><span data-hf-id="hf-j7is" class="ts-chip" id="f03-state"><span data-hf-id="hf-h79w" class="ts-chip-key">state</span><span data-hf-id="hf-6hdy" class="f03-cval">text: <span data-hf-id="hf-t25i" class="fx-val" id="f03-cv" style="width: 72px;"><span data-hf-id="hf-5xlm" class="fx-v" id="f03-cv1">"Hoi"</span><span data-hf-id="hf-cwza" class="fx-v" id="f03-cv2" style="opacity: 0;">"Hoi!"</span></span></span></span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 10.95;
+      var CH = 14.4; // JetBrains Mono 24px advance
+      var S = 1.4;   // 1 dp = 1.4 px
+      var root = document.querySelector('[data-composition-id="03-kringloop"]');
+      var q = function (s) { return root.querySelector(s); };
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // value change inside a line: old slides up and out, new slides in, wrapper width follows (0.25s)
+      function swapVal(oldSel, newSel, wrapSel, chars, at) {
+        tl.to(oldSel, { y: -14, opacity: 0, duration: 0.25, ease: "power2.out" }, at);
+        tl.fromTo(newSel, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, at);
+        tl.to(wrapSel, { width: chars * CH, duration: 0.25, ease: "power2.out" }, at);
+      }
+
+      // ---- APP KIT helpers ----
+      // box of an element in dp, relative to .ph-app (layout is measured once, before any tween)
+      function dpBox(sel) {
+        var el = q(sel), x = 0, y = 0, e = el;
+        while (e && !e.classList.contains("ph-app")) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; }
+        return { x: x, y: y, w: el.offsetWidth, h: el.offsetHeight };
+      }
+      // chip / label pop: opacity, y 10 -> 0, scale 0.96 -> 1
+      function pop(sel, at) { tl.fromTo(sel, { opacity: 0, y: 10, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, at); }
+      // ---- end APP KIT helpers ----
+
+      // ---- TEXTINPUT KIT ----
+      function keyFlash(sel, at, base, down) {
+        tl.to(sel, { backgroundColor: down || "#CBD5E1", duration: 0.05, ease: "none" }, at);
+        tl.to(sel, { backgroundColor: base || "#E2E8F0", duration: 0.2, ease: "power1.out" }, at + 0.12);
+      }
+      function showCh(sel, at) { tl.set(sel, { display: "inline" }, at); }
+      // ---- end TEXTINPUT KIT ----
+
+      // ---- cycle helpers ----
+      var GREY = "#E2E8F0", PANEL = "#F1F5F9", BLUE = "#3178C6", TINT = "#EAF2FB";
+      function nodeOn(i, at) { tl.to("#f03-n" + i, { borderColor: BLUE, backgroundColor: TINT, duration: 0.3, ease: "power3.out" }, at); }
+      function nodeOff(i, at) { tl.to("#f03-n" + i, { borderColor: GREY, backgroundColor: PANEL, duration: 0.3, ease: "power1.inOut" }, at); }
+      // dot along its CSS offset-path (deterministic: GSAP tweens offset-distance)
+      function travel(i, at, dur) {
+        tl.fromTo("#f03-d" + i, { offsetDistance: "0%" }, { offsetDistance: "100%", duration: dur, ease: "power2.inOut", immediateRender: false }, at);
+        tl.to("#f03-d" + i, { opacity: 1, duration: 0.12, ease: "power1.out" }, at);
+        tl.to("#f03-d" + i, { opacity: 0, duration: 0.15, ease: "power1.in" }, at + dur - 0.1);
+      }
+
+      // the field mark, measured from the layout (screen px)
+      var fb = dpBox("#f03-input");
+      tl.set("#f03-mark", { attr: { x: fb.x * S + 1.5, y: fb.y * S + 1.5, width: fb.w * S - 3, height: fb.h * S - 3 } }, 0);
+
+      // ---- 0.0-0.3: kicker, phone and chip in; cards fade in from 0.3 ----
+      tl.fromTo("#f03-kbar", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f03-ktext", { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f03-phone", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f03-chips", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.2);
+      tl.fromTo(["#f03-n0", "#f03-n1", "#f03-n2", "#f03-n3"], { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.08 }, 0.3);
+
+      // ---- 1.08 "rond": the four arcs draw on clockwise (1.08-1.70), heads land at each arc's end ----
+      for (var i = 0; i < 4; i++) {
+        var a = 1.08 + i * 0.14;
+        tl.fromTo("#f03-a" + i, { strokeDashoffset: 302 }, { strokeDashoffset: 0, duration: 0.2, ease: "power1.inOut" }, a);
+        tl.fromTo("#f03-h" + i, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "power1.out" }, a + 0.16);
+      }
+
+      // ---- 1.76 "je typt": key `!` pressed; node `je typt` active; the dot waits at the top node ----
+      keyFlash("#f03-k-m", 1.76);
+      nodeOn(0, 1.76);
+      tl.fromTo("#f03-d0", { opacity: 0, offsetDistance: "0%" }, { opacity: 1, duration: 0.25, ease: "power1.out" }, 1.76);
+
+      // ---- 2.88 "state verandert": dot to the right node; chip "Hoi" -> "Hoi!" (the field keeps "Hoi") ----
+      tl.to("#f03-d0", { offsetDistance: "100%", duration: 0.5, ease: "power2.inOut" }, 2.7);
+      tl.to("#f03-d0", { opacity: 0, duration: 0.15, ease: "power1.in" }, 3.1);
+      nodeOff(0, 2.88);
+      nodeOn(1, 2.88);
+      swapVal("#f03-cv1", "#f03-cv2", "#f03-cv", 6, 2.88);
+
+      // ---- 4.36 "component": dot to the bottom node (render); 4.72 "rendert": render tag ----
+      travel(1, 4.16, 0.5);
+      nodeOff(1, 4.5);
+      nodeOn(2, 4.5);
+      pop("#f03-rtag", 4.72);
+
+      // ---- 6.08 "veld": dot to the left node; 6.48 "toont": the field shows "Hoi!" ----
+      travel(2, 5.88, 0.5);
+      nodeOff(2, 6.2);
+      nodeOn(3, 6.2);
+      showCh("#f03-v3", 6.48);
+
+      // ---- 7.20 "nieuwe waarde": dot back to the top; all nodes neutral; mark on the field ----
+      travel(3, 6.95, 0.5);
+      nodeOff(3, 7.3);
+      tl.to("#f03-mark", { opacity: 1, duration: 0.35, ease: "power1.out" }, 7.2);
+
+      // ---- 8.08 "Die kan je": code chip in the centre; 9.36 "tonen": the Text appears in the phone ----
+      pop("#f03-codechip", 8.08);
+      tl.to("#f03-mark", { opacity: 0, duration: 0.35, ease: "power1.inOut" }, 9.0);
+      tl.fromTo("#f03-text", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false }, 9.36);
+
+      // hold still to full duration
+      tl.set({}, {}, DUR);
+      window.__timelines["03-kringloop"] = tl;
+    })();
+  </script>
+</template>

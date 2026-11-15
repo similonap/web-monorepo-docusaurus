@@ -2,7 +2,11 @@
 sidebar_position: 6
 ---
 
+import HyperframesVideo from '@site/src/components/HyperframesVideo';
+
 # React Native Hooks
+
+<HyperframesVideo name="react-native-hooks" title="React Native - Hooks" />
 
 Alle hooks die je kent uit React (`useState`, `useEffect`, `useRef`, `useContext`, ...) werken ook gewoon in React Native. Daarnaast heeft React Native zelf nog een paar eigen hooks. Die geven je informatie over het toestel waarop je app draait, zoals de grootte van het scherm of de kleurinstelling van de gebruiker.
 
