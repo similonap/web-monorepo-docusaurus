@@ -310,12 +310,12 @@ Dit zijn geen props maar functies van het component zelf. Om ze te kunnen oproep
 ```typescript expo={"dependencies":"expo-constants"}
 import React, {useRef} from "react";
 import Constants from "expo-constants";
-import {View, Button, ScrollView, StyleSheet} from "react-native";
+import {View, Button, ScrollView, ScrollViewInstance, StyleSheet} from "react-native";
 
 const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
 
 const Index = () => {
-    const scrollViewRef = useRef<ScrollView>(null);
+    const scrollViewRef = useRef<ScrollViewInstance>(null);
 
     return (
         <View style={styles.container}>

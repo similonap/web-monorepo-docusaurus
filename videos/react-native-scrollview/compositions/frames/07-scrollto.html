@@ -265,13 +265,13 @@
           <div data-hf-id="hf-ca4d" class="fx-lines" id="f07-lines">
             <div data-hf-id="hf-m4vu" class="fx-row"><span data-hf-id="hf-qaso" class="ts-kw">import</span> {useRef} <span data-hf-id="hf-e409" class="ts-kw">from</span> <span data-hf-id="hf-ijfh" class="ts-str">"react"</span>;</div>
             <div data-hf-id="hf-mfb7" class="fx-row"><span data-hf-id="hf-24v4" class="ts-kw">import</span> {View, Button, ScrollView, StyleSheet} <span data-hf-id="hf-1ghp" class="ts-kw">from</span> <span data-hf-id="hf-j62j" class="ts-str">"react-native"</span>;</div>
-            <div data-hf-id="hf-1j8z" class="fx-row"><span data-hf-id="hf-0xy1" class="ts-kw">import</span> Constants <span data-hf-id="hf-2nes" class="ts-kw">from</span> <span data-hf-id="hf-j1a4" class="ts-str">"expo-constants"</span>;</div>
-            <div data-hf-id="hf-bz7x" class="fx-row"></div>
+            <div data-hf-id="hf-1j8z" class="fx-row"><span data-hf-id="hf-it01" class="ts-kw">import</span> <span data-hf-id="hf-it02" class="ts-kw">type</span> {ScrollViewInstance} <span data-hf-id="hf-it03" class="ts-kw">from</span> <span data-hf-id="hf-it04" class="ts-str">"react-native"</span>;</div>
+            <div data-hf-id="hf-bz7x" class="fx-row"><span data-hf-id="hf-0xy1" class="ts-kw">import</span> Constants <span data-hf-id="hf-2nes" class="ts-kw">from</span> <span data-hf-id="hf-j1a4" class="ts-str">"expo-constants"</span>;</div>
             <div data-hf-id="hf-o6jh" class="fx-row"><span data-hf-id="hf-vgw0" class="ts-kw">const</span> colors = [<span data-hf-id="hf-jsbn" class="ts-str">"powderblue"</span>, <span data-hf-id="hf-jjys" class="ts-str">"lightblue"</span>, <span data-hf-id="hf-5hj3" class="ts-str">"skyblue"</span>, <span data-hf-id="hf-7yor" class="ts-str">"lightskyblue"</span>,</div>
             <div data-hf-id="hf-p5bl" class="fx-row">    <span data-hf-id="hf-ye9x" class="ts-str">"deepskyblue"</span>, <span data-hf-id="hf-3v2d" class="ts-str">"dodgerblue"</span>, <span data-hf-id="hf-yphd" class="ts-str">"steelblue"</span>];</div>
             <div data-hf-id="hf-lvlt" class="fx-row"></div>
             <div data-hf-id="hf-2ck0" class="fx-row"><span data-hf-id="hf-stvc" class="ts-kw">const</span> <span data-hf-id="hf-xdgx" class="ts-fn">Index</span> = () <span data-hf-id="hf-kpf2" class="ts-kw">=&gt;</span> {</div>
-            <div data-hf-id="hf-ww4x" class="fx-row">    <span data-hf-id="hf-rmy9" class="ts-kw">const</span> <span data-hf-id="hf-z14w" class="ts-hl" id="f07-hl-ref">scrollViewRef</span> = <span data-hf-id="hf-1dmd" class="ts-hl" id="f07-hl-useref"><span data-hf-id="hf-iooj" class="ts-fn">useRef</span>&lt;<span data-hf-id="hf-v8wz" class="ts-type">ScrollView</span>&gt;(<span data-hf-id="hf-di3k" class="ts-kw">null</span>)</span>;</div>
+            <div data-hf-id="hf-ww4x" class="fx-row">    <span data-hf-id="hf-rmy9" class="ts-kw">const</span> <span data-hf-id="hf-z14w" class="ts-hl" id="f07-hl-ref">scrollViewRef</span> = <span data-hf-id="hf-1dmd" class="ts-hl" id="f07-hl-useref"><span data-hf-id="hf-iooj" class="ts-fn">useRef</span>&lt;<span data-hf-id="hf-v8wz" class="ts-type">ScrollViewInstance</span>&gt;(<span data-hf-id="hf-di3k" class="ts-kw">null</span>)</span>;</div>
             <div data-hf-id="hf-n2iw" class="fx-row"></div>
             <div data-hf-id="hf-uou7" class="fx-row">    <span data-hf-id="hf-kmyz" class="ts-kw">return</span> (</div>
             <div data-hf-id="hf-tdl5" class="fx-row">        <span data-hf-id="hf-4csn" class="ts-punct">&lt;</span><span data-hf-id="hf-zaoe" class="ts-fn">View</span> style<span data-hf-id="hf-lcgt" class="ts-punct">={</span>styles.container<span data-hf-id="hf-lyf2" class="ts-punct">}&gt;</span></div>
@@ -463,7 +463,7 @@
       showEls(rowEls("07", range(19, 25)).concat(lnEls("07", range(19, 25))), 2.84, 0.4);
       washOn("#f07-hl-ref, #f07-hl-refprop", 2.9);
 
-      // ---- 3.44 "use ref": the wash on row 9 narrows to useRef<ScrollView>(null) ----
+      // ---- 3.44 "use ref": the wash on row 9 narrows to useRef<ScrollViewInstance>(null) ----
       washOff("#f07-hl-ref", 3.44);
       washOn("#f07-hl-useref", 3.44);
 

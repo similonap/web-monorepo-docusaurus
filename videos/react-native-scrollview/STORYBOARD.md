@@ -297,13 +297,13 @@
   ```
   1  import {useRef} from "react";
   2  import {View, Button, ScrollView, StyleSheet} from "react-native";
-  3  import Constants from "expo-constants";
-  4
+  3  import type {ScrollViewInstance} from "react-native";
+  4  import Constants from "expo-constants";
   5  const colors = ["powderblue", "lightblue", "skyblue", "lightskyblue",
   6      "deepskyblue", "dodgerblue", "steelblue"];
   7
   8  const Index = () => {
-  9      const scrollViewRef = useRef<ScrollView>(null);
+  9      const scrollViewRef = useRef<ScrollViewInstance>(null);
   10
   11     return (
   12         <View style={styles.container}>
@@ -327,7 +327,7 @@
 - shots:
   - 0.0-1.4: kicker `scrollTo en scrollToEnd`, panel and phone in.
   - 2.64 "ref": code scrolls to window 8-25 (0.6s); wash on `scrollViewRef` (row 9) and on `ref={scrollViewRef}` (row 19).
-  - 3.44 "use ref": wash on row 9 narrows to `useRef<ScrollView>(null)`.
+  - 3.44 "use ref": wash on row 9 narrows to `useRef<ScrollViewInstance>(null)`.
   - 4.64 "Scroll to": washes move to row 15. 5.76 "y nul": wash narrows to `{y: 0, animated: true}`.
   - 6.64 "brengt je terug naar boven": finger taps `NAAR BOVEN` (up 6.9); the ScrollView animates 500 → 0 dp (0.7s power2.inOut, like `animated: true`).
   - 8.56 "scroll to end": wash moves to row 17. 9.20: finger taps `NAAR BENEDEN` (up 9.45); the ScrollView animates 0 → 960 dp (0.8s power2.inOut). Hold.

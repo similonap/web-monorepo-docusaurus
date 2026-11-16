@@ -25,4 +25,4 @@ Verhaal (volgorde van de cursuspagina):
 4. `horizontal`, `flexGrow: 0` en `showsHorizontalScrollIndicator={false}`.
 5. `keyboardShouldPersistTaps="handled"`: de eerste tik op de knop werkt meteen.
 6. `pagingEnabled`: een carrousel met pagina's even breed als het scherm.
-7. `useRef<ScrollView>(null)`, `scrollTo({y: 0, animated: true})` en `scrollToEnd`.
+7. `useRef<ScrollViewInstance>(null)`, `scrollTo({y: 0, animated: true})` en `scrollToEnd`.
