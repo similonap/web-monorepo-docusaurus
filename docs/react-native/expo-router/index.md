@@ -292,7 +292,7 @@ Je kan de header van de schermen aanpassen door de `screenOptions` property te g
 />
 ```
 
-![Alt text](./img/screenOptions.png)
+![Een header met een oranje achtergrond en een witte, vette titel](./img/screenOptions.png)
 
 Je kan als children van het `Stack` component de schermen individueel configureren door ze `Stack.Screen` componenten te gebruiken. Dit is handig om bijvoorbeeld de titel van de header aan te passen. 
 
@@ -380,6 +380,8 @@ Een modal is een scherm dat over het vorige scherm schuift, bijvoorbeeld een for
 
 Navigeer je nu naar `/add`, dan schuift dat scherm van onder over het huidige scherm. Op iOS kan de gebruiker de modal sluiten door ze naar beneden te vegen. Vanuit je code sluit je ze met `router.back()`.
 
+![Een modal op iOS: het scherm Toevoegen schuift over het Home-scherm](./img/modal.png)
+
 ### Tab Navigation
 
 Bij een Tab Navigation staat er onderaan het scherm een tab bar. Elke tab is een scherm, en met een tik op een tab wissel je van scherm. We gebruiken hiervoor **Native Tabs**: dat is de tab bar van het platform zelf. Op iOS krijg je de echte iOS tab bar (met het Liquid Glass-uiterlijk vanaf iOS 26), op Android de Material Design tab bar.
@@ -412,6 +414,8 @@ Elke tab is een `NativeTabs.Trigger`. Met de `name` property bepaal je welk sche
 - `NativeTabs.Trigger.Icon`: het icoon van de tab. Met `sf` kies je het icoon op iOS, met `md` het icoon op Android.
 - `NativeTabs.Trigger.Badge`: een badge op de tab, bijvoorbeeld het aantal ongelezen berichten: `<NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>`.
 
+![Native Tabs op iOS met de tabs Home en About](./img/native-tabs.png)
+
 :::warning Enkel schermen met een Trigger
 Een scherm komt enkel in de tab bar als je er een `NativeTabs.Trigger` voor maakt. Een bestand in de map zonder `Trigger` krijgt geen tab en je kan er ook niet naartoe navigeren: een link naar dat scherm doet niets. Op Android kan je maximaal 5 tabs gebruiken.
 :::
@@ -434,6 +438,10 @@ Je hebt hiervoor geen extra package nodig. Je kan ook voor de geselecteerde tab 
   md={{ default: 'home', selected: 'home_filled' }}
 />
 ```
+
+Hieronder zie je het resultaat op iOS: de geselecteerde tab Home toont het gevulde huisje (`house.fill`). De tab Berichten heeft een badge met `<NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>`.
+
+![Tab bar op iOS met een gevuld icoon voor de geselecteerde tab en een badge met 3 op de tab Berichten](./img/native-tabs-badge.png)
 
 #### Een tab verbergen
 
@@ -498,6 +506,7 @@ const UsersLayout = () => {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ title: "Users" }} />
+      <Stack.Screen name="[name]" options={{ title: "User" }} />
     </Stack>
   );
 }
@@ -536,6 +545,8 @@ export default Users;
 ```
 
 De `users/[name].tsx` is de pagina uit [Dynamische routes](#dynamische-routes). Tik je op een naam, dan schuift de detailpagina binnen de tab, met een header en een terugknop naar `Users`. De tab bar blijft staan.
+
+![De detailpagina van een gebruiker binnen de tab Users, met een header, een terugknop en de tab bar](./img/native-tabs-stack.png)
 
 :::info JavaScript tabs
 Naast Native Tabs heeft Expo Router ook tabs die volledig in JavaScript getekend worden (`import { Tabs } from 'expo-router/js-tabs'`). Die kan je vrijer stijlen, maar ze zien er niet uit als de tab bar van het platform. In deze cursus gebruiken we Native Tabs.
