@@ -6,7 +6,7 @@ sidebar_position: 9
 
 Expo Router werkt zeer gelijkaardig aan de routing in next.js. Het is een file-based router. Dit wil zeggen dat je een mapstructuur aanmaakt en dat je op basis van de bestandsnaam de route bepaalt. Het laat toe om navigatie tussen schermen in je app te beheren, waardoor gebruikers naadloos tussen verschillende delen van de UI van je app kunnen bewegen, met behulp van dezelfde componenten op meerdere platforms (Android, iOS en web).
 
-Het is gebouwd op [React Navigation](https://reactnavigation.org/), een populaire library voor het beheren van navigatie in React Native apps.
+Het is gebaseerd op [React Navigation](https://reactnavigation.org/), een populaire library voor het beheren van navigatie in React Native apps. Expo Router bevat een eigen, ingebouwde versie daarvan: je hoeft dus geen `@react-navigation`-packages te installeren.
 
 ## Installatie
 
@@ -150,11 +150,18 @@ Op het router object kan je de volgende methodes gebruiken:
 - `replace` : vervangt de huidige pagina in de navigatie stack
 - `back` : gaat terug naar de vorige pagina in de navigatie stack
 - `canGoBack`: geeft aan of er een vorige pagina is in de navigatie stack
+- `dismissAll`: gaat terug naar de eerste pagina van de navigatie stack
 - `setParams`: verandert de parameters van de huidige pagina in de navigatie stack
 
 ### Dynamische routes linken
 
-Je kan dynamische router linken door zelf de route aan te maken door concatenatie van de route en de parameters. Of je kan hiervoor het `Href` object gebruiken. 
+Je kan een link naar een dynamische route maken door de parameter in een template literal in de route te zetten:
+
+```tsx
+<Link href={`/users/${name}`}>View user</Link>
+```
+
+Of je kan hiervoor een `Href` object gebruiken:
 
 ```tsx
 <Link
@@ -165,6 +172,12 @@ Je kan dynamische router linken door zelf de route aan te maken door concatenati
     View user
 </Link>
 ```
+
+:::info Typed routes
+In een nieuw project staan *typed routes* aan. TypeScript kent dan alle routes in je `app`-map en geeft een fout als je naar een route linkt die niet bestaat. Daarom werkt `href={"/users/" + name}` niet: het resultaat is een gewone `string`, en TypeScript kan niet nagaan of dat een geldige route is. Met een template literal (`` `/users/${name}` ``) of een `Href` object lukt dat wel.
+
+De types worden bijgewerkt terwijl `npx expo start` draait. Krijg je een fout op een route die je net aanmaakte, start dan eerst de development server.
+:::
 
 ### Route vervangen
 
@@ -198,19 +211,25 @@ In het voorbeeld hierboven zal de `Slot` component de huidige child route render
 
 ```tsx
 import { Slot } from 'expo-router';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeLayout = () => {
   return (
-    <View>
+    <SafeAreaView style={{ flex: 1 }}>
       <Text>Header</Text>
       <Slot />
       <Text>Footer</Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
 export default HomeLayout;
 ```
+
+Twee dingen zijn hier belangrijk:
+- De layout moet `flex: 1` hebben. Je schermen gebruiken zelf `flex: 1` om de beschikbare ruimte te vullen. Heeft de layout rond de `Slot` geen hoogte, dan is er geen ruimte om te vullen en blijft je scherm onzichtbaar.
+- Een `Slot` tekent geen header, dus niets houdt je inhoud weg van de statusbalk bovenaan. De `SafeAreaView` zorgt ervoor dat de header en footer niet achter de statusbalk of de home-indicator verdwijnen.
 
 Expo Router ondersteunt slechts één layout route per directory. Als je meerdere layout routes wil gebruiken moet je meerdere directories aanmaken. 
 
@@ -222,7 +241,7 @@ Expo Router ondersteunt slechts één layout route per directory. Als je meerder
     - index.tsx
 ```
 
-Het nadeel hiervan is dat het pad hierdoor "vervuilt" wordt met overbodige directories. Je kan dit probleem oplossen door een deel van de directory structuur te verbergen door een deel van het pad te omringen met ronde haakjes. 
+Het nadeel hiervan is dat het pad hierdoor "vervuild" wordt met overbodige directories. Je kan dit probleem oplossen door een deel van de directory structuur te verbergen door een deel van het pad te omringen met ronde haakjes. 
 
 - `app/root/home.tsx` komt overeen met `/root/home`
 - `app/(root)/home.tsx` komt overeen met `/home`
@@ -233,10 +252,9 @@ Dit is handig om layouts toe te voegen zonder extra segmenten aan de URL toe te 
 
 Uiteraard wordt er niet vaak gebruik gemaakt van eigen layouts en wordt er vooral gebruik gemaakt van de ingebouwde native layouts van het platform. Expo Router ondersteunt de volgende native layouts:
 
-- Stack Navigation
+- Stack Navigation (met modals)
 - Tab Navigation
 - Drawer Navigation
-- Modals
 
 ### Stack Navigation
 
@@ -296,7 +314,7 @@ Je kan als children van het `Stack` component de schermen individueel configurer
 </Stack>
 ```
 
-Hierboven gaan we dus de titel van de header aanpassen voor de home pagina en de mische route. 
+Hierboven gaan we dus de titel van de header aanpassen voor de home pagina en de dynamische route.
 
 Het is ook mogelijk om het `Stack.Screen` component te gebruiken in het component zelf. Dus in plaats van de `Stack` component te gebruiken in het `_layout.tsx` bestand kan je het `Stack.Screen` component gebruiken in het `index.tsx` bestand. 
 
@@ -325,7 +343,7 @@ const User = () => {
 }
 ```
 
-Omdat expo router gebaseerd is op React Navigation kan je alle mogelijke opties voor het `Stack.Screen` component kan je [hier](https://reactnavigation.org/docs/native-stack-navigator/#options) terugvinden. 
+Omdat Expo Router gebaseerd is op React Navigation, kan je alle mogelijke opties voor het `Stack.Screen` component [hier](https://reactnavigation.org/docs/native-stack-navigator/#options) terugvinden.
 
 #### Animation
 
@@ -349,83 +367,179 @@ De volgende animaties zijn beschikbaar:
 - `none`: geen animatie
 - meer animaties zijn beschikbaar in de [documentatie](https://reactnavigation.org/docs/native-stack-navigator#animation)
 
-### Tab Navigation
+#### Modals
 
-De werking van een Tab Navigation is vergelijkbaar met een Stack Navigation. Het verschil is dat de schermen niet op elkaar gestapeld worden maar dat er een tab bar wordt toegevoegd.
-
-Om een Tab Navigation te gebruiken moet je het `_layout.tsx` bestand aanpassen en een `Tabs` component gebruiken.
+Een modal is een scherm dat over het vorige scherm schuift, bijvoorbeeld een formulier om iets toe te voegen. Je maakt een modal door in een `Stack` de `presentation` optie van een scherm op `'modal'` te zetten:
 
 ```tsx
-import { Tabs } from 'expo-router';
+<Stack>
+    <Stack.Screen name="index" options={{ title: "Home" }} />
+    <Stack.Screen name="add" options={{ presentation: 'modal', title: "Toevoegen" }} />
+</Stack>
+```
 
-const HomeLayout = () => {
+Navigeer je nu naar `/add`, dan schuift dat scherm van onder over het huidige scherm. Op iOS kan de gebruiker de modal sluiten door ze naar beneden te vegen. Vanuit je code sluit je ze met `router.back()`.
+
+### Tab Navigation
+
+Bij een Tab Navigation staat er onderaan het scherm een tab bar. Elke tab is een scherm, en met een tik op een tab wissel je van scherm. We gebruiken hiervoor **Native Tabs**: dat is de tab bar van het platform zelf. Op iOS krijg je de echte iOS tab bar (met het Liquid Glass-uiterlijk vanaf iOS 26), op Android de Material Design tab bar.
+
+Om een Tab Navigation te gebruiken moet je het `_layout.tsx` bestand aanpassen en een `NativeTabs` component gebruiken uit `expo-router/native-tabs`.
+
+```tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+const TabLayout = () => {
   return (
-    <Tabs>
-      <Tabs.Screen
-        // Name of the dynamic route.
-        name="index"
-        options={{
-          title: 'Home',
-        }}
-      />
-      <Tabs.Screen
-        // Name of the dynamic route.
-        name="about"
-        options={{
-          title: 'About',
-        }}
-      />
-    </Tabs>
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="about">
+        <NativeTabs.Trigger.Label>About</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="info.circle" md="info" />
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }
 
-export default HomeLayout;
+export default TabLayout;
 ```
 
-Je kan eventueel ook bepaalde paginas onzichtbaar maken uit de tab bar door de href property op `null` te zetten. 
+Elke tab is een `NativeTabs.Trigger`. Met de `name` property bepaal je welk scherm (welk bestand in de map) bij de tab hoort. Daarbinnen kan je instellen hoe de tab eruitziet:
+- `NativeTabs.Trigger.Label`: de tekst onder het icoon. Laat je die weg, dan wordt de naam van de route gebruikt.
+- `NativeTabs.Trigger.Icon`: het icoon van de tab. Met `sf` kies je het icoon op iOS, met `md` het icoon op Android.
+- `NativeTabs.Trigger.Badge`: een badge op de tab, bijvoorbeeld het aantal ongelezen berichten: `<NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>`.
+
+:::warning Enkel schermen met een Trigger
+Een scherm komt enkel in de tab bar als je er een `NativeTabs.Trigger` voor maakt. Een bestand in de map zonder `Trigger` krijgt geen tab en je kan er ook niet naartoe navigeren: een link naar dat scherm doet niets. Op Android kan je maximaal 5 tabs gebruiken.
+:::
+
+Native Tabs tonen geen header bovenaan het scherm. Wil je toch een header, dan zet je een Stack in de tab (zie [Een Stack in een tab](#een-stack-in-een-tab)).
+
+#### Iconen
+
+Elk platform heeft zijn eigen set iconen. Daarom geef je per platform de naam van een icoon mee:
+- `sf`: een **SF Symbol**, de iconen van Apple voor iOS. Je vindt ze in de gratis [SF Symbols app](https://developer.apple.com/sf-symbols/) (enkel voor macOS).
+- `md`: een **Material Symbol**, de iconen van Google voor Android. Je kan ze opzoeken op [fonts.google.com/icons](https://fonts.google.com/icons). Gebruik de naam in kleine letters met underscores, bv. `account_circle`.
+
+Je hoeft de namen niet uit het hoofd te kennen. Beide properties zijn getypeerd: typ in VS Code `sf="house` en je krijgt een lijst met alle iconen die beginnen met `house`. Een naam die niet bestaat (bv. `sf="info.circel"`) geeft meteen een TypeScript-fout. Zo vind je ook zonder Mac een SF Symbol.
+
+Je hebt hiervoor geen extra package nodig. Je kan ook voor de geselecteerde tab een ander icoon kiezen:
 
 ```tsx
-<Tabs.Screen
-  name="users/[name]"
-  options={{
-    href: null
-  }}
+<NativeTabs.Trigger.Icon
+  sf={{ default: 'house', selected: 'house.fill' }}
+  md={{ default: 'home', selected: 'home_filled' }}
 />
 ```
 
-Je kan deze href property ook gebruiken om een andere route te linken aan de tab. Bv als je deze naar een specifieke user wil linken. 
+#### Een tab verbergen
 
-Je kan nog meer opties voor het `Tabs.Screen` component [hier](https://reactnavigation.org/docs/bottom-tab-navigator/#options) terugvinden. Een zeer interessante optie is de `tabBarIcon` property. Hiermee kan je een icoon toevoegen aan de tab bar. 
+Met de `hidden` property verberg je een tab uit de tab bar:
 
 ```tsx
-import { Tabs } from 'expo-router';
-import { FontAwesome } from "@expo/vector-icons";
+<NativeTabs.Trigger name="about" hidden />
+```
 
-const HomeLayout = () => {
+Een verborgen tab is helemaal niet meer bereikbaar, ook niet via een `Link` of `router.push`. Wil je een scherm dat wel bereikbaar is maar geen eigen tab heeft (zoals een detailpagina), gebruik dan een Stack in een tab.
+
+#### Een Stack in een tab
+
+Vaak wil je vanuit een tab doorklikken naar een detailpagina, bijvoorbeeld van een lijst met gebruikers naar de pagina van één gebruiker. De tab bar moet dan blijven staan, en de detailpagina heeft een header met een terugknop.
+
+Dat doe je door de schermen van die tab in een eigen map te zetten met een eigen `_layout.tsx` die een `Stack` gebruikt:
+
+```
+- app
+  - _layout.tsx        (NativeTabs)
+  - index.tsx
+  - about.tsx
+  - users
+    - _layout.tsx      (Stack)
+    - index.tsx
+    - [name].tsx
+```
+
+In de `NativeTabs` verwijs je naar de map `users`:
+
+```tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+const TabLayout = () => {
   return (
-    <Tabs>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({color, size}) => <FontAwesome name="home" size={size} color={color} />
-        }}
-      />
-      <Tabs.Screen
-        name="about"
-        options={{
-          title: 'About',
-          tabBarIcon: ({color, size}) => <FontAwesome name="adjust" size={size} color={color} />
-        }}
-      />
-    </Tabs>
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="users">
+        <NativeTabs.Trigger.Label>Users</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="person.2.fill" md="group" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="about">
+        <NativeTabs.Trigger.Label>About</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="info.circle" md="info" />
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }
 
-export default HomeLayout;
+export default TabLayout;
 ```
 
-Een lijst van alle beschikbare icons kan je vinden op https://icons.expo.fyi. Je hoeft hier geen aparte package voor te installeren, deze icons zijn al beschikbaar in `@expo/vector-icons``.
+De `users/_layout.tsx` maakt van de tab een Stack:
+
+```tsx
+import { Stack } from 'expo-router';
+
+const UsersLayout = () => {
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ title: "Users" }} />
+    </Stack>
+  );
+}
+
+export default UsersLayout;
+```
+
+En `users/index.tsx` toont de lijst met links naar de detailpagina:
+
+```tsx
+import { Link } from "expo-router";
+import { View, StyleSheet } from "react-native";
+
+const users = ["bacon", "joske", "expo"];
+
+const Users = () => {
+    return (
+        <View style={styles.container}>
+            {users.map(name => (
+                <Link key={name} href={`/users/${name}`}>{name}</Link>
+            ))}
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 12
+    }
+})
+
+export default Users;
+```
+
+De `users/[name].tsx` is de pagina uit [Dynamische routes](#dynamische-routes). Tik je op een naam, dan schuift de detailpagina binnen de tab, met een header en een terugknop naar `Users`. De tab bar blijft staan.
+
+:::info JavaScript tabs
+Naast Native Tabs heeft Expo Router ook tabs die volledig in JavaScript getekend worden (`import { Tabs } from 'expo-router/js-tabs'`). Die kan je vrijer stijlen, maar ze zien er niet uit als de tab bar van het platform. In deze cursus gebruiken we Native Tabs.
+:::
 
 ### Drawer Navigation
 
@@ -456,46 +570,34 @@ const Layout = () => {
 export default Layout;
 ```
 
-Je kan nog meer opties voor het `Drawer.Screen` component [hier](https://reactnavigation.org/docs/drawer-navigator/#options) terugvinden.
+Net zoals bij Native Tabs zijn enkel de schermen die je met `Drawer.Screen` toevoegt bereikbaar. Je kan nog meer opties voor het `Drawer.Screen` component [hier](https://reactnavigation.org/docs/drawer-navigator/#options) terugvinden.
 
 ### Combineren van layouts
 
-Je kan layouts combineren door meerdere layouts te gebruiken in een directory. Bijvoorbeeld een Tab Navigation in combinatie met een Stack Navigation. Stel dat je eerst een pagina hebt zonder tab bar en als je op een bepaalde link klikt krijg je een pagina met een tab bar.
+Je kan layouts combineren door in een map een andere layout te gebruiken dan in de map erboven. Stel dat je app opent met een welkomstscherm zonder tab bar, en dat je na een tik op een knop in een deel van de app met een tab bar komt.
 
 De structuur van de directory ziet er dan als volgt uit:
 
 ```
 - app
-  - _layout.tsx
+  - _layout.tsx        (Stack)
+  - index.tsx          (welkomstscherm)
   - home
-    - _layout.tsx
-    - screen1.tsx
-    - screen2.tsx
+    - _layout.tsx      (NativeTabs)
+    - index.tsx
+    - profile.tsx
 ```
 
-De `_layout.tsx` in de `app` directory ziet er dan als volgt uit:
+De `_layout.tsx` in de `app` directory is een Stack zonder headers:
 
 ```tsx
 import { Stack } from 'expo-router';
 
 const Layout = () => {
   return (
-    <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          // Hide the header for all other routes.
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="home"
-        options={{
-          // Set the presentation mode to modal for our modal route.
-          presentation: 'modal',
-          headerShown: false,
-        }}
-      />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="home" />
     </Stack>
   );
 }
@@ -503,74 +605,67 @@ const Layout = () => {
 export default Layout;
 ```
 
-met de `index.tsx`:
+Het welkomstscherm `index.tsx` linkt naar `/home`. Door `replace` kan de gebruiker niet terug naar het welkomstscherm:
 
 ```tsx
 import { View, Text, Button } from 'react-native';
 import { Link } from 'expo-router';
-const Home = () => {
+
+const Welcome = () => {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{fontWeight: "bold", fontSize: 24}}>Welcome to the app</Text>
-      <Text style={{fontWeight: "100", marginBottom: 20}}>This is a dummy text</Text>
+      <Text style={{ fontWeight: "bold", fontSize: 24 }}>Welcome to the app</Text>
+      <Text style={{ fontWeight: "100", marginBottom: 20 }}>This is a dummy text</Text>
       <Link href="/home" replace asChild>
-        <Button title='Home Screen'/>
+        <Button title="Start" />
       </Link>
     </View>
   );
 }
 
-export default Home;
+export default Welcome;
 ```
 
-met de `home/_layout.tsx`:
+De `home/_layout.tsx` maakt van de map `home` een Tab Navigation:
 
 ```tsx
-import { Tabs } from "expo-router"
-import { FontAwesome } from "@expo/vector-icons";
+import { NativeTabs } from 'expo-router/native-tabs';
 
-const Layout = () => {
-    return (
-        <Tabs>
-            <Tabs.Screen
-                name="screen1"
-                options={{
-                    // Hide the header for all other routes.
-                    headerShown: false,
-                    tabBarIcon: ({color, size}) => <FontAwesome name="home" size={size} color={color} />
-                  }}
-            />
-            <Tabs.Screen
-                name="screen1"
-                options={{
-                    // Hide the header for all other routes.
-                    headerShown: false,
-                    tabBarIcon: ({color, size}) => <FontAwesome name="address-card" size={size} color={color} />
-                  }}
-            />
-        </Tabs>
-    )
+const HomeLayout = () => {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <NativeTabs.Trigger.Label>Profiel</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="person.crop.circle" md="account_circle" />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
 }
 
-export default Layout;
+export default HomeLayout;
 ```
 
-met de `home/screen1.tsx`:
+Omdat het eerste tabblad `home/index.tsx` heet, hoort het bij de route `/home`. Zo kan de link op het welkomstscherm gewoon naar `/home` gaan. De `home/index.tsx`:
 
 ```tsx
 import { View, Text } from "react-native";
 
-const Page1 = () => {
+const Home = () => {
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontWeight: "bold", fontSize: 24 }}>Welcome to screen 1</Text>
-            <Text style={{ fontWeight: "100", marginBottom: 20 }}>This is screen 1</Text>
-
+            <Text style={{ fontWeight: "bold", fontSize: 24 }}>Home</Text>
         </View>
     );
 }
-export default Page1;
+
+export default Home;
 ```
+
+De `home/profile.tsx` ziet er hetzelfde uit, met de tekst `Profiel`.
 
 ## useFocusEffect
 
