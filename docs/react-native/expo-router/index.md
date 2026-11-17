@@ -2,6 +2,9 @@
 sidebar_position: 9
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Expo Router
 
 Expo Router werkt zeer gelijkaardig aan de routing in next.js. Het is een file-based router. Dit wil zeggen dat je een mapstructuur aanmaakt en dat je op basis van de bestandsnaam de route bepaalt. Het laat toe om navigatie tussen schermen in je app te beheren, waardoor gebruikers naadloos tussen verschillende delen van de UI van je app kunnen bewegen, met behulp van dezelfde componenten op meerdere platforms (Android, iOS en web).
@@ -378,9 +381,20 @@ Een modal is een scherm dat over het vorige scherm schuift, bijvoorbeeld een for
 </Stack>
 ```
 
-Navigeer je nu naar `/add`, dan schuift dat scherm van onder over het huidige scherm. Op iOS kan de gebruiker de modal sluiten door ze naar beneden te vegen. Vanuit je code sluit je ze met `router.back()`.
+Navigeer je nu naar `/add`, dan schuift dat scherm van onder over het huidige scherm. Op iOS verschijnt de modal als een kaart over het vorige scherm, en kan de gebruiker ze sluiten door ze naar beneden te vegen. Op Android neemt de modal het volledige scherm in en sluit de gebruiker ze met de terugknop. Vanuit je code sluit je ze met `router.back()`.
 
-![Een modal op iOS: het scherm Toevoegen schuift over het Home-scherm](./img/modal.png)
+<Tabs groupId="platform">
+<TabItem value="ios" label="iOS" default>
+
+![Een modal op iOS: het scherm Toevoegen schuift als een kaart over het Home-scherm](./img/modal.png)
+
+</TabItem>
+<TabItem value="android" label="Android">
+
+![Een modal op Android: het scherm Toevoegen neemt het volledige scherm in, met een terugpijl in de header](./img/modal-android.png)
+
+</TabItem>
+</Tabs>
 
 ### Tab Navigation
 
@@ -414,7 +428,18 @@ Elke tab is een `NativeTabs.Trigger`. Met de `name` property bepaal je welk sche
 - `NativeTabs.Trigger.Icon`: het icoon van de tab. Met `sf` kies je het icoon op iOS, met `md` het icoon op Android.
 - `NativeTabs.Trigger.Badge`: een badge op de tab, bijvoorbeeld het aantal ongelezen berichten: `<NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>`.
 
+<Tabs groupId="platform">
+<TabItem value="ios" label="iOS" default>
+
 ![Native Tabs op iOS met de tabs Home en About](./img/native-tabs.png)
+
+</TabItem>
+<TabItem value="android" label="Android">
+
+![Native Tabs op Android met de tabs Home en About in een Material Design tab bar](./img/native-tabs-android.png)
+
+</TabItem>
+</Tabs>
 
 :::warning Enkel schermen met een Trigger
 Een scherm komt enkel in de tab bar als je er een `NativeTabs.Trigger` voor maakt. Een bestand in de map zonder `Trigger` krijgt geen tab en je kan er ook niet naartoe navigeren: een link naar dat scherm doet niets. Op Android kan je maximaal 5 tabs gebruiken.
@@ -439,9 +464,20 @@ Je hebt hiervoor geen extra package nodig. Je kan ook voor de geselecteerde tab 
 />
 ```
 
-Hieronder zie je het resultaat op iOS: de geselecteerde tab Home toont het gevulde huisje (`house.fill`). De tab Berichten heeft een badge met `<NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>`.
+Hieronder zie je het resultaat. Op iOS toont de geselecteerde tab Home het gevulde huisje (`house.fill`). Op Android krijgt de geselecteerde tab daarnaast een gekleurde pil achter het icoon. De tab Berichten heeft een badge met `<NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>`.
+
+<Tabs groupId="platform">
+<TabItem value="ios" label="iOS" default>
 
 ![Tab bar op iOS met een gevuld icoon voor de geselecteerde tab en een badge met 3 op de tab Berichten](./img/native-tabs-badge.png)
+
+</TabItem>
+<TabItem value="android" label="Android">
+
+![Tab bar op Android met een pil achter het icoon van de geselecteerde tab en een badge met 3 op de tab Berichten](./img/native-tabs-badge-android.png)
+
+</TabItem>
+</Tabs>
 
 #### Een tab verbergen
 
@@ -546,7 +582,18 @@ export default Users;
 
 De `users/[name].tsx` is de pagina uit [Dynamische routes](#dynamische-routes). Tik je op een naam, dan schuift de detailpagina binnen de tab, met een header en een terugknop naar `Users`. De tab bar blijft staan.
 
-![De detailpagina van een gebruiker binnen de tab Users, met een header, een terugknop en de tab bar](./img/native-tabs-stack.png)
+<Tabs groupId="platform">
+<TabItem value="ios" label="iOS" default>
+
+![De detailpagina van een gebruiker binnen de tab Users op iOS, met een header, een terugknop en de tab bar](./img/native-tabs-stack.png)
+
+</TabItem>
+<TabItem value="android" label="Android">
+
+![De detailpagina van een gebruiker binnen de tab Users op Android, met een header, een terugpijl en de tab bar](./img/native-tabs-stack-android.png)
+
+</TabItem>
+</Tabs>
 
 :::info JavaScript tabs
 Naast Native Tabs heeft Expo Router ook tabs die volledig in JavaScript getekend worden (`import { Tabs } from 'expo-router/js-tabs'`). Die kan je vrijer stijlen, maar ze zien er niet uit als de tab bar van het platform. In deze cursus gebruiken we Native Tabs.
