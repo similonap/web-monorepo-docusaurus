@@ -890,3 +890,568 @@ useFocusEffect(
     }, [])
 );
 ```
+
+## Voorbeeldapplicatie
+
+Tot slot bouwen we een volledige app waarin alles uit dit hoofdstuk samenkomt: een **Linux Cheatsheet**. De app haalt de tien meest gebruikte Linux-commando's op uit een API, toont per commando de syntax en een paar voorbeelden, en laat je commando's bewaren als favoriet.
+
+De data komt van [linux.json](https://raw.githubusercontent.com/similonap/json/refs/heads/master/linux.json). Elk commando ziet er zo uit:
+
+```json
+{
+  "rank": 2,
+  "command": "cd",
+  "description": "Changes the current working directory.",
+  "syntax": "cd [directory]",
+  "examples": [
+    {
+      "usage": "cd /etc",
+      "explanation": "Move into the /etc directory."
+    }
+  ]
+}
+```
+
+De app werkt zo:
+- Je start op een **welkomstscherm**. Met de knop Start ga je naar de app, en daarna kan je niet meer terug naar het welkomstscherm.
+- Onderaan staan twee **tabs**: Commando's en Favorieten. Op de tab Favorieten staat een badge met het aantal favorieten.
+- In de tab Commando's tik je op een commando en schuift de **detailpagina** binnen de tab open. Van daaruit ga je naar het volgende commando of in één keer terug naar het overzicht.
+- Onderaan de lijst opent een link het scherm "Over deze app" als **modal**.
+
+### Mapstructuur
+
+```
+- src
+  - types.ts
+  - api.ts
+  - context
+    - FavoritesContext.tsx
+  - app
+    - _layout.tsx            (Stack)
+    - index.tsx              → /                 welkomstscherm
+    - about.tsx              → /about            modal
+    - (tabs)
+      - _layout.tsx          (NativeTabs)
+      - favorites.tsx        → /favorites
+      - commands
+        - _layout.tsx        (Stack)
+        - index.tsx          → /commands
+        - [command].tsx      → /commands/ls, /commands/cd, ...
+```
+
+Enkel de bestanden in de map `app` worden schermen. De types, de functie die de data ophaalt en de context staan daarom ernaast in `src`: zouden ze in `app` staan, dan probeert Expo Router er een route van te maken.
+
+In de map `app` zie je de drie layouts die in elkaar zitten, zoals in [Combineren van layouts](#combineren-van-layouts):
+1. De root layout is een **Stack** met het welkomstscherm, de tabs en de modal.
+2. De groep `(tabs)` is een **Native Tabs** layout. Omdat het een [groep](#groepen) is, komt `(tabs)` niet in de URL: de tabs zitten op `/commands` en `/favorites`.
+3. De tab `commands` is zelf weer een **Stack**, zodat de detailpagina binnen de tab openschuift ([Een Stack in een tab](#een-stack-in-een-tab)).
+
+### Types en data ophalen
+
+In `types.ts` staan de interfaces voor de data uit de API:
+
+```ts
+export interface Example {
+    usage: string;
+    explanation: string;
+}
+
+export interface Command {
+    rank: number;
+    command: string;
+    description: string;
+    syntax: string;
+    examples: Example[];
+}
+```
+
+`api.ts` haalt de commando's op. Zo staat de URL maar op één plek, en kan elk scherm `getCommands()` gebruiken:
+
+```ts
+import { Command } from "./types";
+
+const URL = "https://raw.githubusercontent.com/similonap/json/refs/heads/master/linux.json";
+
+export const getCommands = async (): Promise<Command[]> => {
+    const response = await fetch(URL);
+    return await response.json();
+}
+```
+
+### Favorieten bijhouden met Context
+
+De favorieten heb je op verschillende plaatsen nodig: op de detailpagina (toevoegen en verwijderen), op de tab Favorieten (de lijst) en in de tab bar (de badge). Daarom steken we ze in een [Context](../../react/child-parent/context.md):
+
+```tsx
+import React, { useState } from "react";
+
+interface IFavoritesContext {
+    favorites: string[];
+    toggleFavorite: (command: string) => void;
+}
+
+export const FavoritesContext = React.createContext<IFavoritesContext>({
+    favorites: [],
+    toggleFavorite: (command: string) => {}
+});
+
+export const FavoritesProvider = ({ children }: { children: React.ReactNode }) => {
+    const [favorites, setFavorites] = useState<string[]>([]);
+
+    const toggleFavorite = (command: string) => {
+        if (favorites.includes(command)) {
+            setFavorites(favorites.filter(favorite => favorite !== command));
+        } else {
+            setFavorites([...favorites, command]);
+        }
+    }
+
+    return (
+        <FavoritesContext.Provider value={{ favorites, toggleFavorite }}>
+            {children}
+        </FavoritesContext.Provider>
+    );
+}
+```
+
+### De root layout
+
+De root layout zet de `FavoritesProvider` rond de hele app, zodat elk scherm en elke layout aan de favorieten kan. Daarbinnen staat de Stack met drie schermen:
+
+```tsx
+import { Stack } from 'expo-router';
+import { FavoritesProvider } from '../context/FavoritesContext';
+
+const RootLayout = () => {
+  return (
+    <FavoritesProvider>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'fade' }} />
+        <Stack.Screen name="about" options={{ presentation: 'modal', title: "Over deze app", headerTransparent: false }} />
+      </Stack>
+    </FavoritesProvider>
+  );
+}
+
+export default RootLayout;
+```
+
+- `index` (het welkomstscherm) en `(tabs)` krijgen geen header van deze Stack. Het welkomstscherm heeft er geen nodig, en de tabs hebben hun eigen headers.
+- Met `animation: 'fade'` faden de tabs in als je van het welkomstscherm komt, in plaats van van rechts in te schuiven.
+- `about` is een [modal](#modals). Op iOS 26 is de header van een modal standaard doorzichtig, waardoor de inhoud eronder schuift. Met `headerTransparent: false` krijgt de header een eigen achtergrond.
+
+### Het welkomstscherm
+
+```tsx
+import { Link } from "expo-router";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+
+const Welcome = () => {
+    return (
+        <View style={styles.container}>
+            <Text style={styles.prompt}>$_</Text>
+            <Text style={styles.title}>Linux Cheatsheet</Text>
+            <Text style={styles.subtitle}>De 10 commando's die je het vaakst nodig hebt.</Text>
+            <Link href="/commands" replace asChild>
+                <Pressable style={styles.button}>
+                    <Text style={styles.buttonText}>Start</Text>
+                </Pressable>
+            </Link>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 24,
+        gap: 12
+    },
+    prompt: {
+        fontSize: 48,
+        fontWeight: "bold"
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: "bold"
+    },
+    subtitle: {
+        fontSize: 16,
+        color: "#555",
+        textAlign: "center"
+    },
+    button: {
+        marginTop: 24,
+        backgroundColor: "#1e293b",
+        paddingVertical: 12,
+        paddingHorizontal: 48,
+        borderRadius: 8
+    },
+    buttonText: {
+        color: "white",
+        fontSize: 18,
+        fontWeight: "bold"
+    }
+});
+
+export default Welcome;
+```
+
+De `Link` gebruikt `asChild`, zodat de `Pressable` de knop is. Door `replace` vervangt `/commands` het welkomstscherm: de gebruiker kan niet meer terug naar het welkomstscherm. Merk op dat de link naar `/commands` gaat en niet naar `/(tabs)/commands`: de groep telt niet mee in de URL.
+
+![Het welkomstscherm op iOS met de titel Linux Cheatsheet en een knop Start](./img/voorbeeld-welkom-ios.png)
+
+### De tabs
+
+```tsx
+import { useContext } from 'react';
+import { NativeTabs } from 'expo-router/native-tabs';
+import { FavoritesContext } from '../../context/FavoritesContext';
+
+const TabLayout = () => {
+  const { favorites } = useContext(FavoritesContext);
+
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="commands">
+        <NativeTabs.Trigger.Label>Commando's</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="terminal" md="terminal" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="favorites">
+        <NativeTabs.Trigger.Label>Favorieten</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'star', selected: 'star.fill' }}
+          md={{ default: 'star_border', selected: 'star' }}
+        />
+        {favorites.length > 0 && (
+          <NativeTabs.Trigger.Badge>{favorites.length.toString()}</NativeTabs.Trigger.Badge>
+        )}
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+
+export default TabLayout;
+```
+
+- De `NativeTabs` layout leest de favorieten uit de context. Telkens er een favoriet bijkomt, rendert de layout opnieuw en klopt de badge meteen.
+- De badge staat er enkel als er favorieten zijn. `NativeTabs.Trigger.Badge` verwacht tekst, daarom zetten we het getal om met `toString()`.
+- De tab Favorieten toont een ander icoon als hij geselecteerd is: een lege ster als de tab niet actief is en een gevulde ster als hij actief is (zie [Iconen](#iconen)).
+
+Er is geen `(tabs)/index.tsx`. Die zou op `/` uitkomen, net als het welkomstscherm `app/index.tsx`, en dan is een van beide niet bereikbaar (zie [Groepen](#groepen)).
+
+### Een Stack in de tab Commando's
+
+De map `commands` krijgt een eigen Stack, met de `screenOptions` uit [Configuratie](#configuratie) voor een donkere header:
+
+```tsx
+import { Stack } from 'expo-router';
+
+const CommandsLayout = () => {
+  return (
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#1e293b',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+      }}
+    >
+      <Stack.Screen name="index" options={{ title: "Commando's" }} />
+    </Stack>
+  );
+}
+
+export default CommandsLayout;
+```
+
+De lijst krijgt hier de titel "Commando's". De titel van de detailpagina zetten we in de pagina zelf, want die hangt af van het commando.
+
+### De lijst met commando's
+
+```tsx
+import { useCallback, useState } from "react";
+import { Link, useFocusEffect } from "expo-router";
+import { FlatList, Pressable, Text, StyleSheet } from "react-native";
+import { getCommands } from "../../../api";
+import { Command } from "../../../types";
+
+const Commands = () => {
+    const [commands, setCommands] = useState<Command[]>([]);
+
+    useFocusEffect(
+        useCallback(() => {
+            const loadCommands = async () => {
+                setCommands(await getCommands());
+            };
+
+            loadCommands();
+        }, [])
+    );
+
+    return (
+        <FlatList
+            data={commands}
+            keyExtractor={item => item.command}
+            renderItem={({ item }) => (
+                <Link href={`/commands/${item.command}`} asChild>
+                    <Pressable style={styles.row}>
+                        <Text style={styles.command}>{item.command}</Text>
+                        <Text style={styles.description} numberOfLines={1}>{item.description}</Text>
+                    </Pressable>
+                </Link>
+            )}
+            ListFooterComponent={
+                <Link href="/about" style={styles.about}>Over deze app</Link>
+            }
+        />
+    );
+}
+
+const styles = StyleSheet.create({
+    row: {
+        padding: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ddd",
+        gap: 4
+    },
+    command: {
+        fontSize: 18,
+        fontWeight: "bold"
+    },
+    description: {
+        color: "#555"
+    },
+    about: {
+        padding: 16,
+        textAlign: "center",
+        color: "#2563eb"
+    }
+});
+
+export default Commands;
+```
+
+- Elke rij is een `Link` met `asChild` rond een `Pressable`. De `href` is een template literal, zodat [typed routes](#dynamische-routes-linken) de link kunnen nakijken.
+- De commando's worden opgehaald in een [useFocusEffect](#usefocuseffect). De lijst blijft bestaan als je naar een andere tab of een detailpagina gaat. Met `useFocusEffect` wordt de data opnieuw opgehaald telkens je terugkeert, zodat je altijd de nieuwste versie van de API ziet.
+- Onderaan de lijst staat een gewone `Link` naar `/about`. Omdat `about` in de root layout een modal is, schuift dat scherm over de tabs.
+
+![De lijst met commando's op iOS met een donkere header en de tabs Commando's en Favorieten](./img/voorbeeld-commandos-ios.png)
+
+### De detailpagina
+
+```tsx
+import { useContext, useEffect, useState } from "react";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { ScrollView, View, Text, Button, StyleSheet, Platform } from "react-native";
+import { getCommands } from "../../../api";
+import { Command } from "../../../types";
+import { FavoritesContext } from "../../../context/FavoritesContext";
+
+const CommandDetail = () => {
+    const { command } = useLocalSearchParams<{ command: string }>();
+    const { favorites, toggleFavorite } = useContext(FavoritesContext);
+    const [commands, setCommands] = useState<Command[]>([]);
+
+    useEffect(() => {
+        const loadCommands = async () => {
+            setCommands(await getCommands());
+        };
+
+        loadCommands();
+    }, []);
+
+    const index = commands.findIndex(item => item.command === command);
+    const item = commands[index];
+    const next = commands[index + 1];
+    const isFavorite = favorites.includes(command);
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <Stack.Screen options={{ title: command }} />
+            {item && (
+                <>
+                    <Text style={styles.description}>{item.description}</Text>
+                    <Text style={styles.code}>{item.syntax}</Text>
+                    <Text style={styles.heading}>Voorbeelden</Text>
+                    {item.examples.map(example => (
+                        <View key={example.usage} style={styles.example}>
+                            <Text style={styles.code}>{example.usage}</Text>
+                            <Text>{example.explanation}</Text>
+                        </View>
+                    ))}
+                    <Button
+                        title={isFavorite ? "Verwijder uit favorieten" : "Voeg toe aan favorieten"}
+                        onPress={() => toggleFavorite(command)}
+                    />
+                    {next && (
+                        <Button
+                            title={`Volgende: ${next.command}`}
+                            onPress={() => router.push(`/commands/${next.command}`)}
+                        />
+                    )}
+                    <Button title="Terug naar het overzicht" onPress={() => router.dismissAll()} />
+                </>
+            )}
+        </ScrollView>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 16,
+        gap: 12
+    },
+    description: {
+        fontSize: 16
+    },
+    heading: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginTop: 8
+    },
+    example: {
+        gap: 4
+    },
+    code: {
+        fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
+        backgroundColor: "#f1f5f9",
+        padding: 8,
+        borderRadius: 4
+    }
+});
+
+export default CommandDetail;
+```
+
+- `useLocalSearchParams` geeft het commando uit de URL: bij `/commands/ls` is `command` gelijk aan `"ls"`.
+- Met `<Stack.Screen options={{ title: command }} />` krijgt de header de naam van het commando als titel.
+- Hier volstaat een gewone `useEffect`. Elke keer je een commando opent, wordt er een nieuwe detailpagina op de Stack gezet, en dus wordt het effect sowieso opnieuw uitgevoerd.
+- De eerste knop past de favorieten in de context aan. De badge op de tab Favorieten verandert meteen mee.
+- "Volgende" gebruikt `router.push`: de volgende detailpagina komt bovenop de Stack. Met de terugknop ga je dus stap voor stap terug langs elk commando dat je bekeek.
+- "Terug naar het overzicht" gebruikt `router.dismissAll()`: alle detailpagina's gaan in één keer van de Stack en je komt terug op de lijst.
+
+![De detailpagina van ls op iOS met de syntax, de voorbeelden, drie knoppen en een badge 2 op de tab Favorieten](./img/voorbeeld-detail-ios.png)
+
+### Favorieten
+
+```tsx
+import { useContext } from "react";
+import { Link } from "expo-router";
+import { View, FlatList, Text, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { FavoritesContext } from "../../context/FavoritesContext";
+
+const Favorites = () => {
+    const { favorites } = useContext(FavoritesContext);
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <Text style={styles.title}>Favorieten</Text>
+            <FlatList
+                data={favorites}
+                keyExtractor={item => item}
+                renderItem={({ item }) => (
+                    <Link
+                        href={{ pathname: "/commands/[command]", params: { command: item } }}
+                        style={styles.row}
+                    >
+                        {item}
+                    </Link>
+                )}
+                ListEmptyComponent={
+                    <Text style={styles.empty}>Je hebt nog geen favorieten.</Text>
+                }
+            />
+        </SafeAreaView>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: "bold",
+        padding: 16
+    },
+    row: {
+        fontSize: 18,
+        padding: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ddd"
+    },
+    empty: {
+        padding: 16,
+        color: "#555"
+    }
+});
+
+export default Favorites;
+```
+
+- Deze tab heeft geen Stack en dus geen header. Native Tabs tonen zelf geen header, daarom zorgt de `SafeAreaView` ervoor dat de titel niet achter de statusbalk verdwijnt.
+- De link naar een commando gebruikt een `Href` object met `pathname` en `params` (zie [Dynamische routes linken](#dynamische-routes-linken)). De detailpagina hoort bij de tab Commando's. Tik je op een favoriet, dan springt de app naar die tab en opent daar de detailpagina. De terugknop brengt je naar de lijst met commando's.
+
+![De tab Favorieten op iOS met ls en grep en een badge 2 op de geselecteerde tab](./img/voorbeeld-favorieten-ios.png)
+
+### Over deze app
+
+```tsx
+import { router } from "expo-router";
+import { View, Text, Button, StyleSheet } from "react-native";
+
+const About = () => {
+    return (
+        <View style={styles.container}>
+            <Text style={styles.text}>
+                Deze app toont de Linux-commando's die je het vaakst gebruikt, met hun syntax en een paar voorbeelden.
+            </Text>
+            <Button title="Sluiten" onPress={() => router.back()} />
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 24,
+        gap: 16
+    },
+    text: {
+        fontSize: 16
+    }
+});
+
+export default About;
+```
+
+De knop Sluiten sluit de modal met `router.back()`. Op iOS kan je de modal ook naar beneden vegen.
+
+![De modal Over deze app op iOS, over de lijst met commando's](./img/voorbeeld-over-ios.png)
+
+### Overzicht
+
+| Onderdeel | Waar in de app |
+| --- | --- |
+| [Schermen](#schermen-toevoegen) en [dynamische routes](#dynamische-routes) | alle bestanden in `app`, `commands/[command].tsx` |
+| [`Link`](#navigeren-tussen-schermen) met `asChild` | `index.tsx`, `commands/index.tsx` |
+| [Route vervangen](#route-vervangen) met `replace` | `index.tsx` |
+| [`Href` object](#dynamische-routes-linken) | `favorites.tsx` |
+| [Imperatief navigeren](#imperatief-navigeren): `push`, `back`, `dismissAll` | `commands/[command].tsx`, `about.tsx` |
+| [Layout routes](#layout-routes) en [groepen](#groepen) | de drie `_layout.tsx`-bestanden, `(tabs)` |
+| [Stack](#stack-navigation): `screenOptions`, `Stack.Screen`, `animation` | `_layout.tsx`, `commands/_layout.tsx`, `commands/[command].tsx` |
+| [Modal](#modals) | `about.tsx` |
+| [Native Tabs](#tab-navigation) met [iconen](#iconen) en badge | `(tabs)/_layout.tsx` |
+| [Een Stack in een tab](#een-stack-in-een-tab) | `commands` |
+| [`useFocusEffect`](#usefocuseffect) en [`useCallback`](#usecallback) | `commands/index.tsx` |
+
+Een paar onderdelen komen niet in de app voor, omdat ze er niet in passen: een eigen layout met [`Slot`](#layout-route-aanmaken), een [Drawer](#drawer-navigation) (de app gebruikt al tabs) en een [verborgen tab](#een-tab-verbergen).
+
