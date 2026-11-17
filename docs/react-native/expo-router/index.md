@@ -234,22 +234,42 @@ Twee dingen zijn hier belangrijk:
 - De layout moet `flex: 1` hebben. Je schermen gebruiken zelf `flex: 1` om de beschikbare ruimte te vullen. Heeft de layout rond de `Slot` geen hoogte, dan is er geen ruimte om te vullen en blijft je scherm onzichtbaar.
 - Een `Slot` tekent geen header, dus niets houdt je inhoud weg van de statusbalk bovenaan. De `SafeAreaView` zorgt ervoor dat de header en footer niet achter de statusbalk of de home-indicator verdwijnen.
 
-Expo Router ondersteunt slechts één layout route per directory. Als je meerdere layout routes wil gebruiken moet je meerdere directories aanmaken. 
+### Groepen
+
+Expo Router ondersteunt slechts één layout route per directory. Wil je een andere layout voor een deel van je schermen, dan moet je die schermen in een aparte directory zetten. Maar een directory wordt normaal ook een stuk van de URL:
 
 ```
 - app
   - _layout.tsx
   - home
     - _layout.tsx
-    - index.tsx
+    - profile.tsx      → /home/profile
 ```
 
-Het nadeel hiervan is dat het pad hierdoor "vervuild" wordt met overbodige directories. Je kan dit probleem oplossen door een deel van de directory structuur te verbergen door een deel van het pad te omringen met ronde haakjes. 
+Wil je dat niet, dan zet je de naam van de directory tussen ronde haakjes. Zo'n directory heet een **groep**. Een groep telt niet mee in de URL:
 
-- `app/root/home.tsx` komt overeen met `/root/home`
-- `app/(root)/home.tsx` komt overeen met `/home`
+```
+- app
+  - _layout.tsx
+  - (home)
+    - _layout.tsx
+    - profile.tsx      → /profile
+```
 
-Dit is handig om layouts toe te voegen zonder extra segmenten aan de URL toe te voegen. Je kan zoveel groepen toevoegen als je wil.
+- `app/home/profile.tsx` komt overeen met `/home/profile`
+- `app/(home)/profile.tsx` komt overeen met `/profile`
+
+De `_layout.tsx` in een groep werkt zoals elke andere layout: ze geldt voor alle schermen in de groep. Je gebruikt groepen vooral om:
+- een layout te geven aan een deel van je schermen, zonder dat hun URL verandert. Een typisch voorbeeld is een groep `(tabs)` met een tab bar (zie [Een groep voor de tabs](#een-groep-voor-de-tabs)).
+- je bestanden te ordenen, bijvoorbeeld de schermen om in te loggen en te registreren in een groep `(auth)`. Een groep heeft daarvoor geen `_layout.tsx` nodig.
+
+Je kan zoveel groepen maken als je wil, en ze ook in elkaar steken.
+
+Linken doe je gewoon naar de URL: `<Link href="/profile">`. Je mag de groep ook in het pad schrijven (`/(home)/profile`): dat is dezelfde route. Met typed routes kent TypeScript beide schrijfwijzen. Een link naar `/home/profile` geeft dan een fout, want die route bestaat niet.
+
+:::warning Twee bestanden voor dezelfde URL
+Omdat een groep niet meetelt in de URL, kunnen twee bestanden op dezelfde URL uitkomen. `app/index.tsx` en `app/(tabs)/index.tsx` zijn bijvoorbeeld allebei `/`. Expo Router geeft daar geen foutmelding voor: `app/index.tsx` wint en het scherm in de groep is niet meer bereikbaar. Zorg ervoor dat elke URL bij maar één bestand hoort.
+:::
 
 ## Native layouts
 
@@ -438,7 +458,7 @@ export default TabLayout;
 
 Elke tab is een `NativeTabs.Trigger`. Met de `name` property bepaal je welk scherm (welk bestand in de map) bij de tab hoort. Daarbinnen kan je instellen hoe de tab eruitziet:
 - `NativeTabs.Trigger.Label`: de tekst onder het icoon. Laat je die weg, dan wordt de naam van de route gebruikt.
-- `NativeTabs.Trigger.Icon`: het icoon van de tab. Met `sf` kies je het icoon op iOS, met `md` het icoon op Android.
+- `NativeTabs.Trigger.Icon`: het icoon van de tab. Met `sf` kies je het icoon op iOS uit de [SF Symbols](https://developer.apple.com/sf-symbols/), met `md` het icoon op Android uit de [Material Symbols](https://fonts.google.com/icons). Meer daarover in [Iconen](#iconen).
 - `NativeTabs.Trigger.Badge`: een badge op de tab, bijvoorbeeld het aantal ongelezen berichten: `<NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>`.
 
 <Tabs groupId="platform">
@@ -737,6 +757,62 @@ export default Home;
 ```
 
 De `home/profile.tsx` ziet er hetzelfde uit, met de tekst `Profiel`.
+
+#### Een groep voor de tabs
+
+In veel apps hebben de tabs geen eigen stuk in de URL zoals `/home`, maar zitten ze op `/` en `/profile`. Daarnaast wil je vaak een scherm dat over de tabs schuift, zonder tab bar, bijvoorbeeld de instellingen. Dat doe je met een [groep](#groepen):
+
+```
+- app
+  - _layout.tsx        (Stack)
+  - (tabs)
+    - _layout.tsx      (NativeTabs)
+    - index.tsx        → /
+    - profile.tsx      → /profile
+  - settings.tsx       → /settings
+```
+
+De `_layout.tsx` in de `app` directory is een Stack met twee schermen: de groep `(tabs)`, met alle tabs samen, en `settings`:
+
+```tsx
+import { Stack } from 'expo-router';
+
+const RootLayout = () => {
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Home" }} />
+      <Stack.Screen name="settings" options={{ title: "Instellingen" }} />
+    </Stack>
+  );
+}
+
+export default RootLayout;
+```
+
+- `headerShown: false` verbergt de header van de Stack boven de tabs. Native Tabs hebben zelf geen header.
+- De `title` zie je niet bij de tabs zelf, maar wel op iOS op de terugknop van het scherm `settings`. Laat je de `title` weg, dan staat daar de naam van de groep: `(tabs)`.
+
+De `(tabs)/_layout.tsx` is dezelfde `NativeTabs` layout als de `home/_layout.tsx` hierboven, met de tabs `index` en `profile`. Vanuit een tab link je naar de instellingen:
+
+```tsx
+import { View, Text } from "react-native";
+import { Link } from "expo-router";
+
+const Profile = () => {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+            <Text style={{ fontWeight: "bold", fontSize: 24 }}>Profiel</Text>
+            <Link href="/settings">Instellingen</Link>
+        </View>
+    );
+}
+
+export default Profile;
+```
+
+Tik je op de link, dan schuift `settings` over de tabs: de tab bar verdwijnt en je krijgt een header met een terugknop. Met de terugknop kom je weer bij de tab waar je was.
+
+Merk op dat er hier geen `app/index.tsx` is: de tab `(tabs)/index.tsx` is al `/`.
 
 ## useFocusEffect
 
