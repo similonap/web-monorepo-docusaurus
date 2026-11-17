@@ -295,7 +295,20 @@ Je kan de header van de schermen aanpassen door de `screenOptions` property te g
 />
 ```
 
-![Een header met een oranje achtergrond en een witte, vette titel](./img/screenOptions.png)
+Hieronder zie je de detailpagina van een gebruiker met deze instellingen. De titels `users/[name]` en `index` zijn de namen van de routes: die pas je hieronder aan met `Stack.Screen`.
+
+<Tabs groupId="platform">
+<TabItem value="ios" label="iOS" default>
+
+![Een header op iOS met een oranje achtergrond, een witte, vette titel users/[name] en een terugknop index](./img/screenOptions-ios.png)
+
+</TabItem>
+<TabItem value="android" label="Android">
+
+![Een header op Android met een oranje achtergrond, een witte, vette titel users/[name] en een witte terugpijl](./img/screenOptions-android.png)
+
+</TabItem>
+</Tabs>
 
 Je kan als children van het `Stack` component de schermen individueel configureren door ze `Stack.Screen` componenten te gebruiken. Dit is handig om bijvoorbeeld de titel van de header aan te passen. 
 
