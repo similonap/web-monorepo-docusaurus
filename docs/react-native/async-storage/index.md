@@ -98,6 +98,50 @@ const Index = () => {
 export default Index;
 ```
 
+## Opslaan/uitlezen van een boolean
+
+Ook een boolean moet je eerst omzetten naar een string. Met de `toString` methode wordt `true` de string `"true"` en `false` de string `"false"`. Bij het uitlezen vergelijk je de string met `"true"`: het resultaat van die vergelijking is terug een boolean.
+
+```typescript expo={"dependencies":"@react-native-async-storage/async-storage"}
+import React from "react";
+
+import { View, Text, Button, Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const getDarkMode = async (): Promise<boolean> => {
+  const value: string | null = await AsyncStorage.getItem("darkMode");
+  return value === "true";
+};
+
+const toggleDarkMode = async () => {
+  const darkMode: boolean = await getDarkMode();
+  await AsyncStorage.setItem("darkMode", (!darkMode).toString());
+};
+
+const getData = async () => {
+  const darkMode: boolean = await getDarkMode();
+  Alert.alert(darkMode ? "Dark mode is on" : "Dark mode is off");
+};
+
+const Index = () => {
+  return (
+    <View>
+      <Text>AsyncStorage</Text>
+      <Button title="Toggle Dark Mode" onPress={toggleDarkMode} />
+      <Button title="Load Data" onPress={getData} />
+    </View>
+  );
+};
+
+export default Index;
+```
+
+Als er nog niets opgeslagen is, geeft `getItem` `null` terug. De vergelijking `value === "true"` is dan `false`, dus dark mode staat standaard uit.
+
+:::warning
+Gebruik geen `Boolean(value)` om de string terug om te zetten. Elke niet-lege string is `true`, dus `Boolean("false")` geeft ook `true`.
+:::
+
 ## Opslaan/uitlezen van een object
 
 Om een object op te slaan in AsyncStorage moet je eerst het object omzetten naar een string. Dit kan je doen met de `JSON.stringify` functie. Om een object terug te halen uit AsyncStorage moet je de string terug omzetten naar een object. Dit kan je doen met de `JSON.parse` functie.
