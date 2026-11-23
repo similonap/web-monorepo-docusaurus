@@ -634,6 +634,20 @@ Naast Native Tabs heeft Expo Router ook tabs die volledig in JavaScript getekend
 
 ### Drawer Navigation
 
+De `Drawer` zit in Expo Router zelf, maar heeft een paar extra packages nodig voor de animaties en het swipen. Die installeer je eerst:
+
+```bash
+npx expo install react-native-reanimated react-native-worklets react-native-gesture-handler
+```
+
+:::info
+Dit commando geldt voor SDK 56 en later. Werk je met een oudere SDK (54 of 55), dan moet je ook `@react-navigation/drawer` installeren:
+
+```bash
+npx expo install @react-navigation/drawer react-native-reanimated react-native-worklets react-native-gesture-handler
+```
+:::
+
 Om een Drawer Navigation te gebruiken moet je het `_layout.tsx` bestand aanpassen en een `Drawer` component gebruiken.
 
 ```tsx
