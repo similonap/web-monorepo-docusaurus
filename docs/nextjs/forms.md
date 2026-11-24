@@ -2,7 +2,7 @@
 
 ## Server Actions
 
-React Server Actions maken het mogelijk om asynchrone code rechtstreeks op de server uit te voeren. Dat betekent dat je geen aparte API-endpoints meer hoeft te schrijven om data te wijzigen. In plaats daarvan schrijf je asynchrone functies die op de server draaien, maar die je kunt aanroepen vanuit zowel Client Components als Server Components. Zo kan je bijvoorbeeld een formulier rechtstreeks koppelen aan een serverfunctie: wanneer de gebruiker het formulier indient, wordt die functie op de server uitgevoerd met directe toegang tot de database en andere back-endlogica. Er is geen extra fetch-request nodig, geen CORS-configuratie en ook geen aparte router of JSON-parsing — alles zit in één plek.
+React Server Actions maken het mogelijk om asynchrone code rechtstreeks op de server uit te voeren. Dat betekent dat je geen aparte API-endpoints meer hoeft te schrijven om data te wijzigen. In plaats daarvan schrijf je asynchrone functies die op de server draaien, maar die je kunt aanroepen vanuit zowel Client Components als Server Components. Zo kan je bijvoorbeeld een formulier rechtstreeks koppelen aan een serverfunctie: wanneer de gebruiker het formulier indient, wordt die functie op de server uitgevoerd met directe toegang tot de database en andere back-endlogica. Er is geen extra fetch-request nodig, geen CORS-configuratie en ook geen aparte router of JSON-parsing: alles zit op één plek.
 
 Vroeger moest dit heel anders. Je had een aparte backend nodig, bijvoorbeeld een Express-server of een .NET Core API. Daarin moest je routes definiëren zoals een POST-endpoint voor het verwerken van formulieren en een GET-endpoint voor het ophalen van data. Op de clientkant moest je in React met fetch of axios een request sturen naar dat endpoint, wachten op een JSON-response en daarna zelf de UI bijwerken. Je moest zorgen voor correcte headers, validatie, beveiliging tegen CSRF en CORS-problemen, en vaak ook dubbele type-definities maken voor zowel frontend als backend. Dat werkte prima, maar voor een eenvoudige use-case zoals het versturen van een contactformulier was er behoorlijk wat boilerplate nodig.
 
@@ -14,9 +14,8 @@ We gaan een eenvoudig formulier maken dat een bericht opslaagt in een mongodb da
 
 ```typescript
 import { Collection, MongoClient } from "mongodb";
+import { connection } from "next/server";
 import { Message } from "@/types";
-
-console.log(process.env.MONGODB_URI);
 
 const client = new MongoClient(process.env.MONGODB_URI!);
 
@@ -28,10 +27,13 @@ export const saveMessage = async (message: Message) => {
 }
 
 export const getMessages = async() => {
+    await connection();
     const messages = await messageCollection.find().toArray();
     return messages;
 }
 ```
+
+Zoals je in het hoofdstuk over server components zag, begint een databasefunctie die je in een component gebruikt met `await connection()`. Voor `saveMessage` is dat niet nodig, want die gebruiken we enkel in een server action.
 
 en 
 
@@ -128,7 +130,7 @@ Nu hebben we een formulier, maar het doet nog niets als we op de knop "Send" kli
 ```typescript
 "use server";
 
-const createMessage = async (formData: FormData) => {
+export const createMessage = async (formData: FormData) => {
     const firstName = formData.get("firstName")?.toString();
     const lastName = formData.get("lastName")?.toString();
     const email = formData.get("email")?.toString();
@@ -203,18 +205,24 @@ const MessageForm = () => {
 export default MessageForm;
 ```
 
-Als we de error message nu willen afhandelen op een heel eenvoudige manier kunnen we gebruik maken van een `error.tsx` file. Deze file wordt automatisch gebruikt door Next.js als er een error wordt gegooid in een server component. We kunnen deze file aanmaken in de `app/contact` folder. 
+Als we de error nu willen afhandelen op een heel eenvoudige manier kunnen we gebruik maken van een `error.tsx` file. Deze file wordt automatisch gebruikt door Next.js als er een error wordt gegooid in een server component of server action. We kunnen deze file aanmaken in de `app/contact` folder. 
 
 ```typescript
 "use client";
 
-const ErrorPage = ({ error, reset }: { error: Error; reset: () => void }) => {
+interface ErrorProps {
+    error: unknown;
+    retry: () => void;
+}
+
+const ErrorPage = ({ error, retry }: ErrorProps) => {
     return (
         <div className="form-container">
             <div className="form-card">
                 <div className="form-header">
                     <h1>Something went wrong</h1>
-                    <p>{error.message}</p>
+                    <p>{error instanceof Error ? error.message : "Unknown error"}</p>
+                    <button className="btn-secondary" onClick={() => retry()}>Try again</button>
                 </div>
             </div>
         </div>
@@ -223,6 +231,8 @@ const ErrorPage = ({ error, reset }: { error: Error; reset: () => void }) => {
 
 export default ErrorPage;
 ```
+
+Opgelet: in development zie je hier de foutmelding `All fields are required`. In productie (`npm run build` en `npm run start`) vervangt Next.js de melding van een fout die op de server gegooid werd door een algemene boodschap, zodat er geen gevoelige gegevens lekken. Voor validatiefouten die de gebruiker moet zien, is een `error.tsx` dus niet geschikt. In de volgende sectie zie je hoe je dat beter doet met `useActionState`.
 
 Wil je er voor zorgen dat de button even gedisabled wordt nadat je de knop hebt ingedrukt, dan kan je gebruik maken van een kleine Client Component die we kunnen inladen in het formulier. Deze component zorgt er voor dat de button even disabled wordt nadat je op de knop hebt geklikt. We maken hiervoor een nieuwe component aan `SubmitButton.tsx`.
 
@@ -248,7 +258,7 @@ Hier gebruiken we dus de `useFormStatus` hook die ons vertelt of het formulier a
 
 ### Formulier (Client Component)
 
-Soms is het nodig om meer controle te hebben over het formulier, bijvoorbeeld om validatie te doen of om de UI bij te werken zonder de pagina te herladen. In dat geval kunnen we een Client Component maken die het formulier bevat. Hiervoor hebben we de `useActionState` hook nodig die we kunnen importeren uit `react-dom`. Deze hook geeft ons de status van de server action en maakt het mogelijk om de UI bij te werken op basis van deze status.
+Soms is het nodig om meer controle te hebben over het formulier, bijvoorbeeld om validatiefouten te tonen of om de UI bij te werken zonder naar een andere pagina te gaan. In dat geval kunnen we een Client Component maken die het formulier bevat. Hiervoor hebben we de `useActionState` hook nodig die we kunnen importeren uit `react`. Deze hook geeft ons de status van de server action en maakt het mogelijk om de UI bij te werken op basis van deze status.
 
 ```typescript
 const [state, createMessageAction, pending] = useActionState(createMessage, {success: false, error: null});
@@ -275,36 +285,72 @@ export const createMessage = async (state: CreateMessageState, formData: FormDat
     const email = formData.get("email")?.toString();
     const message = formData.get("message")?.toString();
 
-    let error : string | null = null;
-
     if (!firstName || !lastName || !email || !message) {
-        error = "All fields are required";
-    } else {
-        await saveMessage({
-            firstName,
-            lastName,
-            email,
-            message,
-            createdAt: new Date()
-        });
-    }   
+        return {
+            success: false,
+            error: "All fields are required"
+        };
+    }
+
+    await saveMessage({
+        firstName,
+        lastName,
+        email,
+        message,
+        createdAt: new Date()
+    });
 
     return {
         success: true,
-        error: error
-    }
+        error: null
+    };
 }
 ```
 
-Vervolgens kunnen we nu de `createMessageAction` meegeven aan het formulier.
+Vervolgens kunnen we nu de `createMessageAction` meegeven aan het formulier. Omdat we een hook gebruiken, moet het formulier nu in een client component staan, bijvoorbeeld `app/contact/ContactForm.tsx`:
+
+```typescript
+"use client";
+
+import { useActionState } from "react";
+import { createMessage } from "@/actions";
+
+const ContactForm = () => {
+    const [state, createMessageAction, pending] = useActionState(createMessage, { success: false, error: null });
+
+    if (state.success) {
+        return <p>Your message has been sent successfully.</p>;
+    }
+
+    return (
+        <form className="form-body" action={createMessageAction}>
+            {/* ... dezelfde input velden als hierboven ... */}
+
+            {state.error && <p className="form-error">{state.error}</p>}
+
+            <div className="form-actions">
+                <button type="submit" className="btn-primary" disabled={pending}>
+                    {pending ? "Sending..." : "Send"}
+                </button>
+            </div>
+        </form>
+    );
+}
+
+export default ContactForm;
+```
+
+De pagina `app/contact/page.tsx` blijft een server component die enkel `<ContactForm />` toont.
 
 ### revalidatePath
 
-Soms wil je na het indienen van een formulier de pagina of een deel van de pagina opnieuw valideren om de nieuwste data weer te geven. In Next.js kun je hiervoor de `revalidatePath` functie gebruiken, die je kunt importeren uit `next/cache`. Met deze functie kun je een specifiek pad opgeven dat opnieuw gevalideerd moet worden. Dit veroorzaakt dat Next.js de data voor dat pad opnieuw ophaalt en de bijbehorende componenten opnieuw rendert.
+Soms wil je na het indienen van een formulier de pagina opnieuw laten renderen om de nieuwste data weer te geven. Next.js doet dat niet automatisch na een server action. Je kan hiervoor de `revalidatePath` functie gebruiken, die je kunt importeren uit `next/cache`. Met deze functie kun je een specifiek pad opgeven dat opnieuw opgebouwd moet worden. Next.js haalt dan de data voor dat pad opnieuw op en rendert de bijbehorende componenten opnieuw.
 
 Stel dat je een formulier hebt waarmee gebruikers reacties kunnen plaatsen op een blogpost. Nadat een gebruiker een reactie heeft ingediend, wil je dat de lijst met reacties automatisch wordt bijgewerkt om de nieuwe reactie weer te geven. Je kunt dit doen door `revalidatePath` aan te roepen met het pad van de blogpost nadat de reactie is opgeslagen.
 
 ```typescript
+"use server";
+
 import { revalidatePath } from "next/cache";
 
 export const submitComment = async (formData: FormData) => {
@@ -314,6 +360,8 @@ export const submitComment = async (formData: FormData) => {
     revalidatePath("/blog/my-post");
 }
 ```
+
+Wil je gewoon de pagina waarop de gebruiker zich bevindt opnieuw laten renderen, dan kan je ook `refresh()` uit `next/cache` gebruiken. Dan hoef je geen pad mee te geven.
 
 ## Use case: Todo List
 
@@ -325,6 +373,7 @@ We hebben een `database.ts` file nodig om de connectie met de database te maken 
 
 ```typescript
 import { Collection, MongoClient } from "mongodb";
+import { connection } from "next/server";
 import { Todo } from "@/types";
 
 const client = new MongoClient(process.env.MONGODB_URI!);
@@ -332,7 +381,8 @@ const client = new MongoClient(process.env.MONGODB_URI!);
 export const todosCollection: Collection<Todo> = client.db("todos").collection<Todo>("todos");
 
 export const getTodos = async (): Promise<Todo[]> => {
-    let todos = await todosCollection.find().toArray();
+    await connection();
+    const todos = await todosCollection.find().toArray();
     return todos.map(todo => ({
         id: todo.id,
         title: todo.title,
@@ -479,6 +529,8 @@ export default TodoItem;
 ```
 
 ### Page component
+
+De `TodoList` haalt data uit de database, dus die zetten we in een `Suspense` component. Het formulier is meteen zichtbaar, de lijst verschijnt zodra de data binnen is.
 
 ```typescript
 import AddTodoForm from "@/components/AddTodoForm";

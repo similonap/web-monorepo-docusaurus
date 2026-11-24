@@ -10,7 +10,7 @@ import SolutionDownload from '@site/src/components/SolutionDownload';
 > 📂 **Naam project:** `lab-nextjs-bitcoin`  
 > 🔗 **Basis project:** n/a
 
-Maak een nieuwe Next.js applicatie aan en noem deze `lab-nextjs-bitcoin`. Je mag zelf kiezen of je tailwind css wil gebruiken of niet.
+Maak een nieuwe Next.js applicatie aan en noem deze `lab-nextjs-bitcoin`. Gebruik de instellingen uit [Nieuw project aanmaken](../../../nextjs/index.md#nieuw-project-aanmaken). Je mag zelf kiezen of je tailwind css wil gebruiken of niet.
 
 Gebruik de https://sampleapis.assimilate.be/bitcoin/current API om de huidige prijs van Bitcoin op te halen en te tonen in je applicatie. Je laat 3 blokken zien met de prijs informatie per currency (USD, EUR, GBP).
 

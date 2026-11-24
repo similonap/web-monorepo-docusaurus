@@ -26,8 +26,9 @@ const UserPostList = async({username, sort = "newest", currentPage = 1} : UserPo
 export const PostListSkeleton = () => {
     return (
         <div className="flex-1 flex-col gap-4">
-            <div className="mb-4 grayscale">
-                <Pagination pageCount={1} currentPage={1} />
+            <div className="mb-4 flex justify-center mt-4">
+                {/* Geen echte Pagination hier: die gebruikt useSearchParams en hoort niet in een fallback */}
+                <span className="px-3 py-1 rounded bg-gray-200 text-gray-400">1</span>
             </div>
             {Array.from({ length: 5 }).map((_, index) => (
                 <PostCardSkeleton key={index} />

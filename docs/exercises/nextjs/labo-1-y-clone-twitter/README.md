@@ -10,7 +10,7 @@ import SolutionDownload from '@site/src/components/SolutionDownload';
 > 📂 **Naam project:** `lab-nextjs-y-basic`  
 > 🔗 **Basis project:** n/a
 
-Maak een nieuwe Next.js applicatie aan en noem deze `lab-nextjs-y-basic`. Je mag zelf kiezen of je tailwind css wil gebruiken of niet.
+Maak een nieuwe Next.js applicatie aan en noem deze `lab-nextjs-y-basic`. Gebruik de instellingen uit [Nieuw project aanmaken](../../../nextjs/index.md#nieuw-project-aanmaken). Je mag zelf kiezen of je tailwind css wil gebruiken of niet.
 
 Gebruik de volgende API's om posts en profiles op te halen:
 - Posts: https://raw.githubusercontent.com/similonap/json/refs/heads/master/y-clone/posts.json

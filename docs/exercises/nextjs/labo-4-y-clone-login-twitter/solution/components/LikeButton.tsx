@@ -1,4 +1,5 @@
 import { increaseLikes } from "@/database/database";
+import { getCurrentUsername } from "@/lib/auth";
 import { Post } from "@/types";
 import { revalidatePath } from "next/cache";
 import { FaThumbsUp } from "react-icons/fa";
@@ -11,6 +12,8 @@ export interface LikeButtonProps {
 const LikeButton = ({post} : LikeButtonProps) => { 
     async function like(postId: string) {
         'use server'
+
+        if (!await getCurrentUsername()) return;
 
         await increaseLikes(postId);
 

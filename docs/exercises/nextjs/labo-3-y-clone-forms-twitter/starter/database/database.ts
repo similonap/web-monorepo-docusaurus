@@ -1,4 +1,5 @@
 import { Collection, MongoClient, Sort } from "mongodb";
+import { connection } from "next/server";
 import { Post, Profile } from "@/types";
 
 const client = new MongoClient(process.env.MONGODB_URI || "mongodb://localhost:27017");
@@ -9,6 +10,9 @@ export const profilesCollection: Collection<Profile> = client.db("y-clone").coll
 const PAGE_SIZE = 5;
 
 export const seedDatabase = async () => {
+    // Pas uitvoeren bij een request (zie cursus: server components)
+    await connection();
+
     await postsCollection.deleteMany({});
     await profilesCollection.deleteMany({});
 
@@ -39,6 +43,8 @@ export const seedDatabase = async () => {
 }
 
 export const getProfileByUsername = async (username: string) => {
+    await connection();
+
     const profile = await profilesCollection.findOne({ username: username });
 
     if (!profile) {
@@ -49,6 +55,8 @@ export const getProfileByUsername = async (username: string) => {
 }
 
 export const getPostsByUsername = async (username: string, sort: string = "newest", page: number = 1) => {
+    await connection();
+
     let sortObject: Sort = { createdOn: -1 }; 
     if (sort === "oldest") {
         sortObject = { createdOn: 1 };
@@ -74,6 +82,8 @@ export const getPostsByUsername = async (username: string, sort: string = "newes
 }
 
 export const getPosts = async (q: string = "", sort: string = "newest", page: number = 1) => {
+    await connection();
+
     let sortObject: Sort = { createdOn: -1 };
     if (sort === "oldest") {
         sortObject = { createdOn: 1 };

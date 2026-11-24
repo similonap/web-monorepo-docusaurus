@@ -20,6 +20,7 @@ Je kan ook vertrekken van de volgende database bestanden:
 ```ts
 // file: database/auth.ts
 import { Collection, MongoClient } from "mongodb";
+import { connection } from "next/server";
 import { User } from "@/types"
 
 const client = new MongoClient(process.env.MONGODB_URI!);
@@ -31,6 +32,7 @@ export const findUserByEmail = async (email: string): Promise<User | null> => {
 }
 
 export const findUserById = async (id: number): Promise<User | null> => {
+    await connection();
     return await userCollection.findOne<User>({id});
 }
 
@@ -51,6 +53,7 @@ en
 ```ts
 // file: database/songs.ts
 import { Collection, MongoClient, SortDirection } from "mongodb";
+import { connection } from "next/server";
 import { Song, SortField, User } from "@/types"
 
 export const PAGE_SIZE = 10;
@@ -80,7 +83,9 @@ export const getSongs = async (
   sortField: SortField, 
   sortDirection: SortDirection, 
   page: number = 1
-) => { 
+) => {
+    await connection();
+
     const pipeline: any[] = [];
 
     if (q) {
@@ -145,6 +150,7 @@ export const getSongs = async (
 }
 
 export const getSongById = async (songId: number, userId: number | null = null): Promise<Song | null> => {
+    await connection();
     const pipeline: any[] = [
         { $match: { id: songId } }
     ];
@@ -179,6 +185,8 @@ export const addCoinsToUser = async (userId: number, coins: number): Promise<voi
     await usersCollection.updateOne({ id: userId }, { $inc: { credits: coins } });
 }
 ```
+
+De functies die data ophalen om te tonen in een pagina beginnen met `await connection()`, zodat Next.js weet dat ze pas bij een request uitgevoerd mogen worden (zie [Server Components](../../../nextjs/csr-ssr.md#use-case-mongodb)). Vergeet ook niet om een `loading.tsx` of `Suspense` te voorzien op de pagina's die deze functies gebruiken.
 
 en de volgende interfaces:
 

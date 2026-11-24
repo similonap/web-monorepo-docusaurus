@@ -13,7 +13,7 @@ Je kan bijvoorbeeld een Google Font gebruiken door deze te importeren in je `lay
 ```typescript
 import { Roboto } from "next/font/google";
 
-export const roboto = Roboto({
+const roboto = Roboto({
   weight: ["400", "700"],
   subsets: ["latin"],
   variable: "--font-roboto",
@@ -24,6 +24,14 @@ Je kan vervolgens deze font toevoegen aan je `body` element in het `layout.tsx` 
 
 ```typescript
 <body className={`${roboto.variable} font-sans`}>
+```
+
+De `variable` optie maakt een CSS variabele `--font-roboto` aan. Om die met Tailwind als `font-sans` te gebruiken, koppel je ze in `globals.css` in het `@theme inline` blok (dat blok staat er al in een nieuw project):
+
+```css
+@theme inline {
+  --font-sans: var(--font-roboto);
+}
 ```
 
 Dit moet uiteraard niet altijd op de `body` toegepast worden. Je kan dit ook op specifieke componenten toepassen door de class toe te voegen aan het element waar je de font wil gebruiken.
@@ -60,12 +68,14 @@ export default function Home() {
         alt="Screenshots of the dashboard project showing desktop version"
         width={700}
         height={400}
-        priority
+        loading="eager"
       />
     </div>
   );
 }
 ```
+
+Afbeeldingen worden standaard pas geladen wanneer ze in beeld komen (lazy loading). Met `loading="eager"` zeg je dat deze afbeelding meteen geladen moet worden. Gebruik dit voor de grote afbeelding bovenaan je pagina die de gebruiker meteen ziet. In oudere voorbeelden zie je hiervoor nog de `priority` prop, maar die is sinds Next.js 16 verouderd.
 
 Je moet hier wel de `width` en `height` specificeren van de afbeelding. Dit is nodig om layout shifts te voorkomen. Je moet hier wel de juiste verhouding van de afbeelding gebruiken. Het `next/image` component zorgt er dan voor dat de afbeelding op de juiste manier geschaald wordt.
 
@@ -81,7 +91,7 @@ export default function Home() {
       <Image
         src={heroImage}
         alt="Screenshots of the dashboard project showing desktop version"
-        priority
+        loading="eager"
       />
     </div>
   );
@@ -100,12 +110,14 @@ Als je een afbeelding wil gebruiken die van een externe bron kom dan moet je alt
     />
 ```
 
-Geeft een fout omdat Next.js niet weet of deze externe bron betrouwbaar is. Je moet deze domeinen expliciet toevoegen aan de `next.config.js` bestand:
+Geeft een fout omdat Next.js niet weet of deze externe bron betrouwbaar is. Je moet deze domeinen expliciet toevoegen aan het `next.config.ts` bestand:
 
 ```typescript
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  cacheComponents: true,
+  partialPrefetching: true,
   images: {
     remotePatterns: [
       {
@@ -120,4 +132,12 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+```
+
+Laat de andere opties die al in je `next.config.ts` staan (zoals `cacheComponents`) gewoon staan en voeg enkel `images` toe. Je kan dit ook korter schrijven met een URL patroon:
+
+```typescript
+images: {
+  remotePatterns: [new URL("https://picsum.photos/**")],
+},
 ```

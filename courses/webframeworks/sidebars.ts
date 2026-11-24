@@ -118,7 +118,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Next.js',
       link: {type: 'doc', id: 'nextjs/index'},
-      items: ['nextjs/csr-ssr', 'nextjs/routing', 'nextjs/forms', 'nextjs/proxy', 'nextjs/font-image-optimization'],
+      items: ['nextjs/csr-ssr', 'nextjs/routing', 'nextjs/forms', 'nextjs/proxy', 'nextjs/font-image-optimization', 'nextjs/cache-components'],
     },
     {
       type: 'category',

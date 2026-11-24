@@ -24,7 +24,6 @@ const SearchBox = () => {
       type="text"
       value={q}
       onChange={onChange}
-      defaultValue={searchParams.get('query')?.toString()}
       placeholder="Search..."
     />
   );

@@ -1,8 +1,7 @@
-import SearchBox from "@/components/SearchBox";
 import { SortDirection, SortField, Spell } from "../types";
 import SortSelect from "@/components/SortSelect";
 
-const Sort = async(props: PageProps<"/sort">) => {
+const Sort = async(props: PageProps<"/sorting">) => {
     const searchParams = await props.searchParams;
     const sortField : SortField = (typeof searchParams.sortField === "string" ? searchParams.sortField : "id") as SortField;
     const sortDirection : SortDirection = (typeof searchParams.sortDirection === "string" ? searchParams.sortDirection : "asc") as SortDirection;

@@ -1,4 +1,3 @@
-import SearchBox from "@/components/SearchBox";
 import { Spell } from "../types";
 import Pagination from "@/components/Pagination";
 

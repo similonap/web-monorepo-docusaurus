@@ -24,6 +24,7 @@ Je kan de volgende `database.ts` file gebruiken om de database connectie en de s
 
 ```typescript
 import { Collection, MongoClient, Sort } from "mongodb";
+import { connection } from "next/server";
 import { Post, Profile } from "@/types";
 
 const client = new MongoClient(process.env.MONGODB_URI || "mongodb://localhost:27017");
@@ -34,6 +35,9 @@ export const profilesCollection: Collection<Profile> = client.db("y-clone").coll
 const PAGE_SIZE = 5;
 
 export const seedDatabase = async () => {
+    // Pas uitvoeren bij een request (zie cursus: server components)
+    await connection();
+
     await postsCollection.deleteMany({});
     await profilesCollection.deleteMany({});
 
@@ -64,6 +68,8 @@ export const seedDatabase = async () => {
 }
 
 export const getProfileByUsername = async (username: string) => {
+    await connection();
+
     const profile = await profilesCollection.findOne({ username: username });
 
     if (!profile) {
@@ -74,6 +80,8 @@ export const getProfileByUsername = async (username: string) => {
 }
 
 export const getPostsByUsername = async (username: string, sort: string = "newest", page: number = 1) => {
+    await connection();
+
     let sortObject: Sort = { createdOn: -1 }; 
     if (sort === "oldest") {
         sortObject = { createdOn: 1 };
@@ -94,10 +102,13 @@ export const getPostsByUsername = async (username: string, sort: string = "newes
     const totalPosts = await postsCollection.countDocuments({ username: username });
     const pages = Math.ceil(totalPosts / PAGE_SIZE);
 
+
     return { posts, pages };
 }
 
 export const getPosts = async (q: string = "", sort: string = "newest", page: number = 1) => {
+    await connection();
+
     let sortObject: Sort = { createdOn: -1 };
     if (sort === "oldest") {
         sortObject = { createdOn: 1 };
@@ -120,9 +131,13 @@ export const getPosts = async (q: string = "", sort: string = "newest", page: nu
     const pages = Math.ceil(totalPosts / PAGE_SIZE);
 
 
+    await new Promise((resolve, reject) => setTimeout(() => resolve(null), 10000))
+
     return { posts, pages };
 }
 ```
+
+Merk op dat de functies die data ophalen beginnen met `await connection()`. Zonder die regel krijg je met MongoDB de foutmelding `Next.js encountered the unstable value new Date() while prerendering` (zie [Server Components](../../../nextjs/csr-ssr.md#use-case-mongodb)).
 
 Als de pagina bezocht wordt zal deze pagina de database seeden met de posts en profielen data en een bericht tonen dat de seed succesvol is uitgevoerd.
 
@@ -141,6 +156,11 @@ Voorzie een navigatie menu die op elke pagina zichtbaar is. Voeg hiervoor een `M
 Pas de home pagina (`/`) aan zodat deze de posts ophaalt uit de database in plaats van uit de API. Voeg paginatie toe zodat er telkens 5 posts per pagina getoond worden. Voeg ook sortering toe zodat de gebruiker kan kiezen om de posts te sorteren op "newest", "oldest" of "most liked". Er moet ook een zoekbalk voorzien worden zodat de gebruiker kan zoeken op tekst in de posts. Telksens de sortering, paginatie of zoekterm verandert moet dit worden weergegeven in de huidige URL als query parameters.
 
 Bij het laden van de posts moet er een laadskelet getoond worden.
+
+:::tip
+- De pagina's lezen `searchParams` en `params` uit en halen data uit de database. Zet dus een `loading.tsx` naast je pagina's (of in de map van je route group) en gebruik `Suspense` met een skeleton rond je lijst met posts.
+- Gebruik in een skeleton (de `fallback` van `Suspense` of in `loading.tsx`) geen componenten die `useSearchParams` gebruiken, zoals je `Pagination`. Toon daar een eenvoudige placeholder.
+:::
 
 ![alt text](./assets/searchpaging.png)
 ![alt text](./assets/skeleton.png)

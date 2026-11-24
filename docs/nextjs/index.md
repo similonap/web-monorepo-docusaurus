@@ -10,7 +10,7 @@ Tot nu toe hebben we gebruik gemaakt van `vite` of een andere tool om een React 
 
 Deze dingen kan je uiteraard allemaal zelf gaan doen in `react.js`. Je kan bijvoorbeeld zelf een routing systeem in elkaar steken of gebruik maken van een van de vele verschillende libraries die aanwezig zijn op npm. Maar dit is niet altijd even eenvoudig. Je moet zelf gaan uitzoeken welke libraries goed samenwerken, je moet zelf gaan uitzoeken hoe je deze libraries moet gebruiken, je moet zelf gaan uitzoeken hoe je deze libraries moet configureren, ... . Daarom bestaan er React frameworks. Deze frameworks zijn een verzameling van libraries die goed samenwerken en die je kan gebruiken om een volledige applicatie te maken. De meeste frameworks bieden ook een manier om delen van je applicatie op de server te renderen. Dit zorgt ervoor dat je applicatie sneller zal laden en dat je applicatie beter zal scoren op SEO vlak. Meer hier over later in de cursus.
 
-De officiele React documentatie verwijst naar 3 frameworks: [Next.js](https://nextjs.org/), [Gatsby.js](https://www.gatsbyjs.com/) en [Remix](https://remix.run/). In deze cursus gaan we gebruik maken van Next.js. Dit is een framework dat heel populair is en dat heel veel functionaliteit aanbiedt. 
+De officiële React documentatie raadt een aantal frameworks aan, waaronder [Next.js](https://nextjs.org/), [React Router](https://reactrouter.com/) (in framework mode) en [Expo](https://expo.dev/) voor mobiele apps. In deze cursus gaan we gebruik maken van Next.js. Dit is een framework dat heel populair is en dat heel veel functionaliteit aanbiedt. 
 
 ## Nieuw project aanmaken
 
@@ -20,20 +20,18 @@ Om een project aan te maken met Next.js moeten we het volgende commando uitvoere
 npx create-next-app@latest
 ```
 
-Je zal hier dan een aantal vragen krijgen over de configuratie van je project. 
+Je krijgt eerst de vraag hoe je project moet heten. Daarna vraagt Next.js of je de aanbevolen instellingen wil gebruiken. Kies hier voor **Yes, use recommended defaults**:
 
 ```bash
-✔ What is your project named? › my-app
-✔ Would you like to use TypeScript? … Yes
-✔ Which linter would you like to use? › ESLint
-✔ Would you like to use Tailwind CSS? … Yes
-✔ Would you like your code inside a `src/` directory? … Yes
-✔ Would you like to use App Router? (recommended) … Yes
-✔ Would you like to use Turbopack? (recommended) … Yes
-✔ Would you like to customize the import alias (`@/*` by default)? … No
+✔ What is your project named? … my-app
+✔ Would you like to use the recommended Next.js defaults? › Yes, use recommended defaults
 ```
 
-Let goed op dat je gebruik maakt van `TypeScript` en dat je de `App Router` router gebruikt. Next.js heeft twee verschillende routing systemen en als je de laatste nieuwe features van React 19 zoals server components wil gebruiken dan moet je deze router gebruiken.
+Je project gebruikt dan onder andere `TypeScript`, `Tailwind CSS`, de `App Router` en `Cache Components`. Next.js heeft twee verschillende routing systemen en als je de laatste nieuwe features van React 19 zoals server components wil gebruiken dan moet je de App Router gebruiken.
+
+:::info Cache Components
+Met **Cache Components** behandelt Next.js alle data standaard als dynamisch: niets wordt gecachet, tenzij je daar zelf om vraagt. Voor jou betekent dit vooral dat je moet aangeven wat er op het scherm komt terwijl data aan het laden is (met `loading.tsx` of `Suspense`). Dat zie je in het hoofdstuk over server components. Hoe je data wél kan cachen, komt pas helemaal op het einde aan bod in [Extra: data cachen](./cache-components.md).
+:::
 
 Je kan vervolgens het project voor de eerste keer opstarten met het volgende commando:
 
@@ -41,14 +39,13 @@ Je kan vervolgens het project voor de eerste keer opstarten met het volgende com
 npm run dev
 ```
 
-Dit start de development server op en opent de applicatie in je browser. Je kan nu beginnen met het aanpassen van de applicatie. Pas bijvoorbeeld de tekst aan in `src/app/page.tsx` en bekijk het resultaat in je browser. Je kan eventueel een van de voorgaande oefeningen opnieuw maken in Next.js. Je gaat zien dat dit heel gelijkaardig is aan het maken van een React applicatie met `vite`. 
+Dit start de development server op en opent de applicatie in je browser. Je kan nu beginnen met het aanpassen van de applicatie. Pas bijvoorbeeld de tekst aan in `app/page.tsx` en bekijk het resultaat in je browser. Je kan eventueel een van de voorgaande oefeningen opnieuw maken in Next.js. Je gaat zien dat dit heel gelijkaardig is aan het maken van een React applicatie met `vite`. 
 
-Opgelet je moet wel aangeven dat een component een client component is door bovenaan het bestand `use client` te zetten. Dit is nodig omdat Next.js standaard server components gebruikt en anders kan bijvoorbeeld geen state of effects gebruiken in je componenten.
+Opgelet je moet wel aangeven dat een component een client component is door bovenaan het bestand `use client` te zetten. Dit is nodig omdat Next.js standaard server components gebruikt en je anders geen state of effects kan gebruiken in je componenten.
 
 ```typescript
 "use client"
 
-import styles from "./page.module.css";
 import { useState } from "react";
 
 export default function Home() {

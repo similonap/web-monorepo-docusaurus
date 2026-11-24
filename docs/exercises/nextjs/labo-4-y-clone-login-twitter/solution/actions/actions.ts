@@ -4,6 +4,7 @@ import { addPost, loginUser } from "@/database/database";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import * as jwt from "jsonwebtoken";
+import { getCurrentUsername } from "@/lib/auth";
 
 interface CreatePostState {
     success: boolean;
@@ -20,17 +21,14 @@ export const createPost = async (prevState: CreatePostState, formData: FormData)
         }
     }
 
-    const cookieStore = await cookies();
-    const jwtCookie = cookieStore.get("jwt");
+    const username = await getCurrentUsername();
 
-    if (!jwtCookie) {
+    if (!username) {
         return {
             success: false,
             message: 'User not authenticated.'
         }
     }
-
-    let {username} = jwt.decode(jwtCookie.value) as { username: string };
 
     await addPost(text, username);
 
@@ -56,7 +54,7 @@ export const login = async (prevState: CreatePostState, formData: FormData) => {
 
         const cookieStore = await cookies();
 
-        const token = jwt.sign(profile, process.env.JWT_SECRET!, { expiresIn: "7d" });
+        const token = jwt.sign({ username: profile.username }, process.env.JWT_SECRET!, { expiresIn: "7d" });
 
         cookieStore.set({
             name: "jwt",

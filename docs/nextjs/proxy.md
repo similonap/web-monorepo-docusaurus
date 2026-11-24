@@ -6,16 +6,19 @@ We gaan in dit hoofdstuk een eenvoudige proxy implementeren om authenticatie toe
 
 ## De proxy implementeren
 
-Om een proxy te implementeren in Next.js, maken we een bestand genaamd `proxy.ts` in de root van onze applicatie. In dit bestand zullen we de logica schrijven om te controleren of een gebruiker is ingelogd.
+Om een proxy te implementeren in Next.js, maken we een bestand genaamd `proxy.ts` in de root van onze applicatie (naast de `app` directory). In dit bestand zullen we de logica schrijven om te controleren of een gebruiker is ingelogd.
+
+:::info
+In oudere versies van Next.js heette dit bestand `middleware.ts` en de functie `middleware`. Sinds Next.js 16 is dat `proxy.ts` en `proxy`. De werking is dezelfde. Kom je online nog voorbeelden met `middleware.ts` tegen, dan kan je ze dus gewoon overnemen in `proxy.ts`.
+:::
 
 In `proxy.ts` kunnen we de volgende code toevoegen:
 
 ```typescript
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
  
-export async function proxy(request: NextRequest) {
+export function proxy(request: NextRequest) {
     return NextResponse.next();
 }
 
@@ -35,20 +38,33 @@ npm install jsonwebtoken
 Nu kunnen we de proxy aanpassen om de JWT te verifiëren:
 
 ```typescript
-const cookieStore = await cookies();
-const jwtCookie = cookieStore.get("jwt");
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import jwt from "jsonwebtoken";
 
-if (jwtCookie) {
-    jwt.verify(jwtCookie.value, process.env.JWT_SECRET!, (err, decoded) => {
-        if (err) return NextResponse.redirect(new URL("/auth/login", request.url));
+export function proxy(request: NextRequest) {
+    const token = request.cookies.get("jwt")?.value;
+
+    if (!token) {
+        return NextResponse.redirect(new URL("/auth/login", request.url));
+    }
+
+    try {
+        jwt.verify(token, process.env.JWT_SECRET!);
         return NextResponse.next();
-    });
-} else {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    } catch {
+        return NextResponse.redirect(new URL("/auth/login", request.url));
+    }
+}
+
+export const config = {
+  matcher: ["/","/dashboard"],
 }
 ```
 
-Je kan heel eenvoudig de cookies uitlezen met de `cookies` functie van Next.js. We proberen de JWT cookie op te halen en verifiëren deze met behulp van de `jsonwebtoken` package. Als de cookie geldig is, laten we het verzoek doorgaan met `NextResponse.next()`. Als de cookie ontbreekt of ongeldig is, wordt de gebruiker doorgestuurd naar de inlogpagina. Je moet ervoor zorgen dat je een geheim sleutel (`JWT_SECRET`) hebt ingesteld in je omgevingsvariabelen voor het verifiëren van de JWT.
+De cookies van het binnenkomende verzoek lees je uit met `request.cookies`. We proberen de JWT cookie op te halen en verifiëren deze met behulp van de `jsonwebtoken` package. `jwt.verify` gooit een error als het token ongeldig of verlopen is, daarom staat het in een `try/catch`. Als de cookie geldig is, laten we het verzoek doorgaan met `NextResponse.next()`. Als de cookie ontbreekt of ongeldig is, wordt de gebruiker doorgestuurd naar de inlogpagina. Je moet ervoor zorgen dat je een geheime sleutel (`JWT_SECRET`) hebt ingesteld in je omgevingsvariabelen (bv. in `.env.local`) voor het verifiëren van de JWT.
+
+De proxy draait op de Node.js server, dus je kan er gewoon npm packages zoals `jsonwebtoken` in gebruiken.
 
 ## Auth Database functies
 
@@ -99,7 +115,7 @@ export const createUser = async (user: User): Promise<void> => {
 }
 ```
 
-Als je de `seedDummyUsers` functie wil aanroepen bij het opstarten van de applicatie, kun je dit doen in een apart bestand genaamd `instrumentation.ts`. Deze naam is misschien wat verwarrend, maar we gebruiken dit bestand om code uit te voeren bij het opstarten van de applicatie. Deze moet in de root van de applicatie staan:
+Als je de `seedDummyUsers` functie wil aanroepen bij het opstarten van de applicatie, kun je dit doen in een apart bestand genaamd `instrumentation.ts`. Deze naam is misschien wat verwarrend, maar we gebruiken dit bestand om code uit te voeren bij het opstarten van de applicatie. Deze moet in de root van de applicatie staan, naast de `app` directory:
 
 ```typescript
 import { seedDummyUsers } from "@/database/auth";
@@ -118,6 +134,7 @@ We maken een bestand `actions/authActions.ts` aan om de login actie te verwerken
 "use server";
 
 import { validateEmail, validatePassword } from "@/utils/validation";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -201,6 +218,7 @@ export const login = async (prevState: LoginState, formData: FormData): Promise<
         httpOnly: true,
         sameSite: "lax",
         secure: true,
+        maxAge: 60 * 60, // even lang geldig als het token: 1 uur
     });
 
     redirect("/dashboard");
@@ -217,7 +235,7 @@ export const login = async (prevState: LoginState, formData: FormData): Promise<
 }
 ```
 
-We geven hier een `LoginState` interface mee om de status van de login actie bij te houden. De `login` functie valideert de invoer, controleert de gebruikersgegevens in de database, genereert een JWT token en stelt deze in als een http-only cookie. Als de login succesvol is, wordt de gebruiker doorgestuurd naar het dashboard. 
+We geven hier een `LoginState` interface mee om de status van de login actie bij te houden. De `login` functie valideert de invoer, controleert de gebruikersgegevens in de database, genereert een JWT token en stelt deze in als een http-only cookie. Als de login succesvol is, wordt de gebruiker doorgestuurd naar het dashboard. Omdat `redirect` intern een error gooit om de actie te stoppen, wordt de `return` daarna nooit uitgevoerd. Die staat er enkel zodat TypeScript tevreden is.
 
 Hier onder een voorbeeld van hoe je de login actie kunt aanroepen vanuit een React component:
 
@@ -314,7 +332,8 @@ export default LoginPage;
 In het dashboard kunnen we de gebruiker opvragen door de JWT token uit de cookie te lezen en te decoderen. Hier is een voorbeeld van hoe je dit kunt doen in de `dashboard/page.tsx`:
 
 ```tsx
-import { getCurrentUser, logout } from "@/actions/authActions";
+import { getCurrentUser } from "@/lib/auth";
+import { logout } from "@/actions/authActions";
 import Image from "next/image";
 
 export default async function Page() {
@@ -349,9 +368,15 @@ export default async function Page() {
 }
 ```
 
-en de `getCurrentUser` actie in de `actions/authActions.ts`:
+De cookies zijn pas gekend wanneer de gebruiker de pagina opvraagt. Zet dus een `loading.tsx` naast deze pagina, net zoals bij het ophalen van data.
+
+De `getCurrentUser` functie zetten we in een apart bestand `lib/auth.ts`, **zonder** `"use server"` bovenaan:
 
 ```typescript
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+import { User } from "@/types";
+
 export const getCurrentUser = async (): Promise<User> => {
     const cookieStore = await cookies();
     const jwtCookie = cookieStore.get("jwt");
@@ -368,6 +393,12 @@ export const getCurrentUser = async (): Promise<User> => {
     }
 }
 ```
+
+Waarom niet gewoon in `actions/authActions.ts`? Elke functie die je exporteert uit een bestand met `"use server"` wordt een server action. Dat is een publiek endpoint dat iedereen vanuit de browser kan aanroepen. `getCurrentUser` is enkel bedoeld om op de server te gebruiken in je componenten, dus hoort die niet in een `"use server"` bestand.
+
+:::warning
+De proxy is een eerste controle, maar niet de enige. Een server action wordt verstuurd als een POST verzoek naar de pagina waarin het formulier staat. Valt die pagina buiten de `matcher` van je proxy, dan wordt de actie niet gecontroleerd. Controleer daarom in elke server action die data aanpast zelf of de gebruiker ingelogd is, bijvoorbeeld door `getCurrentUser()` aan te roepen.
+:::
 
 ## Uitloggen
 

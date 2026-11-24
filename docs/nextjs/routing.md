@@ -36,7 +36,7 @@ const NavBar = () => {
 };
 ```
 
-Je kan in principe zelf kiezen waar je de `NavBar` component aanmaakt in de directory structuur van je project. Je kan deze bijvoorbeeld in de `src/components` directory plaatsen. Er wordt ook vaak gekozen om de componenten bij de pagina's te plaatsen waar ze gebruikt worden. In dit geval zou je de `NavBar` component in de `app` directory kunnen plaatsen.
+Je kan in principe zelf kiezen waar je de `NavBar` component aanmaakt in de directory structuur van je project. Je kan deze bijvoorbeeld in een `components` directory naast de `app` directory plaatsen. Er wordt ook vaak gekozen om de componenten bij de pagina's te plaatsen waar ze gebruikt worden. In dit geval zou je de `NavBar` component in de `app` directory kunnen plaatsen.
 
 #### Active links
 
@@ -102,13 +102,16 @@ Je ziet hier dat de layout een component is die een `children` prop verwacht. De
 Wil je bijvoorbeeld op elke pagina een navigatiebalk tonen, dan kan je dit doen door de navigatiebalk component toe te voegen aan de layout:
 
 ```typescript
+import { Suspense } from "react";
 import NavBar from "@/components/NavBar";
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
       <body>
-        <NavBar />
+        <Suspense fallback={<nav className="h-10" />}>
+          <NavBar />
+        </Suspense>
         {children}
       </body>
     </html>
@@ -117,6 +120,8 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 
 export default RootLayout;
 ```
+
+Omdat onze `NavBar` de `usePathname` hook gebruikt om de actieve link aan te duiden, zetten we hem in een `Suspense` component. Op pagina's met een dynamisch pad (zoals `/products/3`, zie verder) kent Next.js de URL pas wanneer de gebruiker de pagina opvraagt. Zonder `Suspense` krijg je dan een foutmelding zoals `Next.js encountered URL data usePathname() in a Client Component outside of <Suspense>`. Met de `fallback` (hier een lege balk met dezelfde hoogte) kan Next.js de rest van de pagina al op voorhand klaarzetten.
 
 ![One layout](./assets/layouts_0.png)
 
@@ -202,7 +207,7 @@ const products : Product[] = [
 export default products;
 ```
 
-We kunnen dan een nieuwe pagina maken die de lijst van producten toont. Dit kan in het bestand `src/app/products/page.tsx`:
+We kunnen dan een nieuwe pagina maken die de lijst van producten toont. Dit kan in het bestand `app/products/page.tsx`:
 
 ```typescript
 import Link from "next/link";
@@ -223,7 +228,7 @@ const ProductsPage = () => {
   );
 };
 
-export default Products;
+export default ProductsPage;
 ```
 
 We gaan hier uiteraard geen drie aparte pagina's maken voor elk product. In plaats daarvan gaan we een dynamische route maken. Dit kan door een nieuwe directory aan te maken in de `app/products` directory met de naam `[id]`. De naam tussen de vierkante haken geeft aan dat dit een dynamische parameter is. In deze directory kunnen we dan een nieuw bestand `page.tsx` aanmaken. 
@@ -243,7 +248,9 @@ const ProductsDetail = async(props: PageProps<"/products/[id]">) => {
 export default ProductsDetail;
 ```
 
-Merk op dat we hier een speciaal type `PageProps` gebruiken om de props van de pagina te typeren. Dit type wordt meegeleverd door Next.js en zorgt ervoor dat we toegang hebben tot de dynamische parameters in de URL. In dit geval is er één parameter `id` die we kunnen gebruiken om de details van het product op te halen. Omdat het ophalen van parameters in Next.js asynchroon is, maken we de component `async` en gebruiken we `await` om de parameters op te halen.
+Merk op dat we hier een speciaal type `PageProps` gebruiken om de props van de pagina te typeren. Dit type wordt meegeleverd door Next.js en zorgt ervoor dat we toegang hebben tot de dynamische parameters in de URL. Je moet het niet importeren: Next.js genereert het automatisch voor elke route wanneer `npm run dev` of `npm run build` draait. Krijg je toch een rode lijn in je editor, start dan even de development server. In dit geval is er één parameter `id` die we kunnen gebruiken om de details van het product op te halen. Omdat het ophalen van parameters in Next.js asynchroon is, maken we de component `async` en gebruiken we `await` om de parameters op te halen.
+
+De waarde van `id` is pas gekend wanneer de gebruiker de pagina opvraagt. Net zoals bij het ophalen van data moet je dus een `loading.tsx` naast deze pagina zetten (of in `app/products`, dan geldt hij voor beide pagina's). Anders krijg je de foutmelding `Next.js encountered uncached or runtime data during prerendering`.
 
 Als je deze wil uitlezen in een client component, dan kan je gebruik maken van de `useParams` hook die meegeleverd wordt met Next.js. Deze hook geeft een object terug met de dynamische parameters.
 
@@ -253,8 +260,7 @@ Als je deze wil uitlezen in een client component, dan kan je gebruik maken van d
 import { useParams } from "next/navigation";
 
 const ProductDetailClient = () => {
-  const params = useParams();
-  const { id } = params;
+  const { id } = useParams<{ id: string }>();
 
   return (
     <div>
@@ -265,6 +271,8 @@ const ProductDetailClient = () => {
 };
 export default ProductDetailClient;
 ```
+
+Met `useParams<{ id: string }>()` geef je aan welke parameters je verwacht, zodat `id` het type `string` krijgt.
 
 ### not-found.tsx
 
@@ -282,35 +290,51 @@ const NotFound = () => {
 export default NotFound;
 ```
 
-Als je er voor wil zorgen dat een bepaalde pagina de 404 pagina toont, kan je de `notFound` functie aanroepen die meegeleverd wordt met Next.js. Deze functie zorgt ervoor dat de 404 pagina getoond wordt.
+Als je er voor wil zorgen dat een bepaalde pagina de 404 pagina toont, kan je de `notFound` functie aanroepen die meegeleverd wordt met Next.js. Deze functie zorgt ervoor dat de 404 pagina getoond wordt. Zo kunnen we op de detailpagina een 404 tonen als het product niet bestaat:
 
 ```typescript
-"use client";
-import { useParams, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
+import products from "@/data/products";
 
-const ProductDetailClient = () => {
-  const params = useParams();
-  const { id } = params;
+const ProductsDetail = async (props: PageProps<"/products/[id]">) => {
+  const { id } = await props.params;
+  const product = products.find((product) => product.id === Number(id));
 
-  if (id !== "1" && id !== "2" && id !== "3") {
+  if (!product) {
     notFound();
   }
 
   return (
-    <div>
-      <h1>Product Detail for ID: {id}</h1>
-      <p>This is the detail page for product with ID {id}.</p>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
+      <p className="text-lg">This is the detail page for product with ID {id}.</p>
     </div>
   );
 };
-export default ProductDetailClient;
+
+export default ProductsDetail;
 ```
+
+Omdat `notFound()` de uitvoering van de pagina stopt, weet TypeScript dat `product` na de `if` zeker bestaat.
 
 ### Grouped routes
 
 Je kan ook gebruik maken van grouped routes om je directory structuur overzichtelijker te maken. Dit is handig als je bijvoorbeeld een aantal pagina's hebt die bij elkaar horen, maar je wil niet dat deze pagina's een extra niveau in de URL krijgen. Je kan ook op deze manier gedeelde layouts maken voor een groep pagina's zonder dat dit invloed heeft op de URL structuur.
 
 Je kan een grouped route maken door een directory aan te maken met de naam `(group-name)`. De naam tussen de ronde haken geeft aan dat dit een grouped route is. In deze directory kan je dan nieuwe bestanden en directories aanmaken zoals je normaal zou doen.
+
+```
+app/
+├── (shop)/
+│   ├── layout.tsx         → layout met NavBar voor alle shop pagina's
+│   ├── page.tsx           → /
+│   └── products/page.tsx  → /products
+└── (auth)/
+    ├── layout.tsx         → eenvoudige layout zonder NavBar
+    └── login/page.tsx     → /login
+```
+
+De namen `(shop)` en `(auth)` komen niet in de URL terecht.
 
 ### Search parameters
 
@@ -319,6 +343,8 @@ Je kan een grouped route maken door een directory aan te maken met de naam `(gro
 In een server component (zoals een pagina of layout) kan je ook gebruik maken van search parameters (of query parameters). Dit zijn de parameters die in de URL staan na het vraagteken (`?`). Stel dat we een pagina hebben die een lijst van producten toont en we willen deze lijst filteren op basis van een zoekterm. We kunnen dan de zoekterm als een search parameter in de URL meegeven, bijvoorbeeld `/products?q=shirt`.
 
 ```typescript
+import Link from "next/link";
+
 interface Product {
   id: number;
   name: string;
@@ -355,7 +381,7 @@ const ProductsPage = async(props: PageProps<"/products">) => {
 export default ProductsPage;
 ```
 
-Opgelet deze dingen zijn enkel mogelijk in server componenten. 
+Opgelet deze dingen zijn enkel mogelijk in server componenten. Ook de search parameters zijn pas gekend wanneer de gebruiker de pagina opvraagt, dus ook hier hoort een `loading.tsx` naast de pagina.
 
 #### Search parameters in client componenten
 
@@ -404,6 +430,14 @@ const SearchBox = () => {
 export default SearchBox;
 ```
 
+Een component dat `useSearchParams` gebruikt, zet je altijd in een `Suspense` component. De search parameters zijn namelijk pas gekend wanneer de gebruiker de pagina opvraagt. Zonder `Suspense` krijg je de foutmelding `Next.js encountered URL data useSearchParams() in a Client Component outside of <Suspense>`. Opgelet: in development lijkt alles soms te werken, de fout komt dan pas bij `npm run build`.
+
+```typescript
+<Suspense fallback={<div className="h-10" />}>
+    <SearchBox />
+</Suspense>
+```
+
 #### Voorbeeld: Posts sorteren aan de hand van query parameters
 
 We kunnen een client component maken die de sortering van posts aanpast op basis van query parameters in de URL. We maken hiervoor een `SortSelect` component die twee select elementen bevat: één voor het veld waarop gesorteerd wordt en één voor de richting van de sortering (oplopend of aflopend).
@@ -411,7 +445,6 @@ We kunnen een client component maken die de sortering van posts aanpast op basis
 ```typescript
 "use client";
 
-import { SortDirection, SortField } from "@/app/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SortDirection, SortField } from "@/types";
 
@@ -468,6 +501,8 @@ Deze kan je dan als volgt gebruiken om de sortering van een lijst van posts aan 
 
 ```typescript
 import Link from "next/link";
+import { Suspense } from "react";
+import SortSelect from "@/components/SortSelect";
 import { SortDirection, SortField } from "@/types";
 
 interface Product {
@@ -489,9 +524,9 @@ const ProductsPage = async(props: PageProps<"/products">) => {
     const sortField : SortField = (typeof searchParams.sortField === "string" ? searchParams.sortField : "id") as SortField;
     const sortDirection : SortDirection = (typeof searchParams.sortDirection === "string" ? searchParams.sortDirection : "asc") as SortDirection;
 
-    const sortedProducts = products.sort((a, b) => {
-        let fieldA = a[sortField];
-        let fieldB = b[sortField];
+    const sortedProducts = products.toSorted((a, b) => {
+        const fieldA = a[sortField];
+        const fieldB = b[sortField];
 
         if (fieldA < fieldB) return sortDirection === "asc" ? -1 : 1;
         if (fieldA > fieldB) return sortDirection === "asc" ? 1 : -1;
@@ -501,7 +536,9 @@ const ProductsPage = async(props: PageProps<"/products">) => {
     return (
       <div>
         <h1>Products</h1>
-        <SortSelect />
+        <Suspense>
+          <SortSelect />
+        </Suspense>
         <ul>
           {sortedProducts.map((product) => (
             <li key={product.id}>
@@ -553,6 +590,8 @@ export default Pagination;
 Terug naar het producten voorbeeld, we kunnen nu een paginatie component maken die de pagina's toont op basis van een `page` query parameter in de URL. We definiëren eerst een constante `PAGE_SIZE` die aangeeft hoeveel producten er per pagina getoond moeten worden.
 
 ```typescript
+import Link from "next/link";
+import { Suspense } from "react";
 import Pagination from "@/components/Pagination";
 
 
@@ -582,7 +621,9 @@ const ProductsPage = async(props: PageProps<"/products">) => {
     return (
       <div>
         <h1>Products</h1>
-        <Pagination pageCount={pageCount} currentPage={page} />
+        <Suspense>
+          <Pagination pageCount={pageCount} currentPage={page} />
+        </Suspense>
         <ul>
           {productsByPage.map((product) => (
             <li key={product.id}>

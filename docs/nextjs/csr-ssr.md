@@ -104,15 +104,15 @@ const Home = () => {
 export default Home;
 ```
 
-Hier maken we gebruik van `useState` en `useEffect` om data op te halen van een API. Dit is de standaard manier om data op te halen in een React applicatie. Het nadeel hiervan is dat de gebruiker eerst een lege lijst ziet voor een paar milliseconden terwijl de data opgehaald wordt. We zouden dit kunnen oplossen door een loading indicator te tonen, maar dit is niet ideaal voor de gebruikerservaring.
+Hier maken we gebruik van `useState` en `useEffect` om data op te halen van een API. Dit is de standaard manier om data op te halen in een React applicatie. Het nadeel hiervan is dat de browser eerst alle JavaScript moet downloaden en uitvoeren, en pas daarna het request naar de API kan versturen. Tot dan ziet de gebruiker een lege lijst.
 
-Het alternatief in Next.js is om een server component te maken dat de data ophaalt. Dit kan je doen door het `use client` statement weg te laten. In een server component kan je namelijk gewoon `async` functies gebruiken om data op te halen. Dit zorgt ervoor dat de data al opgehaald is voordat de HTML naar de browser gestuurd wordt. De gebruiker ziet dus meteen de volledige lijst zonder dat hij moet wachten.
+Het alternatief in Next.js is om een server component te maken dat de data ophaalt. Dit kan je doen door het `use client` statement weg te laten. In een server component kan je namelijk gewoon `async` functies gebruiken om data op te halen.
 
 ```typescript
 import { User } from "@/types";
 
 const fetchUsers = async() => {
-    const response = await fetch("https://jsonplaceholder.typicode.com/users", { cache: "no-store" });
+    const response = await fetch("https://jsonplaceholder.typicode.com/users");
     const data : User[] = await response.json();
     return data;
 }
@@ -134,15 +134,21 @@ const Home = async() => {
 export default Home;
 ```
 
-Je ziet hier dat het component `Home` nu een `async` functie is. Dit is mogelijk omdat het een server component is. We kunnen dus gewoon `await` gebruiken om de data op te halen. Dit zorgt ervoor dat de data al opgehaald is voordat de HTML naar de browser gestuurd wordt. De gebruiker ziet dus meteen de volledige lijst zonder dat hij moet wachten.
+Je ziet hier dat het component `Home` nu een `async` functie is. Dit is mogelijk omdat het een server component is. We kunnen dus gewoon `await` gebruiken om de data op te halen. De data wordt op de server opgehaald en komt mee met de HTML naar de browser. Er is geen `useEffect`, geen extra request vanuit de browser en geen state nodig.
 
 Opgelet: dit is alleen mogelijk in server components. In client components kan je geen `async` functies gebruiken voor het component zelf.
 
-Merk op dat we bij de fetch call de optie `{ cache: "no-store" }` meegeven. Dit zorgt ervoor dat de data telkens opnieuw opgehaald wordt bij elke request. Standaard zal Next.js namelijk caching toepassen bij fetch calls in server components. Dit betekent dat als je meerdere keren dezelfde request doet, de data uit de cache gehaald wordt in plaats van opnieuw opgehaald. Dit maakt je app sneller, maar kan er ook voor zorgen dat je verouderde data toont. 
-
 ### loading.tsx
 
-Een handige feature van Next.js is dat je een `loading.tsx` bestand kan maken in een directory om een loading indicator te tonen terwijl een server component aan het laden is. Je plaatst deze file in dezelfde directory als waar je loading pagina wil.
+Als je dit voorbeeld zo uitprobeert in een nieuw Next.js project, krijg je de volgende foutmelding:
+
+```
+Next.js encountered uncached data during prerendering.
+```
+
+Next.js probeert van elke pagina zo veel mogelijk op voorhand klaar te zetten, zodat de gebruiker meteen iets te zien krijgt. Deze pagina kan echter niets tonen voordat de API geantwoord heeft. Next.js verwacht dat je aangeeft wat er in de tussentijd op het scherm moet staan.
+
+De eenvoudigste oplossing is een `loading.tsx` bestand in dezelfde directory als de pagina (hier dus `app/loading.tsx`). Next.js toont dit component meteen en vervangt het door de pagina zodra de data binnen is.
 
 ```typescript
 const Loading = () => {
@@ -155,13 +161,17 @@ const Loading = () => {
 export default Loading;
 ```
 
+Een `loading.tsx` geldt voor de pagina in die directory en voor alle pagina's in de subdirectories, tenzij die hun eigen `loading.tsx` hebben. Vuistregel: maak je een `async` pagina die data ophaalt, zet er dan een `loading.tsx` naast.
+
+Achter de schermen zet Next.js je pagina in een React `Suspense` component met `loading.tsx` als fallback. In de volgende sectie zie je hoe je dat zelf doet als je meer controle wil.
+
 ### Suspense
 
 Als je meer controle wilt over wat er moet gebeuren als een component nog data aan het fetchen is, dan kan je gebruik maken van React's `Suspense` component. Hiermee kan je een fallback component tonen terwijl de data aan het laden is. Stel dat we een `Todo` component hebben dat data ophaalt van een API aan de hand van een prop `id`
 
 ```typescript
 const fetchTodo = async (id: string) => {
-    const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {cache: 'no-store'});
+    const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
 
     await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
 
@@ -188,7 +198,7 @@ const Todo = async ({ id }: { id: string }) => {
 export default Todo;
 ```
 
-Let op dat we een vertraging van 2 seconden simuleren om het laden duidelijk te maken. We kunnen dit component nu gebruiken in een andere server component en `Suspense` gebruiken om een fallback te tonen terwijl de data aan het laden is. Als we deze eerst zonder `Suspense` zouden gebruiken, dan zou de hele pagina wachten tot de data geladen is voordat er iets getoond wordt. 
+Let op dat we een vertraging van 2 seconden simuleren om het laden duidelijk te maken. We kunnen dit component nu gebruiken in een andere server component en `Suspense` gebruiken om een fallback te tonen terwijl de data aan het laden is. Gebruiken we het eerst zonder `Suspense`, dan krijgen we dezelfde foutmelding als hierboven. Met enkel een `loading.tsx` zou de hele pagina wachten tot alle todo's geladen zijn voordat er iets getoond wordt.
 
 ```typescript
 import Todo from "@/components/Todo";
@@ -273,14 +283,14 @@ export default TodosPage;
 
 Het is perfect mogelijk om server en client components te combineren in een Next.js applicatie. Een goede vuistregel is om zoveel mogelijk server components te gebruiken en alleen client components te maken als het echt nodig is. Dit zorgt ervoor dat je applicatie snel laadt en dat de hoeveelheid JavaScript die naar de browser gestuurd wordt minimaal is.
 
-Zo kan je bijvoorbeeld een server component maken dat data ophaalt en deze data doorgeven aan een client component dat de data toont. 
+Zo kan je bijvoorbeeld een server component maken dat data ophaalt en deze data doorgeven aan een client component dat de data toont. Net zoals hierboven zet je een `loading.tsx` naast deze pagina.
 
 ```typescript
 import { User } from "@/types";
 import UserCard from "@/components/UserCard";
 
 const fetchUsers = async() => {
-    const response = await fetch("https://jsonplaceholder.typicode.com/users", { cache: "no-store" }););
+    const response = await fetch("https://jsonplaceholder.typicode.com/users");
     const data : User[] = await response.json();
     return data;
 }
@@ -358,38 +368,39 @@ In React kan je gebruik maken van Error Boundaries om fouten op te vangen in je 
 In Next.js kan je een `error.tsx` bestand maken in een directory om een error boundary te definiëren voor alle componenten in die directory. Je plaatst deze file in dezelfde directory als waar je de error boundary wil toepassen. Let op dat dit component een client component moet zijn, dus je moet bovenaan het bestand `use client` zetten.
 
 ```typescript
-'use client' // Error components must be Client Components
- 
-import { useEffect } from 'react'
- 
-export default function Error({
-  error,
-  reset,
-}: {
-  error: Error
-  reset: () => void
-}) {
-  useEffect(() => {
-    // Log the error to an error reporting service
-    console.error(error)
-  }, [error])
- 
-  return (
-    <div>
-      <h2>Something went wrong!</h2>
-      <button
-        onClick={
-          () => reset()
-        }
-      >
-        Try again
-      </button>
-    </div>
-  )
+"use client"; // Error components must be Client Components
+
+import { useEffect } from "react";
+
+interface ErrorProps {
+    error: unknown;
+    retry: () => void;
 }
+
+const ErrorPage = ({ error, retry }: ErrorProps) => {
+    useEffect(() => {
+        // Log the error to an error reporting service
+        console.error(error);
+    }, [error]);
+
+    return (
+        <div>
+            <h2>Something went wrong!</h2>
+            <button onClick={() => retry()}>Try again</button>
+        </div>
+    );
+}
+
+export default ErrorPage;
 ```
 
-Je krijgt hier een `error` object en een `reset` functie als props. Het `error` object bevat de fout die opgetreden is en de `reset` functie kan je aanroepen om te proberen de component opnieuw te laden. Dit is vooral handig in combinatie met Suspense, omdat je zo de gebruiker de mogelijkheid kan geven om het opnieuw te proberen als er een fout optreedt tijdens het laden van data. 
+Je krijgt hier een `error` en een `retry` functie als props. De `error` bevat de fout die opgetreden is. Het type is `unknown` omdat je in JavaScript eender wat kan gooien, niet enkel `Error` objecten. Wil je de foutmelding tonen, controleer dan eerst met `error instanceof Error`.
+
+De `retry` functie haalt de data opnieuw op van de server en probeert het component opnieuw te renderen. Dit is vooral handig in combinatie met Suspense, omdat je zo de gebruiker de mogelijkheid kan geven om het opnieuw te proberen als er een fout optreedt tijdens het laden van data.
+
+:::warning
+In productie toont Next.js niet de echte foutmelding van een fout die op de server gegooid werd, maar een algemene boodschap. Zo lekken er geen gevoelige gegevens (zoals een database-URL) naar de browser. Gebruik `error.tsx` dus voor onverwachte fouten, niet om de gebruiker te vertellen wat er mis is met de ingevulde gegevens. Hoe je dat wel doet, zie je in het hoofdstuk over formulieren.
+:::
 
 ## Use case: MongoDB
 
@@ -399,14 +410,16 @@ Stel dat je de volgende `database.ts` file hebt die de connectie met MongoDB afh
 
 ```typescript
 import { Collection, MongoClient } from "mongodb";
-import { Joke } from "./types";
+import { connection } from "next/server";
+import { Joke } from "@/types";
 
 const client = new MongoClient(process.env.MONGODB_URI!);
 
 export const jokesCollection: Collection<Joke> = client.db("jokes").collection<Joke>("joke");
 
 export const getJokes = async() => {
-    await jokesCollection.deleteMany({});
+    await connection();
+
     if (await jokesCollection.countDocuments() === 0) {
         const response = await fetch("https://sampleapis.assimilate.be/jokes/goodJokes");
         const json : Joke[] = await response.json();
@@ -418,6 +431,10 @@ export const getJokes = async() => {
     return jokes;
 }
 ```
+
+Merk de regel `await connection()` bovenaan `getJokes` op. Bij een `fetch` weet Next.js automatisch dat er data opgehaald wordt die pas bij een request gekend is. Bij een database package zoals `mongodb` weet Next.js dat niet. Met `await connection()` zeg je: alles wat hierna komt, gebeurt pas wanneer een gebruiker de pagina opvraagt. Laat je deze regel weg, dan krijg je een foutmelding zoals `Next.js encountered the unstable value new Date() while prerendering` (de MongoDB driver gebruikt intern `new Date()`).
+
+Vuistregel: elke databasefunctie die je in een component gebruikt om data op te halen, begint met `await connection()`.
 
 We kunnen deze functie `getJokes` nu gebruiken in een server component om de data op te halen en te tonen:
 
@@ -444,4 +461,6 @@ const JokesPage = async() => {
 
 export default JokesPage;
 ```
+
+Ook een database query is data die opgehaald moet worden. Vergeet dus niet om een `loading.tsx` naast deze pagina te zetten, anders krijg je dezelfde foutmelding als bij het `fetch` voorbeeld.
 

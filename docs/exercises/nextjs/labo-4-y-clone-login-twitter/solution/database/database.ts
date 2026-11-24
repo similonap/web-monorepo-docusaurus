@@ -1,4 +1,5 @@
 import { Collection, MongoClient, ObjectId, Sort } from "mongodb";
+import { connection } from "next/server";
 import { Post, Profile } from "@/types";
 import bcrypt from "bcrypt";
 
@@ -12,6 +13,9 @@ export const PAGE_SIZE = 5;
 export const SALT_ROUNDS = 10;
 
 export const seedDatabase = async () => {
+    // Pas uitvoeren bij een request (zie cursus: server components)
+    await connection();
+
     await postsCollection.deleteMany({});
     await profilesCollection.deleteMany({});
 
@@ -47,6 +51,8 @@ export const seedDatabase = async () => {
 }
 
 export const getProfileByUsername = async (username: string) => {
+    await connection();
+
     const profile = await profilesCollection.findOne({ username: username });
 
     if (!profile) {
@@ -71,6 +77,8 @@ export const loginUser = async (username: string, password: string) => {
 }   
 
 export const getPostsByUsername = async (username: string, sort: string = "newest", page: number = 1) => {
+    await connection();
+
     let sortObject: Sort = { createdOn: -1 }; 
     if (sort === "oldest") {
         sortObject = { createdOn: 1 };
@@ -95,6 +103,8 @@ export const getPostsByUsername = async (username: string, sort: string = "newes
 }
 
 export const getPosts = async (q: string = "", sort: string = "newest", page: number = 1) => {
+    await connection();
+
     let sortObject: Sort = { createdOn: -1 };
     if (sort === "oldest") {
         sortObject = { createdOn: 1 };
