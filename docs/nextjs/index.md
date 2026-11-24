@@ -8,7 +8,7 @@ sidebar_position: 3
 
 Tot nu toe hebben we gebruik gemaakt van `vite` of een andere tool om een React applicatie te maken. Deze tools maken een zo minimaal mogelijke applicatie aan die gebruik maakt van React.js. Dit is ideaal voor kleine projecten, maar als je een groter project wil maken, dan heb je meer nodig. Je hebt bijvoorbeeld een router nodig, een manier om data op te halen van een server, een manier om je applicatie te deployen, ... 
 
-Deze dingen kan je uiteraard allemaal zelf gaan doen in `react.js`. Je kan bijvoorbeeld zelf een routing systeem in elkaar steken of gebruik maken van een van de vele verschillende libraries die aanwezig zijn op npm. Maar dit is niet altijd even eenvoudig. Je moet zelf gaan uitzoeken welke libraries goed samenwerken, je moet zelf gaan uitzoeken hoe je deze libraries moet gebruiken, je moet zelf gaan uitzoeken hoe je deze libraries moet configureren, ... . Daarom bestaan er React frameworks. Deze frameworks zijn een verzameling van libraries die goed samenwerken en die je kan gebruiken om een volledige applicatie te maken. De meeste frameworks bieden ook een manier om delen van je applicatie op de server te renderen. Dit zorgt ervoor dat je applicatie sneller zal laden en dat je applicatie beter zal scoren op SEO vlak. Meer hier over later in de cursus.
+Deze dingen kan je uiteraard allemaal zelf gaan doen in `react.js`. Je kan bijvoorbeeld zelf een routing systeem in elkaar steken of gebruik maken van een van de vele verschillende libraries die aanwezig zijn op npm. Maar dit is niet altijd even eenvoudig. Je moet zelf gaan uitzoeken welke libraries goed samenwerken, je moet zelf gaan uitzoeken hoe je deze libraries moet gebruiken, je moet zelf gaan uitzoeken hoe je deze libraries moet configureren, ... Daarom bestaan er React frameworks. Deze frameworks zijn een verzameling van libraries die goed samenwerken en die je kan gebruiken om een volledige applicatie te maken. De meeste frameworks bieden ook een manier om delen van je applicatie op de server te renderen. Dit zorgt ervoor dat je applicatie sneller zal laden en dat je applicatie beter zal scoren op SEO-vlak. Meer hierover later in de cursus.
 
 De officiële React documentatie raadt een aantal frameworks aan, waaronder [Next.js](https://nextjs.org/), [React Router](https://reactrouter.com/) (in framework mode) en [Expo](https://expo.dev/) voor mobiele apps. In deze cursus gaan we gebruik maken van Next.js. Dit is een framework dat heel populair is en dat heel veel functionaliteit aanbiedt. 
 
@@ -27,7 +27,7 @@ Je krijgt eerst de vraag hoe je project moet heten. Daarna vraagt Next.js of je 
 ✔ Would you like to use the recommended Next.js defaults? › Yes, use recommended defaults
 ```
 
-Je project gebruikt dan onder andere `TypeScript`, `Tailwind CSS`, de `App Router` en `Cache Components`. Next.js heeft twee verschillende routing systemen en als je de laatste nieuwe features van React 19 zoals server components wil gebruiken dan moet je de App Router gebruiken.
+Je project gebruikt dan onder andere `TypeScript`, `Tailwind CSS`, de `App Router` en `Cache Components`. Next.js heeft twee verschillende routing systemen en als je de laatste nieuwe features van React 19 zoals server components wil gebruiken, dan moet je de App Router gebruiken.
 
 :::info Cache Components
 Met **Cache Components** behandelt Next.js alle data standaard als dynamisch: niets wordt gecachet, tenzij je daar zelf om vraagt. Voor jou betekent dit vooral dat je moet aangeven wat er op het scherm komt terwijl data aan het laden is (met `loading.tsx` of `Suspense`). Dat zie je in het hoofdstuk over server components. Hoe je data wél kan cachen, komt pas helemaal op het einde aan bod in [Extra: data cachen](./cache-components.md).
@@ -41,7 +41,7 @@ npm run dev
 
 Dit start de development server op en opent de applicatie in je browser. Je kan nu beginnen met het aanpassen van de applicatie. Pas bijvoorbeeld de tekst aan in `app/page.tsx` en bekijk het resultaat in je browser. Je kan eventueel een van de voorgaande oefeningen opnieuw maken in Next.js. Je gaat zien dat dit heel gelijkaardig is aan het maken van een React applicatie met `vite`. 
 
-Opgelet je moet wel aangeven dat een component een client component is door bovenaan het bestand `use client` te zetten. Dit is nodig omdat Next.js standaard server components gebruikt en je anders geen state of effects kan gebruiken in je componenten.
+Opgelet: je moet wel aangeven dat een component een client component is door bovenaan het bestand `use client` te zetten. Dit is nodig omdat Next.js standaard server components gebruikt en je anders geen state of effects kan gebruiken in je componenten.
 
 ```typescript
 "use client"

@@ -1,6 +1,6 @@
 # Server Components
 
-Tot nu toe hebben we gebruik gemaakt van client side rendering (CSR) om onze React applicaties te maken. Dit betekend dat de volledige applicatie in de browser wordt geladen en daar gerenderd wordt. Dit is een goede manier om applicaties te maken, maar het heeft ook enkele nadelen. Een van de nadelen is dat de eerste keer dat de applicatie geladen wordt, er een lege pagina getoond wordt terwijl de JavaScript code gedownload en uitgevoerd wordt. Dit kan ervoor zorgen dat de gebruiker een tijdje naar een lege pagina moet kijken voordat de applicatie getoond wordt. Dit is niet ideaal voor de gebruikerservaring.
+Tot nu toe hebben we gebruik gemaakt van client-side rendering (CSR) om onze React applicaties te maken. Dit betekent dat de volledige applicatie in de browser wordt geladen en daar gerenderd wordt. Dit is een goede manier om applicaties te maken, maar het heeft ook enkele nadelen. Een van de nadelen is dat de eerste keer dat de applicatie geladen wordt, er een lege pagina getoond wordt terwijl de JavaScript code gedownload en uitgevoerd wordt. Dit kan ervoor zorgen dat de gebruiker een tijdje naar een lege pagina moet kijken voordat de applicatie getoond wordt. Dit is niet ideaal voor de gebruikerservaring.
 
 Sinds React 19 is het mogelijk om server components te gebruiken. Dit zijn componenten die op de server gerenderd worden en als HTML naar de browser gestuurd worden. Dit zorgt ervoor dat de gebruiker meteen een volledige pagina te zien krijgt zonder dat hij moet wachten tot de JavaScript code gedownload en uitgevoerd is. Dit zorgt voor een betere gebruikerservaring.
 
@@ -8,7 +8,7 @@ Sinds React 19 is het mogelijk om server components te gebruiken. Dit zijn compo
 
 Voor we in detail treden over server components, is het belangrijk om eerst te begrijpen wat client components zijn. Client components zijn componenten die in de browser gerenderd worden. Dit is de standaard manier om React componenten te maken. In een client component kan je state en effects gebruiken om interactiviteit toe te voegen aan je applicatie. Dit zijn dus de componenten die we tot nu toe altijd gebruikt hebben in onze React applicaties.
 
-Ook belangrijk is dat Next.js standaard alle componenten als server components behandelt. Dit betekend dat als je een nieuw component aanmaakt, dit standaard een server component is. Wil je een client component maken, dan moet je bovenaan het bestand `use client` zetten. Dit is nodig omdat client components state en effects kunnen gebruiken en server components niet.
+Ook belangrijk is dat Next.js standaard alle componenten als server components behandelt. Dit betekent dat als je een nieuw component aanmaakt, dit standaard een server component is. Wil je een client component maken, dan moet je bovenaan het bestand `use client` zetten. Dit is nodig omdat client components state en effects kunnen gebruiken en server components niet.
 
 ```typescript
 import { useState } from "react";
@@ -26,7 +26,7 @@ const Home = () => {
 export default Home;
 ```
 
-Dit zal een fout geven omdat we state gebruiken in een server component. Om dit op te lossen moeten we bovenaan het bestand `use client` zetten
+Dit zal een fout geven omdat we state gebruiken in een server component. Om dit op te lossen moeten we bovenaan het bestand `use client` zetten.
 
 ```typescript
 "use client"
@@ -167,7 +167,58 @@ Achter de schermen zet Next.js je pagina in een React `Suspense` component met `
 
 ### Suspense
 
-Als je meer controle wilt over wat er moet gebeuren als een component nog data aan het fetchen is, dan kan je gebruik maken van React's `Suspense` component. Hiermee kan je een fallback component tonen terwijl de data aan het laden is. Stel dat we een `Todo` component hebben dat data ophaalt van een API aan de hand van een prop `id`
+Als je meer controle wilt over wat er moet gebeuren als een component nog data aan het fetchen is, dan kan je gebruik maken van React's `Suspense` component. Hiermee kan je een fallback tonen voor één deel van de pagina, terwijl de rest van de pagina al zichtbaar is.
+
+Neem opnieuw de lijst van users. Met `loading.tsx` ziet de gebruiker enkel "Loading..." tot de API geantwoord heeft. Zelfs de titel `User List` verschijnt pas daarna, terwijl die helemaal geen data nodig heeft. Daarom verplaatsen we het ophalen van de data naar een apart component `UserList`:
+
+```typescript title="components/UserList.tsx"
+import { User } from "@/types";
+
+const fetchUsers = async() => {
+    const response = await fetch("https://jsonplaceholder.typicode.com/users");
+    const data : User[] = await response.json();
+    return data;
+}
+
+const UserList = async() => {
+    const users = await fetchUsers();
+
+    return (
+      <div>
+        {
+          users.map(user => (
+            <div key={user.id} className="mb-4 p-4 border border-gray-200 rounded">{user.name}</div>))
+        }
+      </div>
+    )
+}
+
+export default UserList;
+```
+
+De pagina zelf is nu geen `async` functie meer. Ze toont de titel meteen en zet `UserList` in een `Suspense` component:
+
+```typescript title="app/page.tsx"
+import { Suspense } from "react";
+import UserList from "@/components/UserList";
+
+const Home = () => {
+    return (
+      <div>
+        <h1 className="text-2xl font-bold mb-4">User List</h1>
+        <Suspense fallback={<p>Loading users...</p>}>
+          <UserList />
+        </Suspense>
+      </div>
+    )
+}
+
+export default Home;
+```
+
+Een `loading.tsx` is nu niet meer nodig: de `Suspense` rond `UserList` vertelt Next.js al wat er op het scherm moet staan terwijl de data laadt. De titel (en bijvoorbeeld ook een navigatiebalk of een zoekveld) staat meteen op het scherm, enkel de lijst moet nog laden.
+
+Je kan ook meerdere `Suspense` componenten op één pagina gebruiken. Elk deel laadt dan onafhankelijk van de andere. Stel dat we een `Todo` component hebben dat data ophaalt van een API aan de hand van een prop `id`:
 
 ```typescript
 const fetchTodo = async (id: string) => {
@@ -283,7 +334,7 @@ export default TodosPage;
 
 Het is perfect mogelijk om server en client components te combineren in een Next.js applicatie. Een goede vuistregel is om zoveel mogelijk server components te gebruiken en alleen client components te maken als het echt nodig is. Dit zorgt ervoor dat je applicatie snel laadt en dat de hoeveelheid JavaScript die naar de browser gestuurd wordt minimaal is.
 
-Zo kan je bijvoorbeeld een server component maken dat data ophaalt en deze data doorgeven aan een client component dat de data toont. Net zoals hierboven zet je een `loading.tsx` naast deze pagina.
+Zo kan je bijvoorbeeld een server component maken dat data ophaalt en deze data doorgeven aan een client component dat de data toont. Net zoals hierboven zet je een `loading.tsx` naast deze pagina, of verplaats je de lijst naar een apart component in een `Suspense`.
 
 ```typescript
 import { User } from "@/types";
@@ -404,7 +455,7 @@ In productie toont Next.js niet de echte foutmelding van een fout die op de serv
 
 ## Use case: MongoDB
 
-Een veel voorkomende use case voor server components is het ophalen van data uit een database. We hebben in vorige cursus gezien dat als we data uit een database willen ophalen, dat we daar een backend server voor nodig hebben zoals Express.js. In Next.js is dit niet nodig omdat we server components kunnen gebruiken om direct data uit een database op te halen. Dit kan bijvoorbeeld met MongoDB. 
+Een veelvoorkomende use case voor server components is het ophalen van data uit een database. We hebben in de vorige cursus gezien dat we een backend server zoals Express.js nodig hebben als we data uit een database willen ophalen. In Next.js is dit niet nodig omdat we server components kunnen gebruiken om direct data uit een database op te halen. Dit kan bijvoorbeeld met MongoDB. 
 
 Stel dat je de volgende `database.ts` file hebt die de connectie met MongoDB afhandelt:
 
@@ -462,5 +513,5 @@ const JokesPage = async() => {
 export default JokesPage;
 ```
 
-Ook een database query is data die opgehaald moet worden. Vergeet dus niet om een `loading.tsx` naast deze pagina te zetten, anders krijg je dezelfde foutmelding als bij het `fetch` voorbeeld.
+Ook een database query is data die opgehaald moet worden. Vergeet dus niet om een `loading.tsx` naast deze pagina te zetten of de lijst in een `Suspense` te plaatsen, anders krijg je dezelfde foutmelding als bij het `fetch` voorbeeld.
 

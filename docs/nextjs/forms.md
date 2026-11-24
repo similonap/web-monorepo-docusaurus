@@ -4,13 +4,13 @@
 
 React Server Actions maken het mogelijk om asynchrone code rechtstreeks op de server uit te voeren. Dat betekent dat je geen aparte API-endpoints meer hoeft te schrijven om data te wijzigen. In plaats daarvan schrijf je asynchrone functies die op de server draaien, maar die je kunt aanroepen vanuit zowel Client Components als Server Components. Zo kan je bijvoorbeeld een formulier rechtstreeks koppelen aan een serverfunctie: wanneer de gebruiker het formulier indient, wordt die functie op de server uitgevoerd met directe toegang tot de database en andere back-endlogica. Er is geen extra fetch-request nodig, geen CORS-configuratie en ook geen aparte router of JSON-parsing: alles zit op één plek.
 
-Vroeger moest dit heel anders. Je had een aparte backend nodig, bijvoorbeeld een Express-server of een .NET Core API. Daarin moest je routes definiëren zoals een POST-endpoint voor het verwerken van formulieren en een GET-endpoint voor het ophalen van data. Op de clientkant moest je in React met fetch of axios een request sturen naar dat endpoint, wachten op een JSON-response en daarna zelf de UI bijwerken. Je moest zorgen voor correcte headers, validatie, beveiliging tegen CSRF en CORS-problemen, en vaak ook dubbele type-definities maken voor zowel frontend als backend. Dat werkte prima, maar voor een eenvoudige use-case zoals het versturen van een contactformulier was er behoorlijk wat boilerplate nodig.
+Vroeger moest dit heel anders. Je had een aparte backend nodig, bijvoorbeeld een Express-server of een .NET Core API. Daarin moest je routes definiëren zoals een POST-endpoint voor het verwerken van formulieren en een GET-endpoint voor het ophalen van data. Op de clientkant moest je in React met fetch of axios een request sturen naar dat endpoint, wachten op een JSON-response en daarna zelf de UI bijwerken. Je moest zorgen voor correcte headers, validatie, beveiliging tegen CSRF en CORS-problemen, en vaak ook dubbele type-definities maken voor zowel frontend als backend. Dat werkte prima, maar voor een eenvoudige use case zoals het versturen van een contactformulier was er behoorlijk wat boilerplate nodig.
 
 Met Server Actions valt al die extra code weg: je definieert één enkele functie in je Next.js-project, markeert die met "use server" en koppelt ze direct aan je formulier. De data gaat automatisch naar de server, de actie wordt uitgevoerd en je kunt na afloop meteen de UI opnieuw valideren of een redirect doen. Dit maakt de code veel overzichtelijker, veiliger en makkelijker te onderhouden. Een aparte API is alleen nog nodig als je data wil delen met externe clients, zoals mobiele apps of andere systemen.
 
 ## Formulier (Server Component)
 
-We gaan een eenvoudig formulier maken dat een bericht opslaagt in een mongodb database. Hiervoor hebben we al een voor gedefinieerde `database.ts` file die de connectie met de database maakt en een `Message` model die we kunnen gebruiken om berichten op te slaan in de database.
+We gaan een eenvoudig formulier maken dat een bericht opslaat in een MongoDB database. Hiervoor hebben we al een voorgedefinieerde `database.ts` file die de connectie met de database maakt en een `Message` model dat we kunnen gebruiken om berichten op te slaan in de database.
 
 ```typescript
 import { Collection, MongoClient } from "mongodb";
@@ -140,9 +140,9 @@ export const createMessage = async (formData: FormData) => {
 };
 ```
 
-FormData bevat de data van het formulier. We kunnen deze data ophalen met de `get` methode. De naam die we meegeven aan de `get` methode moet overeenkomen met de naam die we hebben meegegeven aan het `name` attribuut van het input veld in het formulier. Nu moeten we deze server action koppelen aan het formulier. Dit doen we door de `action` attribute van het `form` element te gebruiken.
+FormData bevat de data van het formulier. We kunnen deze data ophalen met de `get` methode. De naam die we meegeven aan de `get` methode moet overeenkomen met de naam die we hebben meegegeven aan het `name` attribuut van het inputveld in het formulier. Nu moeten we deze server action koppelen aan het formulier. Dit doen we door het `action` attribuut van het `form` element te gebruiken.
 
-Vergeet hier niet om bovenaan de file `use server` toe te voegen anders gaan de server actions niet werken.
+Vergeet hier niet om bovenaan de file `use server` toe te voegen, anders werken de server actions niet.
 
 ```typescript
 <form className="form-body" action={createMessage}>
@@ -205,7 +205,7 @@ const MessageForm = () => {
 export default MessageForm;
 ```
 
-Als we de error nu willen afhandelen op een heel eenvoudige manier kunnen we gebruik maken van een `error.tsx` file. Deze file wordt automatisch gebruikt door Next.js als er een error wordt gegooid in een server component of server action. We kunnen deze file aanmaken in de `app/contact` folder. 
+Als we de error nu willen afhandelen op een heel eenvoudige manier, dan kunnen we gebruik maken van een `error.tsx` file. Deze file wordt automatisch gebruikt door Next.js als er een error wordt gegooid in een server component of server action. We kunnen deze file aanmaken in de `app/contact` folder. 
 
 ```typescript
 "use client";
@@ -234,7 +234,7 @@ export default ErrorPage;
 
 Opgelet: in development zie je hier de foutmelding `All fields are required`. In productie (`npm run build` en `npm run start`) vervangt Next.js de melding van een fout die op de server gegooid werd door een algemene boodschap, zodat er geen gevoelige gegevens lekken. Voor validatiefouten die de gebruiker moet zien, is een `error.tsx` dus niet geschikt. In de volgende sectie zie je hoe je dat beter doet met `useActionState`.
 
-Wil je er voor zorgen dat de button even gedisabled wordt nadat je de knop hebt ingedrukt, dan kan je gebruik maken van een kleine Client Component die we kunnen inladen in het formulier. Deze component zorgt er voor dat de button even disabled wordt nadat je op de knop hebt geklikt. We maken hiervoor een nieuwe component aan `SubmitButton.tsx`.
+Wil je ervoor zorgen dat de button even gedisabled wordt nadat je de knop hebt ingedrukt, dan kan je gebruik maken van een kleine Client Component die we kunnen inladen in het formulier. Deze component zorgt ervoor dat de button even disabled wordt nadat je op de knop hebt geklikt. We maken hiervoor een nieuwe component `SubmitButton.tsx` aan.
 
 ```typescript
 "use client"
@@ -267,7 +267,7 @@ const [state, createMessageAction, pending] = useActionState(createMessage, {suc
 Deze hook geeft ons drie dingen:
 - `state`: de huidige status van de actie. Dit is een object dat we kunnen gebruiken om de status bij te houden. In dit geval houden we bij of de actie succesvol is geweest of dat er een error is opgetreden.
 - `createMessageAction`: een functie die we kunnen aanroepen om de server action uit te voeren.
-- `pending`: een boolean die aangeeft of de actie aan het uitvoeren is (een soort van loading state).
+- `pending`: een boolean die aangeeft of de actie uitgevoerd wordt (een soort van loading state).
 
 We hoeven hier dus zelf geen verschillende states bij te houden zoals loading, success of error. Dit wordt allemaal voor ons gedaan door de `useActionState` hook. 
 
@@ -553,7 +553,7 @@ export default function Home() {
 
 ### Pending state voor checkbox
 
-In de `TodoItem` component kunnen we de `useActionState` hook gebruiken om een pending state te krijgen voor de checkbox. Op die manier kunnen we de checkbox disablen terwijl de actie aan het uitvoeren is.
+In de `TodoItem` component kunnen we de `useActionState` hook gebruiken om een pending state te krijgen voor de checkbox. Op die manier kunnen we de checkbox disablen terwijl de actie uitgevoerd wordt.
 
 We moeten dan wel de `toggleTodoCompletion` actie een klein beetje aanpassen zodat hij de vorige state meekrijgt en deze kan updaten.
 
@@ -586,7 +586,7 @@ Vervolgens kunnen we nu de `useActionState` hook gebruiken in de `TodoItem` comp
     const [state, toggleTodoCompletionAction, pending] = useActionState(toggleTodoCompletion, { error: null})
 ```
 
-We kunnen nu de `toggleTodoCompletionAction` meegeven aan het formulier en de checkbox disablen als de actie aan het uitvoeren is.
+We kunnen nu de `toggleTodoCompletionAction` meegeven aan het formulier en de checkbox disablen als de actie uitgevoerd wordt.
 
 ```typescript
     <form action={toggleTodoCompletionAction}>

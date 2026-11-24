@@ -2,13 +2,13 @@
 
 Tot nu toe bestonden onze applicaties uit één enkele pagina. Dit is niet erg handig als je een volledige website wil maken. Daarom is er een manier nodig om meerdere pagina's te maken. Dit kan met behulp van een router. Een router is een stukje code dat bepaalt welke pagina getoond moet worden op basis van de URL. 
 
-In het onderdeel React.js hebben we routes gedefinieerd met behulp van de bibliotheek React Router (in data mode). Je beschrijft dan in je code, met een array van route objecten, welke componenten bij welke URL's horen. Dit is een goede manier om routes te definiëren, maar het heeft als nadeel dat je aanzienlijke hoeveelheid code moet schrijven om de router te configureren. 
+In het onderdeel React.js hebben we routes gedefinieerd met behulp van de bibliotheek React Router (in data mode). Je beschrijft dan in je code, met een array van route objecten, welke componenten bij welke URL's horen. Dit is een goede manier om routes te definiëren, maar het heeft als nadeel dat je een aanzienlijke hoeveelheid code moet schrijven om de router te configureren. 
 
 ## File-system based router
 
-Next.js maakt gebruik van een zogenaamde "file-system based" router. Dit betekend dat we geen extra code moeten schrijven om de router te configureren. We moeten enkel een aantal bestanden en directories aanmaken en de router zal automatisch de juiste pagina tonen op basis van het pad. 
+Next.js maakt gebruik van een zogenaamde "file-system based" router. Dit betekent dat we geen extra code moeten schrijven om de router te configureren. We moeten enkel een aantal bestanden en directories aanmaken en de router zal automatisch de juiste pagina tonen op basis van het pad. 
 
-Als je een nieuw Next.js project aanmaakt met `npx create-next-app@latest` dan zal er automatisch een `app` directory aangemaakt worden. In deze directory kan je nieuwe bestanden en directories aanmaken om nieuwe routes te maken. Er wordt ook al een `page.tsx` bestand aangemaakt in de `app` directory. 
+Als je een nieuw Next.js project aanmaakt met `npx create-next-app@latest`, dan zal er automatisch een `app` directory aangemaakt worden. In deze directory kan je nieuwe bestanden en directories aanmaken om nieuwe routes te maken. Er wordt ook al een `page.tsx` bestand aangemaakt in de `app` directory. 
 
 ### Nieuwe routes maken
 
@@ -20,7 +20,7 @@ Als je bijvoorbeeld een pagina wilt aanbieden op het pad `/about`, dan kan je ee
 
 Om te navigeren tussen de verschillende pagina's kan je gebruik maken van het `Link` component dat meegeleverd wordt met Next.js. Dit component zorgt ervoor dat de navigatie gebeurt zonder dat de pagina volledig herladen wordt. Dit zorgt voor een betere gebruikerservaring. Als je gewoon een `<a>` element gebruikt, dan zal de pagina volledig herladen worden. 
 
-Als we bijvoorbeeld een navigatiebalk willen maken die op de root pagina getoond wordt, dan kunnen we een nieuwe component `NavBar` maken en deze toevoegen aan de `layout.tsx` bestand in de `app` directory. 
+Als we bijvoorbeeld een navigatiebalk willen maken die op de root pagina getoond wordt, dan kunnen we een nieuwe component `NavBar` maken en deze toevoegen aan het `layout.tsx` bestand in de `app` directory. 
 
 ```typescript
 import Link from "next/link";
@@ -40,7 +40,7 @@ Je kan in principe zelf kiezen waar je de `NavBar` component aanmaakt in de dire
 
 #### Active links
 
-Om aan te geven welke link actief is, kan je gebruik maken van de `usePathname` hook die meegeleverd wordt met Next.js. Deze hook geeft de huidige pathname terug. Je kan deze gebruiken om te bepalen welke link actief is en deze een andere stijl te geven. Deze werkt enkel in client componenten dus meestal zijn navigatiebalken client componenten.
+Om aan te geven welke link actief is, kan je gebruik maken van de `usePathname` hook die meegeleverd wordt met Next.js. Deze hook geeft de huidige pathname terug. Je kan deze gebruiken om te bepalen welke link actief is en deze een andere stijl te geven. Deze werkt enkel in client componenten, dus meestal zijn navigatiebalken client componenten.
 
 ```typescript
 "use client";
@@ -83,7 +83,7 @@ Je kan ook gebruik maken van layouts om gedeelde componenten te maken die op mee
 app/layout.tsx → layout voor alle pagina's
 ``` 
 
-Elke nieuwe next applicatie die je aanmaakt met `npx create-next-app@latest` heeft al een `layout.tsx` bestand in de `app` directory. Vereenvoudigd ziet dit bestand er als volgt uit:
+Elke nieuwe Next.js applicatie die je aanmaakt met `npx create-next-app@latest` heeft al een `layout.tsx` bestand in de `app` directory. Vereenvoudigd ziet dit bestand er als volgt uit:
 
 ```typescript
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
@@ -150,7 +150,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 export default DashboardLayout;
 ```
 
-Merk hierbij op dat eerst de Layout in de `app` directory wordt toegepast en daarna de layout in de `app/dashboard` directory. Dit betekend dat de `NavBar` component altijd getoond wordt, ook op de dashboard pagina's.
+Merk hierbij op dat eerst de layout in de `app` directory wordt toegepast en daarna de layout in de `app/dashboard` directory. Dit betekent dat de `NavBar` component altijd getoond wordt, ook op de dashboard pagina's.
 
 Als je naar /dashboard/invoices navigeert, dan zal de volgende structuur getoond worden:
 
@@ -290,7 +290,7 @@ const NotFound = () => {
 export default NotFound;
 ```
 
-Als je er voor wil zorgen dat een bepaalde pagina de 404 pagina toont, kan je de `notFound` functie aanroepen die meegeleverd wordt met Next.js. Deze functie zorgt ervoor dat de 404 pagina getoond wordt. Zo kunnen we op de detailpagina een 404 tonen als het product niet bestaat:
+Als je ervoor wil zorgen dat een bepaalde pagina de 404 pagina toont, kan je de `notFound` functie aanroepen die meegeleverd wordt met Next.js. Deze functie zorgt ervoor dat de 404 pagina getoond wordt. Zo kunnen we op de detailpagina een 404 tonen als het product niet bestaat:
 
 ```typescript
 import { notFound } from "next/navigation";
@@ -381,7 +381,7 @@ const ProductsPage = async(props: PageProps<"/products">) => {
 export default ProductsPage;
 ```
 
-Opgelet deze dingen zijn enkel mogelijk in server componenten. Ook de search parameters zijn pas gekend wanneer de gebruiker de pagina opvraagt, dus ook hier hoort een `loading.tsx` naast de pagina.
+Opgelet: deze dingen zijn enkel mogelijk in server componenten. Ook de search parameters zijn pas gekend wanneer de gebruiker de pagina opvraagt, dus ook hier hoort een `loading.tsx` naast de pagina.
 
 #### Search parameters in client componenten
 
@@ -587,7 +587,7 @@ const Pagination = ({ pageCount, currentPage }: PaginationProps) => {
 export default Pagination;
 ```
 
-Terug naar het producten voorbeeld, we kunnen nu een paginatie component maken die de pagina's toont op basis van een `page` query parameter in de URL. We definiëren eerst een constante `PAGE_SIZE` die aangeeft hoeveel producten er per pagina getoond moeten worden.
+Terug naar het productenvoorbeeld: we kunnen nu een paginatie component maken die de pagina's toont op basis van een `page` query parameter in de URL. We definiëren eerst een constante `PAGE_SIZE` die aangeeft hoeveel producten er per pagina getoond moeten worden.
 
 ```typescript
 import Link from "next/link";

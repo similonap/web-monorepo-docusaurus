@@ -2,7 +2,7 @@
 
 Een proxy is een soort `middleware` functie die verzoeken onderschept voordat ze worden afgehandeld door de eigenlijke route-handler. Dit kan nuttig zijn voor verschillende doeleinden, zoals authenticatie, logging, of het wijzigen van verzoeken en antwoorden.
 
-We gaan in dit hoofdstuk een eenvoudige proxy implementeren om authenticatie toe te voegen aan onze Next.js applicatie. We zullen een proxy maken die controleert of een gebruiker is ingelogd voordat ze toegang krijgen tot bepaalde routes. We gaan hier gebruik maken van JSON Web Tokens (JWT) voor authenticatie.
+We gaan in dit hoofdstuk een eenvoudige proxy implementeren om authenticatie toe te voegen aan onze Next.js applicatie. We zullen een proxy maken die controleert of een gebruiker is ingelogd voordat die toegang krijgt tot bepaalde routes. We gaan hier gebruik maken van JSON Web Tokens (JWT) voor authenticatie.
 
 ## De proxy implementeren
 
@@ -237,7 +237,7 @@ export const login = async (prevState: LoginState, formData: FormData): Promise<
 
 We geven hier een `LoginState` interface mee om de status van de login actie bij te houden. De `login` functie valideert de invoer, controleert de gebruikersgegevens in de database, genereert een JWT token en stelt deze in als een http-only cookie. Als de login succesvol is, wordt de gebruiker doorgestuurd naar het dashboard. Omdat `redirect` intern een error gooit om de actie te stoppen, wordt de `return` daarna nooit uitgevoerd. Die staat er enkel zodat TypeScript tevreden is.
 
-Hier onder een voorbeeld van hoe je de login actie kunt aanroepen vanuit een React component:
+Hieronder een voorbeeld van hoe je de login actie kunt aanroepen vanuit een React component:
 
 ```tsx
 "use client";
@@ -329,7 +329,7 @@ export default LoginPage;
 
 ## Opvragen van de gebruiker in het dashboard
 
-In het dashboard kunnen we de gebruiker opvragen door de JWT token uit de cookie te lezen en te decoderen. Hier is een voorbeeld van hoe je dit kunt doen in de `dashboard/page.tsx`:
+In het dashboard kunnen we de gebruiker opvragen door het JWT token uit de cookie te lezen en te decoderen. Hier is een voorbeeld van hoe je dit kunt doen in de `dashboard/page.tsx`:
 
 ```tsx
 import { getCurrentUser } from "@/lib/auth";

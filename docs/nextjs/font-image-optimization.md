@@ -1,6 +1,6 @@
 # Fonts en Image Optimization
 
-Next.js heeft ingebouwde ondersteuning voor het optimaliseren van fonts en afbeeldingen. Dit kan de performance van je applicatie verbeteren door ervoor te zorgen dat alleen de benodigde fonts en afbeeldingen worden geladen. Ook wordt hier aan het gebruiksgemak gedacht van de gebruiker.
+Next.js heeft ingebouwde ondersteuning voor het optimaliseren van fonts en afbeeldingen. Dit kan de performance van je applicatie verbeteren door ervoor te zorgen dat alleen de benodigde fonts en afbeeldingen worden geladen. Ook wordt er aan het gebruiksgemak van de gebruiker gedacht.
 
 ## Fonts
 
@@ -79,7 +79,7 @@ Afbeeldingen worden standaard pas geladen wanneer ze in beeld komen (lazy loadin
 
 Je moet hier wel de `width` en `height` specificeren van de afbeelding. Dit is nodig om layout shifts te voorkomen. Je moet hier wel de juiste verhouding van de afbeelding gebruiken. Het `next/image` component zorgt er dan voor dat de afbeelding op de juiste manier geschaald wordt.
 
-Je kan ook kiezen voor de afbeelding te importeren en dan de `width` en `height` automatisch te laten bepalen:
+Je kan er ook voor kiezen om de afbeelding te importeren en dan de `width` en `height` automatisch te laten bepalen:
 
 ```typescript
 import Image from "next/image";
@@ -98,7 +98,7 @@ export default function Home() {
 }
 ```
 
-Als je een afbeelding wil gebruiken die van een externe bron kom dan moet je altijd de `width` en `height` specificeren.
+Als je een afbeelding wil gebruiken die van een externe bron komt, dan moet je altijd de `width` en `height` specificeren.
 
 ```typescript
  <Image
@@ -110,7 +110,7 @@ Als je een afbeelding wil gebruiken die van een externe bron kom dan moet je alt
     />
 ```
 
-Geeft een fout omdat Next.js niet weet of deze externe bron betrouwbaar is. Je moet deze domeinen expliciet toevoegen aan het `next.config.ts` bestand:
+Dit geeft een fout omdat Next.js niet weet of deze externe bron betrouwbaar is. Je moet deze domeinen expliciet toevoegen aan het `next.config.ts` bestand:
 
 ```typescript
 import type { NextConfig } from 'next';
