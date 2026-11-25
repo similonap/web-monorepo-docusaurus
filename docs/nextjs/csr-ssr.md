@@ -334,9 +334,9 @@ export default TodosPage;
 
 Het is perfect mogelijk om server en client components te combineren in een Next.js applicatie. Een goede vuistregel is om zoveel mogelijk server components te gebruiken en alleen client components te maken als het echt nodig is. Dit zorgt ervoor dat je applicatie snel laadt en dat de hoeveelheid JavaScript die naar de browser gestuurd wordt minimaal is.
 
-Zo kan je bijvoorbeeld een server component maken dat data ophaalt en deze data doorgeven aan een client component dat de data toont. Net zoals hierboven zet je een `loading.tsx` naast deze pagina, of verplaats je de lijst naar een apart component in een `Suspense`.
+We bouwen verder op de lijst van users uit de sectie over `Suspense`. `UserList` is een server component dat de data ophaalt. In plaats van elke user zelf te tonen, geeft het elke user door aan een client component `UserCard`:
 
-```typescript
+```typescript title="components/UserList.tsx"
 import { User } from "@/types";
 import UserCard from "@/components/UserCard";
 
@@ -346,12 +346,11 @@ const fetchUsers = async() => {
     return data;
 }
 
-const Home = async() => {
+const UserList = async() => {
     const users = await fetchUsers();
 
     return (
       <div>
-        <h1 className="text-2xl font-bold mb-4">User List</h1>
         {
           users.map(user => (
             <UserCard key={user.id} user={user} />))
@@ -360,12 +359,14 @@ const Home = async() => {
     )
 }
 
-export default Home;
+export default UserList;
 ```
 
-en 
+De pagina `app/page.tsx` blijft dezelfde: de titel staat meteen op het scherm en `UserList` staat in een `Suspense`.
 
-```typescript
+met als `UserCard`:
+
+```typescript title="components/UserCard.tsx"
 "use client"
 
 import { User } from "@/types";
@@ -389,7 +390,7 @@ Op dit moment is het uiteraard niet nodig om deze component als client component
 
 Bijvoorbeeld als we de user card klikbaar willen maken met een `onClick` event handler en willen aanduiden dat deze geselecteerd is:
 
-```typescript
+```typescript title="components/UserCard.tsx"
 "use client"
 
 import { User } from "@/types";
@@ -403,14 +404,14 @@ const UserCard = ({user} : UserCardProps) => {
     const [selected, setSelected] = useState(false);
 
     return (
-        <div key={user.id} className={`mb-4 p-4 border ${selected ? "border-blue-500 bg-blue-50" : "border-gray-200"} rounded cursor-pointer`} onClick={() => setSelected(selected => !selected)}>{ user.name }</div>
+        <div className={`mb-4 p-4 border ${selected ? "border-blue-500 bg-blue-50" : "border-gray-200"} rounded cursor-pointer`} onClick={() => setSelected(selected => !selected)}>{ user.name }</div>
     )
 }
 
 export default UserCard;
 ```
 
-De `Home` component blijft een server component die de data ophaalt en de `UserCard` component is een client component die de interactiviteit afhandelt.
+`UserList` blijft een server component dat de data ophaalt en `UserCard` is een client component dat de interactiviteit afhandelt. Een server component mag dus gewoon client components renderen en er data aan doorgeven via props.
 
 ## Error Boundaries
 
