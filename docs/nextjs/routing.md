@@ -86,7 +86,7 @@ app/layout.tsx → layout voor alle pagina's
 Elke nieuwe Next.js applicatie die je aanmaakt met `npx create-next-app@latest` heeft al een `layout.tsx` bestand in de `app` directory. Vereenvoudigd ziet dit bestand er als volgt uit:
 
 ```typescript
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
+const RootLayout = ({ children }: LayoutProps<"/">) => {
   return (
     <html lang="en">
       <body>{children}</body>
@@ -99,13 +99,15 @@ export default RootLayout;
 
 Je ziet hier dat de layout een component is die een `children` prop verwacht. Deze prop bevat de inhoud van de pagina die getoond moet worden. In dit geval wordt de inhoud van de pagina in de `body` van het HTML document geplaatst.
 
+Het type `LayoutProps<"/">` is hier gelijk aan `{ children: React.ReactNode }`. Net zoals `PageProps` (zie verder bij dynamische routes) hoef je het niet te importeren: Next.js genereert het automatisch voor elke route wanneer `npm run dev` of `npm run build` draait. Tussen de `<...>` staat het pad van de layout. Omdat Next.js de types afleidt uit je bestanden, krijg je meer type safety: een layout in een dynamische route krijgt bijvoorbeeld meteen de juiste `params`, en een fout pad geeft een rode lijn in je editor.
+
 Wil je bijvoorbeeld op elke pagina een navigatiebalk tonen, dan kan je dit doen door de navigatiebalk component toe te voegen aan de layout:
 
 ```typescript
 import { Suspense } from "react";
 import NavBar from "@/components/NavBar";
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
+const RootLayout = ({ children }: LayoutProps<"/">) => {
   return (
     <html lang="en">
       <body>
@@ -136,7 +138,7 @@ Stel je voor dat we een speciale layout willen maken voor alle dashboard pagina'
 ```typescript
 import SideBar from "@/components/SideBar";
 
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+const DashboardLayout = ({ children }: LayoutProps<"/dashboard">) => {
   return (
     <div style={{ display: "flex" }}>
       <SideBar />
@@ -183,7 +185,7 @@ Je hebt ook nog de volgende methodes beschikbaar op het router object:
 - `replace(href: string)`: Navigeert naar de opgegeven URL, maar vervangt de huidige entry in de geschiedenis in plaats van een nieuwe entry toe te voegen.
 - `back()`: Navigeert terug naar de vorige pagina in de geschiedenis.
 - `forward()`: Navigeert vooruit naar de volgende pagina in de geschiedenis.
-- `refresh()`: Vernieuwt de huidige pagina, waarbij alle data opnieuw wordt opgehaald. De state van client componenten blijft behouden. 
+- `refresh()`: Vernieuwt de huidige pagina: de server components worden opnieuw gerenderd en hun data wordt opnieuw opgehaald. De state van client componenten blijft behouden. Data die je zelf gecachet hebt met `"use cache"` blijft wel in de cache (zie [Extra: data cachen](./cache-components.md)).
 
 
 ### Dynamische routes
@@ -276,7 +278,7 @@ Met `useParams<{ id: string }>()` geef je aan welke parameters je verwacht, zoda
 
 ### not-found.tsx
 
-Je kan ook een `not-found.tsx` bestand aanmaken in een directory om een custom 404 pagina te maken voor alle componenten in die directory. Je plaatst deze file in dezelfde directory als waar je de 404 pagina wil toepassen. 
+Met een `not-found.tsx` bestand in de `app` directory maak je een custom 404 pagina. Next.js toont die pagina voor elke URL die niet bestaat in je applicatie.
 
 ```typescript
 const NotFound = () => {
@@ -317,14 +319,17 @@ export default ProductsDetail;
 
 Omdat `notFound()` de uitvoering van de pagina stopt, weet TypeScript dat `product` na de `if` zeker bestaat.
 
-### Grouped routes
+Wil je voor een deel van je applicatie een andere 404 pagina, dan kan je ook een `not-found.tsx` in een subdirectory zetten, bijvoorbeeld `app/products/not-found.tsx`. Opgelet: die wordt enkel getoond wanneer je `notFound()` aanroept in een pagina binnen die directory. Een URL die helemaal niet bestaat (zoals `/products/abc/xyz`) toont altijd de `not-found.tsx` uit de `app` directory.
 
-Je kan ook gebruik maken van grouped routes om je directory structuur overzichtelijker te maken. Dit is handig als je bijvoorbeeld een aantal pagina's hebt die bij elkaar horen, maar je wil niet dat deze pagina's een extra niveau in de URL krijgen. Je kan ook op deze manier gedeelde layouts maken voor een groep pagina's zonder dat dit invloed heeft op de URL structuur.
+### Route groups
 
-Je kan een grouped route maken door een directory aan te maken met de naam `(group-name)`. De naam tussen de ronde haken geeft aan dat dit een grouped route is. In deze directory kan je dan nieuwe bestanden en directories aanmaken zoals je normaal zou doen.
+Je kan ook gebruik maken van route groups om je directory structuur overzichtelijker te maken. Dit is handig als je bijvoorbeeld een aantal pagina's hebt die bij elkaar horen, maar je wil niet dat deze pagina's een extra niveau in de URL krijgen. Je kan ook op deze manier gedeelde layouts maken voor een groep pagina's zonder dat dit invloed heeft op de URL structuur.
+
+Je kan een route group maken door een directory aan te maken met de naam `(group-name)`. De naam tussen de ronde haken geeft aan dat dit een route group is. In deze directory kan je dan nieuwe bestanden en directories aanmaken zoals je normaal zou doen.
 
 ```
 app/
+├── layout.tsx             → root layout met <html> en <body> voor alle pagina's
 ├── (shop)/
 │   ├── layout.tsx         → layout met NavBar voor alle shop pagina's
 │   ├── page.tsx           → /
@@ -334,13 +339,16 @@ app/
     └── login/page.tsx     → /login
 ```
 
-De namen `(shop)` en `(auth)` komen niet in de URL terecht.
+De namen `(shop)` en `(auth)` komen niet in de URL terecht. Let op een paar dingen:
+
+- De root layout `app/layout.tsx` blijft bestaan en bevat de `<html>` en `<body>` tags. De layouts in de groepen bevatten enkel wat er extra bij komt, net zoals de dashboard layout hierboven. De `NavBar` staat nu dus in `app/(shop)/layout.tsx` en niet meer in de root layout.
+- Twee pagina's mogen niet naar hetzelfde pad leiden. Omdat `app/(shop)/page.tsx` nu de pagina voor `/` is, moet je `app/page.tsx` weghalen.
 
 ### Search parameters
 
 #### Server component
 
-In een server component (zoals een pagina of layout) kan je ook gebruik maken van search parameters (of query parameters). Dit zijn de parameters die in de URL staan na het vraagteken (`?`). Stel dat we een pagina hebben die een lijst van producten toont en we willen deze lijst filteren op basis van een zoekterm. We kunnen dan de zoekterm als een search parameter in de URL meegeven, bijvoorbeeld `/products?q=shirt`.
+In een pagina (`page.tsx`) kan je ook gebruik maken van search parameters (of query parameters). Dit zijn de parameters die in de URL staan na het vraagteken (`?`). Stel dat we een pagina hebben die een lijst van producten toont en we willen deze lijst filteren op basis van een zoekterm. We kunnen dan de zoekterm als een search parameter in de URL meegeven, bijvoorbeeld `/products?q=shirt`.
 
 ```typescript
 import Link from "next/link";
@@ -381,7 +389,7 @@ const ProductsPage = async(props: PageProps<"/products">) => {
 export default ProductsPage;
 ```
 
-Opgelet: deze dingen zijn enkel mogelijk in server componenten. Ook de search parameters zijn pas gekend wanneer de gebruiker de pagina opvraagt, dus ook hier hoort een `loading.tsx` naast de pagina.
+Opgelet: de `searchParams` prop krijg je enkel in een pagina, niet in een layout of een ander component. Wil je ze in een ander component gebruiken, geef ze dan door als prop of gebruik `useSearchParams` (zie verder). Ook de search parameters zijn pas gekend wanneer de gebruiker de pagina opvraagt, dus ook hier hoort een `loading.tsx` naast de pagina.
 
 #### Search parameters in client componenten
 
@@ -438,9 +446,9 @@ Een component dat `useSearchParams` gebruikt, zet je altijd in een `Suspense` co
 </Suspense>
 ```
 
-#### Voorbeeld: Posts sorteren aan de hand van query parameters
+#### Voorbeeld: Producten sorteren aan de hand van query parameters
 
-We kunnen een client component maken die de sortering van posts aanpast op basis van query parameters in de URL. We maken hiervoor een `SortSelect` component die twee select elementen bevat: één voor het veld waarop gesorteerd wordt en één voor de richting van de sortering (oplopend of aflopend).
+We kunnen een client component maken die de sortering van producten aanpast op basis van query parameters in de URL. We maken hiervoor een `SortSelect` component die twee select elementen bevat: één voor het veld waarop gesorteerd wordt en één voor de richting van de sortering (oplopend of aflopend).
 
 De mogelijke waarden leggen we vast met twee types in `types.ts` (in de root van je project):
 
@@ -486,7 +494,7 @@ const SortSelect = () => {
 
     return (
         <div>
-            <label htmlFor="sort" className="mr-2 font-medium">Sort by:</label>
+            <label htmlFor="sortField" className="mr-2 font-medium">Sort by:</label>
             <select id="sortField" name="sortField" className="border border-gray-300 rounded-md p-2" onChange={onChangeSortField} value={sortField}>
                 <option value="id">ID</option>
                 <option value="name">Name</option>
@@ -504,7 +512,7 @@ const SortSelect = () => {
 export default SortSelect;
 ```
 
-Deze kan je dan als volgt gebruiken om de sortering van een lijst van posts aan te passen:
+Deze kan je dan als volgt gebruiken om een lijst van producten te sorteren. Ook deze pagina gebruikt `searchParams`, dus zet er een `loading.tsx` naast:
 
 ```typescript
 import Link from "next/link";
@@ -560,9 +568,11 @@ const ProductsPage = async(props: PageProps<"/products">) => {
 export default ProductsPage;
 ```
 
-### Voorbeeld: Paginatie met query parameters
+#### Voorbeeld: Paginatie met query parameters
 
-```typescript
+Terug naar het productenvoorbeeld: we kunnen ook een paginatie component maken die de pagina's toont op basis van een `page` query parameter in de URL.
+
+```typescript title="components/Pagination.tsx"
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
@@ -594,7 +604,7 @@ const Pagination = ({ pageCount, currentPage }: PaginationProps) => {
 export default Pagination;
 ```
 
-Terug naar het productenvoorbeeld: we kunnen nu een paginatie component maken die de pagina's toont op basis van een `page` query parameter in de URL. We definiëren eerst een constante `PAGE_SIZE` die aangeeft hoeveel producten er per pagina getoond moeten worden.
+In de pagina definiëren we een constante `PAGE_SIZE` die aangeeft hoeveel producten er per pagina getoond moeten worden. Ook hier lezen we `searchParams` uit, dus hoort er een `loading.tsx` naast de pagina.
 
 ```typescript
 import Link from "next/link";
