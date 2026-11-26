@@ -14,7 +14,7 @@ const CurrencyList = ({ initialBitcoinResponse }: CurrencyListProps) => {
 
     useEffect(() => {
         const fetchPrice = async() => {
-            let price = await fetchBitcoinPrice();
+            const price = await fetchBitcoinPrice();
             setBitcoinResponse(price);
         }
 

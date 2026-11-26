@@ -92,7 +92,7 @@ export const getPosts = async (q: string = "", sort: string = "newest", page: nu
 
 
     let posts = await postsCollection.find({ text: new RegExp(q, "i") }).sort(sortObject).skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE).toArray();
-    let profiles = await profilesCollection.find().toArray();
+    const profiles = await profilesCollection.find().toArray();
 
     posts = posts.map(post => {
         return {
@@ -122,7 +122,7 @@ export const increaseLikes = async (id: string) => {
 
 
 export const addPost = async (text: string) => {
-    let profile = await profilesCollection.findOne({ username: "JonDoe" });
+    const profile = await profilesCollection.findOne({ username: "JonDoe" });
 
     if (!profile) return;
 

@@ -50,7 +50,7 @@ export const login = async (prevState: CreatePostState, formData: FormData) => {
         const username = formData.get('username')?.toString() || '';
         const password = formData.get('password')?.toString() || '';
 
-        let profile = await loginUser(username, password);
+        const profile = await loginUser(username, password);
 
         const cookieStore = await cookies();
 
@@ -70,10 +70,10 @@ export const login = async (prevState: CreatePostState, formData: FormData) => {
             success: true,
             message: 'Login successful!'
         }
-    } catch (error: any) {
+    } catch (error) {
         return {
             success: false,
-            message: error.message || 'Login failed.'
+            message: error instanceof Error ? error.message : 'Login failed.'
         }
     }
 }

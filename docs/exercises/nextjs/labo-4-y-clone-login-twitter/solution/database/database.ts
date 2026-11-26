@@ -25,8 +25,8 @@ export const seedDatabase = async () => {
     }
     const profiles = await response.json() as Profile[];
 
-    for (let profile of profiles) {
-        let hashedPassword : string = await bcrypt.hash(profile.password, SALT_ROUNDS);
+    for (const profile of profiles) {
+        const hashedPassword : string = await bcrypt.hash(profile.password, SALT_ROUNDS);
         profile.password = hashedPassword;
     }
     await profilesCollection.insertMany(profiles);
@@ -114,7 +114,7 @@ export const getPosts = async (q: string = "", sort: string = "newest", page: nu
 
 
     let posts = await postsCollection.find({ text: new RegExp(q, "i") }).sort(sortObject).skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE).toArray();
-    let profiles = await profilesCollection.find().toArray();
+    const profiles = await profilesCollection.find().toArray();
 
     posts = posts.map(post => {
         return {
@@ -144,7 +144,7 @@ export const increaseLikes = async (id: string) => {
 
 
 export const addPost = async (text: string,username: string) => {
-    let profile = await profilesCollection.findOne({ username: username });
+    const profile = await profilesCollection.findOne({ username: username });
 
     if (!profile) return;
 

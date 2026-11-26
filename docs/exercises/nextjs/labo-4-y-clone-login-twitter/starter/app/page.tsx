@@ -1,10 +1,7 @@
-import Pagination from "@/components/Pagination";
-import PostCard from "@/components/PostCard";
 import PostList, { PostListSkeleton } from "@/components/PostList";
 import PostMessage from "@/components/PostMessage";
 import SearchBox from "@/components/SearchBox";
 import SortView from "@/components/SortView";
-import { getPosts } from "@/database/database";
 import { Suspense } from "react";
 
 export default async function Home(props: PageProps<"/">) {

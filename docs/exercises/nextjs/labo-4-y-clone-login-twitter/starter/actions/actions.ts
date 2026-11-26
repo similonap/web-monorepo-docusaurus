@@ -27,5 +27,3 @@ export const createPost = async (prevState: CreatePostState, formData: FormData)
         message: 'Post created successfully!'
     }
 }
-
-export interface FormState {}

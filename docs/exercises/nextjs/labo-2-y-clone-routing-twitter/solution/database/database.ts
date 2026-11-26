@@ -93,7 +93,7 @@ export const getPosts = async (q: string = "", sort: string = "newest", page: nu
 
 
     let posts = await postsCollection.find({ text: new RegExp(q, "i") }).sort(sortObject).skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE).toArray();
-    let profiles = await profilesCollection.find().toArray();
+    const profiles = await profilesCollection.find().toArray();
 
     posts = posts.map(post => {
         return {
@@ -106,7 +106,7 @@ export const getPosts = async (q: string = "", sort: string = "newest", page: nu
     const pages = Math.ceil(totalPosts / PAGE_SIZE);
 
 
-    await new Promise((resolve, reject) => setTimeout(() => resolve(null), 10000))
+    await new Promise((resolve) => setTimeout(() => resolve(null), 10000))
 
     return { posts, pages };
 }

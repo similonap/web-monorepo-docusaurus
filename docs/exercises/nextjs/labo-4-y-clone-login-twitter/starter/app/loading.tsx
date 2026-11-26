@@ -1,11 +1,9 @@
-import { PostCardSkeleton } from "@/components/PostCard";
+import { PostListSkeleton } from "@/components/PostList";
 
 const Loading = () => {
     return (
-        <div className="flex min-h-screen flex-col items-stretch p-4 bg-zinc-50 font-sans dark:bg-black">
-            {Array.from({ length: 5 }).map((_, index) => (
-                <PostCardSkeleton key={index} />
-            ))}
+        <div className="flex justify-center p-4">
+            <PostListSkeleton />
         </div>
     );
 };

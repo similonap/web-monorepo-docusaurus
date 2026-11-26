@@ -9,7 +9,7 @@ const ProfilePage = async (props: PageProps<"/[username]">) => {
     const sort = typeof searchParams.sort === "string" ? searchParams.sort : "newest";
     const currentPage = typeof searchParams.page === "string" ? parseInt(searchParams.page) : 1;
 
-    let profile = await getProfileByUsername(username);
+    const profile = await getProfileByUsername(username);
 
     return (
         <div>

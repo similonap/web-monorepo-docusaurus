@@ -1,11 +1,7 @@
 import MenuBar from "@/components/MenuBar";
 import SideBar from "@/components/Sidebar";
 
-interface MainLayoutProps {
-    children: React.ReactNode;
-}
-
-const MainLayout = ({ children }: MainLayoutProps) => {
+const MainLayout = ({ children }: LayoutProps<"/">) => {
   return (
     <div className="flex min-h-screen">
       <MenuBar />

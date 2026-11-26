@@ -9,7 +9,7 @@ import SolutionDownload from '@site/src/components/SolutionDownload';
 Download het [starterproject](/exercise-files/nextjs/labo-3-y-clone-forms-twitter/starter.zip) en voer daarna `npm install` uit.
 
 
-> 📂 **Naam project:** `lab-nextjs-y-routing`  
+> 📂 **Naam project:** `lab-nextjs-y-forms`  
 > 🔗 **Basisproject:** de vereiste begincode is inbegrepen in het [starterproject](/exercise-files/nextjs/labo-3-y-clone-forms-twitter/starter.zip).
 
 In deze oefening moet je het vorige project uitbreiden met een formulier waarmee een gebruiker een nieuwe post kan aanmaken. Er moet nog geen user authenticatie zijn, dus je kan de post aanmaken onder de naam `JonDoe`.

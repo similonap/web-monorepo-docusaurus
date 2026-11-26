@@ -11,7 +11,7 @@ const LoginPage = () => {
         if (state.success) {
             router.replace('/');
         }
-    }, [state.success]);
+    }, [state.success, router]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen py-2">
