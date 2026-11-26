@@ -1,3 +1,6 @@
+import RouteMap from '@site/src/components/RouteMap';
+import LayoutDiagram, { Layout, ComponentBox, ChildrenBox } from '@site/src/components/LayoutDiagram';
+
 # Routing
 
 Tot nu toe bestonden onze applicaties uit één enkele pagina. Dit is niet erg handig als je een volledige website wil maken. Daarom is er een manier nodig om meerdere pagina's te maken. Dit kan met behulp van een router. Een router is een stukje code dat bepaalt welke pagina getoond moet worden op basis van de URL. 
@@ -14,7 +17,13 @@ Als je een nieuw Next.js project aanmaakt met `npx create-next-app@latest`, dan 
 
 Als je bijvoorbeeld een pagina wilt aanbieden op het pad `/about`, dan kan je een nieuwe directory `about` aanmaken in de `app` directory en daar een nieuw bestand `page.tsx` aanmaken. Je kan hier zo diep gaan als je zelf wil. Wil je bijvoorbeeld een pagina aanbieden op het pad `/dashboard/invoices`, dan kan je een directory `dashboard` aanmaken in de `app` directory en daar een nieuwe directory `invoices` aanmaken. In deze directory kan je dan een nieuw bestand `page.tsx` aanmaken. 
 
-![alt text](router-1.png)
+<RouteMap
+  files={[
+    "app/page.tsx",
+    "app/about/page.tsx",
+    "app/dashboard/invoices/page.tsx",
+  ]}
+/>
 
 ### Link component
 
@@ -135,7 +144,12 @@ const RootLayout = ({ children }: LayoutProps<"/">) => {
 export default RootLayout;
 ```
 
-![One layout](./assets/layouts_0.png)
+<LayoutDiagram label="De root layout app/layout.tsx toont de NavBar en daaronder de inhoud van de pagina (children).">
+  <Layout file="app/layout.tsx">
+    <ComponentBox name="NavBar" />
+    <ChildrenBox />
+  </Layout>
+</LayoutDiagram>
 
 Je kan ook geneste layouts maken. Dit is handig als je bijvoorbeeld een layout wil maken die alleen op bepaalde pagina's gebruikt wordt. Wil je bijvoorbeeld een layout maken die alleen op de dashboard pagina's gebruikt wordt, dan kan je een nieuw bestand `layout.tsx` aanmaken in de `app/dashboard` directory. 
 
@@ -166,7 +180,15 @@ Merk hierbij op dat eerst de layout in de `app` directory wordt toegepast en daa
 
 Als je naar /dashboard/invoices navigeert, dan zal de volgende structuur getoond worden:
 
-![Geneste Layouts](./assets/layouts_1.png)
+<LayoutDiagram label="De root layout toont de NavBar. Daaronder staat de dashboard layout met de SideBar naast de pagina app/dashboard/invoices/page.tsx.">
+  <Layout file="app/layout.tsx">
+    <ComponentBox name="NavBar" />
+    <Layout file="app/dashboard/layout.tsx" direction="row">
+      <ComponentBox name="SideBar" />
+      <ChildrenBox page="app/dashboard/invoices/page.tsx" />
+    </Layout>
+  </Layout>
+</LayoutDiagram>
 
 ### Imperatieve navigatie
 

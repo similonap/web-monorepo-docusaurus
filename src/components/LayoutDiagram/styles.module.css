@@ -1,0 +1,105 @@
+.container {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: var(--ifm-global-radius);
+  background: var(--ifm-color-emphasis-100);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.85rem;
+}
+
+.layout {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  border: 2px solid var(--ifm-color-primary);
+  border-radius: 10px;
+  background: var(--ifm-background-surface-color);
+}
+
+.file {
+  align-self: flex-start;
+  margin: -0.1rem 0 0 -0.1rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 8px 0 8px 0;
+  background: var(--ifm-color-primary);
+  color: #0b1f1a;
+  font-weight: 600;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.row {
+  flex-direction: row;
+}
+
+.row > .component {
+  flex: 0 0 25%;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 9rem;
+}
+
+.component {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--ifm-color-emphasis-400);
+  border-radius: 8px;
+  background: var(--ifm-color-emphasis-100);
+  color: var(--ifm-font-color-base);
+  font-weight: 600;
+}
+
+.tag {
+  color: var(--ifm-color-emphasis-600);
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.children {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-height: 9rem;
+  padding: 1rem;
+  border: 2px dashed var(--ifm-color-emphasis-400);
+  border-radius: 8px;
+  color: var(--ifm-color-emphasis-700);
+  text-align: center;
+}
+
+.childrenLabel {
+  color: var(--ifm-font-color-base);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.page {
+  font-size: 0.8rem;
+  word-break: break-all;
+}
+
+@media (max-width: 600px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .row > .component {
+    min-height: 0;
+  }
+}
