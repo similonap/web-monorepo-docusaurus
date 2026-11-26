@@ -6,7 +6,7 @@ Soms is het wel zinvol om data te cachen. Denk aan een lijst van landen, de prod
 
 ## use cache
 
-Je cachet een functie door `"use cache"` als eerste regel in de functie te zetten. Met `cacheLife` geef je aan hoe lang de data in de cache mag blijven.
+Je cachet een functie door `"use cache"` als eerste regel in de functie te zetten. Met `cacheLife` geef je aan hoe lang de data in de cache mag blijven. De `User` interface is dezelfde als in het hoofdstuk over server components.
 
 ```typescript
 import { cacheLife } from "next/cache";

@@ -29,10 +29,11 @@ export const config = {
 
 Momenteel staat de proxy alleen maar toe dat alle verzoeken doorgaan. De matcher zorgt ervoor dat de proxy alleen wordt toegepast op de routes `/` en `/dashboard`. Dit wil zeggen dat we alleen authenticatie gaan afdwingen op deze routes.
 
-Voor authenticatie gaan we gebruik maken van JWT tokens die we opslaan in een http-only cookie. We gaan de proxy aanpassen om te controleren of deze cookie aanwezig is en geldig is. Hiervoor installeren we eerst de `jsonwebtoken` package:
+Voor authenticatie gaan we gebruik maken van JWT tokens die we opslaan in een http-only cookie. We gaan de proxy aanpassen om te controleren of deze cookie aanwezig is en geldig is. Hiervoor installeren we eerst de `jsonwebtoken` package. Verderop gebruiken we ook `bcrypt` om wachtwoorden te hashen en `mongodb` voor de database, dus die installeren we meteen mee. De `@types` packages zorgen ervoor dat TypeScript de types van `jsonwebtoken` en `bcrypt` kent:
 
 ```bash
-npm install jsonwebtoken
+npm install jsonwebtoken bcrypt mongodb
+npm install -D @types/jsonwebtoken @types/bcrypt
 ```
 
 Nu kunnen we de proxy aanpassen om de JWT te verifiëren:
@@ -68,9 +69,28 @@ De proxy draait op de Node.js server, dus je kan er gewoon npm packages zoals `j
 
 ## Auth Database functies
 
-We hebben een functie nodig om gebruikers op te halen uit onze database. We maken een bestand `database/auth.ts` aan met de volgende inhoud:
+We hebben een functie nodig om gebruikers op te halen uit onze database. Eerst voegen we een `User` interface toe aan `types.ts` (in de root van je project). We bewaren nooit het wachtwoord zelf, enkel een hash ervan:
 
-```typescript
+```typescript title="types.ts"
+export interface User {
+    id: string;
+    email: string;
+    name: string;
+    avatar?: string;
+    passwordHash: string;
+}
+```
+
+Daarnaast heb je in `.env.local` een `MONGODB_URI` en een `JWT_SECRET` nodig (zie het hoofdstuk over server components voor meer uitleg over `.env.local`):
+
+```bash title=".env.local"
+MONGODB_URI=mongodb+srv://<gebruiker>:<wachtwoord>@<cluster>.mongodb.net/
+JWT_SECRET=een-lange-willekeurige-geheime-tekst
+```
+
+We maken een bestand `database/auth.ts` aan met de volgende inhoud:
+
+```typescript title="database/auth.ts"
 import { Collection, MongoClient } from "mongodb";
 import { User } from "@/types";
 import bcrypt from "bcrypt";

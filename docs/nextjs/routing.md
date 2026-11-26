@@ -442,7 +442,14 @@ Een component dat `useSearchParams` gebruikt, zet je altijd in een `Suspense` co
 
 We kunnen een client component maken die de sortering van posts aanpast op basis van query parameters in de URL. We maken hiervoor een `SortSelect` component die twee select elementen bevat: één voor het veld waarop gesorteerd wordt en één voor de richting van de sortering (oplopend of aflopend).
 
-```typescript
+De mogelijke waarden leggen we vast met twee types in `types.ts` (in de root van je project):
+
+```typescript title="types.ts"
+export type SortField = "id" | "name";
+export type SortDirection = "asc" | "desc";
+```
+
+```typescript title="components/SortSelect.tsx"
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";

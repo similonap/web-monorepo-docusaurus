@@ -70,6 +70,17 @@ By default zijn Next.js applicaties gebaseerd op React Server Components. Het op
 
 ### Data Fetching in Server Components
 
+In de voorbeelden op deze pagina importeren we de types uit `@/types`. Maak daarvoor een bestand `types.ts` aan in de root van je project (naast de `app` directory). De alias `@/` verwijst naar die root. We beginnen met een `User` interface voor de users van [JSONPlaceholder](https://jsonplaceholder.typicode.com/users). Een user heeft nog meer velden (zoals `address` en `company`), maar je hoeft enkel de velden op te nemen die je gebruikt:
+
+```typescript title="types.ts"
+export interface User {
+    id: number;
+    name: string;
+    username: string;
+    email: string;
+}
+```
+
 Stel je hebt het volgende client component dat data ophaalt van een API:
 
 ```typescript
@@ -218,9 +229,20 @@ export default Home;
 
 Een `loading.tsx` is nu niet meer nodig: de `Suspense` rond `UserList` vertelt Next.js al wat er op het scherm moet staan terwijl de data laadt. De titel (en bijvoorbeeld ook een navigatiebalk of een zoekveld) staat meteen op het scherm, enkel de lijst moet nog laden.
 
-Je kan ook meerdere `Suspense` componenten op één pagina gebruiken. Elk deel laadt dan onafhankelijk van de andere. Stel dat we een `Todo` component hebben dat data ophaalt van een API aan de hand van een prop `id`:
+Je kan ook meerdere `Suspense` componenten op één pagina gebruiken. Elk deel laadt dan onafhankelijk van de andere. Stel dat we een `Todo` component hebben dat data ophaalt van een API aan de hand van een prop `id`. Voeg eerst een interface voor een todo toe aan `types.ts`. We noemen ze `TodoItem`, zodat de naam niet botst met het component `Todo`:
 
-```typescript
+```typescript title="types.ts"
+export interface TodoItem {
+    userId: number;
+    id: number;
+    title: string;
+    completed: boolean;
+}
+```
+
+```typescript title="components/Todo.tsx"
+import { TodoItem } from "@/types";
+
 const fetchTodo = async (id: string) => {
     const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
 
@@ -229,7 +251,7 @@ const fetchTodo = async (id: string) => {
     if (!response.ok) {
         throw new Error('Failed to fetch todo');
     }
-    const data = await response.json();
+    const data : TodoItem = await response.json();
     return data;
 }
 
@@ -458,9 +480,50 @@ In productie toont Next.js niet de echte foutmelding van een fout die op de serv
 
 Een veelvoorkomende use case voor server components is het ophalen van data uit een database. We hebben in de vorige cursus gezien dat we een backend server zoals Express.js nodig hebben als we data uit een database willen ophalen. In Next.js is dit niet nodig omdat we server components kunnen gebruiken om direct data uit een database op te halen. Dit kan bijvoorbeeld met MongoDB. 
 
-Stel dat je de volgende `database.ts` file hebt die de connectie met MongoDB afhandelt:
+Installeer eerst de MongoDB driver:
 
-```typescript
+```bash
+npm install mongodb
+```
+
+### .env.local
+
+De connection string van je database hoort niet in je code: er staat een wachtwoord in. Maak daarom in de root van je project (naast de `app` directory) een bestand `.env.local` aan:
+
+```bash title=".env.local"
+MONGODB_URI=mongodb+srv://<gebruiker>:<wachtwoord>@<cluster>.mongodb.net/
+```
+
+Vervang de waarde door de connection string van je eigen database (bijvoorbeeld uit MongoDB Atlas, of `mongodb://localhost:27017` voor een lokale database). Next.js leest dit bestand automatisch in bij het opstarten. Je kan de waarde dan in je code opvragen met `process.env.MONGODB_URI`.
+
+- In een nieuw Next.js project staat `.env*` al in `.gitignore`. Je wachtwoord komt dus niet in git terecht.
+- Pas je `.env.local` aan terwijl de development server draait, herstart dan `npm run dev`.
+- Variabelen in `.env.local` zijn enkel beschikbaar op de server. Enkel variabelen die beginnen met `NEXT_PUBLIC_` komen ook in de browser terecht. Geef je database-URL dus nooit zo'n naam.
+
+### Database functies
+
+We halen jokes op van een API en slaan ze op in MongoDB. Een joke ziet er zo uit:
+
+```json
+{ "id": 1, "type": "general", "setup": "What did the fish say when it hit the wall?", "punchline": "Dam." }
+```
+
+Voeg daarvoor een `Joke` interface toe aan `types.ts`:
+
+```typescript title="types.ts"
+export interface Joke {
+    id: number;
+    type: string;
+    setup: string;
+    punchline: string;
+}
+```
+
+Het `_id` veld dat MongoDB zelf toevoegt, hoef je niet op te nemen. De MongoDB driver voegt dat zelf toe aan het type van wat je terugkrijgt.
+
+Maak dan een bestand `database.ts` aan in de root van je project. Het handelt de connectie met MongoDB af:
+
+```typescript title="database.ts"
 import { Collection, MongoClient } from "mongodb";
 import { connection } from "next/server";
 import { Joke } from "@/types";
@@ -488,25 +551,57 @@ Merk de regel `await connection()` bovenaan `getJokes` op. Bij een `fetch` weet 
 
 Vuistregel: elke databasefunctie die je in een component gebruikt om data op te halen, begint met `await connection()`.
 
-We kunnen deze functie `getJokes` nu gebruiken in een server component om de data op te halen en te tonen:
+### Jokes tonen met Suspense
 
-```typescript
+Ook een database query is data die opgehaald moet worden. Net zoals bij de lijst van users zetten we het ophalen van de data daarom in een apart component `JokeList`. In hetzelfde bestand maken we een skeleton dat de vorm van de lijst nabootst:
+
+```typescript title="components/JokeList.tsx"
 import { getJokes } from "@/database";
 
-const JokesPage = async() => {
+const JokeList = async() => {
     const jokes = await getJokes();
 
     return (
+        <ul className="space-y-4">
+            {jokes.map((joke) => (
+                <li key={joke.id} className="border p-4 rounded shadow">
+                    <h2 className="text-xl font-semibold">{joke.setup}</h2>
+                    <p className="mt-2 text-gray-700">{joke.punchline}</p>
+                </li>
+            ))}
+        </ul>
+    )
+}
+
+export const JokeListSkeleton = () => {
+    return (
+        <ul className="space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+                <li key={i} className="border p-4 rounded shadow animate-pulse">
+                    <div className="bg-gray-300 h-6 w-2/3 rounded"></div>
+                    <div className="bg-gray-300 h-4 w-1/3 rounded mt-2"></div>
+                </li>
+            ))}
+        </ul>
+    )
+}
+
+export default JokeList;
+```
+
+De pagina zelf is geen `async` functie. Ze toont de titel meteen en zet `JokeList` in een `Suspense` met de skeleton als fallback:
+
+```typescript title="app/jokes/page.tsx"
+import { Suspense } from "react";
+import JokeList, { JokeListSkeleton } from "@/components/JokeList";
+
+const JokesPage = () => {
+    return (
         <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Jokes Page</h1>
-            <ul className="space-y-4">
-                {jokes.map((joke) => (
-                    <li key={joke.id} className="border p-4 rounded shadow">
-                        <h2 className="text-xl font-semibold">{joke.setup}</h2>
-                        <p className="mt-2 text-gray-700">{joke.punchline}</p>
-                    </li>
-                ))}
-            </ul>
+            <Suspense fallback={<JokeListSkeleton />}>
+                <JokeList />
+            </Suspense>
         </div>
     )
 }
@@ -514,5 +609,4 @@ const JokesPage = async() => {
 export default JokesPage;
 ```
 
-Ook een database query is data die opgehaald moet worden. Vergeet dus niet om een `loading.tsx` naast deze pagina te zetten of de lijst in een `Suspense` te plaatsen, anders krijg je dezelfde foutmelding als bij het `fetch` voorbeeld.
-
+Laat je de `Suspense` weg (en staat er geen `loading.tsx` naast de pagina), dan krijg je dezelfde foutmelding als bij het `fetch` voorbeeld. Wil je de skeleton beter zien? Voeg dan tijdelijk een vertraging toe in `getJokes`, zoals bij het `Todo` voorbeeld: `await new Promise(resolve => setTimeout(resolve, 2000));`.
