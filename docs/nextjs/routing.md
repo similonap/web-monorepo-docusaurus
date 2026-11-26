@@ -42,23 +42,34 @@ Je kan in principe zelf kiezen waar je de `NavBar` component aanmaakt in de dire
 
 Om aan te geven welke link actief is, kan je gebruik maken van de `usePathname` hook die meegeleverd wordt met Next.js. Deze hook geeft de huidige pathname terug. Je kan deze gebruiken om te bepalen welke link actief is en deze een andere stijl te geven. Deze werkt enkel in client componenten, dus meestal zijn navigatiebalken client componenten.
 
-```typescript
+```typescript title="components/NavBar.tsx"
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 
 interface NavLinkProps {
   href: string;
   label: string;
 }
 
-const NavLink = ({href, label} : NavLinkProps) => {
+const linkClass = "px-3 py-2 rounded-md text-sm font-medium";
+
+const ActiveNavLink = ({ href, label }: NavLinkProps) => {
   const pathname = usePathname();
   return (
-    <Link href={href} className={`px-3 py-2 rounded-md text-sm font-medium ${pathname === href ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-200 hover:text-black"}`}>
-        {label}
+    <Link href={href} className={`${linkClass} ${pathname === href ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-200 hover:text-black"}`}>
+      {label}
     </Link>
+  )
+}
+
+const NavLink = ({ href, label }: NavLinkProps) => {
+  return (
+    <Suspense fallback={<Link href={href} className={`${linkClass} text-gray-700`}>{label}</Link>}>
+      <ActiveNavLink href={href} label={label} />
+    </Suspense>
   )
 }
 
@@ -74,6 +85,10 @@ const NavBar = () => {
 
 export default NavBar;
 ```
+
+`ActiveNavLink` gebruikt `usePathname` om te bepalen of de link actief is. Waarom staat die in een `Suspense` component? Op pagina's met een dynamisch pad (zoals `/products/3`, zie verder bij dynamische routes) kent Next.js de URL pas wanneer de gebruiker de pagina opvraagt. Zonder `Suspense` krijg je daar de foutmelding `Next.js encountered URL data usePathname() in a Client Component outside of <Suspense>`.
+
+Als `fallback` tonen we dezelfde link, maar zonder de actieve stijl. Op een pagina met een vast pad (zoals `/about`) bepaalt Next.js de actieve link al op voorhand en zie je de fallback nooit. Op een pagina met een dynamisch pad staat de navigatiebalk meteen op het scherm en verschijnt enkel de markering van de actieve link een fractie later. Omdat de `Suspense` in `NavLink` zelf zit, hoef je er nergens anders rekening mee te houden.
 
 ### Layouts maken
 
@@ -104,16 +119,13 @@ Het type `LayoutProps<"/">` is hier gelijk aan `{ children: React.ReactNode }`. 
 Wil je bijvoorbeeld op elke pagina een navigatiebalk tonen, dan kan je dit doen door de navigatiebalk component toe te voegen aan de layout:
 
 ```typescript
-import { Suspense } from "react";
 import NavBar from "@/components/NavBar";
 
 const RootLayout = ({ children }: LayoutProps<"/">) => {
   return (
     <html lang="en">
       <body>
-        <Suspense fallback={<nav className="h-10" />}>
-          <NavBar />
-        </Suspense>
+        <NavBar />
         {children}
       </body>
     </html>
@@ -122,8 +134,6 @@ const RootLayout = ({ children }: LayoutProps<"/">) => {
 
 export default RootLayout;
 ```
-
-Omdat onze `NavBar` de `usePathname` hook gebruikt om de actieve link aan te duiden, zetten we hem in een `Suspense` component. Op pagina's met een dynamisch pad (zoals `/products/3`, zie verder) kent Next.js de URL pas wanneer de gebruiker de pagina opvraagt. Zonder `Suspense` krijg je dan een foutmelding zoals `Next.js encountered URL data usePathname() in a Client Component outside of <Suspense>`. Met de `fallback` (hier een lege balk met dezelfde hoogte) kan Next.js de rest van de pagina al op voorhand klaarzetten.
 
 ![One layout](./assets/layouts_0.png)
 
